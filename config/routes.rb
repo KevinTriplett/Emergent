@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  namespace :admin do
+    resources :greeters, only: [:index, :show, :new, :create]
+    resources :members, only: [:new]
+  end
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  root to: "members#index"
 end
