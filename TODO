@@ -1,0 +1,17 @@
+# TODO
+
+## MVP 1
+- [X] sign in to EC@MN
+- [ ] collect new member information
+- [ ] simple greeter log in
+- [ ] display table of new members
+- [ ] ability to change status
+- [ ] ability to assign greeter
+- [ ] expand for additional information
+
+## MVP 2
+- [ ] list of greeters
+- [ ] temporary reorder rotation of greeters
+- [ ] permanent reorder rotation of greeters
+- [ ] ability to approve new requests
+- [ ] individual greeter authentication
