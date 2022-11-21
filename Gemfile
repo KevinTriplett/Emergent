@@ -6,6 +6,15 @@ ruby "3.1.2"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.4"
 
+gem "trailblazer-operation" # Gives you Trailblazer::Operation, and that's it, no Reform.
+gem "trailblazer-developer" # Gives you #wtf?
+gem "trailblazer-macro" # operationb macros
+
+# web scraping
+gem "kimurai", path: "/Users/kevin/Documents/PROJECTS/SOFTWARE/gems/kimuraframework"
+gem "simple_form"
+gem "haml"
+
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
@@ -46,7 +55,7 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 
 # Use Sass to process CSS
-# gem "sassc-rails"
+gem "sassc-rails"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
