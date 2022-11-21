@@ -113,6 +113,10 @@ GEM
     crass (1.0.6)
     cssbundling-rails (1.1.1)
       railties (>= 6.0.0)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     debug (1.6.3)
       irb (>= 1.3.6)
       reline (>= 0.3.1)
@@ -164,6 +168,8 @@ GEM
     mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
     minitest (5.16.3)
+    minitest-line (0.6.5)
+      minitest (~> 5.0)
     msgpack (1.6.0)
     murmurhash3 (0.1.6)
     net-http-digest_auth (1.4.1)
@@ -315,11 +321,13 @@ DEPENDENCIES
   bootsnap
   capybara
   cssbundling-rails
+  database_cleaner-active_record
   debug
   haml
   jbuilder
   jsbundling-rails
   kimurai!
+  minitest-line
   puma (~> 5.0)
   rails (~> 7.0.4)
   sassc-rails
