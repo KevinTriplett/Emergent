@@ -11,8 +11,7 @@ class AddMembers < ActiveRecord::Migration[7.0]
       t.string :location
       t.text :questions_responses
       t.text :notes
-      t.references :greeter
-      t.references :referral
+      t.string :referral
 
       t.timestamps
     end

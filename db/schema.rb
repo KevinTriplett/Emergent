@@ -13,6 +13,7 @@
 ActiveRecord::Schema[7.0].define(version: 2022_11_20_153543) do
   create_table "greeters", force: :cascade do |t|
     t.integer "member_id"
+    t.string "status"
     t.integer "order_permanent"
     t.integer "order_temporary"
     t.datetime "created_at", null: false
@@ -31,12 +32,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_20_153543) do
     t.string "location"
     t.text "questions_responses"
     t.text "notes"
-    t.integer "greeter_id"
-    t.integer "referral_id"
+    t.string "referral"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["greeter_id"], name: "index_members_on_greeter_id"
-    t.index ["referral_id"], name: "index_members_on_referral_id"
   end
 
 end
