@@ -1,0 +1,29 @@
+!!! XML
+!!!
+%html
+  %head
+    %title Emergent Commons Volunteers
+    %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }
+    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = stylesheet_link_tag "custom", "data-turbo-track": "reload"
+    = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
+    -# %script{ src: "/js/jquery-3.6.0.js" }
+    -# %script{ src: "/js/application.js" }
+    -# = turbo_include_tags
+
+  %body#admin
+    .container
+      .row
+        .col-sm
+          - flash.each do |type, msg|
+            .row.alert.alert-info
+              .col.flash= msg
+      .row
+        .col-sm-8
+          %h1 Emergent Commons Volunteer App
+          = yield
+        .col-sm-4
