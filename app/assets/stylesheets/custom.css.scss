@@ -46,6 +46,14 @@ p.timestamp {
   }
 }
 
+table.members {
+  width: 100%;
+}
+
+tr.member-questions, tr.member-more {
+  display: none;
+}
+
 /* ----------------------------------- */
 
 .default-page {

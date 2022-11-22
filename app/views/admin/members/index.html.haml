@@ -1,1 +1,36 @@
 %h5= (@members.empty? ? "No " : "") + "Existing Members"
+
+%table{ class: "members" }
+  %thead
+    %tr
+      %td Name
+      %td Greeter
+      %td Email
+      %td Status
+      %td Request Date
+      %td Answers
+      %td More
+  %tbody
+    - @members.each do |m|
+      %tr
+        %td.member-name
+          = link_to m.name, m.profile_url
+        %td.member-greeter
+          = m.greeter || link_to("make me greeter!", "#", class: "member-greeter")
+        %td.member-email
+          = link_to m.email, "mailto:#{ m.email }"
+        %td.member-status= m.status
+        %td.member-request-date= m.request_timestamp.dow_short_date
+        %td.member-questions-more
+          %i{ class: "bi bi-arrow-down-square" }
+        %td.member-more
+          %i{ class: "bi bi-arrow-down-square" }
+      %tr.member-questions
+        %td{ colspan: 7, data: { id: m.id } }
+          %ol
+            - @qna = m.questions_responses.gsub("\\", "</p><p>Answer: ").split(" -:- ").join("</p></li><li><p>")
+            %li
+              %p!= @qna
+      %tr.member-more
+        %td{ colspan: 7, data: { id: m.id } }
+          %textarea
