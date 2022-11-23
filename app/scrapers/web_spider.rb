@@ -47,6 +47,7 @@ class WebSpider < Kimurai::Base
       last_name = row.css(".invite-list-item-last-name-text").text.strip
       # puts "name = #{name}"
       name = "#{first_name} #{last_name}"
+      puts "MEMBER # #{members.count + 1}"
       puts "name = #{name}"
       email = row.css(".invite-list-item-email-text").text.strip
       puts "email = #{email}"
@@ -106,7 +107,6 @@ class WebSpider < Kimurai::Base
         status: status,
         questions_responses: questions_and_answers.join(" -:- ")
       })
-      puts "MEMBER # #{members.count}"
     end
 
     create_members(members)
