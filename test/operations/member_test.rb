@@ -49,6 +49,27 @@ class MemberOperationTest < MiniTest::Spec
       end
     end
 
+    it "Creates {Greeter} model" do
+      DatabaseCleaner.cleaning do
+        result = Member::Operation::Create.call(
+          params: {
+            member: {
+              name: random_member_name, 
+              email: random_email,
+              join_timestamp: default_date,
+              make_greeter: true
+            }
+          }
+        )
+
+        assert result.success?
+        member = result[:model]
+        assert Greeter.find_by_member_id(member.id)
+        assert member.greeter
+      end
+    # Member.delete_all
+  end
+
     # ----------------
     # failing tests
     it "Fails with invalid parameters" do

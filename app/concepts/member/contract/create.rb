@@ -14,6 +14,7 @@ module Member::Contract
     property :questions_responses
     property :notes
     property :referral
+    property :make_greeter
 
     validation do
       params do
@@ -29,6 +30,7 @@ module Member::Contract
         required(:questions_responses)
         required(:notes)
         required(:referral)
+        required(:make_greeter)
       end
   
       rule(:email) do
