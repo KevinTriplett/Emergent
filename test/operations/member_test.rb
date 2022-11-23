@@ -29,9 +29,9 @@ class MemberOperationTest < MiniTest::Spec
     end
 
     it "Creates {Member} model with non-unique name" do
-      existing_member = create_member
-
       DatabaseCleaner.cleaning do
+        existing_member = create_member
+
         result = Member::Operation::Create.call(
           params: {
             member: {

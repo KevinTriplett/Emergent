@@ -1,8 +1,12 @@
 Rails.application.routes.draw do
   namespace :admin do
-    resources :greeters, only: [:index, :show, :new, :create]
-    resources :members, only: [:index]
+    resources :greeters, only: [:index]
+    resources :members, only: [:index, :new, :create, :edit, :update, :delete]
   end
 
-  root to: "members#index"
+  resource :greeter, param: :token, only: [:show] do
+    resources :members, only: [:index, :update]
+  end
+
+  root to: "members#default"
 end

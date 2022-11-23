@@ -53,13 +53,14 @@ def create_member(params = {})
         email: params[:email] || random_email,
         profile_url: params[:profile_url],
         chat_url: params[:chat_url],
-        request_timestamp: params[:request_timestamp],
+        request_timestamp: params[:request_timestamp] || "12/08/2022",
         join_timestamp: params[:join_timestamp] || "12/08/2022",
         status: params[:status] || "existing",
         location: params[:location] || "Austin, Texas",
-        questions_responses: params[:questions_responses],
+        questions_responses: params[:questions_responses] || "nothing\\nada -:- nope\\knope",
         notes: params[:notes],
-        referral: params[:referral]
+        referral: params[:referral],
+        make_greeter: params[:make_greeter]
       }
     }
   )[:model]

@@ -1,0 +1,26 @@
+%h5 Edit Member
+
+= simple_form_for @form, as: :member, url: admin_member_path(@model.id), method: :patch do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :name, placeholder: "Name", label: false
+  .row
+    .col= f.input :email, placeholder: "Email", label: false
+  .row
+    .col= f.input :profile_url, placeholder: "Profile URL", label: false
+  .row
+    .col= f.input :chat_url, placeholder: "Chat URL", label: false
+  .row
+    .col= f.input :status, placeholder: "Status", label: false
+  .row
+    .col= f.input :referral, placeholder: "Referred by", label: false
+  .row
+    .col= f.input :make_greeter, as: :boolean, label: "Make Greeter"
+  .row
+    .col= f.input :notes, as: :text, placeholder: "Notes", label: false
+  .row
+    .col= f.button :submit, "Update Member", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_members_path
+

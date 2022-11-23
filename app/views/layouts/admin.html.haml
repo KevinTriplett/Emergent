@@ -2,7 +2,7 @@
 !!!
 %html
   %head
-    %title Emergent Commons Volunteers
+    %title Emergent Commons Admin
     %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }
     <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     = csrf_meta_tags
@@ -11,9 +11,9 @@
     = stylesheet_link_tag "application", "data-turbo-track": "reload"
     = stylesheet_link_tag "custom", "data-turbo-track": "reload"
     = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
-    -# %script{ src: "/js/jquery-3.6.0.js" }
-    -# %script{ src: "/js/application.js" }
-    -# = turbo_include_tags
+    %script{ src: "/js/jquery-3.6.0.js" }
+    %script{ src: "/js/application.js" }
+    = turbo_include_tags
 
   %body#admin
     .container
@@ -24,6 +24,6 @@
               .col.flash= msg
       .row
         .col-sm-12
-          %h1 Emergent Commons Volunteer App
+          %h1 Emergent Commons Admin
           = yield
         .col-sm-4

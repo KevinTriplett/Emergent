@@ -48,10 +48,16 @@ p.timestamp {
 
 table.members {
   width: 100%;
-}
-
-tr.member-questions, tr.member-more {
-  display: none;
+  thead th {
+    background-color: cornflowerblue;
+    color: white;
+  }
+  tbody tr.member-questions, tr.member-more {
+    display: none;
+  }
+  tbody td.more {
+    text-align: center;
+  }
 }
 
 /* ----------------------------------- */

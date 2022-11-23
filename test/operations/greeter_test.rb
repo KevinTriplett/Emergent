@@ -9,9 +9,9 @@ class GreeterOperationTest < MiniTest::Spec
     # ----------------
     # happy path tests
     it "Creates {Greeter} model when given valid attributes" do
-      existing_member = create_member
-
       DatabaseCleaner.cleaning do
+        existing_member = create_member
+
         result = Greeter::Operation::Create.call(
           params: {
             greeter: {
@@ -78,9 +78,9 @@ class GreeterOperationTest < MiniTest::Spec
     end
 
     it "Fails with no status attribute" do
-      existing_member = create_member
-
       DatabaseCleaner.cleaning do
+        existing_member = create_member
+
         result = Greeter::Operation::Create.call(
           params: {
             greeter: {
@@ -98,9 +98,8 @@ class GreeterOperationTest < MiniTest::Spec
     end
 
     it "Fails with invalid status attribute" do
-      existing_member = create_member
-
       DatabaseCleaner.cleaning do
+        existing_member = create_member
         result = Greeter::Operation::Create.call(
           params: {
             greeter: {
