@@ -1,4 +1,4 @@
-module Member::Contract
+module User::Contract
   class Create < Reform::Form
     include Dry
 
@@ -14,27 +14,27 @@ module Member::Contract
     property :questions_responses
     property :notes
     property :referral
-    property :make_greeter
+    property :greeter
 
     validation do
       params do
         required(:id)
         required(:name).filled.value(:string)
         required(:email).filled.value(:string)
-        required(:profile_url)
+        required(:profile_url).filled.value(:string)
         required(:chat_url)
-        required(:request_timestamp)
-        required(:join_timestamp).filled.value(:string)
-        required(:status)
+        required(:request_timestamp).filled.value(:string)
+        required(:join_timestamp)
+        required(:status).filled.value(:string)
         required(:location)
-        required(:questions_responses)
+        required(:questions_responses).filled.value(:string)
         required(:notes)
         required(:referral)
-        required(:make_greeter)
+        required(:greeter)
       end
   
       rule(:email) do
-        key.failure('must be unique') if Member.find_by_email(values[:email])
+        key.failure('must be unique') if User.find_by_email(values[:email])
       end
     end
   end

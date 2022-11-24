@@ -29,7 +29,7 @@ TLDS = %w(com it org club pl ru uk aus)
 def random_email
   begin
     @_last_random_email = "#{ NAMES.sample }.#{ SURNAMES.sample }@#{ PROVIDERS.sample }.#{ TLDS.sample }"
-  end while Member.find_by_email(last_random_email)
+  end while User.find_by_email(last_random_email)
   @_last_random_email
 end
 
@@ -37,31 +37,35 @@ def last_random_email
   @_last_random_email
 end
 
-def random_member_name
-  @_last_random_member_name = "#{ NAMES.sample } #{ SURNAMES.sample }"
+def random_user_name
+  @_last_random_user_name = "#{ NAMES.sample } #{ SURNAMES.sample }"
 end
 
-def last_random_member_name
-  @_last_random_member_name
+def last_random_user_name
+  @_last_random_user_name
 end
 
-def create_member(params = {})
-  Member::Operation::Create.call(
+def create_user_with_result(params = {})
+  User::Operation::Create.call(
     params: {
-      member: {
-        name: params[:name] || random_member_name,
+      user: {
+        name: params[:name] || random_user_name,
         email: params[:email] || random_email,
-        profile_url: params[:profile_url],
+        profile_url: params[:profile_url] || "https://example.com",
         chat_url: params[:chat_url],
         request_timestamp: params[:request_timestamp] || "12/08/2022",
         join_timestamp: params[:join_timestamp] || "12/08/2022",
         status: params[:status] || "existing",
         location: params[:location] || "Austin, Texas",
-        questions_responses: params[:questions_responses] || "nothing\\nada -:- nope\\knope",
-        notes: params[:notes],
-        referral: params[:referral],
-        make_greeter: params[:make_greeter]
+        questions_responses: params[:questions_responses] || "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a",
+        notes: params[:notes] || "this are notes",
+        referral: params[:referral] || "referral name",
+        greeter: params[:greeter] || "greeter name"
       }
     }
-  )[:model]
+  )
+end
+
+def create_user(params = {})
+  create_user_with_result(params)[:model]
 end

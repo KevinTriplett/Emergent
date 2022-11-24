@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MemberTest < MiniTest::Spec
+class UserTest < MiniTest::Spec
   include ActionMailer::TestHelper
   DatabaseCleaner.clean
 end

@@ -1,6 +1,6 @@
-class AddMembers < ActiveRecord::Migration[7.0]
+class AddUsers < ActiveRecord::Migration[7.0]
   def change
-    create_table :members do |t|
+    create_table :users do |t|
       t.string :name
       t.string :email
       t.string :profile_url
@@ -12,6 +12,7 @@ class AddMembers < ActiveRecord::Migration[7.0]
       t.text :questions_responses
       t.text :notes
       t.string :referral
+      t.string :greeter
 
       t.timestamps
     end

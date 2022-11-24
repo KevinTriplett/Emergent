@@ -24,10 +24,10 @@ var loaded = false;
 document.addEventListener("turbo:load", function() {
   if(loaded) return;
   loaded = true;
-  $("table.members td.more.member-questions").on("click", function() {
+  $("table.users td.more.member-questions").on("click", function() {
     $(this).closest("tr").next().toggle();
   });
-  $("table.members td.more.member-actions").on("click", function() {
+  $("table.users td.more.member-actions").on("click", function() {
     $(this).closest("tr").next().next().toggle();
   });
 });

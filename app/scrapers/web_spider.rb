@@ -29,14 +29,14 @@ class WebSpider < Kimurai::Base
     # browser.save_screenshot
   end
 
-  # TODO: fill in missing information for members after they join
+  # TODO: fill in missing information for users after they join
   def parse_requests_to_join(response, url:, data: {})
     puts "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     scroll_to_end(row_css, "#flyout-main-content")
     
-    members = []
+    users = []
     browser.current_response.css(row_css).each_with_index do |row, idx|
 
       # name = [
@@ -47,7 +47,7 @@ class WebSpider < Kimurai::Base
       last_name = row.css(".invite-list-item-last-name-text").text.strip
       # puts "name = #{name}"
       name = "#{first_name} #{last_name}"
-      puts "MEMBER # #{members.count + 1}"
+      puts "MEMBER # #{users.count + 1}"
       puts "name = #{name}"
       email = row.css(".invite-list-item-email-text").text.strip
       puts "email = #{email}"
@@ -99,7 +99,7 @@ class WebSpider < Kimurai::Base
       sleep 1
 
       puts "\n-------------------------------------------------------\n"
-      members.push({
+      users.push({
         name: name,
         email: email,
         profile_url: profile_url,
@@ -109,7 +109,7 @@ class WebSpider < Kimurai::Base
       })
     end
 
-    create_members(members)
+    create_users(users)
   end
 
   def parse_questions_and_answers
@@ -136,11 +136,11 @@ class WebSpider < Kimurai::Base
     puts "SUCCESS!"
   end
 
-  def create_members(members)
-    members.each do |member|
-      next if Member.find_by_email(member[:email])
+  def create_users(users)
+    users.each do |member|
+      next if User.find_by_email(member[:email])
       puts "SAVING #{member[:name]}"
-      Member.create! member
+      User.create! member
     end
   end
 

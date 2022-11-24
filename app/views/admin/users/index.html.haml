@@ -1,0 +1,39 @@
+%h5= (@users.empty? ? "No " : "") + "Existing Members"
+
+%table{ class: "users table table-bordered table-striped" }
+  %thead
+    %tr
+      %th Name
+      %th Greeter
+      %th Email
+      %th Status
+      %th Request Date
+      %th Answers
+      %th More
+  %tbody
+    - @users.each do |u|
+      %tr
+        %td.member-name
+          = link_to u.name, u.profile_url
+        %td.member-greeter
+          = u.greeter || link_to("make me greeter!", "#", class: "member-greeter")
+        %td.member-email
+          = link_to u.email, "mailto:#{ u.email }"
+        %td.member-status= u.status
+        %td.member-request-date= u.request_timestamp.dow_short_date
+        %td.member-questions.more{ data: { target: "tr.member-questions" } }
+          %i{ class: "bi bi-arrow-down-square" }
+        %td.member-actions.more{ data: { target: "tr.member-more" } }
+          %i{ class: "bi bi-arrow-down-square" }
+      %tr.more
+        %td.member-questions-more{ colspan: 7, data: { id: u.id } }
+          %ol
+            - u.questions_responses.split(" -:- ").each do |qna|
+              - q, a = *qna.split("\\")
+              %li
+                = "Question: #{q}"
+                %br
+                = "Answer: #{a}"
+      %tr.more
+        %td.member-notes-more{ colspan: 7, data: { id: u.id } }
+          %p= u.notes
