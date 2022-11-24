@@ -60,7 +60,7 @@ def create_user_with_result(params = {})
         questions_responses: params[:questions_responses] || "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a",
         notes: params[:notes] || "this are notes",
         referral: params[:referral] || "referral name",
-        greeter: params[:greeter] || "greeter name"
+        greeter: params[:greeter]
       }
     }
   )
