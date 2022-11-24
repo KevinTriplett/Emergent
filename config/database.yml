@@ -22,4 +22,6 @@ test:
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  database: emergent-production
+  username: deploy
+  password: <%= ENV["EMERGENT_DB_PASSWORD"] %>
