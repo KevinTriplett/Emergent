@@ -41,6 +41,37 @@ class UserOperationTest < MiniTest::Spec
       end
     end
 
+    it "Updates {User} model when given valid attributes" do
+      DatabaseCleaner.cleaning do
+        existing_user = create_user
+        existing_user.greeter = random_user_name
+
+        # user_hash = existing_user.attributes <-- this does not work
+        user_hash = {
+          id: existing_user.id,
+          name: existing_user.name,
+          email: existing_user.email,
+          profile_url: existing_user.profile_url,
+          chat_url: existing_user.chat_url,
+          request_timestamp: existing_user.request_timestamp.dow_short_date,
+          join_timestamp: existing_user.join_timestamp.dow_short_date,
+          status: existing_user.status,
+          location: existing_user.location,
+          questions_responses: existing_user.questions_responses,
+          notes: existing_user.notes,
+          referral: existing_user.referral,
+          greeter: existing_user.greeter
+        }
+        user_hash[:user] = user_hash
+        result = User::Operation::Update.call(params: user_hash)
+
+        assert result.success?
+        user = result[:model]
+        assert_equal existing_user.name, user.name
+        assert_equal last_random_user_name, user.greeter
+      end
+    end
+
     # ----------------
     # failing tests
     it "Fails with invalid parameters" do

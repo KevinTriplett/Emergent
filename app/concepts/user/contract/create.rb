@@ -33,8 +33,10 @@ module User::Contract
         required(:greeter)
       end
   
-      rule(:email) do
-        key.failure('must be unique') if User.find_by_email(values[:email])
+      rule(:email, :id) do
+        email, id = values[:email], values[:id].to_i
+        user = User.find_by_email(email)
+        key.failure('must be unique') if !user.nil? && user.id != id
       end
     end
   end

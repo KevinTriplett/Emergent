@@ -2,8 +2,8 @@ module User::Operation
   class Update < Trailblazer::Operation
 
     class Present < Trailblazer::Operation
-      step Model(User, :new)
-      step Contract::Build(constant: User::Contract::Create)
+      step Model(User, :find_by)
+      step Contract::Build(constant: User::Contract::Create) # reuse the validations
     end
     
     step Subprocess(Present)
