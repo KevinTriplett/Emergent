@@ -7,14 +7,7 @@ module User::Operation
     end
     
     step Subprocess(Present)
-    # step :print_user
     step Contract::Validate(key: :user)
     step Contract::Persist()
-
-    def print_user(ctx, model:, **)
-      puts "model = #{model.inspect}"
-      puts "ctx = #{ctx.inspect}"
-      true
-    end
   end
 end

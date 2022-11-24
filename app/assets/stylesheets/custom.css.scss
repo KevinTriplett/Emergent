@@ -58,10 +58,21 @@ table.users {
   tbody td.more {
     text-align: center;
   }
-  tbody td.user-notes-more textarea {
-    margin: 0 auto;
-    display: block;
-  }
+  tbody td.user-notes-more
+    textarea, span.save-status {
+      margin: 0 auto;
+      display: block;
+    }
+    span.save-status {
+      font-weight: bolder;
+      text-align: center;
+    }
+    span.save-status.success {
+      color: green;
+    }
+    span.save-status.failure {
+      color: red;
+    }
 }
 
 /* ----------------------------------- */

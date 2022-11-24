@@ -65,7 +65,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       notes_css = "tr.more td.user-notes-more textarea"
       assert_selector notes_css, text: old_notes
 
-      keys = "hello this is new notes"
+      keys = " hello this is new notes"
       find(notes_css).send_keys(keys)
       sleep 2
       user.reload

@@ -14,11 +14,9 @@ module Admin
 
     def update_user
       _ctx = run User::Operation::Update do |ctx|
-        user = ctx[:model]
-        user = {user: user}
+        user = {user: ctx[:model]}
         return render json: user
       end
-      puts "kabloooey!!!!!!"
       return head(:bad_request)
     end
   end
