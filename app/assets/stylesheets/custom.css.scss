@@ -52,11 +52,15 @@ table.users {
     background-color: cornflowerblue;
     color: white;
   }
-  tbody tr.member-questions, tr.member-more {
+  tbody tr.more {
     display: none;
   }
   tbody td.more {
     text-align: center;
+  }
+  tbody td.user-notes-more textarea {
+    margin: 0 auto;
+    display: block;
   }
 }
 

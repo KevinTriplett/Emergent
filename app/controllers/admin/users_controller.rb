@@ -8,16 +8,18 @@ module Admin
   
     def index
       @users = User.order(joined_timestamp: :desc).all
+      @update_url = admin_users_url
+      @token = form_authenticity_token
     end
 
-    def update
+    def update_user
       _ctx = run User::Operation::Update do |ctx|
-        flash[:notice] = "#{ctx[:model].name} was updated"
-        return redirect_to admin_users_url
+        user = ctx[:model]
+        user = {user: user}
+        return render json: user
       end
-    
-      @form = _ctx["contract.default"] # FIXME: redundant to #create!
-      render :edit, status: :unprocessable_entity
+      puts "kabloooey!!!!!!"
+      return head(:bad_request)
     end
   end
 end
