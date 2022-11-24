@@ -2,12 +2,14 @@
 
 ## MVP 1
 - [X] sign in to EC@MN
-- [ ] collect new member information
-- [ ] simple greeter log in
-- [ ] display table of new members
-- [ ] ability to change status
-- [ ] ability to assign greeter
-- [ ] expand for additional information
+- [X] collect new member information
+- [X] simple greeter log in
+- [X] display table of new members
+- [X] ability to change status
+- [X] ability to assign greeter
+- [X] expand for additional information (answers / notes)
+- [ ] ability to send email invites
+- [ ] anti-spam email server
 
 ## MVP 2
 - [ ] list of greeters
