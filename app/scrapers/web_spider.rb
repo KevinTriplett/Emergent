@@ -45,60 +45,64 @@ class WebSpider < Kimurai::Base
       # ].map(&:text).join(" ")
       first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
       last_name = row.css(".invite-list-item-last-name-text").text.strip
-      # puts "name = #{name}"
       name = "#{first_name} #{last_name}"
-      puts "MEMBER # #{users.count + 1}"
-      puts "name = #{name}"
       email = row.css(".invite-list-item-email-text").text.strip
-      puts "email = #{email}"
       request_date = row.css(".invite-list-item-email + td").text.strip
-      puts "request_date = #{request_date}"
-      status = row.css(".invite-list-item-status-text").text.strip
-      puts "status = #{status}"
 
-      profile_url = (status == "Joined!") ?
-        row.css(".invite-list-item-email a").attr("href") :
-        nil
-      puts "profile_url = #{profile_url}"
-      
       id = row.get_attribute("data-id").strip # returns the id string
-      # puts "tr data-id = #{id}"
-      puts "ATTEMPTING HOVER"
-      # browser.save_screenshot
       css = "tr.invite-request-list-item[data-id='#{id}']"
-      script = "$(\"#{css}\")[0].scrollIntoView(false)"
       # puts "css = #{css}"
-      puts "script = #{script}"
-      browser.execute_script(script) rescue break
-      browser.find(:css, css).hover rescue break
-      # browser.save_screenshot
 
-      sleep 1
-      
-      puts "ATTEMPTING TO OPEN DROP DOWN MENU"
-      css += " a.mighty-drop-down-toggle"
-      browser.find(:css, css).click rescue break
-      # browser.save_screenshot
-      
-      sleep 1
-
-      puts "ATTEMPTING TO OPEN MODAL"
-      css = ".mighty-drop-down-items-container a.mighty-menu-list-item[name='menu-list-item-answers']"
-      browser.find(:css, css).click rescue break
-      # browser.save_screenshot
+      if row.css("a.invite-list-item-status-text").count == 0
+        status = "Pending"
+        profile_url = nil
+        # for new requests, just click the nice button
+        css += " td.invite-list-item-status a.invite-list-item-view-answers-button"
+        puts "CLICKING THE ANSWER BUTTON"
+        browser.find(:css, css).click
+      else
+        status = row.css("a.invite-list-item-status-text").text.strip
+        profile_url = row.css(".invite-list-item-email a").attr("href")
+        # for joined members, do a little more to get to their answers:
+        puts "ATTEMPTING HOVER"
+        # browser.save_screenshot
+        script = "$(\"#{css}\")[0].scrollIntoView(false)"
+        # puts "script = #{script}"
+        browser.execute_script(script) rescue break
+        browser.find(:css, css).hover rescue break
+        # browser.save_screenshot
+        sleep 1
+        puts "ATTEMPTING TO OPEN DROP DOWN MENU"
+        css += " a.mighty-drop-down-toggle"
+        browser.find(:css, css).click rescue break
+        # browser.save_screenshot
+        sleep 1
+        puts "ATTEMPTING TO OPEN MODAL"
+        css = ".mighty-drop-down-items-container a.mighty-menu-list-item[name='menu-list-item-answers']"
+        browser.find(:css, css).click rescue break
+        # browser.save_screenshot
+      end
 
       sleep 1
 
       questions_and_answers = parse_questions_and_answers
-      puts "qna = #{questions_and_answers.join("\n\n")}"
 
       puts "ATTEMPTING TO CLOSE MODAL"
-      browser.find(:css, ".modal-form-container-header a.modal-form-container-left-button").click rescue break
+      css = ".modal-form-container-header a.modal-form-container-left-button"
+      browser.find(:css, css).click rescue break
       # browser.save_screenshot
 
       sleep 1
 
       puts "\n-------------------------------------------------------\n"
+      puts "MEMBER # #{users.count + 1}"
+      puts "name = #{name}"
+      puts "email = #{email}"
+      puts "request_date = #{request_date}"
+      puts "status = #{status}"
+      puts "profile_url = #{profile_url}"
+      puts "qna = #{questions_and_answers.join("\n\n")}"
+
       users.push({
         name: name,
         email: email,
@@ -145,6 +149,7 @@ class WebSpider < Kimurai::Base
   end
 
   def scroll_to_end(css, modal_css)
+    return
     prev_count = browser.current_response.css(css).count
     return if prev_count == 0
     
