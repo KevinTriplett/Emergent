@@ -31,23 +31,23 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Answers"
       assert_select "th", "More"
 
-      assert_select "td.member-name", user.name
-      assert_select "td.member-greeter", user.greeter
-      assert_select "td.member-email", user.email
-      assert_select "td.member-status", user.status
-      assert_select "td.member-request-date", user.request_timestamp.dow_short_date
-      assert_select "td.member-questions.more i.bi-arrow-down-square", nil
-      assert_select "td.member-actions.more i.bi-arrow-down-square", nil
-      assert_select "tr.more td.member-notes-more p", user.notes
+      assert_select "td.user-name", user.name
+      assert_select "td.user-greeter", user.greeter
+      assert_select "td.user-email", user.email
+      assert_select "td.user-status", user.status
+      assert_select "td.user-request-date", user.request_timestamp.dow_short_date
+      assert_select "td.user-questions.more i.bi-arrow-down-square", nil
+      assert_select "td.user-notes.more i.bi-arrow-down-square", nil
+      assert_select "tr.more td.user-notes-more textarea", user.notes
       
       user.questions_responses.split(" -:- ").each do |qna|
         q,a = *qna.split("\\")
-        assert_select "tr.more td.member-questions-more li", "Question: #{q}\n\nAnswer: #{a}"
+        assert_select "tr.more td.user-questions-more li", "Question: #{q}\n\nAnswer: #{a}"
       end
 
       user.update(greeter: nil)
       get admin_users_path
-      assert_select "td.member-greeter", "make me greeter!"
+      assert_select "td.user-greeter", "make me greeter!"
     end
   end
 end
