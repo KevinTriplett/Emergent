@@ -58,13 +58,13 @@ class WebSpider < Kimurai::Base
         profile_url = nil
         # for new requests, just click the nice button
         css += " td.invite-list-item-status a.invite-list-item-view-answers-button"
-        puts "CLICKING THE ANSWER BUTTON"
+        # puts "CLICKING THE ANSWER BUTTON"
         browser.find(:css, css).click
       else
         status = row.css("a.invite-list-item-status-text").text.strip
         profile_url = row.css(".invite-list-item-email a").attr("href")
         # for joined members, do a little more to get to their answers:
-        puts "ATTEMPTING HOVER"
+        # puts "ATTEMPTING HOVER"
         # browser.save_screenshot
         script = "$(\"#{css}\")[0].scrollIntoView(false)"
         # puts "script = #{script}"
@@ -72,12 +72,12 @@ class WebSpider < Kimurai::Base
         browser.find(:css, css).hover rescue break
         # browser.save_screenshot
         sleep 1
-        puts "ATTEMPTING TO OPEN DROP DOWN MENU"
+        # puts "ATTEMPTING TO OPEN DROP DOWN MENU"
         css += " a.mighty-drop-down-toggle"
         browser.find(:css, css).click rescue break
         # browser.save_screenshot
         sleep 1
-        puts "ATTEMPTING TO OPEN MODAL"
+        # puts "ATTEMPTING TO OPEN MODAL"
         css = ".mighty-drop-down-items-container a.mighty-menu-list-item[name='menu-list-item-answers']"
         browser.find(:css, css).click rescue break
         # browser.save_screenshot
@@ -87,7 +87,7 @@ class WebSpider < Kimurai::Base
 
       questions_and_answers = parse_questions_and_answers
 
-      puts "ATTEMPTING TO CLOSE MODAL"
+      # puts "ATTEMPTING TO CLOSE MODAL"
       css = ".modal-form-container-header a.modal-form-container-left-button"
       browser.find(:css, css).click rescue break
       # browser.save_screenshot
@@ -149,7 +149,6 @@ class WebSpider < Kimurai::Base
   end
 
   def scroll_to_end(css, modal_css)
-    return
     prev_count = browser.current_response.css(css).count
     return if prev_count == 0
     
