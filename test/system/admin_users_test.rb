@@ -102,6 +102,36 @@ class AdminUsersTest < ApplicationSystemTestCase
     end
   end
 
+  test "Greeter can change meeting datetime" do
+    DatabaseCleaner.cleaning do
+      user = create_user
+      old_meeting = user.welcome_timestamp.short_date_at_time
+
+      visit admin_users_path
+      assert_current_path admin_users_path
+
+      assert_selector "td.user-meeting-datetime a", text: old_meeting
+
+      message = dismiss_prompt do
+        click_link(old_meeting)
+      end
+      assert_equal "Enter local time and date like Jan 12, 2023 3PM", message
+      
+      sleep 1
+      user.reload
+      assert_equal old_meeting, user.welcome_timestamp.short_date_at_time
+
+      new_datetime = "Jan 12, 2023 3PM"
+      accept_prompt(with: new_datetime) do
+        click_link(old_meeting)
+      end
+
+      sleep 1
+      user.reload
+      assert_equal new_datetime.to_time, user.welcome_timestamp
+    end
+  end
+
   test "Greeter can enter notes" do
     DatabaseCleaner.cleaning do
       user = create_user

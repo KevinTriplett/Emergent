@@ -149,34 +149,6 @@ var patch = function(userId, data, success, error) {
 
 ////////////////////////////////////////////////////
 // NOTES
-var updateNotes = function(e) {
-  var userNotesTextarea = $(e.currentTarget);
-  var userNotes = userNotesTextarea.val().trim();
-  var userRow = $(e.currentTarget).closest("tr").prev().prev();
-  var userId = userRow.data("id");
-  var userGreeter = getUserGreeter(userRow);
-  var userStatus = userRow.find("td.user-status a").text();
-  var data = {
-    "notes": userNotes,
-    "greeter": userGreeter,
-    "status": userStatus
-  }
-  patch(userId, data, function() {
-    userNotesTextarea
-      .parent()
-      .find("span.save-status")
-      .addClass("success")
-      .removeClass("failure")
-      .text("saved");
-  }, function() {
-    userNotesTextarea
-      .parent()
-      .find("span.save-status")
-      .addClass("failure")
-      .removeClass("success")
-      .text("failed");
-  });
-};
 
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
@@ -189,6 +161,7 @@ var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 document.addEventListener("turbo:load", function() {
   if (loaded) return; // set listeners only once
   loaded = true;
+  convertUTC();
 
   ////////////////////////////////////////////////////
   // MORE EVENT LISTENERS
@@ -201,17 +174,50 @@ document.addEventListener("turbo:load", function() {
 
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
-  $("table.users td.user-notes-more textarea").on("keyup", debounce(updateNotes, 1000));
+  var setUserNotes = function(e) {
+    var userRow = $(e.currentTarget).closest("tr").prev().prev();
+    var userId = userRow.data("id");
+    var userNotesTextarea = $(e.currentTarget);
+    var userNotes = userNotesTextarea.val().trim();
+    var userGreeter = getUserGreeter(userRow);
+    var userMeeting = userRow.find("td.user-meeting-datetime").text();
+    var userStatus = userRow.find("td.user-status a").text();
+    var data = {
+      notes: userNotes,
+      greeter: userGreeter,
+      welcome_timestamp: userMeeting,
+      status: userStatus
+    }
+    patch(userId, data, function() {
+      userNotesTextarea
+        .parent()
+        .find("span.save-status")
+        .addClass("success")
+        .removeClass("failure")
+        .text("saved");
+    }, function() {
+      userNotesTextarea
+        .parent()
+        .find("span.save-status")
+        .addClass("failure")
+        .removeClass("success")
+        .text("failed");
+    });
+  };
+
+  $("table.users td.user-notes-more textarea").on("keyup", debounce(setUserNotes, 1000));
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
   var setUserGreeter = function(userRow, userGreeter) {
     var userId = userRow.data("id");
     var userNotes = userRow.find("td.user-notes-more textarea").text();
+    var userMeeting = userRow.find("td.user-meeting-datetime").text();
     var userStatus = userRow.find("td.user-status a").text();
     var data = {
       notes: userNotes,
       greeter: userGreeter,
+      welcome_timestamp: userMeeting,
       status: userStatus
     };
     patch(userId, data, function() {
@@ -238,10 +244,12 @@ document.addEventListener("turbo:load", function() {
   var setUserStatus = function(userRow, userStatus) {
     var userId = userRow.data("id");
     var userNotes = userRow.find("td.user-notes-more textarea").text();
+    var userMeeting = userRow.find("td.user-meeting-datetime").text();
     var userGreeter = getUserGreeter(userRow);
     var data = {
       notes: userNotes,
       greeter: userGreeter,
+      welcome_timestamp: userMeeting,
       status: userStatus
     };
     patch(userId, data, function() {
@@ -258,6 +266,36 @@ document.addEventListener("turbo:load", function() {
 
     var userRow = $(this).closest("tr");
     setUserStatus(userRow, userStatus);
+  });
+
+  ////////////////////////////////////////////////////
+  // MEETING EVENT LISTENER
+  var setUserMeeting = function(userRow, userMeeting) {
+    var userId = userRow.data("id");
+    var userNotes = userRow.find("td.user-notes-more textarea").text();
+    var userStatus = userRow.find("td.user-status").text();
+    var userGreeter = getUserGreeter(userRow);
+    var data = {
+      notes: userNotes,
+      greeter: userGreeter,
+      welcome_timestamp: userMeeting,
+      status: userStatus
+    };
+    patch(userId, data, function() {
+      userRow.find("td.user-meeting-datetime a").text(userMeeting);
+    }, function() {
+      alert("Could not change meeting - ask Kevin");
+    });
+  }
+
+  $("table.users td.user-meeting-datetime a").on("click", function(e) {
+    e.preventDefault();
+    var userMeeting = prompt("Enter local time and date like Jan 12, 2023 3PM");
+    if (!userMeeting) return;
+
+    var userRow = $(this).closest("tr");
+    setUserMeeting(userRow, userMeeting);
+    setUserStatus(userRow, "Scheduled");
   });
 
   ////////////////////////////////////////////////////

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_20_152228) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_25_130757) do
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -26,6 +26,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_20_152228) do
     t.string "greeter"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "welcome_timestamp"
   end
 
 end

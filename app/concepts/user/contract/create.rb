@@ -7,6 +7,7 @@ module User::Contract
     property :email
     property :profile_url
     property :chat_url
+    property :welcome_timestamp
     property :request_timestamp
     property :join_timestamp
     property :status
@@ -23,6 +24,7 @@ module User::Contract
         required(:email).filled.value(:string)
         required(:profile_url).filled.value(:string)
         required(:chat_url)
+        required(:welcome_timestamp).filled.value(:string)
         required(:request_timestamp).filled.value(:string)
         required(:join_timestamp)
         required(:status).filled.value(:string)
