@@ -181,8 +181,8 @@ var updateNotes = function(e) {
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 var loaded = false;
-var prevGreeter = "";
-var prevEmailTemplateIndex = "";
+var prevGreeter = getCookie("greeter-name");
+var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 
 ////////////////////////////////////////////////////
 // EVENT LISTENERS
@@ -227,6 +227,8 @@ document.addEventListener("turbo:load", function() {
     if (!userGreeter) return;
 
     prevGreeter = userGreeter;
+    setCookie("greeter-name", prevGreeter); // save for next time
+
     var userRow = $(this).closest("tr");
     setUserGreeter(userRow, userGreeter);
   });
@@ -280,6 +282,8 @@ document.addEventListener("turbo:load", function() {
     }
 
     prevEmailTemplateIndex = templateIndex + 1;
+    setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
+
     var userName = userRow.find("td.user-name").text().trim();
     var userEmail = userRow.find("td.user-email a").text().trim();
     var data = {

@@ -87,7 +87,6 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "Greeter can send email and it automatically changes status" do
     DatabaseCleaner.cleaning do
       user = create_user
-      old_greeter = user.greeter
       old_status = user.status
 
       visit admin_users_path
@@ -98,7 +97,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       end
       assert_equal "First, click 'make me greeter!' and then send the email", message
       user.reload
-      assert_equal old_greeter, user.greeter
+      assert_nil user.greeter
       assert_equal old_status, user.status
 
       accept_prompt(with: random_user_name) do
