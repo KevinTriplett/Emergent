@@ -8,12 +8,19 @@
 - [X] ability to change status
 - [X] ability to assign greeter
 - [X] expand for additional information (answers / notes)
-- [ ] ability to send email invites
-- [ ] anti-spam email server
+- [X] create deploy server
+- [ ] allow greeter to choose from email templates
+- [ ] ability to send email invites from personal email
+- [ ] import members via rake task
+- [ ] add self referential greeter_id column to users table
+- [ ] user authentication
+- [ ] add greeter authorization role for authenticated user
+- [ ] create domain email server
+- [ ] lower spam score for the domain email server
+- [ ] ability to send email invites from domain or personal email
 
 ## MVP 2
 - [ ] list of greeters
 - [ ] temporary reorder rotation of greeters
 - [ ] permanent reorder rotation of greeters
 - [ ] ability to approve new requests
-- [ ] individual greeter authentication
