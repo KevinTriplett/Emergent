@@ -12,6 +12,7 @@ require 'whenever/capistrano'
 
 set :rbenv_type, :user
 set :rbenv_ruby, '3.1.2'
+set :bundle_config, { deployment: false }
 
 # Load the SCM plugin appropriate to your project:
 #
