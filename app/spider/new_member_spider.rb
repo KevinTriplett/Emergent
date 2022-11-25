@@ -1,6 +1,6 @@
 require 'kimurai'
 
-class WebSpider < Kimurai::Base
+class NewMemberSpider < Kimurai::Base
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   @name = "spider"
   @engine = :selenium_chrome
