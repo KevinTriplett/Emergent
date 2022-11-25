@@ -89,7 +89,7 @@ Thanks for joining us at Emergent Commons. I'm one of the Greeters, to help you 
 Comment on who they mentioned as someone they know here and about their other answers, so they know that we do pay attention to their answers and do want to know about them and what they desire from their experience at Emergent Commons
 |||||||||||||||||| REVISE THIS PART ||||||||||||||||||
 
-I'd love to chat in person, over Zoom, about the platform to make sure you get off to a fantastic start. If you'd rather exploring on your own, just let me know and I'll send you some key points.
+I'd love to chat in person, over Zoom, about the platform to make sure you get off to a fantastic start. If you'd rather explore on your own, just let me know and I'll send you some key points.
 
 I'm pretty flexible with days and times. Can you let me know a few options that would work for you?
 
