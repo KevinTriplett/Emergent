@@ -5,8 +5,6 @@ class NewUserSpider < Kimurai::Base
   @name = "new_user_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://emergent-commons.mn.co/sign_in"]
-  @new_user_count = 0
-  @max_new_users = Rails.env.production? ? 100 : 50
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
@@ -22,8 +20,11 @@ class NewUserSpider < Kimurai::Base
       delay: 2..4
     }
   }
+  @@max_new_users = 100 #Rails.env.production? ? 100 : 50
+  @@new_user_count = 0
 
   def parse(response, url:, data: {})
+  puts "@@max_new_users = #{@@max_new_users}"
     sign_in
     report_failure_unless_response_has("body.communities-app")
     # browser.save_screenshot
@@ -37,7 +38,7 @@ class NewUserSpider < Kimurai::Base
     puts "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
-    @new_user_count = scroll_to_end(row_css, "#flyout-main-content")
+    @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
     
     users = []
     browser.current_response.css(row_css).each_with_index do |row, idx|
@@ -98,7 +99,7 @@ class NewUserSpider < Kimurai::Base
       sleep 1
 
       puts "\n-------------------------------------------------------\n"
-      puts "MEMBER #{users.count + 1} of #{@new_user_count}"
+      puts "MEMBER #{users.count + 1} of #{@@new_user_count}"
       puts "name = #{name}"
       puts "email = #{email}"
       puts "request_date = #{request_date}"
@@ -149,7 +150,7 @@ class NewUserSpider < Kimurai::Base
         puts "SKIPPING EXISTING MEMBER: #{user[:name]}"
         next
       end
-      puts "SAVING (#{user_count} of #{@new_user_count}): #{user[:name]}"
+      puts "SAVING (#{user_count} of #{@@new_user_count}): #{user[:name]}"
       User.create! user
     end
   end
@@ -168,7 +169,7 @@ class NewUserSpider < Kimurai::Base
       sleep 10
       new_count = browser.current_response.css(css).count
       puts "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
-      break if new_count == prev_count || new_count >= @max_new_users
+      break if new_count == prev_count || new_count >= @@max_new_users
       prev_count = new_count
     end
 
