@@ -18,6 +18,88 @@ function setCookie(name, value) {
 }
 
 ////////////////////////////////////////////////////
+// EMAIL TEMPLATES
+var emailTemplates = [
+function(data) {
+  return `Hi ${data.name},
+
+Welcome to Emergent Commons. I'm one of the Greeters here.
+
+I would like to schedule a time when we can talk in person, over Zoom, about being a member of Emergent Commons.
+
+I am pretty flexible with days and times. Can you let me know a few options that would work for you?
+
+Again, welcome!
+${data.greeter}`;
+},
+////////////////////////////////////////////////////
+function(data) {
+  return `Hi ${data.name},
+
+Welcome to the Emergent Commons.
+ 
+I'm one of the Greeter volunteers for Emergent Commons. I would like to meet with you on Zoom to help you feel comfortable entering our community.
+ 
+Let me know your time zone and your availability to have a conversation and we would choose time for our meeting. I plan to introduce myself and our community to you, show you around and answer any questions you may have.
+ 
+Please feel free to explore our community site before we meet on zoom. I have already opened up our gate for you to look around and explore as much as you have time for. You could also go over items on the Welcome Checklist that should be visible on the right hand-side of your screen after you join.
+ 
+Here are a few tips: 
+- Crews are where most activities happen so check through the list and see if any pique your interest and then click the join button to keep up with what is happening inside.
+ 
+- To stay more connected you might want to turn on notifications under your settings accessed through your picture icon/avatar. Make sure to set your location on your profile, that will allow you to see any events in your time zone.
+ 
+- Do not hesitate to RSVP and join any events you are interested in, just mention that you are new and dive right in. 
+ 
+I'm looking forward to hearing from you soon.
+${data.greeter}`;
+},
+////////////////////////////////////////////////////
+function(data) {
+  return `Hi ${data.name},
+
+Welcome to the Emergent Commons.
+
+I am one of the Greeters for Emergent Commons. I would like to meet with you on Zoom to help you feel comfortable entering our community.
+
+Please let me know your time zone and your availability to have a conversation so we would choose a day and time to meet.
+
+Please feel free to explore our community site before we meet. I opened the gate for you to look around and explore as much as you have time like.
+
+You could also go over items on the Welcome Checklist that should be visible on the right-hand side of your screen after you join.
+
+Here are a few tips: 
+
+- Crews are where most activities happen so check through the list and see if any pique your interest and then click the join button to keep up with what is happening inside.
+
+- To stay more connected you might want to turn on notifications under your settings accessed through your picture icon/avatar. Make sure to set your location on your profile, that will allow you to see any events in your time zone.
+
+- Do not hesitate to RSVP and join any events you are interested in, just mention that you are new and dive right in. 
+
+I look forward to hearing from you soon,
+${data.greeter}`;
+},
+////////////////////////////////////////////////////
+function(data) {
+  return `Hi ${data.name},
+
+Thanks for joining us at Emergent Commons. I'm one of the Greeters, to help you start exploring and engaging within the community. There's no central figure, we're a diverse bunch of people exploring ways to communicate with each other so we can understand the world and communicate with the people in it.
+
+|||||||||||||||||| REVISE THIS PART ||||||||||||||||||
+Comment on who they mentioned as someone they know here and about their other answers, so they know that we do pay attention to their answers and do want to know about them and what they desire from their experience at Emergent Commons
+|||||||||||||||||| REVISE THIS PART ||||||||||||||||||
+
+I'd love to chat in person, over Zoom, about the platform to make sure you get off to a fantastic start. If you'd rather exploring on your own, just let me know and I'll send you some key points.
+
+I'm pretty flexible with days and times. Can you let me know a few options that would work for you?
+
+Again, welcome!
+
+All the best,
+${data.greeter}`;
+}]
+
+////////////////////////////////////////////////////
 // DEBOUNCE
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
@@ -41,7 +123,7 @@ function debounce(func, wait, immediate) {
 ////////////////////////////////////////////////////
 // UTILS
 var getUserGreeter = function(userRow) {
-  var userGreeter = userRow.find("td.user-greeter a").first().text();
+  var userGreeter = userRow.find("td.user-greeter a").text();
   return userGreeter == "make me greeter!" ? null : userGreeter;
 }
 
@@ -73,7 +155,7 @@ var updateNotes = function(e) {
   var userRow = $(e.currentTarget).closest("tr").prev().prev();
   var userId = userRow.data("id");
   var userGreeter = getUserGreeter(userRow);
-  var userStatus = userRow.find("td.user-status a").first().text();
+  var userStatus = userRow.find("td.user-status a").text();
   var data = {
     "notes": userNotes,
     "greeter": userGreeter,
@@ -97,9 +179,13 @@ var updateNotes = function(e) {
 };
 
 ////////////////////////////////////////////////////
-// EVENT LISTENERS
+// GLOBAL VARIABLES
 var loaded = false;
 var prevGreeter = "";
+var prevEmailTemplateIndex = "";
+
+////////////////////////////////////////////////////
+// EVENT LISTENERS
 document.addEventListener("turbo:load", function() {
   if (loaded) return; // set listeners only once
   loaded = true;
@@ -122,23 +208,23 @@ document.addEventListener("turbo:load", function() {
   $("table.users td.user-greeter a").on("click", function(e) {
     e.preventDefault();
     var userGreeter = prompt("Enter your name", prevGreeter);
-    if (userGreeter) {
-      prevGreeter = userGreeter;
-      var userRow = $(this).closest("tr");
-      var userId = userRow.data("id");
-      var userNotes = userRow.find("td.user-notes-more textarea").first().text();
-      var userStatus = userRow.find("td.user-status a").first().text();
-      var data = {
-        notes: userNotes,
-        greeter: userGreeter,
-        status: userStatus
-      };
-      patch(userId, data, function() {
-        userRow.find("td.user-greeter a").first().text(userGreeter);
-      }, function() {
-        alert("Could not change greeter - ask Kevin");
-      });
-    }
+    if (!userGreeter) return;
+
+    prevGreeter = userGreeter;
+    var userRow = $(this).closest("tr");
+    var userId = userRow.data("id");
+    var userNotes = userRow.find("td.user-notes-more textarea").text();
+    var userStatus = userRow.find("td.user-status a").text();
+    var data = {
+      notes: userNotes,
+      greeter: userGreeter,
+      status: userStatus
+    };
+    patch(userId, data, function() {
+      userRow.find("td.user-greeter a").text(userGreeter);
+    }, function() {
+      alert("Could not change greeter - ask Kevin");
+    });
   });
 
   ////////////////////////////////////////////////////
@@ -146,22 +232,55 @@ document.addEventListener("turbo:load", function() {
   $("table.users td.user-status a").on("click", function(e) {
     e.preventDefault();
     var userStatus = prompt("Enter new status");
-    if (userStatus) {
-      var userRow = $(this).closest("tr");
-      var userId = userRow.data("id");
-      var userNotes = userRow.find("td.user-notes-more textarea").first().text();
-      var userGreeter = getUserGreeter(userRow);
-      var data = {
-        notes: userNotes,
-        greeter: userGreeter,
-        status: userStatus
-      };
-      patch(userId, data, function() {
-        userRow.find("td.user-status a").first().text(userStatus);
-      }, function() {
-        alert("Could not change status - ask Kevin");
-      });
+    if (!userStatus) return;
+
+    var userRow = $(this).closest("tr");
+    var userId = userRow.data("id");
+    var userNotes = userRow.find("td.user-notes-more textarea").text();
+    var userGreeter = getUserGreeter(userRow);
+    var data = {
+      notes: userNotes,
+      greeter: userGreeter,
+      status: userStatus
+    };
+    patch(userId, data, function() {
+      userRow.find("td.user-status a").text(userStatus);
+    }, function() {
+      alert("Could not change status - ask Kevin");
+    });
+  });
+
+  ////////////////////////////////////////////////////
+  // EMAIL EVENT LISTENER
+  $("table.users td.user-email a").on("click", function(e) {
+    e.preventDefault();
+    var userRow = $(this).closest("tr");
+    var userGreeter = userRow.find("td.user-greeter a").text();
+    if (userGreeter == "make me greeter!") {
+      alert("First, click 'make me greeter!' and then send the email");
+      return;
     }
+
+    var maxIndex = emailTemplates.length;
+    var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
+    if (!templateIndex) return;
+
+    templateIndex = parseInt(templateIndex) - 1;
+    if (templateIndex > maxIndex) {
+      alert(`Choose an email template 1 through ${maxIndex+1}`);
+      return;
+    }
+
+    prevEmailTemplateIndex = templateIndex + 1;
+    var userName = userRow.find("td.user-name").text().trim();
+    var userEmail = userRow.find("td.user-email a").text().trim();
+    var data = {
+      name: userName,
+      greeter: userGreeter
+    };
+    var body = emailTemplates[templateIndex](data);
+    body = encodeURIComponent(body);
+    var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
+    window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
   });
 });
-
