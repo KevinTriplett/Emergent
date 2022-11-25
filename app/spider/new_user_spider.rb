@@ -1,11 +1,12 @@
 require 'kimurai'
 
-class NewMemberSpider < Kimurai::Base
+class NewUserSpider < Kimurai::Base
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-  @name = "new_member_spider"
+  @name = "new_user_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://emergent-commons.mn.co/sign_in"]
-  @new_member_count = 0
+  @new_user_count = 0
+  @max_new_users = Rails.env.production? ? 100 : 50
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
@@ -36,7 +37,7 @@ class NewMemberSpider < Kimurai::Base
     puts "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
-    @new_member_count = scroll_to_end(row_css, "#flyout-main-content")
+    @new_user_count = scroll_to_end(row_css, "#flyout-main-content")
     
     users = []
     browser.current_response.css(row_css).each_with_index do |row, idx|
@@ -65,7 +66,7 @@ class NewMemberSpider < Kimurai::Base
       else
         status = row.css("a.invite-list-item-status-text").text.strip
         profile_url = row.css(".invite-list-item-email a").attr("href")
-        # for joined members, do a little more to get to their answers:
+        # for joined users, do a little more to get to their answers:
         # puts "ATTEMPTING HOVER"
         # browser.save_screenshot
         script = "$(\"#{css}\")[0].scrollIntoView(false)"
@@ -97,7 +98,7 @@ class NewMemberSpider < Kimurai::Base
       sleep 1
 
       puts "\n-------------------------------------------------------\n"
-      puts "MEMBER #{users.count + 1} of #{@new_member_count}"
+      puts "MEMBER #{users.count + 1} of #{@new_user_count}"
       puts "name = #{name}"
       puts "email = #{email}"
       puts "request_date = #{request_date}"
@@ -143,19 +144,20 @@ class NewMemberSpider < Kimurai::Base
   end
 
   def create_users(users)
-    users.each_with_index do |member, member_count|
-      if User.find_by_email(member[:email])
-        puts "SKIPPING EXISTING MEMBER: #{member[:name]}"
+    users.each_with_index do |user, user_count|
+      if User.find_by_email(user[:email])
+        puts "SKIPPING EXISTING MEMBER: #{user[:name]}"
         next
       end
-      puts "SAVING (#{member_count} of #{@new_member_count}): #{member[:name]}"
-      User.create! member
+      puts "SAVING (#{user_count} of #{@new_user_count}): #{user[:name]}"
+      User.create! user
     end
   end
 
   def scroll_to_end(css, modal_css)
     prev_count = browser.current_response.css(css).count
     return if prev_count == 0
+    new_count = 0
     
     loop do
       if modal_css
@@ -166,7 +168,7 @@ class NewMemberSpider < Kimurai::Base
       sleep 10
       new_count = browser.current_response.css(css).count
       puts "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
-      break if new_count == prev_count || new_count > 150
+      break if new_count == prev_count || new_count >= @max_new_users
       prev_count = new_count
     end
 
