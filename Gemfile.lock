@@ -167,16 +167,16 @@ GEM
       zeitwerk (~> 2.6)
     dry-inflector (1.0.0)
     dry-initializer (3.1.1)
-    dry-logic (1.4.0)
+    dry-logic (1.5.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.0, < 2)
       zeitwerk (~> 2.6)
-    dry-schema (1.12.0)
+    dry-schema (1.13.0)
       concurrent-ruby (~> 1.0)
-      dry-configurable (~> 1.0, < 2)
+      dry-configurable (~> 1.0, >= 1.0.1)
       dry-core (~> 1.0, < 2)
       dry-initializer (~> 3.0)
-      dry-logic (>= 1.4, < 2)
+      dry-logic (>= 1.5, < 2)
       dry-types (>= 1.7, < 2)
       zeitwerk (~> 2.6)
     dry-types (1.7.0)
@@ -262,8 +262,6 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.13.9-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.13.9-x86_64-linux)
-      racc (~> 1.4)
     ntlm-http (0.1.1)
     pg (1.4.5)
     pmap (1.1.1)
@@ -346,7 +344,6 @@ GEM
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
     sqlite3 (1.5.4-arm64-darwin)
-    sqlite3 (1.5.4-x86_64-linux)
     sshkit (1.21.3)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -420,7 +417,6 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
-  x86_64-linux
 
 DEPENDENCIES
   bootsnap
