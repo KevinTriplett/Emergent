@@ -274,8 +274,8 @@ document.addEventListener("turbo:load", function() {
     if (!templateIndex) return;
 
     templateIndex = parseInt(templateIndex) - 1;
-    if (templateIndex > maxIndex) {
-      alert(`Choose an email template 1 through ${maxIndex+1}`);
+    if (templateIndex < 0 || templateIndex > maxIndex - 1) {
+      alert(`Choose an email template 1 through ${maxIndex}`);
       return;
     }
 
