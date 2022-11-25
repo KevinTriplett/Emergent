@@ -2,9 +2,10 @@ require 'kimurai'
 
 class NewMemberSpider < Kimurai::Base
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-  @name = "spider"
+  @name = "new_member_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://emergent-commons.mn.co/sign_in"]
+  @new_member_count = 0
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
@@ -27,6 +28,7 @@ class NewMemberSpider < Kimurai::Base
     # browser.save_screenshot
     request_to :parse_requests_to_join, url: "https://emergent-commons.mn.co/settings/invite/requests"
     # browser.save_screenshot
+    puts "ALL DONE SUCCESSFULLY"
   end
 
   # TODO: fill in missing information for users after they join
@@ -34,7 +36,7 @@ class NewMemberSpider < Kimurai::Base
     puts "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
-    scroll_to_end(row_css, "#flyout-main-content")
+    @new_member_count = scroll_to_end(row_css, "#flyout-main-content")
     
     users = []
     browser.current_response.css(row_css).each_with_index do |row, idx|
@@ -95,7 +97,7 @@ class NewMemberSpider < Kimurai::Base
       sleep 1
 
       puts "\n-------------------------------------------------------\n"
-      puts "MEMBER # #{users.count + 1}"
+      puts "MEMBER #{users.count + 1} of #{@new_member_count}"
       puts "name = #{name}"
       puts "email = #{email}"
       puts "request_date = #{request_date}"
@@ -141,9 +143,12 @@ class NewMemberSpider < Kimurai::Base
   end
 
   def create_users(users)
-    users.each do |member|
-      next if User.find_by_email(member[:email])
-      puts "SAVING #{member[:name]}"
+    users.each_with_index do |member, member_count|
+      if User.find_by_email(member[:email])
+        puts "SKIPPING EXISTING MEMBER: #{member[:name]}"
+        next
+      end
+      puts "SAVING (#{member_count} of #{@new_member_count}): #{member[:name]}"
       User.create! member
     end
   end
@@ -165,6 +170,7 @@ class NewMemberSpider < Kimurai::Base
       prev_count = new_count
     end
 
+    new_count
   end
 
   def report_failure_unless_response_has(css)
