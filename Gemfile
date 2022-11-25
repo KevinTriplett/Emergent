@@ -16,7 +16,7 @@ gem "cells-rails"
 gem "reform"
 
 # web scraping
-gem "kimurai", path: "/Users/kevin/Documents/PROJECTS/SOFTWARE/gems/kimuraframework"
+gem "kimurai", path: ENV['KIMURAI_GEM_PATH']
 gem "whenever", require: false
 gem "simple_form"
 gem "haml"

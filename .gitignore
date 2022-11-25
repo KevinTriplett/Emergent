@@ -6,6 +6,7 @@
 
 # ignore Mac OS X filesystem file
 .DS_Store
+.rbenv-vars
 
 # Ignore bundler config.
 /.bundle
