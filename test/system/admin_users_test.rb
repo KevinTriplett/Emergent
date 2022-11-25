@@ -4,6 +4,44 @@ class AdminUsersTest < ApplicationSystemTestCase
   include ActionMailer::TestHelper
   DatabaseCleaner.clean
 
+  test "Saves greeter name between prompts and page loads" do
+    DatabaseCleaner.cleaning do
+      user = create_user
+
+      visit admin_users_path
+      assert_current_path admin_users_path
+
+      accept_prompt(with: random_user_name) do
+        click_link('make me greeter!')
+      end
+      sleep 1
+      user.reload
+      assert_equal last_random_user_name, user.greeter
+
+      user.update!(greeter: nil)
+      visit admin_users_path
+      assert_current_path admin_users_path
+      accept_prompt do
+        click_link('make me greeter!')
+      end
+      sleep 1
+      user.reload
+      assert_equal last_random_user_name, user.greeter
+      user.update!(greeter: nil)
+
+      visit root_path
+      visit admin_users_path
+      assert_current_path admin_users_path
+
+      accept_prompt do
+        click_link('make me greeter!')
+      end
+      sleep 1
+      user.reload
+      assert_equal last_random_user_name, user.greeter
+    end
+  end
+
   test "Greeter can select a user to greet" do
     DatabaseCleaner.cleaning do
       user = create_user
