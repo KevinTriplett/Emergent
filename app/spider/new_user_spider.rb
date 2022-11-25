@@ -20,11 +20,10 @@ class NewUserSpider < Kimurai::Base
       delay: 2..4
     }
   }
-  @@max_new_users = 100 #Rails.env.production? ? 100 : 50
+  @@max_new_users = Rails.env.production? ? 100 : 50
   @@new_user_count = 0
 
   def parse(response, url:, data: {})
-  puts "@@max_new_users = #{@@max_new_users}"
     sign_in
     report_failure_unless_response_has("body.communities-app")
     # browser.save_screenshot
