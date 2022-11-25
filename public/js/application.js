@@ -205,13 +205,7 @@ document.addEventListener("turbo:load", function() {
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
-  $("table.users td.user-greeter a").on("click", function(e) {
-    e.preventDefault();
-    var userGreeter = prompt("Enter your name", prevGreeter);
-    if (!userGreeter) return;
-
-    prevGreeter = userGreeter;
-    var userRow = $(this).closest("tr");
+  var setUserGreeter = function(userRow, userGreeter) {
     var userId = userRow.data("id");
     var userNotes = userRow.find("td.user-notes-more textarea").text();
     var userStatus = userRow.find("td.user-status a").text();
@@ -225,16 +219,21 @@ document.addEventListener("turbo:load", function() {
     }, function() {
       alert("Could not change greeter - ask Kevin");
     });
+  }
+
+  $("table.users td.user-greeter a").on("click", function(e) {
+    e.preventDefault();
+    var userGreeter = prompt("Enter your name", prevGreeter);
+    if (!userGreeter) return;
+
+    prevGreeter = userGreeter;
+    var userRow = $(this).closest("tr");
+    setUserGreeter(userRow, userGreeter);
   });
 
   ////////////////////////////////////////////////////
   // STATUS EVENT LISTENER
-  $("table.users td.user-status a").on("click", function(e) {
-    e.preventDefault();
-    var userStatus = prompt("Enter new status");
-    if (!userStatus) return;
-
-    var userRow = $(this).closest("tr");
+  var setUserStatus = function(userRow, userStatus) {
     var userId = userRow.data("id");
     var userNotes = userRow.find("td.user-notes-more textarea").text();
     var userGreeter = getUserGreeter(userRow);
@@ -248,6 +247,15 @@ document.addEventListener("turbo:load", function() {
     }, function() {
       alert("Could not change status - ask Kevin");
     });
+  }
+
+  $("table.users td.user-status a").on("click", function(e) {
+    e.preventDefault();
+    var userStatus = prompt("Enter new status");
+    if (!userStatus) return;
+
+    var userRow = $(this).closest("tr");
+    setUserStatus(userRow, userStatus);
   });
 
   ////////////////////////////////////////////////////
@@ -282,5 +290,6 @@ document.addEventListener("turbo:load", function() {
     body = encodeURIComponent(body);
     var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
     window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
+    setUserStatus(userRow, "Invite Sent");
   });
 });
