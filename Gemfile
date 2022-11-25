@@ -16,7 +16,9 @@ gem "cells-rails"
 gem "reform"
 
 # web scraping
-gem "kimurai", path: ENV['KIMURAI_GEM_PATH']
+gem "kimurai",
+  path: "vendor/kimuraframework",
+  require:"not_a_mock"
 gem "whenever", require: false
 gem "simple_form"
 gem "haml"
