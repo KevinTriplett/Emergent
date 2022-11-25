@@ -27,7 +27,7 @@ Welcome to Emergent Commons. I'm one of the Greeters here.
 
 I would like to schedule a time when we can talk in person, over Zoom, about being a member of Emergent Commons.
 
-I am pretty flexible with days and times. Can you let me know a few options that would work for you?
+I'm pretty flexible with days and times. Can you let me know a few options that would work for you?
 
 Again, welcome!
 ${data.greeter}`;
@@ -38,7 +38,7 @@ function(data) {
 
 Welcome to the Emergent Commons.
  
-I'm one of the Greeter volunteers for Emergent Commons. I would like to meet with you on Zoom to help you feel comfortable entering our community.
+I'm one of the Greeter volunteers for Emergent Commons. I'd like to meet with you on Zoom to help you feel comfortable entering our community.
  
 Let me know your time zone and your availability to have a conversation and we would choose time for our meeting. I plan to introduce myself and our community to you, show you around and answer any questions you may have.
  
@@ -49,7 +49,7 @@ Here are a few tips:
  
 - To stay more connected you might want to turn on notifications under your settings accessed through your picture icon/avatar. Make sure to set your location on your profile, that will allow you to see any events in your time zone.
  
-- Do not hesitate to RSVP and join any events you are interested in, just mention that you are new and dive right in. 
+- Don't hesitate to RSVP and join any events you are interested in, just mention that you are new and dive right in. 
  
 I'm looking forward to hearing from you soon.
 ${data.greeter}`;
@@ -60,11 +60,11 @@ function(data) {
 
 Welcome to the Emergent Commons.
 
-I am one of the Greeters for Emergent Commons. I would like to meet with you on Zoom to help you feel comfortable entering our community.
+I'm one of the Greeters for Emergent Commons. I'd like to meet with you on Zoom to help you feel comfortable entering our community.
 
 Please let me know your time zone and your availability to have a conversation so we would choose a day and time to meet.
 
-Please feel free to explore our community site before we meet. I opened the gate for you to look around and explore as much as you have time like.
+And please feel free to explore our community site before we meet. I opened the gate for you to look around and explore as much as you have time and like.
 
 You could also go over items on the Welcome Checklist that should be visible on the right-hand side of your screen after you join.
 
@@ -74,7 +74,7 @@ Here are a few tips:
 
 - To stay more connected you might want to turn on notifications under your settings accessed through your picture icon/avatar. Make sure to set your location on your profile, that will allow you to see any events in your time zone.
 
-- Do not hesitate to RSVP and join any events you are interested in, just mention that you are new and dive right in. 
+- Don't hesitate to RSVP and join any events you are interested in, just mention that you are new and dive right in. 
 
 I look forward to hearing from you soon,
 ${data.greeter}`;
