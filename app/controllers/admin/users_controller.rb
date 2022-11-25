@@ -7,7 +7,7 @@ module Admin
     end
   
     def index
-      @users = User.order(joined_timestamp: :desc).all
+      @users = User.order(request_timestamp: :desc).all
       @update_url = admin_users_url
       @token = form_authenticity_token
     end
