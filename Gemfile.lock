@@ -1,5 +1,5 @@
 PATH
-  remote: vendor/kimuraframework
+  remote: vendor/bundle/kimuraframework
   specs:
     kimurai (1.9.0)
       activesupport

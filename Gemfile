@@ -17,7 +17,7 @@ gem "reform"
 
 # web scraping
 gem "kimurai",
-  path: "vendor/kimuraframework",
+  path: "vendor/bundle/kimuraframework",
   require:"not_a_mock"
 gem "whenever", require: false
 gem "simple_form"
