@@ -9,8 +9,9 @@
 - [X] ability to assign greeter
 - [X] expand for additional information (answers / notes)
 - [X] create deploy server
-- [ ] allow greeter to choose from email templates
-- [ ] ability to send email invites from personal email
+- [X] allow greeter to choose from email templates
+- [X] ability to send email invites from personal email
+- [X] save greeter name and preferred template number
 - [ ] import members via rake task
 - [ ] add self referential greeter_id column to users table
 - [ ] user authentication
