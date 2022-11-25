@@ -8,7 +8,6 @@ class AdminUsersTest < ApplicationSystemTestCase
     DatabaseCleaner.cleaning do
       user = create_user
       old_name = user.name
-      old_status = user.status
 
       visit admin_users_path
       assert_current_path admin_users_path
@@ -25,13 +24,25 @@ class AdminUsersTest < ApplicationSystemTestCase
       user.reload
       assert_equal old_name, user.name
 
-      message = accept_prompt(with: random_user_name) do
+      accept_prompt(with: random_user_name) do
         click_link('make me greeter!')
       end
       
       sleep 1
       user.reload
       assert_equal last_random_user_name, user.greeter
+    end
+  end
+
+  test "Greeter can change user status" do
+    DatabaseCleaner.cleaning do
+      user = create_user
+      old_status = user.status
+
+      visit admin_users_path
+      assert_current_path admin_users_path
+
+      assert_selector "td.user-status a", text: user.status
 
       message = dismiss_prompt do
         click_link(user.status)
@@ -43,7 +54,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal old_status, user.status
 
       new_status = "panic"
-      message = accept_prompt(with: new_status) do
+      accept_prompt(with: new_status) do
         click_link(user.status)
       end
 
@@ -70,6 +81,58 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 2
       user.reload
       assert_equal old_notes + keys, user.notes
+    end
+  end
+
+  test "Greeter can send email and it automatically changes status" do
+    DatabaseCleaner.cleaning do
+      user = create_user
+      old_greeter = user.greeter
+      old_status = user.status
+
+      visit admin_users_path
+      assert_current_path admin_users_path
+
+      message = accept_alert do
+        click_link(user.email)
+      end
+      assert_equal "First, click 'make me greeter!' and then send the email", message
+      user.reload
+      assert_equal old_greeter, user.greeter
+      assert_equal old_status, user.status
+
+      accept_prompt(with: random_user_name) do
+        click_link('make me greeter!')
+      end
+      sleep 1
+    
+      message = dismiss_prompt do
+        click_link(user.email)
+      end
+      assert_equal "Enter an email template 1 through 4", message
+      user.reload
+      assert_equal old_status, user.status
+      
+      accept_prompt(with: "0") do
+        click_link(user.email)
+      end
+      message = accept_alert
+      assert_equal "Choose an email template 1 through 4", message
+      assert_equal old_status, user.status
+      
+      accept_prompt(with: "5") do
+        click_link(user.email)
+      end
+      message = accept_alert
+      assert_equal "Choose an email template 1 through 4", message
+      assert_equal old_status, user.status
+      
+      accept_prompt(with: "1") do
+        click_link(user.email)
+      end
+      sleep 1
+      user.reload
+      assert_equal "Invite Sent", user.status
     end
   end
 end
