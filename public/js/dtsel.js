@@ -215,7 +215,8 @@
             if (state.visible && !prevState.visible){
                 document.body.appendChild(this.el.wrapper);
 
-                var parts = self.elem.value.split(/\s*,\s*/);
+                // KMT
+                var parts = self.elem.value.split(/\s* \s*/);
                 var startDate = undefined;
                 var startTime = 0;
                 if (self.settings.config.showDate) {
