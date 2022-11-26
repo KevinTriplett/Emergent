@@ -509,6 +509,10 @@
             strings.push(renderTime(joined, this.settings));
         }
         this.elem.value = strings.join(', ');
+
+        // KMT
+        const event = new Event('change');
+        this.elem.dispatchEvent(event);
     }
 
     DTBox.prototype.onDateSelected = function (e) {
