@@ -124,9 +124,9 @@ function debounce(func, wait, immediate) {
 // UTILS
 var convertTimeFromUTC = function(utc) {
   if (!utc) return;
-  var datetime = new Date(utc)
-  datetime = datetime.toLocaleString("en-GB", format);
-  var t = datetime.split(", ");
+  var dt = (new Date(utc)).toLocaleString("en-GB");
+  // convert to iso 8601 format
+  var t = dt.split(", ");
   var d = t.shift();
   d = d.split("/");
   return `${d[2]}-${d[1]}-${d[0]} ${t[0]}`;
@@ -134,7 +134,7 @@ var convertTimeFromUTC = function(utc) {
 
 var convertTimeToUTC = function(datetime) {
   datetime = new Date(datetime)
-  return datetime.toUTCString();
+  return datetime.toISOString();
 }
 
 var getUserGreeter = function(userRow) {
@@ -181,9 +181,6 @@ var patch = function(userId, data, success, error) {
 }
 
 ////////////////////////////////////////////////////
-// NOTES
-
-////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 var loaded = false;
 var prevGreeter = getCookie("greeter-name");
@@ -197,6 +194,7 @@ var format = {
   hour: "2-digit",
   minute: "2-digit"
 };
+
 ////////////////////////////////////////////////////
 // PAGE INITIALIZATION
 document.addEventListener("turbo:load", function() {
@@ -210,6 +208,8 @@ document.addEventListener("turbo:load", function() {
     var datetime = convertTimeFromUTC(el.val());
     el.val(datetime);
   });
+
+  $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
   ////////////////////////////////////////////////////
   // MEETING DATETIME PICKER LISTENER
