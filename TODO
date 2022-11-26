@@ -13,8 +13,9 @@
 - [X] ability to send email invites from personal email
 - [X] save greeter name and preferred template number
 - [X] add datetime for welcome meeting to users
+- [ ] automate database backup (see https://github.com/backup/backup)
 - [ ] test rake task somehow
-- [ ] move spider puts to logger.debugger
+- [x] move spider puts to logger.debugger (removed puts)
 - [ ] import members via rake task
 - [ ] add self referential greeter_id column to users table
 - [ ] user authentication
