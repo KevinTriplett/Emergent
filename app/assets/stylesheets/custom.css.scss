@@ -58,6 +58,18 @@ table.users {
   tbody td.more {
     text-align: center;
   }
+  tbody td.user-questions-more {
+    li {
+      margin-bottom: 7px;
+    }
+    span.question {
+      font-size: small;
+      color: lightslategray;
+    }
+    span.answer {
+      font-size: large;
+    }
+  }
   tbody td.user-notes-more
     textarea, span.save-status {
       margin: 0 auto;

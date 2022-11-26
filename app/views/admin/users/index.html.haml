@@ -35,9 +35,9 @@
             - u.questions_responses.split(" -:- ").each do |qna|
               - q, a = *qna.split("\\")
               %li
-                = "Question: #{q}"
+                %span.question= q
                 %br
-                = "Answer: #{a}"
+                %span.answer= a
       %tr.more
         %td.user-notes-more{ colspan: 8, data: { id: u.id } }
           %textarea{ cols: "40" }= u.notes
