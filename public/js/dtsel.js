@@ -476,7 +476,7 @@
             }
             makeRow('HH:', 'hours', 23, handler);
             makeRow('MM:', 'minutes', 59, handler);
-            makeRow('SS:', 'seconds', 59, handler);
+            // makeRow('SS:', 'seconds', 59, handler); // KMT
 
             footer.classList.add("cal-footer");
             Object.defineProperty(this.el, "footer", { value: footer });
@@ -492,8 +492,9 @@
             footer.children[0].children[1].innerText = padded(this.hours, 2);
             footer.minutes.value = this.minutes;
             footer.children[1].children[1].innerText = padded(this.minutes, 2);
-            footer.seconds.value = this.seconds;
-            footer.children[2].children[1].innerText = padded(this.seconds, 2);
+            // KMT
+            // footer.seconds.value = this.seconds;
+            // footer.children[2].children[1].innerText = padded(this.seconds, 2);
         }
     }
 
