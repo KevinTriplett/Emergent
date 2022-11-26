@@ -24,17 +24,18 @@ class NewUserSpider < Kimurai::Base
   @@new_user_count = 0
 
   def parse(response, url:, data: {})
+    puts "STARTING"
     sign_in
     report_failure_unless_response_has("body.communities-app")
     # browser.save_screenshot
     request_to :parse_requests_to_join, url: "https://emergent-commons.mn.co/settings/invite/requests"
     # browser.save_screenshot
-    puts "ALL DONE SUCCESSFULLY"
+    puts "COMPLETED SUCCESSFULLY"
   end
 
   # TODO: fill in missing information for users after they join
   def parse_requests_to_join(response, url:, data: {})
-    puts "LOOKING FOR NEW JOIN REQUESTS"
+    # puts "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
@@ -97,14 +98,14 @@ class NewUserSpider < Kimurai::Base
 
       sleep 1
 
-      puts "\n-------------------------------------------------------\n"
-      puts "MEMBER #{users.count + 1} of #{@@new_user_count}"
-      puts "name = #{name}"
-      puts "email = #{email}"
-      puts "request_date = #{request_date}"
-      puts "status = #{status}"
-      puts "profile_url = #{profile_url}"
-      puts "qna = #{questions_and_answers.join("\n\n")}"
+      # puts "\n-------------------------------------------------------\n"
+      # puts "MEMBER #{users.count + 1} of #{@@new_user_count}"
+      # puts "name = #{name}"
+      # puts "email = #{email}"
+      # puts "request_date = #{request_date}"
+      # puts "status = #{status}"
+      # puts "profile_url = #{profile_url}"
+      # puts "qna = #{questions_and_answers.join("\n\n")}"
 
       users.push({
         name: name,
@@ -133,23 +134,23 @@ class NewUserSpider < Kimurai::Base
 
   def sign_in
     wait_until("body.auth-sign_in")
-    puts "SIGNING IN"
+    # puts "SIGNING IN"
     browser.fill_in "Email", with: "kt@kevintriplett.com"
     sleep 1
     browser.fill_in "Password", with: "XV9NN79P4xNbGLXPdo"
     browser.click_link "Sign In"
     sleep 1
     wait_while(".pace-running")
-    puts "SUCCESS!"
+    # puts "SUCCESS!"
   end
 
   def create_users(users)
     users.each_with_index do |user, user_count|
       if User.find_by_email(user[:email])
-        puts "SKIPPING EXISTING MEMBER: #{user[:name]}"
+        # puts "SKIPPING EXISTING MEMBER: #{user[:name]}"
         next
       end
-      puts "SAVING (#{user_count} of #{@@new_user_count}): #{user[:name]}"
+      # puts "SAVING (#{user_count} of #{@@new_user_count}): #{user[:name]}"
       User.create! user
     end
   end
@@ -167,7 +168,7 @@ class NewUserSpider < Kimurai::Base
       end
       sleep 10
       new_count = browser.current_response.css(css).count
-      puts "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
+      # puts "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
       break if new_count == prev_count || new_count >= @@max_new_users
       prev_count = new_count
     end
@@ -189,21 +190,21 @@ class NewUserSpider < Kimurai::Base
     i = 10
     sleep 1
     while response_has(css) || i < 0
-      puts "WAITING WHILE #{css} ..."
+      # puts "WAITING WHILE #{css} ..."
       sleep 1
       i -= 1
     end
-    puts "NEVER WENT AWAY!" if response_has(css)
+    # puts "NEVER WENT AWAY!" if response_has(css)
   end
 
   def wait_until(css)
     i = 10
     sleep 1
     until response_has(css) || i < 0
-      puts "WAITING UNTIl #{css} ..."
+      # puts "WAITING UNTIl #{css} ..."
       sleep 1
       i -= 1
     end
-    puts "COULD NOT FIND IT!" unless response_has(css)
+    # puts "COULD NOT FIND IT!" unless response_has(css)
   end
 end
