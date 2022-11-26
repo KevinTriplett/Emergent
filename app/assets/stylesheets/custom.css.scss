@@ -48,9 +48,17 @@ p.timestamp {
 
 table.users {
   width: 100%;
-  thead th {
-    background-color: cornflowerblue;
-    color: white;
+  thead {
+    th {
+      background-color: cornflowerblue;
+      color: white;
+      span.tzinfo {
+        font-size: x-small;
+      }
+    }
+    th.meeting {
+      line-height: 0.8em;
+    }
   }
   tbody tr.more {
     display: none;
