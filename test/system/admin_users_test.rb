@@ -193,8 +193,6 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 2
       user.reload
       assert_equal "2023-10-09T20:45:00Z", user.welcome_timestamp.picker_datetime
-      assert_equal "Scheduled", user.status
-      assert_selector "td.user-status", text: "Scheduled"
     end
   end
 

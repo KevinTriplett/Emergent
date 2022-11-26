@@ -218,11 +218,7 @@ document.addEventListener("turbo:load", function() {
     var userRow = $(this).closest("tr");
     var userId = userRow.data("id");
     var data = getPatchData(userRow);
-    data.status = "Scheduled";
-    patch(userId, data, function() {
-      if (data.welcome_timestamp == "") return;
-      userRow.find("td.user-status a").text(data.status);
-    }, function() {
+    patch(userId, data, null, function() {
       alert("Could not set meeting date and time - ask Kevin");
     });
   }
