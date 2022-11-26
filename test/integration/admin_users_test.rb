@@ -26,7 +26,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Greeter"
       assert_select "th", "Email"
       assert_select "th", "Status"
-      assert_select "th", "Meeting Date"
+      assert_select "th.meeting", "Meeting Schedule\n\n(GMT)"
       assert_select "th", "Request Date"
       assert_select "th", "Answers"
       assert_select "th", "More"
@@ -43,7 +43,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       
       user.questions_responses.split(" -:- ").each do |qna|
         q,a = *qna.split("\\")
-        assert_select "tr.more td.user-questions-more li", "Question: #{q}\n\nAnswer: #{a}"
+        assert_select "tr.more td.user-questions-more li", "#{q}\n\n#{a}"
       end
 
       user.update(greeter: nil)
