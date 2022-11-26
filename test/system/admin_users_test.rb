@@ -181,14 +181,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_users_path
       assert_current_path admin_users_path
 
-      new_date = "2023-10-09 15:45"
       find("td.user-meeting-datetime input.datetime-picker").click
-      find("td.user-meeting-datetime input.datetime-picker").send_keys(new_date)
+      find("td.user-meeting-datetime input.datetime-picker").send_keys("2023-10-09 15:45")
       find("td.user-request-date").click
 
       sleep 2
       user.reload
-      assert_equal new_date, user.welcome_timestamp.picker_datetime
+      assert_equal "2023-10-09T20:45:00Z", user.welcome_timestamp.picker_datetime
       assert_equal "Scheduled", user.status
       assert_selector "td.user-status", text: "Scheduled"
     end
