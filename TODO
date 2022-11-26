@@ -12,8 +12,9 @@
 - [X] allow greeter to choose from email templates
 - [X] ability to send email invites from personal email
 - [X] save greeter name and preferred template number
+- [X] add datetime for welcome meeting to users
 - [ ] test rake task somehow
-- [ ] add datetime for welcome meeting to users
+- [ ] move spider puts to logger.debugger
 - [ ] import members via rake task
 - [ ] add self referential greeter_id column to users table
 - [ ] user authentication
