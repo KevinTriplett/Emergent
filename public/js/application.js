@@ -122,6 +122,21 @@ function debounce(func, wait, immediate) {
 
 ////////////////////////////////////////////////////
 // UTILS
+var convertTimeFromUTC = function(utc) {
+  if (!utc) return;
+  var datetime = new Date(utc)
+  datetime = datetime.toLocaleString("en-GB", format);
+  var t = datetime.split(", ");
+  var d = t.shift();
+  d = d.split("/");
+  return `${d[2]}-${d[1]}-${d[0]} ${t[0]}`;
+}
+
+var convertTimeToUTC = function(datetime) {
+  datetime = new Date(datetime)
+  return datetime.toUTCString();
+}
+
 var getUserGreeter = function(userRow) {
   var userGreeter = userRow.find("td.user-greeter a").text();
   return userGreeter == "make me greeter!" ? null : userGreeter;
@@ -136,6 +151,7 @@ var getPatchData = function(userRow) {
   var userGreeter = getUserGreeter(userRow);
   var userMeeting = userRow.find("td.user-meeting-datetime input.datetime-picker").val();
   var userStatus = userRow.find("td.user-status").text();
+  userMeeting = convertTimeToUTC(userMeeting);
   return {
     notes: userNotes,
     greeter: userGreeter,
@@ -172,13 +188,28 @@ var patch = function(userId, data, success, error) {
 var loaded = false;
 var prevGreeter = getCookie("greeter-name");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
-
+var format = {
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  hour12: false,
+  year:"numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit"
+};
 ////////////////////////////////////////////////////
 // PAGE INITIALIZATION
 document.addEventListener("turbo:load", function() {
   if (loaded) return; // set listeners only once
   loaded = true;
-  convertTimeFromUTC(); // convert UTC displed times to local time
+
+  ////////////////////////////////////////////////////
+  // CONVERT ALL UTC TIMES TO LOCAL
+  $(".utc-time").each( function(i, el) {
+    el = $(el);
+    var datetime = convertTimeFromUTC(el.val());
+    el.val(datetime);
+  });
 
   ////////////////////////////////////////////////////
   // MEETING DATETIME PICKER LISTENER
