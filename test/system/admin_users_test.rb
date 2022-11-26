@@ -119,6 +119,11 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 2
       user.reload
       assert_equal old_notes + keys, user.notes
+      assert_selector "tr.more td.user-notes-more span", text: "saved"
+
+      keys = " hello this is more stuff"
+      find(notes_css).send_keys(keys)
+      assert_selector "tr.more td.user-notes-more span", text: ""
     end
   end
 

@@ -134,6 +134,7 @@ var convertTimeFromUTC = function(utc) {
 
 var convertTimeToUTC = function(datetime) {
   datetime = new Date(datetime)
+  if (datetime == "Invalid Date") return;
   return datetime.toISOString();
 }
 
@@ -253,7 +254,8 @@ document.addEventListener("turbo:load", function() {
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
   var setUserNotes = function(e) {
-    var userRow = $(this).closest("tr").prev().prev();
+    var userNotesTextarea = $(this)
+    var userRow = userNotesTextarea.closest("tr").prev().prev();
     var userId = userRow.data("id");
     var data = getPatchData(userRow);
     patch(userId, data, function() {
@@ -262,18 +264,30 @@ document.addEventListener("turbo:load", function() {
         .find("span.save-status")
         .addClass("success")
         .removeClass("failure")
-        .text("saved");
+        .text("saved")
+        .show();
     }, function() {
       userNotesTextarea
         .parent()
         .find("span.save-status")
         .addClass("failure")
         .removeClass("success")
-        .text("failed");
+        .text("failed")
+        .show();
     });
   };
 
-  $("table.users td.user-notes-more textarea").on("keyup", debounce(setUserNotes, 1000));
+  $("table.users td.user-notes-more textarea")
+    .on("keyup", debounce(setUserNotes, 1000))
+    .on("keydown", function(e) {
+      $(this)
+        .parent()
+        .find("span.save-status")
+        .removeClass("success")
+        .removeClass("failure")
+        .text("").
+        hide();
+    });
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
