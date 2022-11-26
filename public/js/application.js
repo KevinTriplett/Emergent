@@ -124,7 +124,7 @@ function debounce(func, wait, immediate) {
 // UTILS
 var convertTimeFromUTC = function(utc) {
   if (!utc) return;
-  var dt = (new Date(utc)).toLocaleString("en-GB");
+  var dt = (new Date(utc)).toLocaleString("en-GB").substring(0,17);
   // convert to iso 8601 format
   var t = dt.split(", ");
   var d = t.shift();
