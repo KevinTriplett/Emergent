@@ -508,7 +508,7 @@
             var joined = new Date(date.getTime() + this.time);
             strings.push(renderTime(joined, this.settings));
         }
-        this.elem.value = strings.join(', ');
+        this.elem.value = strings.join(' ');
 
         // KMT
         const event = new Event('change');
