@@ -30,7 +30,7 @@
         %td.user-notes.more
           %i{ class: "bi bi-arrow-down-square" }
       %tr.more
-        %td.user-questions-more{ colspan: 7, data: { id: u.id } }
+        %td.user-questions-more{ colspan: 8, data: { id: u.id } }
           %ol
             - u.questions_responses.split(" -:- ").each do |qna|
               - q, a = *qna.split("\\")
@@ -39,6 +39,6 @@
                 %br
                 = "Answer: #{a}"
       %tr.more
-        %td.user-notes-more{ colspan: 7, data: { id: u.id } }
+        %td.user-notes-more{ colspan: 8, data: { id: u.id } }
           %textarea{ cols: "40" }= u.notes
           %span.save-status
