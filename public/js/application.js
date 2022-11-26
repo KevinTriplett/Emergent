@@ -127,6 +127,23 @@ var getUserGreeter = function(userRow) {
   return userGreeter == "make me greeter!" ? null : userGreeter;
 }
 
+var getUserNotes = function(userRow) {
+  return userRow.next().next().find("td.user-notes-more textarea").val();
+}
+
+var getPatchData = function(userRow) {
+  var userNotes = getUserNotes(userRow);
+  var userGreeter = getUserGreeter(userRow);
+  var userMeeting = userRow.find("td.user-meeting-datetime input.datetime-picker").val();
+  var userStatus = userRow.find("td.user-status").text();
+  return {
+    notes: userNotes,
+    greeter: userGreeter,
+    welcome_timestamp: userMeeting,
+    status: userStatus
+  };
+}
+
 ////////////////////////////////////////////////////
 // PATCH
 var patch = function(userId, data, success, error) {
@@ -157,11 +174,41 @@ var prevGreeter = getCookie("greeter-name");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 
 ////////////////////////////////////////////////////
-// EVENT LISTENERS
+// PAGE INITIALIZATION
 document.addEventListener("turbo:load", function() {
   if (loaded) return; // set listeners only once
   loaded = true;
-  convertUTC();
+  convertTimeFromUTC(); // convert UTC displed times to local time
+
+  ////////////////////////////////////////////////////
+  // MEETING DATETIME PICKER LISTENER
+  var setUserMeeting = function(e) {
+    var userRow = $(this).closest("tr");
+    var userId = userRow.data("id");
+    var data = getPatchData(userRow);
+    data.status = "Scheduled";
+    patch(userId, data, function() {
+      if (data.welcome_timestamp == "") return;
+      userRow.find("td.user-status a").text(data.status);
+    }, function() {
+      alert("Could not set meeting date and time - ask Kevin");
+    });
+  }
+
+  $( ".datetime-picker" ).on("click", function(e) {
+    var el = $(this);
+    if (el.data("picker")) return; // return if datetime picker already instantiated
+    var userRow = el.closest("tr");
+    var userId = userRow.data("id");
+    var options = {
+      showTime: true,
+      timeFormat: "HH:MM"
+    };
+    var css = `tr[data-id="${userId}"] input.datetime-picker`;
+    el.data("picker", new dtsel.DTS(css, options));
+    el.blur(); // now simulate opening the picker
+    el.focus();
+  }).on("change", debounce(setUserMeeting, 1000));
 
   ////////////////////////////////////////////////////
   // MORE EVENT LISTENERS
@@ -175,19 +222,9 @@ document.addEventListener("turbo:load", function() {
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
   var setUserNotes = function(e) {
-    var userRow = $(e.currentTarget).closest("tr").prev().prev();
+    var userRow = $(this).closest("tr").prev().prev();
     var userId = userRow.data("id");
-    var userNotesTextarea = $(e.currentTarget);
-    var userNotes = userNotesTextarea.val().trim();
-    var userGreeter = getUserGreeter(userRow);
-    var userMeeting = userRow.find("td.user-meeting-datetime").text();
-    var userStatus = userRow.find("td.user-status a").text();
-    var data = {
-      notes: userNotes,
-      greeter: userGreeter,
-      welcome_timestamp: userMeeting,
-      status: userStatus
-    }
+    var data = getPatchData(userRow);
     patch(userId, data, function() {
       userNotesTextarea
         .parent()
@@ -211,15 +248,8 @@ document.addEventListener("turbo:load", function() {
   // GREETER EVENT LISTENER
   var setUserGreeter = function(userRow, userGreeter) {
     var userId = userRow.data("id");
-    var userNotes = userRow.find("td.user-notes-more textarea").text();
-    var userMeeting = userRow.find("td.user-meeting-datetime").text();
-    var userStatus = userRow.find("td.user-status a").text();
-    var data = {
-      notes: userNotes,
-      greeter: userGreeter,
-      welcome_timestamp: userMeeting,
-      status: userStatus
-    };
+    var data = getPatchData(userRow);
+    data.greeter = userGreeter;
     patch(userId, data, function() {
       userRow.find("td.user-greeter a").text(userGreeter);
     }, function() {
@@ -243,15 +273,8 @@ document.addEventListener("turbo:load", function() {
   // STATUS EVENT LISTENER
   var setUserStatus = function(userRow, userStatus) {
     var userId = userRow.data("id");
-    var userNotes = userRow.find("td.user-notes-more textarea").text();
-    var userMeeting = userRow.find("td.user-meeting-datetime").text();
-    var userGreeter = getUserGreeter(userRow);
-    var data = {
-      notes: userNotes,
-      greeter: userGreeter,
-      welcome_timestamp: userMeeting,
-      status: userStatus
-    };
+    var data = getPatchData(userRow);
+    data.status = userStatus;
     patch(userId, data, function() {
       userRow.find("td.user-status a").text(userStatus);
     }, function() {
@@ -263,39 +286,8 @@ document.addEventListener("turbo:load", function() {
     e.preventDefault();
     var userStatus = prompt("Enter new status");
     if (!userStatus) return;
-
     var userRow = $(this).closest("tr");
     setUserStatus(userRow, userStatus);
-  });
-
-  ////////////////////////////////////////////////////
-  // MEETING EVENT LISTENER
-  var setUserMeeting = function(userRow, userMeeting) {
-    var userId = userRow.data("id");
-    var userNotes = userRow.find("td.user-notes-more textarea").text();
-    var userStatus = userRow.find("td.user-status").text();
-    var userGreeter = getUserGreeter(userRow);
-    var data = {
-      notes: userNotes,
-      greeter: userGreeter,
-      welcome_timestamp: userMeeting,
-      status: userStatus
-    };
-    patch(userId, data, function() {
-      userRow.find("td.user-meeting-datetime a").text(userMeeting);
-    }, function() {
-      alert("Could not change meeting - ask Kevin");
-    });
-  }
-
-  $("table.users td.user-meeting-datetime a").on("click", function(e) {
-    e.preventDefault();
-    var userMeeting = prompt("Enter local time and date like Jan 12, 2023 3PM");
-    if (!userMeeting) return;
-
-    var userRow = $(this).closest("tr");
-    setUserMeeting(userRow, userMeeting);
-    setUserStatus(userRow, "Scheduled");
   });
 
   ////////////////////////////////////////////////////

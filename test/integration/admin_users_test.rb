@@ -35,7 +35,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td.user-greeter", user.greeter
       assert_select "td.user-email", user.email
       assert_select "td.user-status", user.status
-      assert_select "td.user-meeting-datetime a", user.welcome_timestamp.short_date_at_time
+      assert_select "td.user-meeting-datetime input[value=?]", user.welcome_timestamp.picker_datetime
       assert_select "td.user-request-date", user.request_timestamp.dow_short_date
       assert_select "td.user-questions.more i.bi-arrow-down-square", nil
       assert_select "td.user-notes.more i.bi-arrow-down-square", nil

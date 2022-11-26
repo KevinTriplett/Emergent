@@ -27,12 +27,24 @@ function optTimeAndDay(tzString) {
   };
 }
 
+function optPickerDateTime(tzString) {
+  return {
+    timeZone: tzString,
+    hour12: false,
+    year:"numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  };
+}
+
 function getFormat(className, tzString) {
   switch(className) {
   case "user-request-date":
     return optShortDate(tzString)
-  case "user-meeting-date":
-    return optTimeAndDay(tzString)
+  case "datetime-picker":
+    return optPickerDateTime(tzString)
   }
   // default
   return {
@@ -44,17 +56,35 @@ function getFormat(className, tzString) {
 
 function convertTZ(datetime, className, tzString) {
   date = new Date((typeof datetime == "string" ? new Date(datetime) : datetime));
-  return date.toLocaleString("en-US", getFormat(className, tzString));   
+  if (date == "Invalid Date") return date;
+  return date.toLocaleString("en-US", getFormat(className, tzString)).replace(/\//g, "-");
 }
 
-function convertUTC() {
+function convertElementTimeFromUTC(el) {
+  var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  el = $(el);
+  var datetime = (el.val() || el.text()).trim();
+  var className = el.attr("class").split(" ")[0];
+  datetime = convertTZ(datetime, className, timezone);
+  if (datetime == "Invalid Date") return;
+  el.text(datetime);
+}
+
+function convertTimeFromUTC() {
+  $(".utc-time").each( function(i, dom) {
+    convertElementTimeFromUTC(dom);
+  });
+};
+
+function convertTimeToUTC() {
   var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   $(".utc-time").each( function(i, dom){
     dom = $(dom);
-    datetime = dom.text().trim();
+    var link = dom.find("a");
+    datetime = link.text().trim();
     className = dom.attr("class").split(" ")[0];
     datetime = convertTZ(datetime, className, timezone);
     if (datetime === "Invalid Date") return;
-    dom.text(datetime);
+    link.text(datetime);
   })
 };
