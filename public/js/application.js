@@ -123,7 +123,7 @@ function debounce(func, wait, immediate) {
 ////////////////////////////////////////////////////
 // UTILS
 var convertTimeFromUTC = function(utc) {
-  if (!utc) return;
+  if (!utc) return null;
   var dt = (new Date(utc)).toLocaleString("en-GB").substring(0,17);
   // convert to iso 8601 format
   var t = dt.split(", ");
@@ -134,7 +134,7 @@ var convertTimeFromUTC = function(utc) {
 
 var convertTimeToUTC = function(datetime) {
   datetime = new Date(datetime)
-  if (datetime == "Invalid Date") return;
+  if (datetime == "Invalid Date") return null;
   return datetime.toISOString();
 }
 
