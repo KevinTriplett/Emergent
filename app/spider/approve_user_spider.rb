@@ -47,7 +47,7 @@ class ApproveUserSpider < EmergeSpider
       next unless row.css("a.navigate[href='#{ApproveUserSpider.user_profile_url}']").count == 0
       puts "FOUND USER, ATTEMPTING TO APPROVE"
       css = "a.invite-list-item-approve-button"
-      row.find(:css, css).click
+      row.find(css).click
       sleep 1
       # double check if possible that the approve button is no longer visible
       break
