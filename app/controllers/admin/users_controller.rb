@@ -7,7 +7,8 @@ module Admin
     end
   
     def index
-      @users = User.order(request_timestamp: :desc).all
+      date = ("2022-11-18").to_date
+      @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
       @update_url = admin_users_url
       @token = form_authenticity_token
     end
