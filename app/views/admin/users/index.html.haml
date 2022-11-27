@@ -18,7 +18,7 @@
     - @users.each do |u|
       %tr{ data: {id: u.id}}
         %td.user-name
-          = link_to u.name, u.profile_url
+          = u.profile_url ? link_to(u.name, u.profile_url) : u.name
         %td.user-greeter
           = link_to(u.greeter || "make me greeter!", "#", class: "user-greeter")
         %td.user-email
