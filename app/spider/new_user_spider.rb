@@ -134,14 +134,14 @@ class NewUserSpider < Kimurai::Base
 
   def sign_in
     wait_until("body.auth-sign_in")
-    # puts "SIGNING IN"
-    browser.fill_in "Email", with: "kt@kevintriplett.com"
+    puts "SIGNING IN"
+    browser.fill_in "Email", with: Rails.configuration.mn_username
     sleep 1
-    browser.fill_in "Password", with: "XV9NN79P4xNbGLXPdo"
+    browser.fill_in "Password", with: Rails.configuration.mn_password
     browser.click_link "Sign In"
     sleep 1
     wait_while(".pace-running")
-    # puts "SUCCESS!"
+    puts "SUCCESS!"
   end
 
   def create_users(users)
