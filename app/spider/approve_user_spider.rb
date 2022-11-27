@@ -39,7 +39,7 @@ class ApproveUserSpider < EmergeSpider
 
   # TODO: fill in missing information for users after they join
   def approve_user(response, url:, data: {})
-    puts "LOOKING FOR USER WITH PROFILE URL #{user_profile_url}"
+    puts "LOOKING FOR USER WITH PROFILE URL #{ApproveUserSpider.user_profile_url}"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
 
