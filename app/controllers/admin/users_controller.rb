@@ -20,5 +20,13 @@ module Admin
       end
       return head(:bad_request)
     end
+
+    def approve_user
+      user = User.find(params[:id])
+      ApproveUserSpider.user_profile_url = user.profile_url
+      ApproveUserSpider.crawl!
+      user.update!(status: "whatever")
+      redirect_to admin_users_url
+    end
   end
 end

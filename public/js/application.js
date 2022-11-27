@@ -212,6 +212,10 @@ document.addEventListener("turbo:load", function() {
 
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
+  $("a.user-approve").on("click", function(e) {
+    loaded = false;
+  });
+
   ////////////////////////////////////////////////////
   // MEETING DATETIME PICKER LISTENER
   var setUserMeeting = function(e) {
