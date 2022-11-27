@@ -5,7 +5,7 @@ set :application, "Emergent"
 set :repo_url, "git@github.com:KevinTriplett/Emergent.git"
 
 # Default branch is :master
-set :branch, 'main'
+set :branch, 'approvals'
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, "/home/deploy/#{fetch :application}"
