@@ -28,21 +28,21 @@ class EmergeSpider < Kimurai::Base
     i = 10
     sleep 1
     while response_has(css) || i < 0
-      # puts "WAITING WHILE #{css} ..."
+      puts "WAITING WHILE #{css} ..."
       sleep 1
       i -= 1
     end
-    # puts "NEVER WENT AWAY!" if response_has(css)
+    puts "NEVER WENT AWAY!" if response_has(css)
   end
 
   def wait_until(css)
     i = 10
     sleep 1
     until response_has(css) || i < 0
-      # puts "WAITING UNTIl #{css} ..."
+      puts "WAITING UNTIl #{css} ..."
       sleep 1
       i -= 1
     end
-    # puts "COULD NOT FIND IT!" unless response_has(css)
+    puts "COULD NOT FIND IT!" unless response_has(css)
   end
 end
