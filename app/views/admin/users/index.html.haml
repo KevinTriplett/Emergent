@@ -27,7 +27,7 @@
         %td.user-meeting-datetime
           - datetime = u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
           %input.datetime-picker.utc-time{ type: "text", value: datetime }
-        %td.user-request-date= u.request_timestamp.dow_short_date
+        %td.user-request-date= u.request_timestamp.short_date
         %td.user-questions.more
           %i{ class: "bi bi-arrow-down-square" }
         %td.user-notes.more
