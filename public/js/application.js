@@ -374,7 +374,8 @@ document.addEventListener("turbo:load", function() {
     };
     var body = emailTemplates[templateIndex](data);
     body = encodeURIComponent(body);
-    var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
+    var subject = "Scheduling your welcome Zoom to Emergent Commons 👋🏼"
+    // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
     window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
     setUserStatus(userRow, "Invite Sent");
   });
