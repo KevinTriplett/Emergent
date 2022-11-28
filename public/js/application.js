@@ -203,6 +203,13 @@ document.addEventListener("turbo:load", function() {
   loaded = true;
 
   ////////////////////////////////////////////////////
+  // OPEN ALL NOTES THAT ARE NOT EMPTY
+  $(".user-notes-more textarea").each( function(i, el) {
+    el = $(el);
+    if (el.val()) el.closest("tr").show();
+  });
+
+  ////////////////////////////////////////////////////
   // CONVERT ALL UTC TIMES TO LOCAL
   $(".utc-time").each( function(i, el) {
     el = $(el);
