@@ -26,7 +26,6 @@
      * @property {Number} time
      * @property {Number} hours
      * @property {Number} minutes
-     * @property {Number} seconds
      * @property {BodyType} bodyType
      * @property {Boolean} visible
      * @property {Number} cancelBlur
@@ -56,7 +55,7 @@
         var defaultConfig = {
             defaultView: BODYTYPES[0],
             dateFormat: "yyyy-mm-dd",
-            timeFormat: "HH:MM:SS",
+            timeFormat: "HH:MM",
             showDate: true,
             showTime: false,
             paddingX: 5,
@@ -78,7 +77,7 @@
         this.dateFormat = this.config.dateFormat;
         this.timeFormat = this.config.timeFormat;
         this.dateFormatRegEx = new RegExp("yyyy|yy|mm|dd", "gi");
-        this.timeFormatRegEx = new RegExp("hh|mm|ss|a", "gi");
+        this.timeFormatRegEx = new RegExp("hh|mm|a", "gi");
         this.inputElem = elem;
         this.dtbox = null;
         this.setup();
@@ -162,7 +161,6 @@
             day: getterSetter("day", 0),
             hours: getterSetter("hours", 0),
             minutes: getterSetter("minutes", 0),
-            seconds: getterSetter("seconds", 0),
             cancelBlur: getterSetter("cancelBlur", 0),
             addHandler: {value: addHandler},
             month_long: {
@@ -184,8 +182,7 @@
                 get: function() {
                     var hours = self.hours * 60 * 60 * 1000;
                     var minutes = self.minutes * 60 * 1000;
-                    var seconds = self.seconds * 1000;
-                    return  hours + minutes + seconds;
+                    return  hours + minutes;
                 }
             },
         });
@@ -241,7 +238,6 @@
                 self.day = value.getDate();
                 self.hours = value.getHours();
                 self.minutes = value.getMinutes();
-                self.seconds = value.getSeconds();
 
                 if (self.settings.config.showDate) {
                     self.setHeaderContent();
@@ -388,9 +384,9 @@
         var grid = this.el.body.children[0];
         var classes = ["cal-cell-prev", "cal-cell-next", "cal-value"];
         if ("DAYS" == this.bodyType) {
-            var oneDayMilliSecs = 24 * 60 * 60 * 1000;
             var start = new Date(this.year, this.month, 1);
-            var adjusted = new Date(start.getTime() - oneDayMilliSecs * start.getDay());
+            var adjusted = start;
+            adjusted.setDate(start.getDate() - start.getDay());
 
             grid.children[6].style.display = "";
             for (var i = 1; i < 7; i++) {
@@ -410,7 +406,7 @@
                     } else if (isEqualDate(adjusted, this.value)){
                         cell.classList.add(classes[2]);
                     }
-                    adjusted = new Date(adjusted.getTime() + oneDayMilliSecs);
+                    adjusted.setDate( adjusted.getDate() + 1 );
                 }
             }
         } else if ("YEARS" == this.bodyType) {
@@ -477,7 +473,6 @@
             }
             makeRow('HH:', 'hours', 23, handler);
             makeRow('MM:', 'minutes', 59, handler);
-            // makeRow('SS:', 'seconds', 59, handler); // KMT
 
             footer.classList.add("cal-footer");
             Object.defineProperty(this.el, "footer", { value: footer });
@@ -493,9 +488,6 @@
             footer.children[0].children[1].innerText = padded(this.hours, 2);
             footer.minutes.value = this.minutes;
             footer.children[1].children[1].innerText = padded(this.minutes, 2);
-            // KMT
-            // footer.seconds.value = this.seconds;
-            // footer.children[2].children[1].innerText = padded(this.seconds, 2);
         }
     }
 
@@ -793,8 +785,8 @@
             throw new TypeError('timeFormat not found (' + settings.timeFormat + ')');
         }
 
-        /** @type {{hh:number=, mm:number=, ss:number=, a:string=}} */
-        var formatObj = {hh:null, mm:null, ss:null, a:null};
+        /** @type {{hh:number=, mm:number=, a:string=}} */
+        var formatObj = {hh:null, mm:null, a:null};
         var formatObj = parseData(value, format, formatObj, function(hooks){
             hooks.updateValue.add("a", function(val, data, start, stop){
                 return value.slice(start, start + 2);
@@ -802,7 +794,6 @@
         });
         var hours = formatObj["hh"].value;
         var minutes = formatObj["mm"].value;
-        var seconds = formatObj["ss"].value;
         var am_pm = formatObj["a"].value;
         var am_pm_lower = am_pm ? am_pm.toLowerCase() : am_pm;
         if (am_pm && ["am", "pm"].indexOf(am_pm_lower) > -1){
@@ -812,7 +803,7 @@
                 hours += 12;
             }
         }
-        var time = hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000;
+        var time = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
         return time;
     }
 
@@ -849,7 +840,6 @@
         var format = Format.toLowerCase();
         var hours = value.getHours();
         var minutes = value.getMinutes();
-        var seconds = value.getSeconds();
         var am_pm = null;
         var hh_am_pm = null;
         if (format.indexOf('a') > -1) {
@@ -860,7 +850,6 @@
         var formatObj = {
             hh: am_pm ? hh_am_pm : (hours < 10 ? "0" + hours : hours),
             mm: minutes < 10 ? "0" + minutes : minutes,
-            ss: seconds < 10 ? "0" + seconds : seconds,
             a: am_pm,
         };
         var str = format.replace(settings.timeFormatRegEx, function (found) {
