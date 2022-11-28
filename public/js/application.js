@@ -247,7 +247,16 @@ document.addEventListener("turbo:load", function() {
     el.data("picker", new dtsel.DTS(css, options));
     el.blur(); // now simulate opening the picker
     el.focus();
-  }).on("change", debounce(setUserMeeting, 1000));
+  }).on("change", debounce(setUserMeeting, 1000))
+  .on("keydown", function(e) {
+    switch(e.key) {
+    case "Esc":
+    case "Escape":
+    case "Enter":
+    case "Return":
+      $(this).blur();
+    }
+  });
 
   ////////////////////////////////////////////////////
   // MORE EVENT LISTENERS
