@@ -24,11 +24,11 @@ class ApproveUserSpider < EmergeSpider
   # class level instance variable, not a class variable
   # ref https://stackoverflow.com/questions/21122691/attr-accessor-on-class-variables
   class << self
-    attr_accessor :user_profile_url
+    attr_accessor :user_email
   end
 
   def parse(response, url:, data: {})
-    puts "APPROVING USER WITH PROFILE URL #{ApproveUserSpider.user_profile_url}"
+    puts "APPROVING USER WITH EMAIL #{ApproveUserSpider.user_email}"
     sign_in
     report_failure_unless_response_has("body.communities-app")
     # browser.save_screenshot
@@ -37,20 +37,14 @@ class ApproveUserSpider < EmergeSpider
     puts "COMPLETED SUCCESSFULLY"
   end
 
-  # TODO: fill in missing information for users after they join
   def approve_user(response, url:, data: {})
-    puts "LOOKING FOR USER WITH PROFILE URL #{ApproveUserSpider.user_profile_url}"
-    row_css = ".invite-list-container tr.invite-request-list-item"
-    wait_until(row_css)
+    puts "ATTEMPTING TO FIND AND CLICK APPROVE FOR USER WITH EMAIL #{ApproveUserSpider.user_email}"
+    css = ".invite-list-container tr.invite-request-list-item"
+    wait_until(rcss)
 
-    browser.current_response.css(row_css).each_with_index do |row, idx|
-      next unless row.css("a.navigate[href='#{ApproveUserSpider.user_profile_url}']").count == 0
-      puts "FOUND USER, ATTEMPTING TO APPROVE"
-      css = "a.invite-list-item-approve-button"
-      row.first(:css, css).click
-      sleep 1
-      # double check if possible that the approve button is no longer visible
-      break
-    end
+    css += ":has(.invite-list-item-email-text[title='#{ApproveUserSpider.user_email}'])"
+    css += " a.invite-list-item-approve-button"
+    PUTS "LOOKING FOR #{css}"
+    browser.find(:css, css).click
   end
 end
