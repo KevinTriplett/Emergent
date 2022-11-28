@@ -15,7 +15,7 @@
 - [X] add datetime for welcome meeting to users
 - [X] ability to approve new requests
 - [X] move spider puts to logger.debugger (removed puts for now)
-- [ ] change email subject line to correct wording
+- [X] change email subject line to correct wording
 - [ ] automate database backup (see https://github.com/backup/backup)
 - [ ] test rake task somehow
 - [ ] import members via rake task
