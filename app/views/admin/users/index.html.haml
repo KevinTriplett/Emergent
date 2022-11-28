@@ -41,6 +41,12 @@
                 %span.question= q
                 %br
                 %span.answer= a
+          - if u.status == "Pending"
+            = link_to("Approve", |
+              admin_approve_user_path(u.id),  |
+              class: "btn btn-primary user-approve", |
+              data: { turbo_method: "post", turbo_confirm: "Confirm you want to approve (takes a few minutes)" })
+
       %tr.more
         %td.user-notes-more{ colspan: 8, data: { id: u.id } }
           %textarea{ cols: "40" }= u.notes

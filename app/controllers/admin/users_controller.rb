@@ -20,5 +20,13 @@ module Admin
       end
       return head(:bad_request)
     end
+
+    def approve_user
+      user = User.find(params[:id])
+      ApproveUserSpider.user_email = user.email
+      ApproveUserSpider.crawl!
+      user.update!(status: "Joined!")
+      redirect_to admin_users_url
+    end
   end
 end

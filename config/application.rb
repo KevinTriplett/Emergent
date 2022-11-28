@@ -23,6 +23,6 @@ module Emergent
     config.admin_name = ENV["ADMIN_NAME"]
     config.admin_password = ENV["ADMIN_PASSWORD"]
     config.mn_username = ENV["MN_USERNAME"]
-    config.mn_password = ENV["MN_PASSWORD"]    
+    config.mn_password = ENV["MN_PASSWORD"]
   end
 end
