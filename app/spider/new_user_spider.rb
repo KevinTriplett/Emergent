@@ -145,13 +145,11 @@ class NewUserSpider < Kimurai::Base
   end
 
   def create_users(users)
-    users.each_with_index do |user, user_count|
-      if User.find_by_email(user[:email])
-        # puts "SKIPPING EXISTING MEMBER: #{user[:name]}"
-        next
-      end
-      # puts "SAVING (#{user_count} of #{@@new_user_count}): #{user[:name]}"
-      User.create! user
+    users.each do |u|
+      user = User.find_by_email(u[:email])
+      next if user && user.profile_url
+      User.update(profile_url: u[:profile_url]) if user && !user.profile_url
+      User.create!(u) unless user
     end
   end
 
