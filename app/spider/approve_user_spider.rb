@@ -40,7 +40,7 @@ class ApproveUserSpider < EmergeSpider
   def approve_user(response, url:, data: {})
     puts "ATTEMPTING TO FIND AND CLICK APPROVE FOR USER WITH EMAIL #{ApproveUserSpider.user_email}"
     css = ".invite-list-container tr.invite-request-list-item"
-    wait_until(rcss)
+    wait_until(css)
 
     css += ":has(.invite-list-item-email-text[title='#{ApproveUserSpider.user_email}'])"
     css += " a.invite-list-item-approve-button"
