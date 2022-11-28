@@ -44,7 +44,7 @@ class ApproveUserSpider < EmergeSpider
 
     css += ":has(.invite-list-item-email-text[title='#{ApproveUserSpider.user_email}'])"
     css += " a.invite-list-item-approve-button"
-    PUTS "LOOKING FOR #{css}"
+    puts "LOOKING FOR #{css}"
     browser.find(:css, css).click
   end
 end
