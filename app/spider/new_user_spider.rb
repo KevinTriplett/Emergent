@@ -155,6 +155,7 @@ class NewUserSpider < Kimurai::Base
 
   def scroll_to_end(css, modal_css)
     prev_count = browser.current_response.css(css).count
+    return prev_count # comment out to enable infinite scroll
     return if prev_count == 0
     new_count = 0
     
