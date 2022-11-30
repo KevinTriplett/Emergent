@@ -143,7 +143,7 @@ class NewUserSpider < EmergeSpider
 
   def scroll_to_end(css, modal_css)
     prev_count = browser.current_response.css(css).count
-    return prev_count # comment to scroll for all members
+    # return prev_count # comment to scroll for all members
     return if prev_count == 0
     new_count = 0
     
