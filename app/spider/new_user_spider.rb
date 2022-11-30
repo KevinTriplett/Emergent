@@ -135,8 +135,8 @@ class NewUserSpider < EmergeSpider
   def create_users(users)
     users.each do |u|
       user = User.find_by_email(u[:email])
-      next if user && user.profile_url
-      User.update(profile_url: u[:profile_url]) if user && !user.profile_url
+      # next if user && user.profile_url
+      User.update(profile_url: u[:profile_url]) if user #&& !user.profile_url
       User.create!(u) unless user
     end
   end
