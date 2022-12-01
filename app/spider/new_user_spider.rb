@@ -4,7 +4,6 @@ class NewUserSpider < EmergeSpider
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   @name = "new_user_spider"
   @engine = :selenium_chrome
-  @start_urls = ["https://emergent-commons.mn.co/sign_in"]
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
@@ -20,20 +19,31 @@ class NewUserSpider < EmergeSpider
       delay: 2..4
     }
   }
-  @@max_new_users = Rails.env.production? ? 100 : 50
-  @@new_user_count = 0
 
-  def parse(response, url:, data: {})
-    NewUserSpider.logger.info "STARTING"
-    sign_in
-    report_failure_unless_response_has("body.communities-app")
-    # browser.save_screenshot
-    request_to :parse_requests_to_join, url: "https://emergent-commons.mn.co/settings/invite/requests"
-    # browser.save_screenshot
-    NewUserSpider.logger.info "COMPLETED SUCCESSFULLY"
+  # class level instance variable, not a class variable
+  # ref https://stackoverflow.com/questions/21122691/attr-accessor-on-class-variables
+  class << self
+    attr_accessor :check_for_new_members
   end
 
-  # TODO: fill in missing information for users after they join
+  def wait_for_trigger
+    NewUserSpider.check_for_new_members = false
+    NewUserSpider.logger.info "STARTING"
+    request_to sign_in, url: "https://emergent-commons.mn.co/sign_in"
+    report_failure_unless_response_has("body.communities-app")
+    NewUserSpider.logger.info "ENTERING LOOP"
+    loop do
+      if NewUserSpider.check_for_new_members
+        request_to :parse_requests_to_join, url: "https://emergent-commons.mn.co/settings/invite/requests"
+        NewUserSpider.check_for_new_members = false
+      else
+        sleep 10
+      end
+    end
+    NewUserSpider.logger.info "EXITING LOOP"
+    ApproveUserSpider.logger.info "COMPLETED SUCCESSFULLY"
+  end
+
   def parse_requests_to_join(response, url:, data: {})
     NewUserSpider.logger.debug "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
@@ -143,7 +153,7 @@ class NewUserSpider < EmergeSpider
 
   def scroll_to_end(css, modal_css)
     prev_count = browser.current_response.css(css).count
-    # return prev_count # comment to scroll for all members
+    return prev_count # comment to scroll for all members
     return if prev_count == 0
     new_count = 0
     
@@ -156,7 +166,7 @@ class NewUserSpider < EmergeSpider
       sleep 10
       new_count = browser.current_response.css(css).count
       NewUserSpider.logger.debug "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
-      break if new_count == prev_count || new_count >= @@max_new_users
+      break if new_count == prev_count
       prev_count = new_count
     end
 
