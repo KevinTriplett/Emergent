@@ -156,7 +156,7 @@ class NewUserSpider < EmergeSpider
       sleep 10
       new_count = browser.current_response.css(css).count
       NewUserSpider.logger.debug "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
-      break if new_count == prev_count # || new_count >= @@max_new_users
+      break if new_count == prev_count || new_count >= @@max_new_users
       prev_count = new_count
     end
 
