@@ -12,6 +12,7 @@ module Admin
       @update_url = admin_users_url
       @token = form_authenticity_token
       @options = [
+        "Pending",
         "Joined!",
         "1st Email Sent",
         "2nd Email Sent",
