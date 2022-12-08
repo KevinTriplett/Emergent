@@ -26,7 +26,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Greeter"
       assert_select "th", "Email"
       assert_select "th", "Status"
-      assert_select "th.meeting", "Meeting Schedule\n\n(GMT)"
+      assert_select "th.meeting", "Date Scheduled\n\n(GMT)"
       assert_select "th", "Request Date"
       assert_select "th", "Answers"
       assert_select "th", "More"
@@ -34,9 +34,9 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td.user-name", user.name
       assert_select "td.user-greeter", user.greeter
       assert_select "td.user-email", user.email
-      assert_select "td.user-status", user.status
+      assert_select "td.user-status select option[selected='selected']", user.status
       assert_select "td.user-meeting-datetime input[value=?]", user.welcome_timestamp.picker_datetime
-      assert_select "td.user-request-date", user.request_timestamp.dow_short_date
+      assert_select "td.user-request-date", user.request_timestamp.short_date
       assert_select "td.user-questions.more i.bi-arrow-down-square", nil
       assert_select "td.user-notes.more i.bi-arrow-down-square", nil
       assert_select "tr.more td.user-notes-more textarea", user.notes

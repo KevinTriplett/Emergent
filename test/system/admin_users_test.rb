@@ -74,31 +74,21 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = create_user(status: "Joined!")
       old_status = user.status
 
       visit admin_users_path
       assert_current_path admin_users_path
 
-      assert_selector "td.user-status a", text: user.status
+      assert_selector "td.user-status span.ui-selectmenu-text", text: user.status
 
-      message = dismiss_prompt do
-        click_link(user.status)
-      end
-      assert_equal "Enter new status", message
-      
-      sleep 1
-      user.reload
-      assert_equal old_status, user.status
-
-      new_status = "panic"
-      accept_prompt(with: new_status) do
-        click_link(user.status)
-      end
+      find("td.user-status span.ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: "Completed", exact_text: true).click
+      assert_selector "td.user-status span.ui-selectmenu-text", text: "Completed"
 
       sleep 1
       user.reload
-      assert_equal new_status, user.status
+      assert_equal "Completed", user.status
     end
   end
 
@@ -110,7 +100,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_users_path
       assert_current_path admin_users_path
 
-      find("td.user-notes.more i").click
+      # find("td.user-notes.more i").click -- do not have to click if notes is <> ""
       notes_css = "tr.more td.user-notes-more textarea"
       assert_selector notes_css, text: old_notes
 
@@ -172,9 +162,6 @@ class AdminUsersTest < ApplicationSystemTestCase
       accept_prompt(with: "1") do
         click_link(user.email)
       end
-      sleep 1
-      user.reload
-      assert_equal "Invite Sent", user.status
     end
   end
 

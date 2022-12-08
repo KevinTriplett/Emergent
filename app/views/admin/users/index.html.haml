@@ -8,7 +8,7 @@
       %th Email
       %th Status
       %th.meeting
-        Meeting Schedule
+        Date Scheduled
         %br
         %span.tzinfo (GMT)
       %th Request Date
@@ -23,7 +23,11 @@
           = link_to(u.greeter || "make me greeter!", "#", class: "user-greeter")
         %td.user-email
           = link_to u.email, "mailto:#{ u.email }"
-        %td.user-status= link_to(u.status, "#", class: "user-status")
+        %td.user-status
+          %select
+            - @options.each do |o|
+              - selected = (o == u.status ? "selected" : nil)
+              %option{ selected: selected }= o
         %td.user-meeting-datetime
           - datetime = u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
           %input.datetime-picker.utc-time{ type: "text", value: datetime }

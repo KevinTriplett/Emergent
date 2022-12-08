@@ -11,6 +11,21 @@ module Admin
       @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
       @update_url = admin_users_url
       @token = form_authenticity_token
+      @options = [
+        "Joined!",
+        "1st Email Sent",
+        "2nd Email Sent",
+        "Emailing",
+        "No Response",
+        "Rescheduling",
+        "Follow Up",
+        "Will Call",
+        "Greet Scheduled",
+        "Declined",
+        "Welcomed",
+        "Posted Intro",
+        "Completed"
+      ]
     end
 
     def update_user

@@ -56,7 +56,7 @@ def create_user_with_result(params = {})
         welcome_timestamp: params[:welcome_timestamp] || "07/12/2022",
         request_timestamp: params[:request_timestamp] || "08/12/2022",
         join_timestamp: params[:join_timestamp] || "09/12/2022",
-        status: params[:status] || "existing",
+        status: params[:status] || "Joined!",
         location: params[:location] || "Austin, Texas",
         questions_responses: params[:questions_responses] || "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a",
         notes: params[:notes] || "this are notes",

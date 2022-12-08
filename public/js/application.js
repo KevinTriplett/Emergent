@@ -151,7 +151,7 @@ var getPatchData = function(userRow) {
   var userNotes = getUserNotes(userRow);
   var userGreeter = getUserGreeter(userRow);
   var userMeeting = userRow.find("td.user-meeting-datetime input.datetime-picker").val();
-  var userStatus = userRow.find("td.user-status").text();
+  var userStatus = userRow.find("td.user-status select").val();
   userMeeting = convertTimeToUTC(userMeeting);
   return {
     notes: userNotes,
@@ -335,20 +335,19 @@ document.addEventListener("turbo:load", function() {
   var setUserStatus = function(userRow, userStatus) {
     var userId = userRow.data("id");
     var data = getPatchData(userRow);
-    data.status = userStatus;
+    data.status = userStatus || data.status;
     patch(userId, data, function() {
-      userRow.find("td.user-status a").text(userStatus);
+      userRow.find("td.user-status select").val(data.status);
     }, function() {
       alert("Could not change status - ask Kevin");
     });
   }
 
-  $("table.users td.user-status a").on("click", function(e) {
-    e.preventDefault();
-    var userStatus = prompt("Enter new status");
-    if (!userStatus) return;
-    var userRow = $(this).closest("tr");
-    setUserStatus(userRow, userStatus);
+  $(".user-status select").selectmenu({
+    change: function(e) {
+      var userRow = $(this).closest("tr");
+      setUserStatus(userRow, null);
+    }
   });
 
   ////////////////////////////////////////////////////
@@ -386,6 +385,5 @@ document.addEventListener("turbo:load", function() {
     var subject = "Scheduling your welcome Zoom to Emergent Commons 👋🏼"
     // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
     window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
-    setUserStatus(userRow, "Invite Sent");
   });
 });
