@@ -26,7 +26,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Greeter"
       assert_select "th", "Email"
       assert_select "th", "Status"
-      assert_select "th.meeting", "Date Scheduled\n\n(GMT)"
+      assert_select "th.meeting", "When\n\n(GMT)"
       assert_select "th", "Request Date"
       assert_select "th", "Answers"
       assert_select "th", "More"
