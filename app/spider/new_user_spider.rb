@@ -59,7 +59,7 @@ class NewUserSpider < EmergeSpider
 
       if row.css("a.invite-list-item-status-text").count == 0
         status = "Pending"
-        profile_url = nil
+        chat_url = profile_url = member_id = nil
         # for new requests, just click the nice button
         css += " td.invite-list-item-status a.invite-list-item-view-answers-button"
         NewUserSpider.logger.debug "CLICKING THE ANSWER BUTTON"
@@ -67,6 +67,9 @@ class NewUserSpider < EmergeSpider
       else
         status = row.css("a.invite-list-item-status-text").text.strip
         profile_url = row.css(".invite-list-item-email a").attr("href")
+        # https://emergent-commons.mn.co/members/7567995
+        member_id = profile_url.split('/').last.to_i
+        chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
         # for joined users, do a little more to get to their answers:
         NewUserSpider.logger.debug "ATTEMPTING HOVER"
         # browser.save_screenshot
@@ -105,12 +108,17 @@ class NewUserSpider < EmergeSpider
       NewUserSpider.logger.debug "request_date = #{request_date}"
       NewUserSpider.logger.debug "status = #{status}"
       NewUserSpider.logger.debug "profile_url = #{profile_url}"
+      NewUserSpider.logger.debug "chat_url = #{chat_url}"
       NewUserSpider.logger.debug "qna = #{questions_and_answers.join("\n\n")}"
 
       users.push({
         name: name,
+        first_name: first_name,
+        last_name: last_name,
         email: email,
         profile_url: profile_url,
+        chat_url: chat_url,
+        member_id: member_id,
         request_timestamp: request_date,
         status: status,
         questions_responses: questions_and_answers.join(" -:- ")
