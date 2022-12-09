@@ -35,9 +35,16 @@ module Admin
 
     def approve_user
       user = User.find(params[:id])
-      ApproveUserSpider.user_email = user.email
-      ApproveUserSpider.crawl!
-      user.update!(status: "Joined!")
+      Spider.set_message("approve_user_spider", user.email)
+      until result = Spider.get_result
+        sleep 1
+      end
+      if result == "success"
+        user.update(status: "Joined!")
+        flash[:notice] = "#{user.name} was approved"
+      else
+        flash[:error] = "#{user.name} could not be approved - talk to Kevin"
+      end
       redirect_to admin_users_url
     end
   end
