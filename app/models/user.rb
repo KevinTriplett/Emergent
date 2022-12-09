@@ -5,8 +5,15 @@ class User < ActiveRecord::Base
     data = file.readlines.map(&:chomp)
     file.close
 
-    puts "header row = #{data.shift}" # first line is headers
-    # first_name,last_name,email,member_id,join_date,join_timestamp
+    # check first row for correct file format
+    headers = data.shift
+    correct_headers = %w{first_name1 last_name email member_id join_date join_timestamp location time_zone country}.join("\t")
+    unless headers == correct_headers
+      puts "header row = #{headers}" # first line is headers
+      puts "should be  = #{correct_headers}"
+      return
+    end
+
     data.each do |line|
       first_name, last_name, email, member_id, x, join_timestamp, location, time_zone, country = line.split("\t")
       location = location.gsub(/\"/, "") if location
