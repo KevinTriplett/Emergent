@@ -18,14 +18,15 @@
 - [X] change email subject line to correct wording
 - [X] allow user to close calendar popup
 - [X] add drop-down for status for consistency
+- [X] import members via rake task
 - [ ] send reminders on potential status change like meeting dates / follow up
 - [ ] create way for new members to specify dates and times they're available
 - [ ] *** automate database backup (see https://github.com/backup/backup)
 - [ ] keep spiders always logged in and waiting for command (memory limits?)
-- [ ] import members via rake task
 - [ ] calculate success rate for greetings (responses / completion)
 
 ## MVP 2
+- [ ] crawl site for volunteer team memberships (Master of Scrolls)
 - [ ] add self referential greeter_id column to users table
 - [ ] user authentication
 - [ ] add greeter authorization role for authenticated user
