@@ -19,30 +19,27 @@ class ApproveUserSpider < EmergeSpider
       delay: 2..4
     }
   }
-
-  # class level instance variable, not a class variable
-  # ref https://stackoverflow.com/questions/21122691/attr-accessor-on-class-variables
-  class << self
-    attr_accessor :user_email
-  end
+  ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def wait_for_trigger
-    ApproveUserSpider.user_email = nil
-    ApproveUserSpider.logger.info "STARTING"
+    puts "SPIDER #{name} STARTING"
+    NewUserSpider.logger.info "#{name} STARTING"
+    ::Spider.get_message(name) # erase any leftover message
     request_to :sign_in, url: "https://emergent-commons.mn.co/sign_in"
     report_failure_unless_response_has("body.communities-app")
-    ApproveUserSpider.logger.info "ENTERING LOOP"
+    ApproveUserSpider.logger.info "#{name} ENTERING LOOP"
     loop do
-      if ApproveUserSpider.user_email
-        ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{ApproveUserSpider.user_email}"
+      email = ::Spider.get_message(name)
+      if email
+        ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
         request_to :approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests"
-        ApproveUserSpider.user_email = nil
+        ::Spider.set_result(name, "success")
       else
         sleep 2
       end
     end
-    ApproveUserSpider.logger.info "EXITING LOOP"
-    ApproveUserSpider.logger.info "COMPLETED SUCCESSFULLY"
+    ApproveUserSpider.logger.info "#{name} EXITING LOOP"
+    ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   end
 
   def approve_user(response, url:, data: {})

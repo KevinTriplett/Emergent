@@ -19,29 +19,25 @@ class NewUserSpider < EmergeSpider
       delay: 2..4
     }
   }
-
-  # class level instance variable, not a class variable
-  # ref https://stackoverflow.com/questions/21122691/attr-accessor-on-class-variables
-  class << self
-    attr_accessor :check_for_new_members
-  end
+  ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def wait_for_trigger
-    NewUserSpider.check_for_new_members = false
-    NewUserSpider.logger.info "STARTING"
-    request_to sign_in, url: "https://emergent-commons.mn.co/sign_in"
+    puts "SPIDER #{name} STARTING"
+    NewUserSpider.logger.info "#{name} STARTING"
+    ::Spider.get_message(name) # erase any leftover message
+    request_to :sign_in, url: "https://emergent-commons.mn.co/sign_in"
     report_failure_unless_response_has("body.communities-app")
-    NewUserSpider.logger.info "ENTERING LOOP"
+    NewUserSpider.logger.info "#{name} ENTERING LOOP"
     loop do
-      if NewUserSpider.check_for_new_members
+      if ::Spider.get_message(name)
         request_to :parse_requests_to_join, url: "https://emergent-commons.mn.co/settings/invite/requests"
-        NewUserSpider.check_for_new_members = false
+        ::Spider.set_result(name, "success")
       else
         sleep 10
       end
     end
-    NewUserSpider.logger.info "EXITING LOOP"
-    ApproveUserSpider.logger.info "COMPLETED SUCCESSFULLY"
+    NewUserSpider.logger.info "#{name} EXITING LOOP"
+    ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   end
 
   def parse_requests_to_join(response, url:, data: {})
@@ -76,7 +72,7 @@ class NewUserSpider < EmergeSpider
         browser.find(:css, css).click
       else
         status = row.css("a.invite-list-item-status-text").text.strip
-        profile_url = row.css(".invite-list-item-email a").attr("href")
+        profile_url = row.css(".invite-list-item-email a").attr("href").value
         # https://emergent-commons.mn.co/members/7567995
         member_id = profile_url.split('/').last.to_i
         chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
