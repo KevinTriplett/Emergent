@@ -4,6 +4,7 @@ class ApproveUserSpider < EmergeSpider
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   @name = "approve_user_spider"
   @engine = :selenium_chrome
+  @start_urls = ["https://emergent-commons.mn.co/sign_in"]
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
@@ -21,23 +22,16 @@ class ApproveUserSpider < EmergeSpider
   }
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
-  def wait_for_trigger
+  def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    ::Spider.get_message(name) # erase any leftover message
-    request_to :sign_in, url: "https://emergent-commons.mn.co/sign_in"
+    sign_in
     report_failure_unless_response_has("body.communities-app")
-    ApproveUserSpider.logger.info "#{name} ENTERING LOOP"
-    loop do
-      email = ::Spider.get_message(name)
-      if email
-        ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
-        request_to :approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests"
-        ::Spider.set_result(name, "success")
-      else
-        sleep 2
-      end
-    end
-    ApproveUserSpider.logger.info "#{name} EXITING LOOP"
+
+    email = ::Spider.get_message(name)
+    ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
+    request_to :approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests"
+
+    ::Spider.set_result(name, "success")
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   end
 

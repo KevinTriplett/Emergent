@@ -36,6 +36,7 @@ module Admin
     def approve_user
       user = User.find(params[:id])
       Spider.set_message("approve_user_spider", user.email)
+      ApproveUserSpider.crawl!
       until result = Spider.get_result
         sleep 1
       end

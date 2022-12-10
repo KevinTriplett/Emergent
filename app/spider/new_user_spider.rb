@@ -20,13 +20,18 @@ class NewUserSpider < EmergeSpider
       delay: 2..4
     }
   }
+  @@limit_user_count = nil
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    sign_in(response, url: url, data: data)
+    sign_in
     report_failure_unless_response_has("body.communities-app")
+
+    @@limit_user_count = ::Spider.get_message(name).to_i || 100
     request_to :parse_join_requests, url: "https://emergent-commons.mn.co/settings/invite/requests"
+
+    ::Spider.set_result(name, "success")
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   end
 
@@ -148,8 +153,7 @@ class NewUserSpider < EmergeSpider
 
   def scroll_to_end(css, modal_css)
     prev_count = browser.current_response.css(css).count
-    return prev_count # comment to scroll for all members
-    return if prev_count == 0
+    return prev_count if prev_count == 0 || prev_count >= @@limit_user_count
     new_count = 0
     
     loop do
@@ -161,7 +165,7 @@ class NewUserSpider < EmergeSpider
       sleep 10
       new_count = browser.current_response.css(css).count
       NewUserSpider.logger.debug "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
-      break if new_count == prev_count
+      break if new_count == prev_count || new_count >= @@limit_user_count
       prev_count = new_count
     end
 
