@@ -3,7 +3,9 @@ lock "~> 3.17.1"
 
 set :application, "Emergent"
 set :repo_url, "git@github.com:KevinTriplett/Emergent.git"
-
+set :passenger_environment_variables, {
+  'PASSENGER_INSTANCE_REGISTRY_DIR' => '/var/run/passenger-instreg'
+}
 # Default branch is :master
 set :branch, 'main'
 
