@@ -24,7 +24,7 @@ class NewUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    sign_in(response, {url: url, data: data})
+    sign_in(response, url: url, data: data)
     report_failure_unless_response_has("body.communities-app")
     request_to :parse_join_requests, url: "https://emergent-commons.mn.co/settings/invite/requests"
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
