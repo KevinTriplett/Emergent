@@ -35,6 +35,7 @@ class NewUserSpider < EmergeSpider
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
+    NewUserSpider.logger.info "CRAWLING THROUGH #{@@new_user_count} MEMBERS"
     
     users = []
     browser.current_response.css(row_css).each_with_index do |row, idx|
