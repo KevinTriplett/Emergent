@@ -1,7 +1,7 @@
 namespace :ec do
   desc "Crawls the Emergent Commons MN site for pending member requests"
   task nm_crawl: :environment do
-    Spider.message("new_user_spider", "run")
+    NewUserSpider.crawl!
   end
 end
 

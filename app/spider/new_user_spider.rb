@@ -4,6 +4,7 @@ class NewUserSpider < EmergeSpider
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   @name = "new_user_spider"
   @engine = :selenium_chrome
+  @start_urls = ["https://emergent-commons.mn.co/sign_in"]
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
@@ -21,26 +22,15 @@ class NewUserSpider < EmergeSpider
   }
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
-  def wait_for_trigger
-    puts "SPIDER #{name} STARTING"
-    NewUserSpider.logger.info "#{name} STARTING"
-    ::Spider.get_message(name) # erase any leftover message
-    request_to :sign_in, url: "https://emergent-commons.mn.co/sign_in"
+  def parse(response, url:, data: {})
+    NewUserSpider.logger.info "SPIDER #{name} STARTING"
+    sign_in(response, url, data)
     report_failure_unless_response_has("body.communities-app")
-    NewUserSpider.logger.info "#{name} ENTERING LOOP"
-    loop do
-      if ::Spider.get_message(name)
-        request_to :parse_requests_to_join, url: "https://emergent-commons.mn.co/settings/invite/requests"
-        ::Spider.set_result(name, "success")
-      else
-        sleep 10
-      end
-    end
-    NewUserSpider.logger.info "#{name} EXITING LOOP"
+    request_to :parse_join_requests, url: "https://emergent-commons.mn.co/settings/invite/requests"
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   end
 
-  def parse_requests_to_join(response, url:, data: {})
+  def parse_join_requests(response, url:, data: {})
     NewUserSpider.logger.debug "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)

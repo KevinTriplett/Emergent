@@ -22,8 +22,7 @@ class ApproveUserSpider < EmergeSpider
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def wait_for_trigger
-    puts "SPIDER #{name} STARTING"
-    NewUserSpider.logger.info "#{name} STARTING"
+    NewUserSpider.logger.info "SPIDER #{name} STARTING"
     ::Spider.get_message(name) # erase any leftover message
     request_to :sign_in, url: "https://emergent-commons.mn.co/sign_in"
     report_failure_unless_response_has("body.communities-app")
