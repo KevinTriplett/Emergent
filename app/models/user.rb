@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
 
     # check first row for correct file format
     headers = data.shift
-    correct_headers = %w{first_name1 last_name email member_id join_date join_timestamp location time_zone country}.join("\t")
+    correct_headers = %w{first_name last_name email member_id join_date join_timestamp location time_zone country}.join("\t")
     unless headers == correct_headers
       puts "header row = #{headers}" # first line is headers
       puts "should be  = #{correct_headers}"
