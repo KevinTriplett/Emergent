@@ -138,26 +138,26 @@ var convertTimeToUTC = function(datetime) {
   return datetime.toISOString();
 }
 
-var getUserGreeter = function(userRow) {
-  var userGreeter = userRow.parent().find("td.user-greeter a").text();
+var getUserGreeter = function(userDOM) {
+  var userGreeter = userDOM.find("td.user-greeter a").text();
   return userGreeter == "Make me greeter!" ? null : userGreeter;
 }
 
-var getUserShadow = function(userRow) {
-  var userShadow = userRow.parent().find("td.user-shadow a").text();
+var getUserShadow = function(userDOM) {
+  var userShadow = userDOM.find("td.user-shadow a").text();
   return userShadow == "Let me shadow!" ? null : userShadow;
 }
 
-var getUserNotes = function(userRow) {
-  return userRow.parent().find("td.user-notes textarea").val();
+var getUserNotes = function(userDOM) {
+  return userDOM.find("td.user-notes textarea").val();
 }
 
-var getPatchData = function(userRow) {
-  var userNotes = getUserNotes(userRow);
-  var userGreeter = getUserGreeter(userRow);
-  var userShadow = getUserShadow(userRow);
-  var userMeeting = userRow.parent().find("td.user-meeting-datetime input.datetime-picker").val();
-  var userStatus = userRow.parent().find("td.user-status select").val();
+var getPatchData = function(userDOM) {
+  var userNotes = getUserNotes(userDOM);
+  var userGreeter = getUserGreeter(userDOM);
+  var userShadow = getUserShadow(userDOM);
+  var userMeeting = userDOM.find("td.user-meeting-datetime input.datetime-picker").val();
+  var userStatus = userDOM.find("td.user-status select").val();
   userMeeting = convertTimeToUTC(userMeeting);
   return {
     notes: userNotes,
@@ -243,9 +243,9 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // MEETING DATETIME PICKER LISTENER
   var setUserMeeting = function(e) {
-    var userRow = $(this).closest("tr");
-    var userId = userRow.data("id");
-    var data = getPatchData(userRow);
+    var userDOM = $(this).closest("[data-id");
+    var userId = userDOM.data("id");
+    var data = getPatchData(userDOM);
     patch(userId, data, null, function() {
       alert("Could not set meeting date and time - ask Kevin");
     });
@@ -254,13 +254,13 @@ $(document).ready(function() {
   $( ".datetime-picker" ).on("click", function(e) {
     var el = $(this);
     if (el.data("picker")) return; // return if datetime picker already instantiated
-    var userRow = el.closest("tr");
-    var userId = userRow.data("id");
+    var userDOM = el.closest("[data-id]");
+    var userId = userDOM.data("id");
     var options = {
       showTime: true,
       timeFormat: "HH:MM"
     };
-    var css = `tr[data-id="${userId}"] input.datetime-picker`;
+    var css = `[data-id="${userId}"] input.datetime-picker`;
     el.data("picker", new dtsel.DTS(css, options));
     el.blur(); // now simulate opening the picker
     el.focus();
@@ -279,9 +279,9 @@ $(document).ready(function() {
   // NOTES EVENT LISTENER
   var setUserNotes = function(e) {
     var userNotesTextarea = $(this)
-    var userRow = userNotesTextarea.closest("tr").prev().prev();
-    var userId = userRow.data("id");
-    var data = getPatchData(userRow);
+    var userDOM = userNotesTextarea.closest("[data-id]");
+    var userId = userDOM.data("id");
+    var data = getPatchData(userDOM);
     patch(userId, data, function() {
       userNotesTextarea
         .parent()
@@ -315,13 +315,13 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
-  var setUserGreeter = function(userRow, userGreeter) {
-    var userId = userRow.data("id");
-    var data = getPatchData(userRow);
+  var setUserGreeter = function(userDOM, userGreeter) {
+    var userId = userDOM.data("id");
+    var data = getPatchData(userDOM);
     data.greeter = userGreeter;
     patch(userId, data, function() {
       userGreeter = userGreeter ? userGreeter : "Make me greeter!"
-      userRow.parent().find("td.user-greeter a").text(userGreeter);
+      userDOM.find("td.user-greeter a").text(userGreeter);
     }, function() {
       alert("Could not change greeter - ask Kevin");
     });
@@ -336,19 +336,19 @@ $(document).ready(function() {
 
     setCookie("greeter-name", prevGreeter); // save for next time
 
-    var userRow = $(this).closest("tr");
-    setUserGreeter(userRow, userGreeter);
+    var userDOM = $(this).closest("[data-id");
+    setUserGreeter(userDOM, userGreeter);
   });
 
   ////////////////////////////////////////////////////
   // SHADOW EVENT LISTENER
-  var setUserShadow = function(userRow, userShadow) {
-    var userId = userRow.data("id");
-    var data = getPatchData(userRow);
+  var setUserShadow = function(userDOM, userShadow) {
+    var userId = userDOM.data("id");
+    var data = getPatchData(userDOM);
     data.shadow_greeter = userShadow;
     patch(userId, data, function() {
       userShadow = userShadow ? userShadow : "Let me shadow!"
-      userRow.parent().find("td.user-shadow a").text(userShadow);
+      userDOM.find("td.user-shadow a").text(userShadow);
     }, function() {
       alert("Could not change shadow - ask Kevin");
     });
@@ -364,18 +364,18 @@ $(document).ready(function() {
 
     setCookie("greeter-name", prevGreeter); // save for next time
 
-    var userRow = $(this).closest("tr");
-    setUserShadow(userRow, userShadow);
+    var userDOM = $(this).closest("[data-id]");
+    setUserShadow(userDOM, userShadow);
   });
 
   ////////////////////////////////////////////////////
   // STATUS EVENT LISTENER
-  var setUserStatus = function(userRow, userStatus) {
-    var userId = userRow.data("id");
-    var data = getPatchData(userRow);
+  var setUserStatus = function(userDOM, userStatus) {
+    var userId = userDOM.data("id");
+    var data = getPatchData(userDOM);
     data.status = userStatus || data.status;
     patch(userId, data, function() {
-      userRow.parent().find("td.user-status select").val(data.status);
+      userDOM.find("td.user-status select").val(data.status);
     }, function() {
       alert("Could not change status - ask Kevin");
     });
@@ -383,8 +383,8 @@ $(document).ready(function() {
 
   $(".user-status select").selectmenu({
     change: function(e) {
-      var userRow = $(this).closest("tr");
-      setUserStatus(userRow, null);
+      var userDOM = $(this).closest("[data-id]");
+      setUserStatus(userDOM, null);
     }
   });
 
@@ -392,8 +392,8 @@ $(document).ready(function() {
   // EMAIL EVENT LISTENER
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
-    var userRow = $(this).closest("tr");
-    var userGreeter = userRow.parent().find("td.user-greeter a").text();
+    var userDOM = $(this).closest("[data-id]");
+    var userGreeter = userDOM.find("td.user-greeter a").text();
     if (userGreeter == "Make me greeter!") {
       alert("First, click 'Make me greeter!' and then send the email");
       return;
@@ -412,8 +412,8 @@ $(document).ready(function() {
     prevEmailTemplateIndex = templateIndex + 1;
     setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
 
-    var userName = userRow.parent().find("td.user-name").text().trim();
-    var userEmail = userRow.parent().find("td.user-email a").text().trim();
+    var userName = userDOM.find("td.user-name").text().trim();
+    var userEmail = userDOM.find("td.user-email a").text().trim();
     var data = {
       name: userName,
       greeter: userGreeter
