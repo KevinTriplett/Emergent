@@ -148,6 +148,11 @@ var getUserShadow = function(userRow) {
   return userShadow == "Let me shadow!" ? null : userShadow;
 }
 
+var getUserShadow = function(userRow) {
+  var userShadow = userRow.parent().find("td.user-shadow a").text();
+  return userShadow == "make me shadow!" ? null : userShadow;
+}
+
 var getUserNotes = function(userRow) {
   return userRow.parent().find("td.user-notes textarea").val();
 }
