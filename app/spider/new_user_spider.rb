@@ -26,8 +26,7 @@ class NewUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    NewUserSpider.logger.info "$CHROME_USER_DATA_DIR = #{ENV["CHROME_USER_DATA_DIR"]}"
-    sign_in
+    sign_in # unless response_has("body.communities-app")
     report_failure_unless_response_has("body.communities-app")
 
     @@limit_user_count = ::Spider.get_message(name).to_i || 100

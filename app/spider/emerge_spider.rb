@@ -8,14 +8,14 @@ class EmergeSpider < Kimurai::Base
 
   def sign_in
     wait_until("body.auth-sign_in")
-    EmergeSpider.logger.debug "#{name} SIGNING IN"
+    EmergeSpider.logger.info "#{name} SIGNING IN"
     browser.fill_in "Email", with: Rails.configuration.mn_username
     sleep 1
     browser.fill_in "Password", with: Rails.configuration.mn_password
     browser.click_link "Sign In"
     sleep 1
     wait_while(".pace-running")
-    EmergeSpider.logger.debug "#{name} SIGIN SUCCESSFUL"
+    EmergeSpider.logger.info "#{name} SIGIN SUCCESSFUL"
   end
 
   def report_failure_unless_response_has(css)
@@ -48,5 +48,6 @@ class EmergeSpider < Kimurai::Base
       i -= 1
     end
     EmergeSpider.logger.debug "#{name} COULD NOT FIND IT!" unless response_has(css)
+    raise "ERROR: #{name} could not find css #{css}"
   end
 end
