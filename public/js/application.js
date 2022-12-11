@@ -198,7 +198,7 @@ var format = {
 
 ////////////////////////////////////////////////////
 // PAGE INITIALIZATION
-document.addEventListener("turbo:load", function() {
+$(document).ready(function() {
   if (loaded) return; // set listeners only once
   loaded = true;
 
