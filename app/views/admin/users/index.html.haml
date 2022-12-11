@@ -1,6 +1,6 @@
 %h5= (@users.empty? ? "No " : "") + "Existing Members"
 
-%table{ class: "users table table-bordered table-striped", data: {url: @update_url, token: @token} }
+%table.users.table.table-bordered.table-striped{ data: {url: @update_url, token: @token} }
   %thead
     %tr
       %th Name
@@ -11,18 +11,13 @@
         When
         %br
         %span.tzinfo (GMT)
-      %th Request Date
-      %th Answers
-      %th More
+      %th Shadow
   %tbody
     - @users.each do |u|
       %tr{ data: {id: u.id}}
-        %td.user-name
-          = u.profile_url ? link_to(u.name, u.profile_url) : u.name
-        %td.user-greeter
-          = link_to(u.greeter || "make me greeter!", "#", class: "user-greeter")
-        %td.user-email
-          = link_to u.email, "mailto:#{ u.email }"
+        %td.user-name= link_to(u.name, admin_user_url(u.id))
+        %td.user-greeter= link_to(u.greeter ? u.greeter : "Make me greeter!", "#", class: "user-greeter")
+        %td.user-email= link_to u.email, "mailto:#{ u.email }"
         %td.user-status
           %select
             - @options.each do |o|
@@ -31,27 +26,4 @@
         %td.user-meeting-datetime
           - datetime = u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
           %input.datetime-picker.utc-time{ type: "text", value: datetime }
-        %td.user-request-date= u.request_timestamp.short_date
-        %td.user-questions.more
-          %i{ class: "bi bi-arrow-down-square" }
-        %td.user-notes.more
-          %i{ class: "bi bi-arrow-down-square" }
-      %tr.more
-        %td.user-questions-more{ colspan: 8, data: { id: u.id } }
-          %ol
-            - u.questions_responses.split(" -:- ").each do |qna|
-              - q, a = *qna.split("\\")
-              %li
-                %span.question= q
-                %br
-                %span.answer= a
-          - if u.status == "Pending"
-            = link_to("Approve", |
-              admin_approve_user_path(u.id),  |
-              class: "btn btn-primary user-approve", |
-              data: { turbo_method: "post", turbo_confirm: "Confirm you want to approve (takes a few minutes)" })
-
-      %tr.more
-        %td.user-notes-more{ colspan: 8, data: { id: u.id } }
-          %textarea{ cols: "40" }= u.notes
-          %span.save-status
+        %td.user-shadow= u.shadow_greeter ? u.shadow_greeter : link_to("Let me shadow!", "#", class: "shadow-greeter")

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_09_204642) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_11_032041) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_09_204642) do
     t.integer "member_id"
     t.string "time_zone"
     t.string "country"
+    t.string "shadow_greeter"
   end
 
 end

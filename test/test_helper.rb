@@ -45,6 +45,10 @@ def last_random_user_name
   @_last_random_user_name
 end
 
+def mock_qna
+  "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a"
+end
+
 def create_user_with_result(params = {})
   User::Operation::Create.call(
     params: {
@@ -58,10 +62,11 @@ def create_user_with_result(params = {})
         join_timestamp: params[:join_timestamp] || "09/12/2022",
         status: params[:status] || "Joined!",
         location: params[:location] || "Austin, Texas",
-        questions_responses: params[:questions_responses] || "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a",
+        questions_responses: params[:questions_responses] || mock_qna,
         notes: params[:notes] || "this are notes",
         referral: params[:referral] || "referral name",
-        greeter: params[:greeter]
+        greeter: params[:greeter],
+        shadow_greeter: params[:shadow_greeter]
       }
     }
   )

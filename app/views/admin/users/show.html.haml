@@ -1,0 +1,49 @@
+%h5= @user.name
+%p=link_to "Back", admin_users_url 
+
+%table.user.table.table-bordered.table-striped{ data: {url: @update_url, token: @token} }
+  %tbody
+    %tr{ data: {id: @user.id } }
+      %td.header Greeter
+      %td.user-greeter= link_to(@user.greeter ? @user.greeter : "Make me greeter!", "#", class: "user-greeter")
+    %tr
+      %td.header Email
+      %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
+    %tr{ data: {id: @user.id } }
+      %td.header Status
+      %td.user-status
+        %select
+          - @options.each do |o|
+            - selected = (o == @user.status ? "selected" : nil)
+            %option{ selected: selected }= o
+    %tr{ data: {id: @user.id } }
+      %td.header.meeting
+        When
+        %br
+        %span.tzinfo (GMT)
+      %td.user-meeting-datetime
+        - datetime = @user.welcome_timestamp ? @user.welcome_timestamp.picker_datetime : nil
+        %input.datetime-picker.utc-time{ type: "text", value: datetime }
+    %tr{ data: {id: @user.id } }
+      %td.header Shadow
+      %td.user-shadow= link_to(@user.shadow_greeter ? @user.shadow_greeter : "Let me shadow!", "#", class: "shadow-greeter")
+    %tr{ data: {id: @user.id } }
+      %td.header Notes
+      %td.user-notes
+        %textarea{ cols: "40" }= @user.notes
+        %span.save-status
+    %tr
+      %td.header Questions
+      %td.user-questions
+        %ol
+          - @user.questions_responses.split(" -:- ").each do |qna|
+            - q, a = *qna.split("\\")
+            %li
+              %span.question= q
+              %br
+              %span.answer= a
+        - if @user.status == "Pending"
+          = link_to("Approve", |
+            admin_approve_user_path(@user.id),  |
+            class: "btn btn-primary user-approve", |
+            data: { turbo_method: "post", turbo_confirm: "Confirm you want to approve (takes a few minutes)" })

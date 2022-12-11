@@ -49,7 +49,7 @@ p.timestamp {
   }
 }
 
-table.users {
+table.users, table.user {
   width: 100%;
   thead {
     th {
@@ -63,13 +63,7 @@ table.users {
       line-height: 0.8em;
     }
   }
-  tbody tr.more {
-    display: none;
-  }
-  tbody td.more {
-    text-align: center;
-  }
-  tbody td.user-questions-more {
+  tbody td.user-questions {
     li {
       margin-bottom: 7px;
     }
@@ -81,14 +75,10 @@ table.users {
       font-size: large;
     }
   }
-  tbody td.user-notes-more
-    textarea, span.save-status {
-      margin: 0 auto;
-      display: block;
-    }
+  tbody td.user-notes
     span.save-status {
       font-weight: bolder;
-      text-align: center;
+      vertical-align: top;
     }
     span.save-status.success {
       color: green;

@@ -4,6 +4,7 @@ module User::Contract
 
     property :id
     property :greeter
+    property :shadow_greeter
     property :welcome_timestamp
     property :notes
     property :status
@@ -12,6 +13,7 @@ module User::Contract
       params do
         required(:id)
         required(:greeter)
+        required(:shadow_greeter)
         required(:welcome_timestamp)
         required(:notes)
         required(:status)

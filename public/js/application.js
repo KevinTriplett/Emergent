@@ -139,24 +139,31 @@ var convertTimeToUTC = function(datetime) {
 }
 
 var getUserGreeter = function(userRow) {
-  var userGreeter = userRow.find("td.user-greeter a").text();
-  return userGreeter == "make me greeter!" ? null : userGreeter;
+  var userGreeter = userRow.parent().find("td.user-greeter a").text();
+  return userGreeter == "Make me greeter!" ? null : userGreeter;
+}
+
+var getUserShadow = function(userRow) {
+  var userShadow = userRow.parent().find("td.user-shadow a").text();
+  return userShadow == "Let me shadow!" ? null : userShadow;
 }
 
 var getUserNotes = function(userRow) {
-  return userRow.next().next().find("td.user-notes-more textarea").val();
+  return userRow.parent().find("td.user-notes textarea").val();
 }
 
 var getPatchData = function(userRow) {
   var userNotes = getUserNotes(userRow);
   var userGreeter = getUserGreeter(userRow);
-  var userMeeting = userRow.find("td.user-meeting-datetime input.datetime-picker").val();
-  var userStatus = userRow.find("td.user-status select").val();
+  var userShadow = getUserShadow(userRow);
+  var userMeeting = userRow.parent().find("td.user-meeting-datetime input.datetime-picker").val();
+  var userStatus = userRow.parent().find("td.user-status select").val();
   userMeeting = convertTimeToUTC(userMeeting);
   return {
     notes: userNotes,
     greeter: userGreeter,
     welcome_timestamp: userMeeting,
+    shadow_greeter: userShadow,
     status: userStatus
   };
 }
@@ -164,8 +171,8 @@ var getPatchData = function(userRow) {
 ////////////////////////////////////////////////////
 // PATCH
 var patch = function(userId, data, success, error) {
-  var url = $("table.users").data("url");
-  var token = $("table.users").data("token");
+  var url = $("table.users,table.user").data("url");
+  var token = $("table.users,table.user").data("token");
   $.ajax({
     url: url + "/" + userId + "/update_user",
     type: "POST",
@@ -203,10 +210,12 @@ $(document).ready(function() {
   loaded = true;
 
   ////////////////////////////////////////////////////
-  // OPEN ALL NOTES THAT ARE NOT EMPTY
-  $(".user-notes-more textarea").each( function(i, el) {
-    el = $(el);
-    if (el.val()) el.closest("tr").show();
+  // CONNECT DATATABLE
+  // ref https://datatables.net/reference/index
+  $("table.users").DataTable({
+    paging: false,
+    fixedHeader: true,
+    fixedColumn: true
   });
 
   ////////////////////////////////////////////////////
@@ -259,15 +268,6 @@ $(document).ready(function() {
   });
 
   ////////////////////////////////////////////////////
-  // MORE EVENT LISTENERS
-  $("table.users td.more.user-questions").on("click", function() {
-    $(this).closest("tr").next().toggle();
-  });
-  $("table.users td.more.user-notes").on("click", function() {
-    $(this).closest("tr").next().next().toggle();
-  });
-
-  ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
   var setUserNotes = function(e) {
     var userNotesTextarea = $(this)
@@ -293,7 +293,7 @@ $(document).ready(function() {
     });
   };
 
-  $("table.users td.user-notes-more textarea")
+  $("table.user td.user-notes textarea")
     .on("keyup", debounce(setUserNotes, 1000))
     .on("keydown", function(e) {
       $(this)
@@ -312,22 +312,52 @@ $(document).ready(function() {
     var data = getPatchData(userRow);
     data.greeter = userGreeter;
     patch(userId, data, function() {
-      userRow.find("td.user-greeter a").text(userGreeter);
+      userGreeter = userGreeter ? userGreeter : "Make me greeter!"
+      userRow.parent().find("td.user-greeter a").text(userGreeter);
     }, function() {
       alert("Could not change greeter - ask Kevin");
     });
   }
 
-  $("table.users td.user-greeter a").on("click", function(e) {
+  $("td.user-greeter a").on("click", function(e) {
     e.preventDefault();
     var userGreeter = prompt("Enter your name", prevGreeter);
-    if (!userGreeter) return;
-
+    if (userGreeter === null) return;
     prevGreeter = userGreeter;
+    if (userGreeter === "") userGreeter = null;
+
     setCookie("greeter-name", prevGreeter); // save for next time
 
     var userRow = $(this).closest("tr");
     setUserGreeter(userRow, userGreeter);
+  });
+
+  ////////////////////////////////////////////////////
+  // SHADOW EVENT LISTENER
+  var setUserShadow = function(userRow, userShadow) {
+    var userId = userRow.data("id");
+    var data = getPatchData(userRow);
+    data.shadow_greeter = userShadow;
+    patch(userId, data, function() {
+      userShadow = userShadow ? userShadow : "Let me shadow!"
+      userRow.parent().find("td.user-shadow a").text(userShadow);
+    }, function() {
+      alert("Could not change greeter - ask Kevin");
+    });
+  }
+
+  // use same prevGreeter, since it's the user
+  $("td.user-shadow a").on("click", function(e) {
+    e.preventDefault();
+    var userShadow = prompt("Enter your name", prevGreeter);
+    if (userShadow === null) return;
+    prevGreeter = userShadow;
+    if (userShadow === "") userShadow = null;
+
+    setCookie("greeter-name", prevGreeter); // save for next time
+
+    var userRow = $(this).closest("tr");
+    setUserShadow(userRow, userShadow);
   });
 
   ////////////////////////////////////////////////////
@@ -337,7 +367,7 @@ $(document).ready(function() {
     var data = getPatchData(userRow);
     data.status = userStatus || data.status;
     patch(userId, data, function() {
-      userRow.find("td.user-status select").val(data.status);
+      userRow.parent().find("td.user-status select").val(data.status);
     }, function() {
       alert("Could not change status - ask Kevin");
     });
@@ -352,12 +382,12 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // EMAIL EVENT LISTENER
-  $("table.users td.user-email a").on("click", function(e) {
+  $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userRow = $(this).closest("tr");
-    var userGreeter = userRow.find("td.user-greeter a").text();
-    if (userGreeter == "make me greeter!") {
-      alert("First, click 'make me greeter!' and then send the email");
+    var userGreeter = userRow.parent().find("td.user-greeter a").text();
+    if (userGreeter == "Make me greeter!") {
+      alert("First, click 'Make me greeter!' and then send the email");
       return;
     }
 
@@ -374,8 +404,8 @@ $(document).ready(function() {
     prevEmailTemplateIndex = templateIndex + 1;
     setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
 
-    var userName = userRow.find("td.user-name").text().trim();
-    var userEmail = userRow.find("td.user-email a").text().trim();
+    var userName = userRow.parent().find("td.user-name").text().trim();
+    var userEmail = userRow.parent().find("td.user-email a").text().trim();
     var data = {
       name: userName,
       greeter: userGreeter
