@@ -26,8 +26,8 @@ class NewUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    sign_in # unless response_has("body.communities-app")
-    report_failure_unless_response_has("body.communities-app")
+    sign_in unless response_has("body.communities-app")
+    raise_error_unless_response_has("body.communities-app")
 
     @@limit_user_count = ::Spider.get_message(name).to_i || 100
     request_to :parse_join_requests, url: "https://emergent-commons.mn.co/settings/invite/requests"

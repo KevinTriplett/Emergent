@@ -7,8 +7,8 @@ class EmergeSpider < Kimurai::Base
   end
 
   def sign_in
-    wait_until("body.auth-sign_in")
     EmergeSpider.logger.info "#{name} SIGNING IN"
+    wait_until("body.auth-sign_in")
     browser.fill_in "Email", with: Rails.configuration.mn_username
     sleep 1
     browser.fill_in "Password", with: Rails.configuration.mn_password
@@ -18,10 +18,12 @@ class EmergeSpider < Kimurai::Base
     EmergeSpider.logger.info "#{name} SIGIN SUCCESSFUL"
   end
 
-  def report_failure_unless_response_has(css)
-    return if response_has(css)
-    EmergeSpider.logger.debug "Expected to find #{css}"
-    raise
+  def raise_error_unless_response_has(css)
+    raise "ERROR: #{name} could not find css #{css}" unless response_has(css)
+  end
+
+  def raise_error_if_response_has(css)
+    raise "ERROR: #{name} could not find css #{css}" if response_has(css)
   end
 
   def response_has(css)
@@ -29,25 +31,20 @@ class EmergeSpider < Kimurai::Base
   end
 
   def wait_while(css)
-    i = 10
-    sleep 1
-    while response_has(css) || i < 0
+    for i in 0..10
+      return true unless response_has(css)
       EmergeSpider.logger.debug "#{name} WAITING WHILE #{css} ..."
       sleep 1
-      i -= 1
     end
-    EmergeSpider.logger.debug "#{name} NEVER WENT AWAY!" if response_has(css)
+    raise_error_if_response_has(css)
   end
 
   def wait_until(css)
-    i = 10
-    sleep 1
-    until response_has(css) || i < 0
+    for i in 0..10
+      return true if response_has(css)
       EmergeSpider.logger.debug "#{name} WAITING UNTIl #{css} ..."
       sleep 1
-      i -= 1
     end
-    EmergeSpider.logger.debug "#{name} COULD NOT FIND IT!" unless response_has(css)
-    raise "ERROR: #{name} could not find css #{css}"
+    raise_error_unless_response_has(css)
   end
 end

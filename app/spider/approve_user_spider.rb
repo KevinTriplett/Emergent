@@ -17,15 +17,15 @@ class ApproveUserSpider < EmergeSpider
       # Clear all cookies and set default cookies (if provided) before each request:
       clear_and_set_cookies: false,
       # Process delay before each request:
-      delay: 2..4
+      delay: 1..2
     }
   }
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    sign_in
-    report_failure_unless_response_has("body.communities-app")
+    sign_in unless response_has("body.communities-app")
+    raise_error_unless_response_has("body.communities-app")
 
     email = ::Spider.get_message(name)
     ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
