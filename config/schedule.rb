@@ -13,5 +13,5 @@
 set :output, "/home/deploy/Emergent/current/log/cron.log"
 
 every 1.hour do
-  rake "ec:nm_crawl"
+  rake "ec:nm_crawl_all"
 end
