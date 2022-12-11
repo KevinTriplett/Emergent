@@ -25,6 +25,7 @@ class NewUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
+    NewUserSpider.logger.info "$CHROME_USER_DATA_DIR = #{ENV["CHROME_USER_DATA_DIR"]}"
     sign_in
     report_failure_unless_response_has("body.communities-app")
 
