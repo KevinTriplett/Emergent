@@ -49,7 +49,12 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
 
-      assert_selector "h5", text: user.name
+      assert_selector "h3", text: user.name
+      
+      assert_selector "a.user-back[href='#{admin_users_url}']", text: "👈 Back"
+      assert_selector "a.user-profile-button[href='#{user.profile_url}']", text: "😊 Profile"
+      assert_selector "a.user-chat-button[href='#{user.chat_url}']", text: "💬 Chat"
+
       assert_selector "td.user-greeter a", text: "Make me greeter!"
       assert_selector "td.user-shadow a", text: "Let me shadow!"
 

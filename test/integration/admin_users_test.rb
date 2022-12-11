@@ -57,8 +57,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
       get admin_user_path(user.id)
       
-      assert_select "h5", user.name
       assert_select "h1", "Emergent Commons Volunteer App"
+      assert_select "h3", user.name
+
+      assert_select "a.user-profile-button", "😊 Profile"
+      assert_select "a.user-chat-button", "💬 Chat"
 
       assert_select "td", "Greeter"
       assert_select "td", "Email"
@@ -87,6 +90,9 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       user.update(shadow_greeter: nil)
       get admin_user_path(user.id)
       assert_select "td.user-shadow", "Let me shadow!"
+
+      user.update(profile_url: nil)
+      user.update(chat_url: nil)
     end
   end
 end

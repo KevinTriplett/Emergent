@@ -55,8 +55,8 @@ def create_user_with_result(params = {})
       user: {
         name: params[:name] || random_user_name,
         email: params[:email] || random_email,
-        profile_url: params[:profile_url] || "https://example.com",
-        chat_url: params[:chat_url],
+        profile_url: params[:profile_url] || "https://example.com/profile/12345",
+        chat_url: params[:chat_url] || "https://example.com/chat/12345",
         welcome_timestamp: params[:welcome_timestamp] || "07/12/2022",
         request_timestamp: params[:request_timestamp] || "08/12/2022",
         join_timestamp: params[:join_timestamp] || "09/12/2022",
