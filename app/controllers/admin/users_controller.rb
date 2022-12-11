@@ -7,22 +7,14 @@ module Admin
       @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
       @update_url = admin_users_url
       @token = form_authenticity_token
-      @options = [
-        "Pending",
-        "Joined!",
-        "1st Email Sent",
-        "2nd Email Sent",
-        "Emailing",
-        "No Response",
-        "Rescheduling",
-        "Follow Up",
-        "Will Call",
-        "Greet Scheduled",
-        "Declined",
-        "Welcomed",
-        "Posted Intro",
-        "Completed"
-      ]
+      @options = get_status_options
+    end
+
+    def show
+      @user = User.find(params[:id])
+      @update_url = admin_users_url
+      @token = form_authenticity_token
+      @options = get_status_options
     end
 
     def update_user
@@ -47,6 +39,27 @@ module Admin
         flash[:error] = "#{user.name} could not be approved - talk to Kevin"
       end
       redirect_to admin_users_url
+    end
+
+    private
+
+    def get_status_options
+      return [
+        "Pending",
+        "Joined!",
+        "1st Email Sent",
+        "2nd Email Sent",
+        "Emailing",
+        "No Response",
+        "Rescheduling",
+        "Follow Up",
+        "Will Call",
+        "Greet Scheduled",
+        "Declined",
+        "Welcomed",
+        "Posted Intro",
+        "Completed"
+      ]
     end
   end
 end

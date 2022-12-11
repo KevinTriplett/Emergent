@@ -8,15 +8,17 @@
     = csrf_meta_tags
     = csp_meta_tag
 
-    = stylesheet_link_tag "application", "data-turbo-track": "reload"
-    = stylesheet_link_tag "jquery-ui", "data-turbo-track": "reload"
-    = stylesheet_link_tag "dtsel", "data-turbo-track": "reload"
-    = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
+    = stylesheet_link_tag "application"
+    = stylesheet_link_tag "jquery-ui"
+    = stylesheet_link_tag "dtsel"
+    = stylesheet_link_tag "https://cdn.datatables.net/v/bs5/dt-1.13.1/fc-4.2.1/fh-3.3.1/r-2.4.0/datatables.min.css"
+    = javascript_include_tag "application", defer: true
+
     %script{ src: "/js/jquery-3.6.0.js" }
     %script{ src: "/js/jquery-ui.js" }
     %script{ src: "/js/application.js" }
     %script{ src: "/js/dtsel.js" }
-    = turbo_include_tags
+    %script{ src: "https://cdn.datatables.net/v/bs5/dt-1.13.1/fc-4.2.1/fh-3.3.1/r-2.4.0/datatables.min.js" }
 
   %body#admin
     .container

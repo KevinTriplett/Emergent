@@ -16,6 +16,7 @@ module User::Contract
     property :notes
     property :referral
     property :greeter
+    property :shadow_greeter
 
     validation do
       params do
@@ -33,6 +34,7 @@ module User::Contract
         required(:notes)
         required(:referral)
         required(:greeter)
+        required(:shadow_greeter)
       end
   
       rule(:email, :id) do

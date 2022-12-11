@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   post "/admin/users(/:id)/approve", to: "admin/users#approve_user", as: :admin_approve_user
 
   namespace :admin do
-    resources :users, only: [:index, :update]
+    resources :users, only: [:index, :show, :update]
   end
 
   root to: "home#index"
