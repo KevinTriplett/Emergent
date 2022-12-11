@@ -219,6 +219,14 @@ $(document).ready(function() {
   });
 
   ////////////////////////////////////////////////////
+  // MAKE TABLE CELLS CLICKABLE
+  $("table.users td, table.user td").on("click", function(e) {
+    if (this === e.target) {
+      if ($(this).find("a").length > 0) $(this).find("a")[0].click();
+    }
+  });
+
+  ////////////////////////////////////////////////////
   // CONVERT ALL UTC TIMES TO LOCAL
   $(".utc-time").each( function(i, el) {
     el = $(el);
