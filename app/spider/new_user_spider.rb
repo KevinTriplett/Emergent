@@ -146,15 +146,15 @@ class NewUserSpider < EmergeSpider
   def create_users(users)
     users.each do |u|
       user = User.find_by_email(u[:email])
-      # next if user && user.profile_url
-      User.update(profile_url: u[:profile_url]) if user #&& !user.profile_url
+      User.update(profile_url: u[:profile_url]) if user
+      User.update(chat_url: u[:chat_url]) if user
       User.create!(u) unless user
     end
   end
 
   def scroll_to_end(css, modal_css)
     prev_count = browser.current_response.css(css).count
-    return prev_count if prev_count == 0 || prev_count >= @@limit_user_count
+    return prev_count if prev_count == 0 || (@@limit_user_count > 0 && prev_count >= @@limit_user_count)
     new_count = 0
     
     loop do
@@ -165,8 +165,8 @@ class NewUserSpider < EmergeSpider
       end
       sleep 10
       new_count = browser.current_response.css(css).count
-      NewUserSpider.logger.debug "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
-      break if new_count == prev_count || new_count >= @@limit_user_count
+      NewUserSpider.logger.info "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
+      break if new_count == prev_count || (@@limit_user_count > 0 && new_count >= @@limit_user_count)
       prev_count = new_count
     end
 
