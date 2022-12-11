@@ -9,6 +9,7 @@ class NewUserSpider < EmergeSpider
     user_agent: USER_AGENT,
     disable_images: true,
     window_size: [1366, 768],
+    user_data_dir: "/home/deploy/Emergent/shared/tmp/chrome_profile",
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
