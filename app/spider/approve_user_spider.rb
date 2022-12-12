@@ -24,8 +24,7 @@ class ApproveUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    sign_in unless response_has("body.communities-app")
-    raise_error_unless_response_has("body.communities-app")
+    request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
 
     email = ::Spider.get_message(name)
     ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"

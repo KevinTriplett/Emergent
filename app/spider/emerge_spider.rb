@@ -6,7 +6,7 @@ class EmergeSpider < Kimurai::Base
     self.logger.progname
   end
 
-  def sign_in
+  def sign_in(response, url:, data: {})
     EmergeSpider.logger.info "#{name} SIGNING IN"
     wait_until("body.auth-sign_in")
     browser.fill_in "Email", with: Rails.configuration.mn_username
@@ -15,6 +15,7 @@ class EmergeSpider < Kimurai::Base
     browser.click_link "Sign In"
     sleep 1
     wait_while(".pace-running")
+    wait_until("body.communities-app")
     EmergeSpider.logger.info "#{name} SIGIN SUCCESSFUL"
   end
 

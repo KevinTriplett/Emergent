@@ -9,7 +9,7 @@ class NewUserSpider < EmergeSpider
     user_agent: USER_AGENT,
     disable_images: true,
     window_size: [1366, 768],
-    user_data_dir: "/home/deploy/Emergent/shared/tmp/chrome_profile",
+    user_data_dir: (Rails.env.production? ? "/home/deploy/Emergent/shared/tmp/chrome_profile" : nil),
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
@@ -26,8 +26,7 @@ class NewUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
-    sign_in unless response_has("body.communities-app")
-    raise_error_unless_response_has("body.communities-app")
+    request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
 
     @@limit_user_count = ::Spider.get_message(name).to_i || 100
     request_to :parse_join_requests, url: "https://emergent-commons.mn.co/settings/invite/requests"
@@ -41,6 +40,7 @@ class NewUserSpider < EmergeSpider
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
+    scroll_back_to_beginning(@@new_user_count/25, "#flyout-main-content")
     NewUserSpider.logger.info "CRAWLING THROUGH #{@@new_user_count} MEMBERS"
     
     users = []
@@ -179,5 +179,15 @@ class NewUserSpider < EmergeSpider
     end
 
     new_count
+  end
+
+  def scroll_back_to_beginning(count, modal_css)
+    for i in 0..count.to_i
+      if modal_css
+        browser.execute_script("$('#{modal_css}')[0].scrollBy(0,-10000)")
+      else
+        browser.execute_script("window.scrollBy(0,-10000)")
+      end
+    end
   end
 end
