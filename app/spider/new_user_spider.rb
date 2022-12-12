@@ -9,7 +9,7 @@ class NewUserSpider < EmergeSpider
     user_agent: USER_AGENT,
     disable_images: true,
     window_size: [1366, 768],
-    user_data_dir: (Rails.env.development? ? nil : "/home/deploy/Emergent/shared/tmp/chrome_profile"),
+    user_data_dir: Rails.root.join('shared', 'tmp', 'browser_profile').to_s,
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
@@ -113,12 +113,13 @@ class NewUserSpider < EmergeSpider
 
       sleep 1
 
-      NewUserSpider.logger.debug "\n-------------------------------------------------------\n"
+      NewUserSpider.logger.debug "\n\n-------------------------------------------------------"
       NewUserSpider.logger.debug "MEMBER #{users.count + 1} of #{@@new_user_count}"
       NewUserSpider.logger.debug "name = #{full_name}"
       NewUserSpider.logger.debug "email = #{email}"
       NewUserSpider.logger.debug "request_date = #{request_date}"
       NewUserSpider.logger.debug "status = #{status}"
+      NewUserSpider.logger.debug "member_id = #{member_id}"
       NewUserSpider.logger.debug "profile_url = #{profile_url}"
       NewUserSpider.logger.debug "chat_url = #{chat_url}"
       NewUserSpider.logger.debug "qna = #{questions_and_answers.join("\n\n")}"
@@ -155,9 +156,10 @@ class NewUserSpider < EmergeSpider
   def create_users(users)
     users.each do |u|
       user = User.find_by_email(u[:email])
-      User.update(profile_url: u[:profile_url]) if user
-      User.update(chat_url: u[:chat_url]) if user
+      user.update(profile_url: u[:profile_url]) if user
+      user.update(chat_url: u[:chat_url]) if user
       User.create!(u) unless user
+      user.reload
     end
   end
 
