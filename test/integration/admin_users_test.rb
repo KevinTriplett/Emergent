@@ -31,12 +31,14 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Status"
       assert_select "th.meeting", "When\n\n(GMT)"
       assert_select "th", "Shadow"
+      assert_select "th", "Requested"
 
       assert_select "td.user-greeter", user.greeter
       assert_select "td.user-email", user.email
       assert_select "td.user-status select option[selected='selected']", user.status
       assert_select "td.user-meeting-datetime input[value=?]", user.welcome_timestamp.picker_datetime
       assert_select "td.user-shadow", user.shadow_greeter
+      assert_select "td.user-requested-date", user.request_timestamp.picker_date
       
       user.update(greeter: nil)
       get admin_users_path

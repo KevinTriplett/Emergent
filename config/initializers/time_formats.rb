@@ -28,6 +28,11 @@ class ActiveSupport::TimeWithZone
     strftime("%Y-%m-%dT%H:%M:%SZ")
   end
 
+  # 2023-01-26
+  def picker_date
+    strftime("%Y %m %d")
+  end
+
   # 8:40 pm (Tue 1/26)
   def time_and_day
     strftime("%l:%M %P (%a %-m/%-d)")
