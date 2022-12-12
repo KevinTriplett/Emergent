@@ -8,7 +8,7 @@
   %tbody
     %tr
       %td.header Greeter
-      %td.user-greeter= link_to(@user.greeter ? @user.greeter : "Make me greeter!", "#", class: "user-greeter")
+      %td.user-greeter= link_to(@user.greeter ? @user.greeter : "I will greet", "#", class: "user-greeter")
     %tr
       %td.header Email
       %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
@@ -29,7 +29,7 @@
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
     %tr
       %td.header Shadow
-      %td.user-shadow= link_to(@user.shadow_greeter ? @user.shadow_greeter : "I will shadow!", "#", class: "shadow-greeter")
+      %td.user-shadow= link_to(@user.shadow_greeter ? @user.shadow_greeter : "I will shadow", "#", class: "shadow-greeter")
     %tr
       %td.header Notes
       %td.user-notes

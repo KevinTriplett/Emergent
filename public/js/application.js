@@ -140,12 +140,12 @@ var convertTimeToUTC = function(datetime) {
 
 var getUserGreeter = function(userDOM) {
   var userGreeter = userDOM.find("td.user-greeter a").text();
-  return userGreeter == "Make me greeter!" ? null : userGreeter;
+  return userGreeter == "I will greet" ? null : userGreeter;
 }
 
 var getUserShadow = function(userDOM) {
   var userShadow = userDOM.find("td.user-shadow a").text();
-  return userShadow == "I will shadow!" ? null : userShadow;
+  return userShadow == "I will shadow" ? null : userShadow;
 }
 
 var getUserNotes = function(userDOM) {
@@ -321,7 +321,7 @@ $(document).ready(function() {
     var data = getPatchData(userDOM);
     data.greeter = userGreeter;
     patch(userId, data, function() {
-      userGreeter = userGreeter ? userGreeter : "Make me greeter!"
+      userGreeter = userGreeter ? userGreeter : "I will greet"
       userDOM.find("td.user-greeter a").text(userGreeter);
     }, function() {
       alert("Could not change greeter - ask Kevin");
@@ -348,7 +348,7 @@ $(document).ready(function() {
     var data = getPatchData(userDOM);
     data.shadow_greeter = userShadow;
     patch(userId, data, function() {
-      userShadow = userShadow ? userShadow : "I will shadow!"
+      userShadow = userShadow ? userShadow : "I will shadow"
       userDOM.find("td.user-shadow a").text(userShadow);
     }, function() {
       alert("Could not change shadow - ask Kevin");
@@ -395,8 +395,8 @@ $(document).ready(function() {
     e.preventDefault();
     var userDOM = $(this).closest("[data-id]");
     var userGreeter = userDOM.find("td.user-greeter a").text();
-    if (userGreeter == "Make me greeter!") {
-      alert("First, click 'Make me greeter!' and then send the email");
+    if (userGreeter == "I will greet") {
+      alert("First, click 'I will greet' and then send the email");
       return;
     }
 

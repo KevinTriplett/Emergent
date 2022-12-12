@@ -42,11 +42,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       
       user.update(greeter: nil)
       get admin_users_path
-      assert_select "td.user-greeter", "Make me greeter!"
+      assert_select "td.user-greeter", "I will greet"
 
       user.update(shadow_greeter: nil)
       get admin_users_path
-      assert_select "td.user-shadow", "I will shadow!"
+      assert_select "td.user-shadow", "I will shadow"
     end
   end
 
@@ -87,11 +87,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
       user.update(greeter: nil)
       get admin_user_path(user.id)
-      assert_select "td.user-greeter", "Make me greeter!"
+      assert_select "td.user-greeter", "I will greet"
 
       user.update(shadow_greeter: nil)
       get admin_user_path(user.id)
-      assert_select "td.user-shadow", "I will shadow!"
+      assert_select "td.user-shadow", "I will shadow"
 
       user.update(profile_url: nil)
       user.update(chat_url: nil)

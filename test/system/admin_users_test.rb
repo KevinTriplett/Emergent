@@ -12,7 +12,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_current_path admin_users_path
 
       accept_prompt(with: random_user_name) do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       sleep 1
       user.reload
@@ -22,7 +22,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_users_path
       assert_current_path admin_users_path
       accept_prompt do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       sleep 1
       user.reload
@@ -34,7 +34,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_current_path admin_users_path
 
       accept_prompt do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       sleep 1
       user.reload
@@ -55,13 +55,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "a.user-profile-button[href='#{user.profile_url}']", text: "😊 Profile"
       assert_selector "a.user-chat-button[href='#{user.chat_url}']", text: "💬 Chat"
 
-      assert_selector "td.user-greeter a", text: "Make me greeter!"
-      assert_selector "td.user-shadow a", text: "I will shadow!"
+      assert_selector "td.user-greeter a", text: "I will greet"
+      assert_selector "td.user-shadow a", text: "I will shadow"
 
       ######################
       # GREETER
       message = dismiss_prompt do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       assert_equal "Enter your name", message
       
@@ -70,7 +70,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil user.greeter
 
       accept_prompt(with: random_user_name) do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       
       sleep 1
@@ -84,12 +84,12 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.greeter
-      assert_selector "td.user-greeter a", text: "Make me greeter!"
+      assert_selector "td.user-greeter a", text: "I will greet"
 
       ######################
       # SHADOW
       message = dismiss_prompt do
-        click_link('I will shadow!')
+        click_link('I will shadow')
       end
       assert_equal "Enter your name", message
       
@@ -98,7 +98,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil user.shadow_greeter
 
       accept_prompt(with: random_user_name) do
-        click_link('I will shadow!')
+        click_link('I will shadow')
       end
       
       sleep 1
@@ -112,7 +112,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.shadow_greeter
-      assert_selector "td.user-shadow a", text: "I will shadow!"
+      assert_selector "td.user-shadow a", text: "I will shadow"
     end
   end
 
@@ -124,13 +124,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_current_path admin_users_path
 
       assert_selector "td.user-name a", text: user.name
-      assert_selector "td.user-greeter a", text: "Make me greeter!"
-      assert_selector "td.user-shadow a", text: "I will shadow!"
+      assert_selector "td.user-greeter a", text: "I will greet"
+      assert_selector "td.user-shadow a", text: "I will shadow"
 
       ######################
       # GREETER
       message = dismiss_prompt do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       assert_equal "Enter your name", message
       
@@ -139,7 +139,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil user.greeter
 
       accept_prompt(with: random_user_name) do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       
       sleep 1
@@ -153,12 +153,12 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.greeter
-      assert_selector "td.user-greeter a", text: "Make me greeter!"
+      assert_selector "td.user-greeter a", text: "I will greet"
 
       ######################
       # SHADOW
       message = dismiss_prompt do
-        click_link('I will shadow!')
+        click_link('I will shadow')
       end
       assert_equal "Enter your name", message
       
@@ -167,7 +167,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil user.shadow_greeter
 
       accept_prompt(with: random_user_name) do
-        click_link('I will shadow!')
+        click_link('I will shadow')
       end
       
       sleep 1
@@ -181,7 +181,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.shadow_greeter
-      assert_selector "td.user-shadow a", text: "I will shadow!"
+      assert_selector "td.user-shadow a", text: "I will shadow"
     end
   end
 
@@ -309,13 +309,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       message = accept_alert do
         click_link(user.email)
       end
-      assert_equal "First, click 'Make me greeter!' and then send the email", message
+      assert_equal "First, click 'I will greet' and then send the email", message
       user.reload
       assert_nil user.greeter
       assert_equal old_status, user.status
 
       accept_prompt(with: random_user_name) do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       sleep 1
     
@@ -357,13 +357,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       message = accept_alert do
         click_link(user.email)
       end
-      assert_equal "First, click 'Make me greeter!' and then send the email", message
+      assert_equal "First, click 'I will greet' and then send the email", message
       user.reload
       assert_nil user.greeter
       assert_equal old_status, user.status
 
       accept_prompt(with: random_user_name) do
-        click_link('Make me greeter!')
+        click_link('I will greet')
       end
       sleep 1
     
