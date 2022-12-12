@@ -52,7 +52,7 @@ class NewUserSpider < EmergeSpider
       # ].map(&:text).join(" ")
       first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
       last_name = row.css(".invite-list-item-last-name-text").text.strip
-      name = "#{first_name} #{last_name}"
+      full_name = "#{first_name} #{last_name}"
       email = row.css(".invite-list-item-email-text").text.strip
       request_date = row.css(".invite-list-item-email + td").text.strip
 
@@ -66,7 +66,15 @@ class NewUserSpider < EmergeSpider
         # for new requests, just click the nice button
         css += " td.invite-list-item-status a.invite-list-item-view-answers-button"
         NewUserSpider.logger.debug "CLICKING THE ANSWER BUTTON"
-        browser.find(:css, css).click
+        begin
+          browser.find(:css, css).click
+        rescue
+          # skip this member but output a message in the log
+          NewUserSpider.logger.failure "#{name} could not click on Answer button"
+          NewUserSpider.logger.failure "member #{full_name}"
+          NewUserSpider.logger.failure "css #{css}"
+          next
+        end
       else
         status = row.css("a.invite-list-item-status-text").text.strip
         profile_url = row.css(".invite-list-item-email a").attr("href").value
@@ -106,7 +114,7 @@ class NewUserSpider < EmergeSpider
 
       NewUserSpider.logger.debug "\n-------------------------------------------------------\n"
       NewUserSpider.logger.debug "MEMBER #{users.count + 1} of #{@@new_user_count}"
-      NewUserSpider.logger.debug "name = #{name}"
+      NewUserSpider.logger.debug "name = #{full_name}"
       NewUserSpider.logger.debug "email = #{email}"
       NewUserSpider.logger.debug "request_date = #{request_date}"
       NewUserSpider.logger.debug "status = #{status}"
@@ -115,7 +123,7 @@ class NewUserSpider < EmergeSpider
       NewUserSpider.logger.debug "qna = #{questions_and_answers.join("\n\n")}"
 
       users.push({
-        name: name,
+        name: full_name,
         first_name: first_name,
         last_name: last_name,
         email: email,
