@@ -21,9 +21,9 @@
         %td.user-email= link_to u.email, "mailto:#{ u.email }"
         %td.user-status
           %select
-            - @options.each do |o|
-              - selected = (o == u.status ? "selected" : nil)
-              %option{ selected: selected }= o
+            - @options.each do |opt|
+              - selected = (opt == u.status ? "selected" : nil)
+              %option{ selected: selected }= opt
         %td.user-meeting-datetime
           - datetime = u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
           %input.datetime-picker.utc-time{ type: "text", value: datetime }
