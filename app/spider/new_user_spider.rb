@@ -70,9 +70,10 @@ class NewUserSpider < EmergeSpider
           browser.find(:css, css).click
         rescue
           # skip this member but output a message in the log
-          NewUserSpider.logger.failure "#{name} could not click on Answer button"
-          NewUserSpider.logger.failure "member #{full_name}"
-          NewUserSpider.logger.failure "css #{css}"
+          NewUserSpider.logger.fatal "#{name} could not click on Answer button"
+          NewUserSpider.logger.fatal "member #{full_name}"
+          NewUserSpider.logger.fatal "css #{css}"
+          NewUserSpider.logger.fatal "skipping ------------------------------------"
           next
         end
       else
