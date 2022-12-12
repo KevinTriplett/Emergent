@@ -27,5 +27,5 @@
         %td.user-meeting-datetime
           - datetime = u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
           %input.datetime-picker.utc-time{ type: "text", value: datetime }
-        %td.user-shadow= link_to(u.shadow_greeter ? u.shadow_greeter : "Let me shadow!", "#", class: "shadow-greeter")
+        %td.user-shadow= link_to(u.shadow_greeter ? u.shadow_greeter : "I will shadow!", "#", class: "shadow-greeter")
         %td.user-requested-date= u.request_timestamp.picker_date

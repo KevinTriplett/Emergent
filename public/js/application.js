@@ -145,7 +145,7 @@ var getUserGreeter = function(userDOM) {
 
 var getUserShadow = function(userDOM) {
   var userShadow = userDOM.find("td.user-shadow a").text();
-  return userShadow == "Let me shadow!" ? null : userShadow;
+  return userShadow == "I will shadow!" ? null : userShadow;
 }
 
 var getUserNotes = function(userDOM) {
@@ -348,7 +348,7 @@ $(document).ready(function() {
     var data = getPatchData(userDOM);
     data.shadow_greeter = userShadow;
     patch(userId, data, function() {
-      userShadow = userShadow ? userShadow : "Let me shadow!"
+      userShadow = userShadow ? userShadow : "I will shadow!"
       userDOM.find("td.user-shadow a").text(userShadow);
     }, function() {
       alert("Could not change shadow - ask Kevin");

@@ -56,7 +56,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "a.user-chat-button[href='#{user.chat_url}']", text: "💬 Chat"
 
       assert_selector "td.user-greeter a", text: "Make me greeter!"
-      assert_selector "td.user-shadow a", text: "Let me shadow!"
+      assert_selector "td.user-shadow a", text: "I will shadow!"
 
       ######################
       # GREETER
@@ -89,7 +89,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       ######################
       # SHADOW
       message = dismiss_prompt do
-        click_link('Let me shadow!')
+        click_link('I will shadow!')
       end
       assert_equal "Enter your name", message
       
@@ -98,7 +98,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil user.shadow_greeter
 
       accept_prompt(with: random_user_name) do
-        click_link('Let me shadow!')
+        click_link('I will shadow!')
       end
       
       sleep 1
@@ -112,7 +112,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.shadow_greeter
-      assert_selector "td.user-shadow a", text: "Let me shadow!"
+      assert_selector "td.user-shadow a", text: "I will shadow!"
     end
   end
 
@@ -125,7 +125,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       assert_selector "td.user-name a", text: user.name
       assert_selector "td.user-greeter a", text: "Make me greeter!"
-      assert_selector "td.user-shadow a", text: "Let me shadow!"
+      assert_selector "td.user-shadow a", text: "I will shadow!"
 
       ######################
       # GREETER
@@ -158,7 +158,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       ######################
       # SHADOW
       message = dismiss_prompt do
-        click_link('Let me shadow!')
+        click_link('I will shadow!')
       end
       assert_equal "Enter your name", message
       
@@ -167,7 +167,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil user.shadow_greeter
 
       accept_prompt(with: random_user_name) do
-        click_link('Let me shadow!')
+        click_link('I will shadow!')
       end
       
       sleep 1
@@ -181,7 +181,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.shadow_greeter
-      assert_selector "td.user-shadow a", text: "Let me shadow!"
+      assert_selector "td.user-shadow a", text: "I will shadow!"
     end
   end
 
