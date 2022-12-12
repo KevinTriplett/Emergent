@@ -26,6 +26,9 @@
 !/tmp/pids/
 !/tmp/pids/.keep
 
+# ignore browser files
+/shared/tmp/*
+
 # Ignore uploaded files in development.
 /storage/*
 !/storage/.keep
