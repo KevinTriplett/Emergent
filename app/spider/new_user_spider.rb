@@ -9,7 +9,7 @@ class NewUserSpider < EmergeSpider
     user_agent: USER_AGENT,
     disable_images: true,
     window_size: [1366, 768],
-    user_data_dir: (Rails.env.production? ? "/home/deploy/Emergent/shared/tmp/chrome_profile" : nil),
+    user_data_dir: (Rails.env.development? ? nil : "/home/deploy/Emergent/shared/tmp/chrome_profile"),
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
