@@ -26,8 +26,7 @@ class ApproveUserSpider < EmergeSpider
     NewUserSpider.logger.info "SPIDER #{name} STARTING"
     request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
 
-    email = ::Spider.get_message(name)
-    ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
+    ApproveUserSpider.logger.info "STARTING APPROVING USER"
     request_to :approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests"
 
     ::Spider.set_result(name, "success")
@@ -35,11 +34,13 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
-    ApproveUserSpider.logger.debug "ATTEMPTING TO FIND AND CLICK APPROVE FOR USER WITH EMAIL #{ApproveUserSpider.user_email}"
+    email = ::Spider.get_message(name)
+    ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
+    ApproveUserSpider.logger.debug "ATTEMPTING TO FIND AND CLICK APPROVE FOR USER WITH EMAIL #{email}"
     css = ".invite-list-container tr.invite-request-list-item"
     wait_until(css)
 
-    css += ":has(.invite-list-item-email-text[title='#{ApproveUserSpider.user_email}'])"
+    css += ":has(.invite-list-item-email-text[title='#{email}'])"
     css += " a.invite-list-item-approve-button"
     ApproveUserSpider.logger.debug "LOOKING FOR #{css}"
     browser.find(:css, css).click
