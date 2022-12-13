@@ -29,7 +29,7 @@ module Admin
       user = User.find(params[:id])
       Spider.set_message("approve_user_spider", user.email)
       ApproveUserSpider.crawl!
-      until result = Spider.get_result
+      until result = Spider.get_result("approve_user_spider")
         sleep 1
       end
       user.update(status: "Joined!") if result == "success"
