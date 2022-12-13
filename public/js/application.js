@@ -240,8 +240,11 @@ $(document).ready(function() {
   $("a.user-approve").on("click", function(e) {
     e.preventDefault();
     self = $(this);
+    if (self.hasClass("disabled")) return;
     var url = $(this).attr("href");
     var token = $("table.users,table.user").data("token");
+    self.addClass("disabled");
+
     $.ajax({
       url: url,
       type: "POST",
