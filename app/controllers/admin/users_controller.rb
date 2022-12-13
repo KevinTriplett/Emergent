@@ -32,13 +32,8 @@ module Admin
       until result = Spider.get_result
         sleep 1
       end
-      if result == "success"
-        user.update(status: "Joined!")
-        flash[:notice] = "#{user.name} was approved"
-      else
-        flash[:error] = "#{user.name} could not be approved - talk to Kevin"
-      end
-      redirect_to admin_users_url
+      user.update(status: "Joined!") if result == "success"
+      render json: {result: result}
     end
 
     private

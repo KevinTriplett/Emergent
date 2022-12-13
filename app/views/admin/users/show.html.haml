@@ -45,8 +45,7 @@
               %span.question= q
               %br
               %span.answer= a
-        - if @user.status == "Pending"
-          = link_to("Approve", |
-            admin_approve_user_path(@user.id),  |
-            class: "btn btn-primary user-approve", |
-            data: { turbo_method: "post", turbo_confirm: "Confirm you want to approve (takes a few minutes)" })
+        -# - if @user.status == "Pending"
+        = link_to "Approve", |
+          admin_approve_user_path(@user.id), |
+          class: "btn btn-primary user-approve"

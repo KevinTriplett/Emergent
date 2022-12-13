@@ -238,7 +238,31 @@ $(document).ready(function() {
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
   $("a.user-approve").on("click", function(e) {
-    loaded = false;
+    e.preventDefault();
+    self = $(this);
+    var url = $(this).attr("href");
+    var token = $("table.users,table.user").data("token");
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: null,
+      processData: false,
+      dataType: 'JSON',
+      contentType: 'application/json',
+      headers: {
+        'X-CSRF-Token': token
+      },
+      success: function(data) {
+        if (data.result == "success")
+          self.replaceWith("<p class='approved'>Member approved!</p>");
+        else
+          self.replaceWith("<p>Member could not be approved - ask Kevin</p>");
+      },
+      error: function() {
+        self.replaceWith("<p>Member could not be approved - ask Kevin</p>");
+      }
+    });
+  
   });
 
   ////////////////////////////////////////////////////

@@ -63,29 +63,42 @@ table.users, table.user {
       line-height: 0.8em;
     }
   }
-  tbody td.user-questions {
-    li {
-      margin-bottom: 7px;
+  tbody {
+    td.user-questions {
+      li {
+        margin-bottom: 7px;
+      }
+      span.question {
+        font-size: small;
+        color: lightslategray;
+      }
+      span.answer {
+        font-size: large;
+      }
+      p {
+        color: red;
+        font-size: larger;
+        font-weight: bold;
+      }
+      p.approved {
+        color: green;
+        font-size: larger;
+        font-weight: bold;
+      }
     }
-    span.question {
-      font-size: small;
-      color: lightslategray;
-    }
-    span.answer {
-      font-size: large;
+    td.user-notes {
+      span.save-status {
+        font-weight: bolder;
+        vertical-align: top;
+      }
+      span.save-status.success {
+        color: green;
+      }
+      span.save-status.failure {
+        color: red;
+      }
     }
   }
-  tbody td.user-notes
-    span.save-status {
-      font-weight: bolder;
-      vertical-align: top;
-    }
-    span.save-status.success {
-      color: green;
-    }
-    span.save-status.failure {
-      color: red;
-    }
 }
 
 /* ----------------------------------- */
