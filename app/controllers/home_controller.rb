@@ -1,3 +1,6 @@
 class HomeController < ApplicationController
-  def index; end
+  layout "home"
+  def index
+    @body_class = "home"
+  end
 end
