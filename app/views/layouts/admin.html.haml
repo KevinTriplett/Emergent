@@ -26,9 +26,8 @@
         .col-sm
           - flash.each do |type, msg|
             .row.alert.alert-info
-              .col.flash= msg
+              .col.flash{class: type}= msg
       .row
         .col-sm-12
           %h1 Emergent Commons Volunteer App
           = yield
-        .col-sm-4

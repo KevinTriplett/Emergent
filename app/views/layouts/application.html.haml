@@ -10,15 +10,14 @@
     = stylesheet_link_tag "application", "data-turbo-track": "reload"
     = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
 
-  %body#admin
+  %body#app{class: @body_class}
     .container
       .row
         .col-sm
           - flash.each do |type, msg|
             .row.alert.alert-info
-              .col.flash= msg
+              .col.flash{class: type}= msg
       .row
-        .col-sm-8
+        .col-sm-12
           %h1 Emergent Commons App
           = yield
-        .col-sm-4
