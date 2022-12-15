@@ -25,3 +25,9 @@ production:
   database: emergent-production
   username: deploy
   password: <%= ENV["EMERGENT_DB_PASSWORD"] %>
+
+staging:
+  <<: *default
+  database: emergent-staging
+  username: deploy
+  password: <%= ENV["EMERGENT_DB_PASSWORD"] %>

@@ -1,3 +1,4 @@
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
@@ -8,10 +9,9 @@
 # server "db.example.com", user: "deploy", roles: %w{db}
 server 'emergentcommons.app', user: 'deploy', roles: %w{app db web}
 
-set :deploy_to, "/home/deploy/#{fetch :application}/production/"
-set :branch, 'main' # Default branch is :master
-set :stage, :production
-
+set :deploy_to, "/home/deploy/#{fetch :application}/staging/"
+set :branch, 'staging'
+set :stage, :staging
 
 
 # role-based syntax

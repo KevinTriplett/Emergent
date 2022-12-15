@@ -8,11 +8,8 @@ set :repo_url, "git@github.com:KevinTriplett/Emergent.git"
 set :passenger_environment_variables, {
   'PASSENGER_INSTANCE_REGISTRY_DIR' => '/var/run/passenger-instreg'
 }
-# Default branch is :master
-set :branch, 'main'
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, "/home/deploy/#{fetch :application}"
 set :rbenv_prefix, '/usr/bin/rbenv exec' # Cf issue: https://github.com/capistrano/rbenv/issues/96
 
 # whenever crontab delimiters / namespace

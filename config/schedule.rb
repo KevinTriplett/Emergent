@@ -12,10 +12,12 @@
 
 set :output, "/home/deploy/Emergent/current/log/cron.log"
 
-every 1.day, at: "4:30am" do
-  rake "ec:nm_crawl_all"
-end
+if Rails.env.production?
+  every 1.day, at: "4:30am" do
+    rake "ec:nm_crawl_all"
+  end
 
-every 1.hour do
-  rake "ec:nm_crawl_newest"
+  every 1.hour do
+    rake "ec:nm_crawl_newest"
+  end
 end
