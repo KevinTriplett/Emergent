@@ -1,6 +1,7 @@
 module Admin
   class UsersController < ApplicationController
     layout "admin"
+    before_action :signed_in_user
 
     def index
       date = ("2022-11-18").to_date

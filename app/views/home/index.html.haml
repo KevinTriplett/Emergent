@@ -1,4 +1,5 @@
 %img{ src: "/images/ec-elephant.jpg", width: "100%" }
 .center
-  %input{type: "text", placeholder: "Your Mighty Networks Email"}
-  =link_to("Send My Magic Link", user_login_url, class: "btn btn-primary")
+  %form{action: send_magic_link_url, method: "put"}
+    %input{name: "email", type: "text", placeholder: "Email"}
+    %button.btn.btn-warning Send My Magic Link

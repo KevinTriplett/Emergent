@@ -1,4 +1,18 @@
 class User < ActiveRecord::Base
+  has_secure_token
+
+  def ensure_token
+    update(token: User.generate_unique_secure_token) if token.nil?
+  end
+
+  def generate_session_token
+    update(session_token: SecureRandom.urlsafe_base64)
+    session_token
+  end
+
+  def has_role(role)
+    true # TODO: implement
+  end
 
   def self.import_users
     file = File.open "tmp/import.tsv"
@@ -21,6 +35,7 @@ class User < ActiveRecord::Base
       profile_url = "https://emergent-commons.mn.co/members/#{member_id}"
       chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
 
+      # TODO: initialize timezone based on location if timezone.nil?
       if find_by_email(email)
         puts "updating #{name}"
         user = find_by_email(email)

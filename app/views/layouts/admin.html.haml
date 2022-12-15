@@ -23,10 +23,12 @@
   %body#admin
     .container
       .row
-        .col-sm
+        .col-sm-8
           - flash.each do |type, msg|
             .row.alert.alert-info
               .col.flash{class: type}= msg
+        .col-sm-4.right
+          = link_to "Logout", logout_url
       .row
         .col-sm-12
           %h1 Emergent Commons Volunteer App
