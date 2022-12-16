@@ -11,6 +11,8 @@ server 'emergentcommons.app', user: 'deploy', roles: %w{app db web}
 set :deploy_to, "/home/deploy/#{fetch :application}/production/"
 set :branch, 'main' # Default branch is :master
 set :stage, :production
+set :whenever_environment, Proc.new { fetch :stage }
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
 
 
