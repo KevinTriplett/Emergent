@@ -12,9 +12,9 @@ server 'emergentcommons.app', user: 'deploy', roles: %w{app db web}
 set :deploy_to, "/home/deploy/#{fetch :application}/staging/"
 set :branch, 'staging'
 set :stage, :staging
-# set :whenever_environment, defer { stage }
-# set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
-# require 'whenever/capistrano'
+set :whenever_environment, Proc.new { fetch :stage }
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
+require 'whenever/capistrano'
 
 
 # role-based syntax
