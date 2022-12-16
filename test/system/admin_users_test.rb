@@ -26,8 +26,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Saves greeter name between prompts and page loads" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user
+      user = login
 
       visit admin_users_path
       assert_current_path admin_users_path
@@ -65,8 +64,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can select a user to greet and shadow in show view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user
+      user = login
 
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
@@ -140,8 +138,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can select a user to greet in index view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user
+      user = login
 
       visit admin_users_path
       assert_current_path admin_users_path
@@ -210,8 +207,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and set meeting in show view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user(status: "Joined!")
+      user = login(status: "Joined!")
       user.update!(welcome_timestamp: nil)
 
       visit admin_user_path(user.id)
@@ -255,8 +251,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and change meeting in index view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user(status: "Joined!")
+      user = login(status: "Joined!")
       user.update!(welcome_timestamp: nil)
 
       visit admin_users_path
@@ -300,8 +295,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can enter notes in show view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user
+      user = login
       old_notes = user.notes
 
       visit admin_user_path(user.id)
@@ -326,8 +320,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can send email in show view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user
+      user = login
       old_status = user.status
 
       visit admin_user_path(user.id)
@@ -375,8 +368,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can send email in index view" do
     DatabaseCleaner.cleaning do
-      login
-      user = create_user
+      user = login
       old_status = user.status
 
       visit admin_users_path

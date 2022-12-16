@@ -83,9 +83,10 @@ def create_user_with_result(params = {})
   )
 end
 
-def login
-  user = create_authorized_user
+def login(params = {})
+  user = create_authorized_user(params)
   visit login_url(token: user.token)
+  user
 end
 
 def create_user(params = {})
