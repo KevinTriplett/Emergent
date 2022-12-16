@@ -35,7 +35,9 @@ module SessionsHelper
 
   def verify_and_decrypt_session_cookie(cookie, secret_key_base = Rails.application.secret_key_base)
     cookie = CGI.unescape(cookie)
+    logger.info "cookie = #{cookie}"
     data, iv, auth_tag = cookie.split("--").map do |v| 
+      logger.info "v = #{v}"
       Base64.strict_decode64(v)
     end
     cipher = OpenSSL::Cipher.new("aes-256-gcm")
