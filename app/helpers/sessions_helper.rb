@@ -2,6 +2,8 @@ require 'cgi'
 require 'active_support'
 
 module SessionsHelper
+  class InvalidMessage < StandardError; end
+
   def sign_in
     params.permit(:token)
     user = User.find_by_token(params[:token])
@@ -21,7 +23,7 @@ module SessionsHelper
 
   def current_user
     return unless cookies[:session_token]
-    session_token = verify_and_decrypt_session_cookie(cookies[:session_token])
+    session_token = verify_and_decrypt_cookie(:session_token)
     @current_user ||= User.find_by_session_token(session_token)
   end
 
@@ -33,13 +35,12 @@ module SessionsHelper
     current_user && current_user.has_role(:greeter)
   end
 
-  def verify_and_decrypt_session_cookie(cookie, secret_key_base = Rails.application.secret_key_base)
-    cookie = CGI.unescape(cookie)
-    logger.info "cookie = #{cookie}"
-    data, iv, auth_tag = cookie.split("--").map do |v| 
-      logger.info "v = #{v}"
-      Base64.strict_decode64(v)
-    end
+  # ref https://gist.github.com/wildjcrt/6359713fa770d277927051fdeb30ebbf
+  def verify_and_decrypt_cookie(key, secret_key_base = Rails.application.secret_key_base)
+    raise "someone ate the cookie" unless cookies[key]
+    data, iv, auth_tag = cookies[key].split("--").map { |v| ::Base64.strict_decode64(v) }
+    raise "auth_tag is invalid" if auth_tag.nil? || auth_tag.bytes.length != 16
+    
     cipher = OpenSSL::Cipher.new("aes-256-gcm")
 
     # Compute the encryption key
@@ -55,10 +56,12 @@ module SessionsHelper
     # Perform decryption
     cookie_payload = cipher.update(data)
     cookie_payload << cipher.final
+    message = ActiveSupport::Messages::Metadata.verify(cookie_payload, "cookie.session_token")
+    raise "cannot verify cookie" if message.nil?
     cookie_payload = JSON.parse(cookie_payload)
 
     # Decode Base64 encoded stored data
-    decoded_stored_value = Base64.decode64(cookie_payload["_rails"]["message"])
+    decoded_stored_value = ::Base64.decode64(cookie_payload["_rails"]["message"])
     JSON.parse(decoded_stored_value)
   end
 end
