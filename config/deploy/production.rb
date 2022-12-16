@@ -10,8 +10,11 @@ server 'emergentcommons.app', user: 'deploy', roles: %w{app db web}
 
 set :deploy_to, "/home/deploy/#{fetch :application}/production/"
 set :branch, 'main' # Default branch is :master
-set :stage, :production
 
+set :stage, :production
+set :whenever_environment, defer { stage }
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
+require 'whenever/capistrano'
 
 
 # role-based syntax

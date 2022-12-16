@@ -12,9 +12,6 @@ set :passenger_environment_variables, {
 # Default deploy_to directory is /var/www/my_app_name
 set :rbenv_prefix, '/usr/bin/rbenv exec' # Cf issue: https://github.com/capistrano/rbenv/issues/96
 
-# whenever crontab delimiters / namespace
-set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
-
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
 
