@@ -94,9 +94,9 @@ def create_user(params = {})
 end
 
 def get_magic_link(user)
-  "http://emergentcommons.app/login/#{user.token}"
+  "http://test.emergentcommons.app/login/#{user.token}"
 end
 
 def get_unsubscribe_link(user)
-  "http://emergentcommons.app/unsubscribe/#{user.token}"
+  "http://test.emergentcommons.app/unsubscribe/#{user.token}"
 end

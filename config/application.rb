@@ -21,8 +21,6 @@ module Emergent
     # config.eager_load_paths << Rails.root.join("extras")
     config.from_email_adr = "noreply@emergentcommons.app"
 
-    Rails.application.routes.default_url_options[:host] = 'emergentcommons.app'
-
     config.admin_name = ENV["ADMIN_NAME"]
     config.admin_password = ENV["ADMIN_PASSWORD"]
     config.mn_username = ENV["MN_USERNAME"]
