@@ -20,7 +20,9 @@ class HomeController < ApplicationController
 
   def send_magic_link
     params.permit(:email)
+    logger.info "email = #{params[:email]}"
     user = User.find_by_email params[:email]
+    logger.info "user = #{user.inspect}"
     if user
       user.ensure_token
       UserMailer.with(user).send_magic_link.deliver_now
