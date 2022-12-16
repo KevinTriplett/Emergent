@@ -3,24 +3,47 @@ require "test_helper"
 class AdminUsersTest < ActionDispatch::IntegrationTest
   DatabaseCleaner.clean
 
-  test "Admin page with no users" do
-    # User.delete_all
+  #
+  # for cookiejar info ref https://philna.sh/blog/2020/01/15/test-signed-cookies-in-rails/
+  #
+
+  test "Admin page with unauthorized user" do
+    get admin_users_path
+    assert_response :redirect
+  end
+
+  test "Admin page with authorized user but first visit" do
     DatabaseCleaner.cleaning do
+      user = create_authorized_user
       get admin_users_path
-  
+      assert_response :redirect
+    end
+  end
+
+  test "Admin page with authorized user" do
+    DatabaseCleaner.cleaning do
+      create_authorized_user
+      set_authorization_cookie
+
+      get admin_users_path
+      assert_response :success
+      assert_not_nil assigns(:users)
+
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "No Existing Members"
+      assert_select "h5", "Existing Members"
     end
   end
 
   test "Admin page with users" do
     DatabaseCleaner.cleaning do
-      user = create_user({
+      user = create_authorized_user({
         greeter: random_user_name,
         shadow_greeter: random_user_name
       })
+      set_authorization_cookie
 
       get admin_users_path
+      assert_response :success
       
       assert_select "h5", "Existing Members"
       assert_select "h1", "Emergent Commons Volunteer App"
@@ -52,10 +75,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
   test "Admin page with user" do
     DatabaseCleaner.cleaning do
-      user = create_user({
+      user = create_authorized_user({
         greeter: random_user_name,
         shadow_greeter: random_user_name
       })
+      set_authorization_cookie
 
       get admin_user_path(user.id)
       

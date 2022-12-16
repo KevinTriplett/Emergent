@@ -16,7 +16,7 @@
   %tbody
     - @users.each do |u|
       %tr{ data: {id: u.id}}
-        %td.user-name= link_to(u.name, admin_user_url(u.id))
+        %td.user-name= link_to(u.name, admin_user_url(u.id)) 
         %td.user-greeter= link_to(u.greeter ? u.greeter : "I will greet", "#", class: "user-greeter")
         %td.user-email= link_to u.email, "mailto:#{ u.email }"
         %td.user-status
