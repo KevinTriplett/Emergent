@@ -14,7 +14,6 @@ set :branch, 'staging'
 set :stage, :staging
 set :whenever_environment, Proc.new { fetch :stage }
 set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
-require 'whenever/capistrano'
 
 
 # role-based syntax
