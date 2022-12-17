@@ -1,5 +1,24 @@
 class User < ActiveRecord::Base
 
+  def self.get_status_options
+    return [
+      "Pending",
+      "Joined!",
+      "1st Email Sent",
+      "2nd Email Sent",
+      "Emailing",
+      "No Response",
+      "Rescheduling",
+      "Follow Up",
+      "Will Call",
+      "Greet Scheduled",
+      "Declined",
+      "Welcomed",
+      "Posted Intro",
+      "Completed"
+    ]
+  end
+
   def self.import_users
     file = File.open "tmp/import.tsv"
     data = file.readlines.map(&:chomp)

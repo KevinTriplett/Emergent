@@ -202,12 +202,25 @@ var format = {
   hour: "2-digit",
   minute: "2-digit"
 };
+var progressMessages = [
+  "Establishing secure channel ...",
+  "Contacting HQ ...",
+  "Exchanging credentials ...",
+  "Looking up member request ...",
+  "Sending request to #action ...",
+  "Getting response ...",
+  "Disconnecting from HQ ...",
+  "Cleaning up channel ...",
+  "Updating database ...",
+  "Waiting, not much longer now ..."
+]
 
 ////////////////////////////////////////////////////
 // PAGE INITIALIZATION
 $(document).ready(function() {
   if (loaded) return; // set listeners only once
   loaded = true;
+  $("#spinner").hide();
 
   ////////////////////////////////////////////////////
   // CONNECT DATATABLE
@@ -237,13 +250,22 @@ $(document).ready(function() {
 
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
-  $("a.user-approve").on("click", function(e) {
+  $("a.user-approve,a.user-reject").on("click", function(e) {
     e.preventDefault();
     self = $(this);
+    var action = self.attr("class").split(" ").pop().split("-").pop();
     if (self.hasClass("disabled")) return;
     var url = $(this).attr("href");
     var token = $("table.users,table.user").data("token");
-    self.addClass("disabled");
+    $("#spinner").show();
+    $(".progress-message").show();
+    $(".user-approve,.user-reject").hide();
+
+    var count = 0;
+    var timer = setInterval(function() {
+      var msg = progressMessages[count++].replace("#action", action)
+      $(".progress-message").text(msg);
+    }, 5000);
 
     $.ajax({
       url: url,
@@ -256,13 +278,15 @@ $(document).ready(function() {
         'X-CSRF-Token': token
       },
       success: function(data) {
-        if (data.result == "success")
-          self.replaceWith("<p class='approved'>Member approved!</p>");
-        else
-          self.replaceWith("<p>Member could not be approved - ask Kevin</p>");
-      },
-      error: function() {
-        self.replaceWith("<p>Member could not be approved - ask Kevin</p>");
+        clearTimeout(timer);
+        $("#spinner").hide();
+        var msg = `Member ${action} `
+        msg += data.result == "success" ? "completed" : "could not be completed - ask Kevin";
+        $(".progress-message")
+          .text(msg)
+          .addClass(data.result)
+          .css("top", "0px")
+          .css("left", "30px");
       }
     });
   

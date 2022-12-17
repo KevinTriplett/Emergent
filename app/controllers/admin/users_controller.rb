@@ -7,14 +7,14 @@ module Admin
       @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
       @update_url = admin_users_url
       @token = form_authenticity_token
-      @options = get_status_options
+      @options = User.get_status_options
     end
 
     def show
       @user = User.find(params[:id])
       @update_url = admin_users_url
       @token = form_authenticity_token
-      @options = get_status_options
+      @options = User.get_status_options
     end
 
     def update_user
@@ -26,8 +26,9 @@ module Admin
     end
 
     def approve_user
+      # TODO: move this into an operation
       user = User.find(params[:id])
-      Spider.set_message("approve_user_spider", user.email)
+      Spider.set_message("approve_user_spider", "approve;#{user.email}")
       ApproveUserSpider.crawl!
       until result = Spider.get_result("approve_user_spider")
         sleep 1
@@ -36,25 +37,19 @@ module Admin
       render json: {result: result}
     end
 
-    private
+    def reject_user
+      # TODO: for future implementation
+      return render json: {result: "failure"}
 
-    def get_status_options
-      return [
-        "Pending",
-        "Joined!",
-        "1st Email Sent",
-        "2nd Email Sent",
-        "Emailing",
-        "No Response",
-        "Rescheduling",
-        "Follow Up",
-        "Will Call",
-        "Greet Scheduled",
-        "Declined",
-        "Welcomed",
-        "Posted Intro",
-        "Completed"
-      ]
+      # TODO: move this into an operation
+      user = User.find(params[:id])
+      Spider.set_message("approve_user_spider", "reject;#{user.email}")
+      ApproveUserSpider.crawl!
+      until result = Spider.get_result("approve_user_spider")
+        sleep 1
+      end
+      user.update(status: "Joined!") if result == "success"
+      render json: {result: result}
     end
   end
 end

@@ -49,3 +49,9 @@
           = link_to "Approve", |
             admin_approve_user_path(@user.id), |
             class: "btn btn-primary user-approve"
+          = link_to "Reject", |
+            admin_reject_user_path(@user.id), |
+            class: "btn btn-warning user-reject"
+          .lds-hourglass#spinner
+          %span.progress-message Working ...
+
