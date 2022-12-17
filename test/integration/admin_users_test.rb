@@ -3,10 +3,6 @@ require "test_helper"
 class AdminUsersTest < ActionDispatch::IntegrationTest
   DatabaseCleaner.clean
 
-  #
-  # for cookiejar info ref https://philna.sh/blog/2020/01/15/test-signed-cookies-in-rails/
-  #
-
   test "Admin page with unauthorized user" do
     get admin_users_path
     assert_response :redirect
