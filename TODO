@@ -23,10 +23,10 @@
 - [X] allow member table sorting and filtering
 - [X] user authentication
 - [X] create domain email server
-- [ ] lower spam score for the domain email server
+- [X] lower spam score for the domain email server
+- [X] add "Reject" button to new request
+- [X] give step-by-step feedback for approving user (faked)
 - [ ] *** automate database backup (see https://github.com/backup/backup)
-- [ ] add "Reject" button to new request
-- [ ] give step-by-step feedback for approving user
 - [ ] send reminders on potential status change like meeting dates / follow up
 - [ ] create way for new members to specify dates and times they're available
 - [ ] calculate success rate for greetings (responses / completion)
