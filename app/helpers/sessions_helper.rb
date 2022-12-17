@@ -36,15 +36,17 @@ module SessionsHelper
   end
 
   # ref https://gist.github.com/wildjcrt/6359713fa770d277927051fdeb30ebbf
-  def verify_and_decrypt_cookie(key, secret_key_base = Rails.application.secret_key_base)
-    raise "someone ate the cookie" unless cookies[key]
-    data, iv, auth_tag = cookies[key].split("--").map { |v| ::Base64.strict_decode64(v) }
+  def verify_and_decrypt_cookie(key, secret_key_base = Rails.application.secret_key_base, purpose = nil)
+    raise "no cookie to decrypt" unless cookies[key]
+    data, iv, auth_tag = cookies[key].split("--").map { |v| Base64.strict_decode64(v) }
     raise "auth_tag is invalid" if auth_tag.nil? || auth_tag.bytes.length != 16
-    
+    purpose ||= "cookie.#{key}"
+
     cipher = OpenSSL::Cipher.new("aes-256-gcm")
 
     # Compute the encryption key
-    secret = OpenSSL::PKCS5.pbkdf2_hmac(secret_key_base, "authenticated encrypted cookie", 1000, cipher.key_len, OpenSSL::Digest::SHA256.new)
+    salt = Rails.configuration.action_dispatch.authenticated_encrypted_cookie_salt
+    secret = OpenSSL::PKCS5.pbkdf2_hmac(secret_key_base, salt, 1000, cipher.key_len, OpenSSL::Digest::SHA256.new)
 
     # Setup cipher for decryption and add inputs
     cipher.decrypt
@@ -56,7 +58,7 @@ module SessionsHelper
     # Perform decryption
     cookie_payload = cipher.update(data)
     cookie_payload << cipher.final
-    message = ActiveSupport::Messages::Metadata.verify(cookie_payload, "cookie.session_token")
+    message = ActiveSupport::Messages::Metadata.verify(cookie_payload, purpose)
     raise "cannot verify cookie" if message.nil?
     cookie_payload = JSON.parse(cookie_payload)
 
