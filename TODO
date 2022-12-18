@@ -26,6 +26,7 @@
 - [X] lower spam score for the domain email server
 - [X] add "Reject" button to new request
 - [X] give step-by-step feedback for approving user (faked)
+- [X] style home page for mobile devices
 - [ ] *** automate database backup (see https://github.com/backup/backup)
 - [ ] send reminders on potential status change like meeting dates / follow up
 - [ ] create way for new members to specify dates and times they're available
