@@ -56,6 +56,63 @@ body.home {
   }
 }
 
+@media (orientation: portrait) and (min-width: 300px) {
+  body.home .center {
+    top: 180px;
+  }
+}
+@media (orientation: portrait) and (min-width: 350px) {
+  body.home .center {
+    top: 200px;
+  }
+}
+@media (orientation: portrait) and (min-width: 400px) {
+  body.home .center {
+    top: 225px;
+  }
+}
+@media (orientation: portrait) and (min-width: 730px) {
+  body.home .center {
+    top: 425px;
+  }
+}
+@media (orientation: portrait) and (min-width: 830px) {
+  body.home .center {
+    top: 450px;
+  }
+}
+@media (orientation: portrait) and (min-width: 1020px) {
+  body.home .center {
+    top: 550px;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 560px) {
+  body.home .center {
+    top: 90px;
+  }
+}
+@media (orientation: landscape) and (min-width: 730px) {
+  body.home .center {
+    top: 110px;
+  }
+}
+@media (orientation: landscape) and (min-width: 1020px) {
+  body.home .center {
+    top: 150px;
+  }
+}
+@media (orientation: landscape) and (min-width: 1360px) {
+  body.home .center {
+    top: 250px;
+  }
+}
+@media (orientation: landscape) and (min-width: 1900px) {
+  body.home .center {
+    top: 350px;
+  }
+}
+
 input.btn,
 input.form-control,
 input.form-check-input,
