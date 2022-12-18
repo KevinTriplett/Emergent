@@ -128,7 +128,7 @@ class NewUserSpider < EmergeSpider
         name: full_name,
         first_name: first_name,
         last_name: last_name,
-        email: email,
+        email: email.downcase,
         profile_url: profile_url,
         chat_url: chat_url,
         member_id: member_id,

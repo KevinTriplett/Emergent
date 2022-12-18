@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
         user.update(name: name)
         user.update(first_name: first_name)
         user.update(last_name: last_name)
-        # user.update(email: email)
+        user.update(email: email.downcase)
         user.update(member_id: member_id)
         user.update(profile_url: profile_url)
         user.update(chat_url: chat_url)
@@ -56,7 +56,7 @@ class User < ActiveRecord::Base
           name: name,
           first_name: first_name,
           last_name: last_name,
-          email: email,
+          email: email.downcase,
           member_id: member_id,
           profile_url: profile_url,
           chat_url: chat_url,
