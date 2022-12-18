@@ -20,7 +20,7 @@ class HomeController < ApplicationController
 
   def send_magic_link
     params.permit(:email)
-    user = User.find_by_email params[:email]
+    user = User.find_by_email params[:email].downcase
     if user
       user.ensure_token
       UserMailer.with(user).send_magic_link.deliver_now
