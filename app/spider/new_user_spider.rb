@@ -156,10 +156,10 @@ class NewUserSpider < EmergeSpider
   def create_users(users)
     users.each do |u|
       user = User.find_by_email(u[:email])
+      NewUserSpider.logger.info "#{user ? "Creating" : "Updating"} user #{u[:name]}"
       user.update(profile_url: u[:profile_url]) if user
       user.update(chat_url: u[:chat_url]) if user
       User.create!(u) unless user
-      user.reload
     end
   end
 
