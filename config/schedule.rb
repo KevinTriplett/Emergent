@@ -10,7 +10,7 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-set :output, "/home/deploy/Emergent/current/log/cron.log"
+set :output, "/home/deploy/Emergent/production/current/log/cron.log"
 
 env 'MAILTO', 'output_of_cron@kevintriplett.com'
 
