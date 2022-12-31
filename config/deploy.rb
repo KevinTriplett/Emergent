@@ -3,6 +3,7 @@ lock "~> 3.17.1"
 
 set :application, "Emergent"
 set :repo_url, "git@github.com:KevinTriplett/Emergent.git"
+set :deploy_to, "/home/deploy/#{fetch :application}/#{fetch :stage}/"
 
 # ref https://stackoverflow.com/questions/72918950/error-when-uploading-ruby-on-rails-application-with-capistrano
 set :passenger_environment_variables, {
@@ -11,9 +12,6 @@ set :passenger_environment_variables, {
 
 # Default deploy_to directory is /var/www/my_app_name
 set :rbenv_prefix, '/usr/bin/rbenv exec' # Cf issue: https://github.com/capistrano/rbenv/issues/96
-
-# whenever crontab delimiters / namespace
-set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh

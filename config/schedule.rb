@@ -13,7 +13,7 @@
 set :output, "/home/deploy/Emergent/current/log/cron.log"
 
 if 'production' == @environment
-  every 1.day, at: "4:30am" do
+  every 1.day, at: "4:30 am" do
     rake "ec:nm_crawl_all"
   end
 
