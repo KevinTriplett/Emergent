@@ -12,7 +12,6 @@ set :branch, 'main' # Default branch is :master
 set :stage, :production
 
 # whenever crontab delimiters / namespace
-require 'whenever/capistrano'
 set :whenever_environment, Proc.new { fetch :stage }
 set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
