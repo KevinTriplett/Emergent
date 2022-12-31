@@ -12,6 +12,8 @@
 
 set :output, "/home/deploy/Emergent/current/log/cron.log"
 
+env 'MAILTO', 'output_of_cron@kevintriplett.com'
+
 if 'production' == @environment
   every 1.day, at: "4:30 am" do
     rake "ec:nm_crawl_all"
