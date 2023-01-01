@@ -1,8 +1,8 @@
 %h3= @user.name
 %p
   =link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-  = @user.profile_url ? link_to("😊 Profile", @user.profile_url, class: "user-profile-button btn btn-primary") : "🫣 No Profile Yet"
-  = @user.chat_url ? link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary") : "🤫 Can't Chat Yet"
+  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}")
+  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}")
 
 %table.user.table.table-bordered.table-striped{ data: {url: @update_url, token: @token, id: @user.id } }
   %tbody

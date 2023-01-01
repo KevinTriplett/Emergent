@@ -250,6 +250,8 @@ $(document).ready(function() {
 
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
+  ////////////////////////////////////////////////////
+  // APPROVE AND REJECT BUTTONS
   $("a.user-approve,a.user-reject").on("click", function(e) {
     e.preventDefault();
     self = $(this);
@@ -287,6 +289,19 @@ $(document).ready(function() {
           .addClass(data.result)
           .css("top", "0px")
           .css("left", "30px");
+
+        if (data.result == "failure") return;
+
+        $(".user-profile-button")
+          .attr("href", data.profile_url)
+          .removeClass("hidden");
+        $(".user-chat-button")
+          .attr("href", data.chat_url)
+          .removeClass("hidden");
+        $(".user-status .ui-selectmenu-text")
+          .text(data.status);
+        $(".user-status select")
+          .val(data.status);
       }
     });
   

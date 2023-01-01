@@ -34,7 +34,13 @@ module Admin
         sleep 1
       end
       user.update(status: "Joined!") if result == "success"
-      render json: {result: result}
+      user.reload
+      render json: {
+        result: result,
+        profile_url: user.profile_url,
+        chat_url: user.chat_url,
+        status: user.status
+      }
     end
 
     def reject_user

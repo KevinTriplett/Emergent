@@ -16,7 +16,7 @@ class EmergeSpider < Kimurai::Base
     browser.click_link "Sign In"
     wait_while(".pace-running")
     wait_until("body.communities-app")
-    EmergeSpider.logger.info "#{name} SIGIN SUCCESSFUL"
+    EmergeSpider.logger.info "#{name} SIGNIN SUCCESSFUL"
   end
 
   def raise_error_unless_response_has(css)

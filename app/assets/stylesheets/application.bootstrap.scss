@@ -49,6 +49,14 @@ p.timestamp {
   }
 }
 
+.user-profile-button,
+.user-chat-button {
+  display: inline-block;
+  &.hidden {
+    display: none;
+  }
+}
+
 table.users, table.user {
   width: 100%;
   thead {
