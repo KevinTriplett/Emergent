@@ -82,7 +82,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h3", user.name
 
-      assert_select "a.user-profile-button", "😊 Profile"
+      assert_select "a.user-profile-button", "🙂 Profile"
       assert_select "a.user-chat-button", "💬 Chat"
 
       assert_select "td", "Greeter"
