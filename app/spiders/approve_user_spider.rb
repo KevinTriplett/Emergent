@@ -53,7 +53,6 @@ class ApproveUserSpider < EmergeSpider
 
     # update the member's new id
     ApproveUserSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
-    sleep 2
     link = browser.find(:css, "#{email_div} a")["href"]
     return unless link
 
