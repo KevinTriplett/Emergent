@@ -57,16 +57,16 @@ module Admin
       user.update(status: "Joined!") if result == "success"
       render json: {result: result}
     end
-  end
 
-  private
+    private
 
-  def spider_data(command)
-    data = {
-      action: "approve",
-      email: user.email,
-      admin_name: current_user.name
-    }
-    Marshal.dump data
+    def spider_data(command)
+      data = {
+        action: "approve",
+        email: user.email,
+        admin_name: current_user.name
+      }
+      Marshal.dump data
+    end
   end
 end
