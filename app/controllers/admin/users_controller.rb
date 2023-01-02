@@ -29,12 +29,11 @@ module Admin
     def approve_user
       # TODO: move this into an operation
       user = User.find(params[:id])
-      Spider.set_message("approve_user_spider", "approve;#{user.email}")
+      Spider.set_message("approve_user_spider", spider_data("approve"))
       ApproveUserSpider.crawl!
       until result = Spider.get_result("approve_user_spider")
         sleep 1
       end
-      user.update(status: "Joined!") if result == "success"
       user.reload
       render json: {
         result: result,
@@ -50,7 +49,7 @@ module Admin
 
       # TODO: move this into an operation
       user = User.find(params[:id])
-      Spider.set_message("approve_user_spider", "reject;#{user.email}")
+      Spider.set_message("approve_user_spider", spider_data("reject"))
       ApproveUserSpider.crawl!
       until result = Spider.get_result("approve_user_spider")
         sleep 1
@@ -58,5 +57,16 @@ module Admin
       user.update(status: "Joined!") if result == "success"
       render json: {result: result}
     end
+  end
+
+  private
+
+  def spider_data(command)
+    data = {
+      action: "approve",
+      email: user.email,
+      admin_name: current_user.name
+    }
+    Marshal.dump data
   end
 end

@@ -11,13 +11,13 @@ module User::Operation
     step :log_changes
     step Contract::Persist()
 
-    def log_changes(ctx, model:, current_user:, **)
+    def log_changes(ctx, model:, admin_name:, **)
       user = User.find(model.id)
       params = ctx[:params][:user]
       changes = user.changes(params)
       return true unless changes
       timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
-      change_log = "#{user.change_log}#{timestamp} by #{current_user.name}:\n"
+      change_log = "#{user.change_log}#{timestamp} by #{admin_name}:\n"
       changes.each_pair do |key, val|
         change_log += "- #{key} changed: #{val[0]} -> #{val[1]}\n"
       end

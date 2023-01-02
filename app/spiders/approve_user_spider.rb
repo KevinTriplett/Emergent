@@ -36,7 +36,8 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
-    action, email = ::Spider.get_message(name).split(";")
+    data = Marshal.load ::Spider.get_message(name)
+    action, email, admin_name = data[:action], data[:email], data[:admin_name]
     ApproveUserSpider.logger.info "#{action.upcase}ING USER WITH EMAIL #{email}"
     ApproveUserSpider.logger.debug "ATTEMPTING TO FIND AND CLICK #{action.upcase} FOR USER WITH EMAIL #{email}"
     css = ".invite-list-container tr.invite-request-list-item"
@@ -62,8 +63,21 @@ class ApproveUserSpider < EmergeSpider
 
     user = User.find_by_email(email)
     ApproveUserSpider.logger.debug "UPDATING USER #{user.name}"
+    update_hash = {
+      user: {
+        status: "Joined!",
+        notes: "Approved by #{admin_name}",
+        profile_url: "https://emergent-commons.mn.co/members/#{member_id}",
+        chat_url: "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
+        },
+      id: existing_user.id
+    }
+    # call operation so change_log is also updated
+    User::Operation::Update.call(params: update_hash, admin_name: admin_name)
+
     user.update(member_id: member_id)
-    user.update(profile_url: "https://emergent-commons.mn.co/members/#{member_id}")
-    user.update(chat_url: "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}")
+    user.update(member_id: member_id)
+    user.update(profile_url: )
+    user.update(chat_url: )
   end
 end
