@@ -66,18 +66,15 @@ class ApproveUserSpider < EmergeSpider
     update_hash = {
       user: {
         status: "Joined!",
+        greeter: user.greeter,
+        shadow_greeter: user.shadow_greeter,
         notes: "Approved by #{admin_name}",
         profile_url: "https://emergent-commons.mn.co/members/#{member_id}",
         chat_url: "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
         },
-      id: existing_user.id
+      id: user.id
     }
     # call operation so change_log is also updated
     User::Operation::Update.call(params: update_hash, admin_name: admin_name)
-
-    user.update(member_id: member_id)
-    user.update(member_id: member_id)
-    user.update(profile_url: )
-    user.update(chat_url: )
   end
 end
