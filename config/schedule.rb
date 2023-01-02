@@ -20,6 +20,6 @@ if 'production' == @environment
   end
 
   every 1.hour do
-    rake "ec:nm_crawl_newest"
+    rake "ec:nm_crawl_new"
   end
 end
