@@ -29,7 +29,7 @@ module Admin
     def approve_user
       # TODO: move this into an operation
       user = User.find(params[:id])
-      Spider.set_message("approve_user_spider", spider_data("approve"))
+      Spider.set_message("approve_user_spider", spider_data(user, "approve"))
       ApproveUserSpider.crawl!
       until result = Spider.get_result("approve_user_spider")
         sleep 1
@@ -49,7 +49,7 @@ module Admin
 
       # TODO: move this into an operation
       user = User.find(params[:id])
-      Spider.set_message("approve_user_spider", spider_data("reject"))
+      Spider.set_message("approve_user_spider", spider_data(user, "reject"))
       ApproveUserSpider.crawl!
       until result = Spider.get_result("approve_user_spider")
         sleep 1
@@ -60,7 +60,7 @@ module Admin
 
     private
 
-    def spider_data(command)
+    def spider_data(user, command)
       data = {
         action: "approve",
         email: user.email,
