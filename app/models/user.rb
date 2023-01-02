@@ -1,6 +1,16 @@
 class User < ActiveRecord::Base
   has_secure_token
 
+  def changes(params)
+    {
+      notes: (notes == params[:notes] ?  nil : [notes, params[:notes]]),
+      status: (status == params[:status] ? nil : [status, params[:status]]),
+      greeter: (greeter == params[:greeter] ?  nil : [greeter, params[:greeter]]),
+      shadow_greeter: (shadow_greeter == params[:shadow_greeter] ?  nil : [shadow_greeter, params[:shadow_greeter]]),
+      welcome_timestamp: (welcome_timestamp == params[:welcome_timestamp] ?  nil : [welcome_timestamp, params[:welcome_timestamp]])
+    }.compact
+  end
+
   def ensure_token
     update(token: User.generate_unique_secure_token) if token.nil?
   end

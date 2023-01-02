@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    _ctx = run User::Operation::Update do |ctx|
+    _ctx = run User::Operation::Update(current_user: current_user) do |ctx|
       flash[:notice] = "User profile updated"
       return redirect_to user_url(ctx[:model].token)
     end
