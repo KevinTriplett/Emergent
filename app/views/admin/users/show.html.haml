@@ -55,3 +55,6 @@
           .lds-hourglass#spinner
           %span.progress-message Working ...
 
+    %tr
+      %td.header ChangeLog
+      %td.change-log!= @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"

@@ -101,4 +101,5 @@ group :test do
   gem "webdrivers"
   gem "minitest-line"
   gem "database_cleaner-active_record"
+  gem "rails-controller-testing"
 end

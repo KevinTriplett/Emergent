@@ -19,6 +19,7 @@ module Emergent
     # config.time_zone = "Central Time (US & Canada)"
     config.time_zone = "UTC"
     # config.eager_load_paths << Rails.root.join("extras")
+    config.from_email_adr = "noreply@emergentcommons.app"
 
     config.admin_name = ENV["ADMIN_NAME"]
     config.admin_password = ENV["ADMIN_PASSWORD"]

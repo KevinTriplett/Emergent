@@ -4,9 +4,29 @@ class AdminUsersTest < ApplicationSystemTestCase
   include ActionMailer::TestHelper
   DatabaseCleaner.clean
 
+
+  test "User can get a magic link on first visit" do
+    DatabaseCleaner.cleaning do
+      user = create_authorized_user
+
+      visit admin_users_path
+      assert_current_path root_path
+
+      ActionMailer::Base.deliveries.clear
+      fill_in "Email", with: user.email
+      click_on "Send My Magic Link"
+      email = ActionMailer::Base.deliveries.last
+      assert_equal email.to, [user.email]
+      assert_equal email.subject, "Emergent Commons - your magic link"
+      assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
+      assert_match /#{get_magic_link(user)}/, email.body.inspect
+      ActionMailer::Base.deliveries.clear
+    end
+  end
+
   test "Saves greeter name between prompts and page loads" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = login
 
       visit admin_users_path
       assert_current_path admin_users_path
@@ -44,7 +64,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can select a user to greet and shadow in show view" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = login
 
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
@@ -118,7 +138,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can select a user to greet in index view" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = login
 
       visit admin_users_path
       assert_current_path admin_users_path
@@ -187,7 +207,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and set meeting in show view" do
     DatabaseCleaner.cleaning do
-      user = create_user(status: "Joined!")
+      user = login(status: "Joined!")
       user.update!(welcome_timestamp: nil)
 
       visit admin_user_path(user.id)
@@ -231,7 +251,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and change meeting in index view" do
     DatabaseCleaner.cleaning do
-      user = create_user(status: "Joined!")
+      user = login(status: "Joined!")
       user.update!(welcome_timestamp: nil)
 
       visit admin_users_path
@@ -275,7 +295,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can enter notes in show view" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = login
       old_notes = user.notes
 
       visit admin_user_path(user.id)
@@ -300,7 +320,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can send email in show view" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = login
       old_status = user.status
 
       visit admin_user_path(user.id)
@@ -348,7 +368,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can send email in index view" do
     DatabaseCleaner.cleaning do
-      user = create_user
+      user = login
       old_status = user.status
 
       visit admin_users_path

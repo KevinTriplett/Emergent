@@ -1,6 +1,7 @@
 module Admin
   class UsersController < ApplicationController
     layout "admin"
+    before_action :signed_in_user
 
     def index
       date = ("2022-11-18").to_date
@@ -18,7 +19,7 @@ module Admin
     end
 
     def update_user
-      _ctx = run User::Operation::Update do |ctx|
+      _ctx = run User::Operation::Update, current_user: current_user do |ctx|
         user = {user: ctx[:model]}
         return render json: user
       end

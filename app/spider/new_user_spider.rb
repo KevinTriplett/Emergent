@@ -128,7 +128,7 @@ class NewUserSpider < EmergeSpider
         name: full_name,
         first_name: first_name,
         last_name: last_name,
-        email: email,
+        email: email.downcase,
         profile_url: profile_url,
         chat_url: chat_url,
         member_id: member_id,
@@ -156,7 +156,7 @@ class NewUserSpider < EmergeSpider
   def create_users(users)
     users.each do |u|
       user = User.find_by_email(u[:email])
-      NewUserSpider.logger.info "#{user ? "updating" : "creating"} #{u[:name]}"
+      NewUserSpider.logger.info "#{user ? "updating" : "creating"} user: #{u[:name]}"
       user.update(profile_url: u[:profile_url]) if user
       user.update(chat_url: u[:chat_url]) if user
       User.create!(u) unless user

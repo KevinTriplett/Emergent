@@ -9,12 +9,10 @@
 server 'emergentcommons.app', user: 'deploy', roles: %w{app db web}
 
 set :branch, 'main' # Default branch is :master
-set :stage, :production
 
-# whenever crontab delimiters / namespace
+set :stage, :production
 set :whenever_environment, Proc.new { fetch :stage }
 set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
-
 
 
 # role-based syntax

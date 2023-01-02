@@ -21,21 +21,22 @@
 - [X] import members via rake task
 - [X] keep spiders logged in
 - [X] allow member table sorting and filtering
-- [ ] add "Reject" button to new request
-- [ ] give step-by-step feedback for approving user
+- [X] user authentication
+- [X] create domain email server
+- [X] lower spam score for the domain email server
+- [X] add "Reject" button to new request
+- [X] give step-by-step feedback for approving user (faked)
+- [X] style home page for mobile devices
+- [ ] add self referential greeter_id column to users table
+- [ ] *** automate database backup (see https://github.com/backup/backup)
 - [ ] send reminders on potential status change like meeting dates / follow up
 - [ ] create way for new members to specify dates and times they're available
-- [ ] *** automate database backup (see https://github.com/backup/backup)
 - [ ] calculate success rate for greetings (responses / completion)
-
-## MVP 2
 - [ ] crawl site for volunteer team memberships (Master of Scrolls)
-- [ ] add self referential greeter_id column to users table
-- [ ] user authentication
 - [ ] add greeter authorization role for authenticated user
 - [ ] list of greeters
 - [ ] temporary reorder rotation of greeters
 - [ ] permanent reorder rotation of greeters
-- [ ] create domain email server
-- [ ] lower spam score for the domain email server
 - [ ] ability to send email invites from domain or personal email
+
+## MVP 2

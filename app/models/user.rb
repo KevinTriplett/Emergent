@@ -1,4 +1,28 @@
 class User < ActiveRecord::Base
+  has_secure_token
+
+  def changes(params)
+    {
+      notes: (notes == params[:notes] ?  nil : [notes, params[:notes]]),
+      status: (status == params[:status] ? nil : [status, params[:status]]),
+      greeter: (greeter == params[:greeter] ?  nil : [greeter, params[:greeter]]),
+      shadow_greeter: (shadow_greeter == params[:shadow_greeter] ?  nil : [shadow_greeter, params[:shadow_greeter]]),
+      welcome_timestamp: (welcome_timestamp == params[:welcome_timestamp] ?  nil : [welcome_timestamp, params[:welcome_timestamp]])
+    }.compact
+  end
+
+  def ensure_token
+    update(token: User.generate_unique_secure_token) if token.nil?
+  end
+
+  def generate_session_token
+    update(session_token: SecureRandom.urlsafe_base64)
+    session_token
+  end
+
+  def has_role(role)
+    true # TODO: implement
+  end
 
   def self.get_status_options
     return [
@@ -47,7 +71,7 @@ class User < ActiveRecord::Base
         user.update(name: name)
         user.update(first_name: first_name)
         user.update(last_name: last_name)
-        # user.update(email: email)
+        user.update(email: email.downcase)
         user.update(member_id: member_id)
         user.update(profile_url: profile_url)
         user.update(chat_url: chat_url)
@@ -61,7 +85,7 @@ class User < ActiveRecord::Base
           name: name,
           first_name: first_name,
           last_name: last_name,
-          email: email,
+          email: email.downcase,
           member_id: member_id,
           profile_url: profile_url,
           chat_url: chat_url,
