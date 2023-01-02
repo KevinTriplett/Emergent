@@ -143,7 +143,7 @@ class UserOperationTest < MiniTest::Spec
         result = User::Operation::Update.call(params: user_hash, current_user: admin)
         assert result.success?
         timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
-        new_change_log = "\n#{timestamp} by #{admin.name}:\n- status changed: #{existing_user.status} -> New Status\n"
+        new_change_log = "#{timestamp} by #{admin.name}:\n- status changed: #{existing_user.status} -> New Status\n"
         assert_equal new_change_log, existing_user.reload.change_log
 
         user_hash = {
@@ -159,7 +159,7 @@ class UserOperationTest < MiniTest::Spec
         result = User::Operation::Update.call(params: user_hash, current_user: admin)
         assert result.success?
         timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
-        new_change_log += "\n#{timestamp} by #{admin.name}:\n- notes changed: #{existing_user.notes} -> Replacing all the notes\n"
+        new_change_log += "#{timestamp} by #{admin.name}:\n- notes changed: #{existing_user.notes} -> Replacing all the notes\n"
         assert_equal new_change_log, existing_user.reload.change_log
       end
     end

@@ -49,3 +49,6 @@
           = link_to "Approve", |
             admin_approve_user_path(@user.id), |
             class: "btn btn-primary user-approve"
+    %tr
+      %td.header ChangeLog
+      %td.change-log!= @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
