@@ -72,6 +72,7 @@ class NewUserSpider < EmergeSpider
     NewUserSpider.logger.info "CRAWLING THROUGH #{@@new_user_count} MEMBERS"
     
     rows = browser.current_response.css(row_css)
+    # ref https://til.hashrocket.com/posts/2dab9b4db4-ruby-array-shortcuts-and-method
     create_users rows.collect(&method(:extract_user_data)).select(&:present?)
   end
 

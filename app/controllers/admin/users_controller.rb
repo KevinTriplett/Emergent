@@ -66,6 +66,7 @@ module Admin
         email: user.email,
         admin_name: current_user.name
       }
+      # ref https://www.cosmiclearn.com/ruby/serialization.php
       Marshal.dump data
     end
   end
