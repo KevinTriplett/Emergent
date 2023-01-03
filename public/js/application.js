@@ -97,6 +97,32 @@ Again, welcome!
 
 All the best,
 ${data.greeter}`;
+},
+////////////////////////////////////////////////////
+function(data) {
+  return `Hi ${data.name},
+
+First a very hearty welcome to Emergent Commons!
+  
+|||||||||||||||||| REVISE THIS PART ||||||||||||||||||
+Second, I see you know Justin Franks! Besides knowing him at EC, I actually met him in person when I was visiting my sister-in-law last year in the DC area. Also, I see you are the Founder of Sacred Ground. I'm excited to meet you and also to see our commonality. (for examples see Landing Page answers)
+  
+And lastly, we like to meet one on one with new members. We have found everyone we meet with really likes it, finds it helpful, helps them understand our culture, and makes them feel more comfortable and at home in the community.
+  
+|||||||||||||||||| REVISE THIS PART ||||||||||||||||||
+So, I'd like to invite you to a zoom meeting with me. Let me know what works for you. I am in the EST time zone. Right now I have open: 
+  
+Saturday, Dec 3rd after 3 pm, 
+Sunday after 2:00 pm, 
+Monday between 11:00 am and 3:00 pm, 
+Wednesday between 11:00 am and 1:30 p
+  
+Let me know if any of these times work for you. Or suggest some times that work for you and what your time zone is.
+    
+I look forward to hearing from you.
+  
+Cheers,
+${data.greeter}`;
 }]
 
 ////////////////////////////////////////////////////
