@@ -68,7 +68,7 @@ class User < ActiveRecord::Base
       profile_url = "https://emergent-commons.mn.co/members/#{member_id}"
       chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
 
-      user = email ? find_by_email(email) : find_by_name(name)
+      user = email.present? ? find_by_email(email) : find_by_name(name)
       if user
         puts "updating #{name}"
         user = find_by_email(email)
