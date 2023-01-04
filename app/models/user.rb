@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 
   def changes(params)
     changed = {}
-    %w{notes status greeter shadow_greeter welcome_timestamp}.each do |attr|
+    %w{notes status greeter shadow_greeter when_timestamp}.each do |attr|
       attr = attr.to_sym
       changed[attr] = changed?(attr, params[attr])
     end

@@ -45,32 +45,19 @@ class UserOperationTest < MiniTest::Spec
       DatabaseCleaner.cleaning do
         admin = create_user
         existing_user = create_user
-        existing_user.greeter = random_user_name
 
         # user_hash = existing_user.attributes <-- this does not work
         user_hash = {
           user: {
-            name: existing_user.name,
-            email: existing_user.email,
-            profile_url: existing_user.profile_url,
-            chat_url: existing_user.chat_url,
-            request_timestamp: existing_user.request_timestamp.dow_short_date,
-            join_timestamp: existing_user.join_timestamp.dow_short_date,
-            status: existing_user.status,
-            location: existing_user.location,
-            questions_responses: existing_user.questions_responses,
-            notes: existing_user.notes,
-            referral: existing_user.referral,
-            greeter: existing_user.greeter
+            greeter: random_user_name
           },
           id: existing_user.id
         }
         result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
 
         assert result.success?
-        user = result[:model]
-        assert_equal existing_user.name, user.name
-        assert_equal last_random_user_name, user.greeter
+        existing_user.reload
+        assert_equal last_random_user_name, existing_user.greeter
       end
     end
 
@@ -132,11 +119,7 @@ class UserOperationTest < MiniTest::Spec
         assert_nil existing_user.change_log
         user_hash = {
           user: {
-            status: "New Status",
-            notes: existing_user.notes,
-            welcome_timestamp: existing_user.welcome_timestamp,
-            greeter: existing_user.greeter,
-            shadow_greeter: existing_user.shadow_greeter
+            status: "New Status"
           },
           id: existing_user.id
         }
@@ -147,26 +130,25 @@ class UserOperationTest < MiniTest::Spec
         assert_equal new_change_log, existing_user.reload.change_log
 
         random_user_name_1, random_user_name_2 = random_user_name, random_user_name
-        welcome_timestamp = Time.now
+        when_timestamp = Time.now
         user_hash = {
           user: {
-            status: existing_user.status,
             notes: "Replacing all the notes",
-            welcome_timestamp: welcome_timestamp,
+            when_timestamp: when_timestamp,
             greeter: random_user_name_1,
             shadow_greeter: random_user_name_2
           },
           id: existing_user.id
         }
-        welcome_timestamp = welcome_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
+        when_timestamp = when_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
         result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
         assert result.success?
         timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
         new_change_log += "#{timestamp} by #{admin.name}:\n"
         new_change_log += "- notes changed: (blank) -> Replacing all the notes\n"
+        new_change_log += "- when_timestamp changed: #{existing_user.when_timestamp} -> #{when_timestamp}\n"
         new_change_log += "- greeter changed: (blank) -> #{random_user_name_1}\n"
         new_change_log += "- shadow_greeter changed: (blank) -> #{random_user_name_2}\n"
-        new_change_log += "- welcome_timestamp changed: #{existing_user.welcome_timestamp} -> #{welcome_timestamp}\n"
         assert_equal new_change_log, existing_user.reload.change_log
       end
     end

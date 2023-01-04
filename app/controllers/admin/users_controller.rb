@@ -20,8 +20,7 @@ module Admin
 
     def update_user
       _ctx = run User::Operation::Update, admin_name: current_user.name do |ctx|
-        user = {user: ctx[:model]}
-        return render json: user
+        return render json: {user: ctx[:model].reload}
       end
       return head(:bad_request)
     end
@@ -35,27 +34,7 @@ module Admin
         sleep 1
       end
       user.reload
-      render json: {
-        result: result,
-        profile_url: user.profile_url,
-        chat_url: user.chat_url,
-        status: user.status
-      }
-    end
-
-    def reject_user
-      # TODO: for future implementation
-      return render json: {result: "failure"}
-
-      # TODO: move this into an operation
-      user = User.find(params[:id])
-      Spider.set_message("approve_user_spider", spider_data(user, "reject"))
-      ApproveUserSpider.crawl!
-      until result = Spider.get_result("approve_user_spider")
-        sleep 1
-      end
-      user.update(status: "Joined!") if result == "success"
-      render json: {result: result}
+      render json: {url: admin_user_url(user.id)}
     end
 
     private

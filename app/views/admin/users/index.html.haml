@@ -19,7 +19,7 @@
         %td.user-name= u.name
         %td.user-greeter= u.greeter
         %td.user-status= u.status
-        %td.user-meeting-datetime= u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
+        %td.user-meeting-datetime= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
         %td.user-shadow= u.shadow_greeter
         %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
         %td.hidden= u.request_timestamp

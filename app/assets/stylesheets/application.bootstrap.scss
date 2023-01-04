@@ -160,6 +160,12 @@ table.users tr {
   }
 }
 
+table.user {
+  td.user-notes textarea {
+    width: 100%
+  }
+}
+
 table.users, table.user {
   width: 100%;
   thead {
