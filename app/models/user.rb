@@ -28,6 +28,14 @@ class User < ActiveRecord::Base
     true # TODO: implement
   end
 
+  def notes_abbreviated
+    notes ? "#{notes[0..16]}#{notes_ellipsis(16)}" : nil
+  end
+
+  def notes_ellipsis(len)
+    notes.length > len ? "..." : nil
+  end
+
   def self.get_status_options
     return [
       "Pending",

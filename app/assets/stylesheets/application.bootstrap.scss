@@ -150,6 +150,16 @@ p.timestamp {
   }
 }
 
+table.users tr {
+  cursor: pointer;
+  &:hover {
+    background-color: #beebf4;
+  }
+  .hidden {
+    display: none;
+  }
+}
+
 table.users, table.user {
   width: 100%;
   thead {
