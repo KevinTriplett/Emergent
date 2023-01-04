@@ -127,7 +127,7 @@ class UserOperationTest < MiniTest::Spec
     it "tracks changes to user" do
       DatabaseCleaner.cleaning do
         admin = create_user
-        existing_user = create_user
+        existing_user = create_user(notes: "")
 
         assert_nil existing_user.change_log
         user_hash = {
@@ -146,20 +146,27 @@ class UserOperationTest < MiniTest::Spec
         new_change_log = "#{timestamp} by #{admin.name}:\n- status changed: #{existing_user.status} -> New Status\n"
         assert_equal new_change_log, existing_user.reload.change_log
 
+        random_user_name_1, random_user_name_2 = random_user_name, random_user_name
+        welcome_timestamp = Time.now
         user_hash = {
           user: {
             status: existing_user.status,
             notes: "Replacing all the notes",
-            welcome_timestamp: existing_user.welcome_timestamp,
-            greeter: existing_user.greeter,
-            shadow_greeter: existing_user.shadow_greeter
+            welcome_timestamp: welcome_timestamp,
+            greeter: random_user_name_1,
+            shadow_greeter: random_user_name_2
           },
           id: existing_user.id
         }
+        welcome_timestamp = welcome_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
         result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
         assert result.success?
         timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
-        new_change_log += "#{timestamp} by #{admin.name}:\n- notes changed: #{existing_user.notes} -> Replacing all the notes\n"
+        new_change_log += "#{timestamp} by #{admin.name}:\n"
+        new_change_log += "- notes changed: (blank) -> Replacing all the notes\n"
+        new_change_log += "- greeter changed: (blank) -> #{random_user_name_1}\n"
+        new_change_log += "- shadow_greeter changed: (blank) -> #{random_user_name_2}\n"
+        new_change_log += "- welcome_timestamp changed: #{existing_user.welcome_timestamp} -> #{welcome_timestamp}\n"
         assert_equal new_change_log, existing_user.reload.change_log
       end
     end

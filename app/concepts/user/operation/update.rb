@@ -15,11 +15,13 @@ module User::Operation
       user = User.find(model.id)
       params = ctx[:params][:user]
       changes = user.changes(params)
-      return true unless changes
+      return true if changes.blank?
       timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
       change_log = "#{user.change_log}#{timestamp} by #{admin_name}:\n"
       changes.each_pair do |key, val|
-        change_log += "- #{key} changed: #{val[0]} -> #{val[1]}\n"
+        old_val = val[0].blank? ? "(blank)" : val[0]
+        new_val = val[1].blank? ? "(blank)" : val[1]
+        change_log += "- #{key} changed: #{old_val} -> #{new_val}\n"
       end
       user.update(change_log: change_log)
     end

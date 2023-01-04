@@ -2,13 +2,17 @@ class User < ActiveRecord::Base
   has_secure_token
 
   def changes(params)
-    {
-      notes: (notes == params[:notes] ?  nil : [notes, params[:notes]]),
-      status: (status == params[:status] ? nil : [status, params[:status]]),
-      greeter: (greeter == params[:greeter] ?  nil : [greeter, params[:greeter]]),
-      shadow_greeter: (shadow_greeter == params[:shadow_greeter] ?  nil : [shadow_greeter, params[:shadow_greeter]]),
-      welcome_timestamp: (welcome_timestamp == params[:welcome_timestamp] ?  nil : [welcome_timestamp, params[:welcome_timestamp]])
-    }.compact
+    changed = {}
+    %w{notes status greeter shadow_greeter welcome_timestamp}.each do |attr|
+      attr = attr.to_sym
+      changed[attr] = changed?(attr, params[attr])
+    end
+    changed.compact
+  end
+
+  def changed?(attr, new_val)
+    old_val = send(attr)
+    (old_val == new_val) || (old_val.blank? && new_val.blank?) ? nil : [old_val, new_val]
   end
 
   def ensure_token
