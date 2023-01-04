@@ -47,7 +47,7 @@ class ApproveUserSpider < EmergeSpider
     css += ":has(#{email_div})"
     css += " a.invite-list-item-#{action}-button"
     ApproveUserSpider.logger.debug "LOOKING FOR #{css}"
-    browser.find(:css, css).click
+    browser.find(:css, css).click if Rails.env.production? || Rails.env.staging?
     if (action == "reject")
       # TODO: enter reasons for rejecting
     end
