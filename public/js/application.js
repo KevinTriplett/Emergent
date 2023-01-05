@@ -246,6 +246,7 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // MAKE TABLE ROWS CLICKABLE
   $("table.users tr").on("click", function(e) {
+    if (e.target.nodeName == "A") return;
     document.location = this.closest("tr").dataset["url"];
   });
 

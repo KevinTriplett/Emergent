@@ -6,6 +6,8 @@ module Admin
     def index
       date = Time.now - 2.months
       @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
+      @update_url = admin_users_url
+      @token = form_authenticity_token
     end
 
     def show
