@@ -28,7 +28,6 @@ class ApproveUserSpider < EmergeSpider
 
     request_to :approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests"
 
-    ::Spider.set_result(name, "success")
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
     ::Spider.set_result(name, "failure")
@@ -36,45 +35,26 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
-    data = Marshal.load ::Spider.get_message(name)
-    action, email, admin_name = data[:action], data[:email], data[:admin_name]
-    ApproveUserSpider.logger.info "#{action.upcase}ING USER WITH EMAIL #{email}"
-    ApproveUserSpider.logger.debug "ATTEMPTING TO FIND AND CLICK #{action.upcase} FOR USER WITH EMAIL #{email}"
+    email = ::Spider.get_message(name)
+    ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
+    ApproveUserSpider.logger.debug "ATTEMPTING TO FIND AND CLICK APPROVE BUTTON FOR USER WITH EMAIL #{email}"
     css = ".invite-list-container tr.invite-request-list-item"
     wait_until(css)
 
     email_div = ".invite-list-item-email-text[title='#{email}']"
     css += ":has(#{email_div})"
-    css += " a.invite-list-item-#{action}-button"
+    css += " a.invite-list-item-approve-button"
     ApproveUserSpider.logger.debug "LOOKING FOR #{css}"
-    browser.find(:css, css).click
-    if (action == "reject")
-      # TODO: enter reasons for rejecting
-    end
+    browser.find(:css, css).click # if Rails.env.production? || Rails.env.staging?
 
     # update the member's new id
     ApproveUserSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
-    link = browser.find(:css, "#{email_div} a")["href"]
-    return unless link
+    css = "#{email_div} a"
+    wait_until(css)
+    link = browser.find(:css, css)["href"]
 
     member_id = link.split("/").last
     ApproveUserSpider.logger.debug "GOT MEMBER ID '#{member_id}'"
-    return unless member_id.to_i > 0
-
-    user = User.find_by_email(email)
-    ApproveUserSpider.logger.debug "UPDATING USER #{user.name}"
-    update_hash = {
-      user: {
-        status: "Joined!",
-        greeter: user.greeter,
-        shadow_greeter: user.shadow_greeter,
-        notes: "Approved by #{admin_name}",
-        profile_url: "https://emergent-commons.mn.co/members/#{member_id}",
-        chat_url: "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
-        },
-      id: user.id
-    }
-    # call operation so change_log is also updated
-    User::Operation::Update.call(params: update_hash, admin_name: admin_name)
+    ::Spider.set_result(name, member_id)
   end
 end
