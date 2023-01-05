@@ -169,34 +169,8 @@ var getUserMeeting = function(userDom) {
   return convertTimeToUTC(userMeetingDom.val())
 }
 
-var getUserGreeter = function(userDom) {
-  var userGreeter = userDom.find("td.user-greeter a").text();
-  return userGreeter == "I will greet" ? null : userGreeter;
-}
-
-var getUserShadow = function(userDom) {
-  var userShadow = userDom.find("td.user-shadow a").text();
-  return userShadow == "I will shadow" ? null : userShadow;
-}
-
 var getUserNotes = function(userDom) {
   return userDom.find("td.user-notes textarea").val();
-}
-
-var getPatchData = function(userDom) {
-  var userNotes = getUserNotes(userDom);
-  var userGreeter = getUserGreeter(userDom);
-  var userShadow = getUserShadow(userDom);
-  var userMeeting = userDom.find("td.user-meeting-datetime input.datetime-picker").val();
-  var userStatus = userDom.find("td.user-status select").val();
-  userMeeting = convertTimeToUTC(userMeeting);
-  return {
-    notes: userNotes,
-    greeter: userGreeter,
-    when_timestamp: userMeeting,
-    shadow_greeter: userShadow,
-    status: userStatus
-  };
 }
 
 ////////////////////////////////////////////////////
@@ -225,7 +199,8 @@ var patch = function(userId, data, success, error) {
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 var loaded = false;
-var prevGreeter = getCookie("greeter-name");
+var greeterName = getCookie("user_name").replace("+", " ");
+var greeterId = getCookie("user_id").replace("+", " ");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 var format = {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -397,55 +372,30 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
-  var setUserGreeter = function(userDom, userGreeter) {
+  $("td.user-greeter a").on("click", function(e) {
+    e.preventDefault();
+    var userDom = $(this).closest("[data-id");
     var userId = userDom.data("id");
-    var data = { greeter: userGreeter };
+    var data = { greeter_id: greeterId };
     patch(userId, data, function() {
-      userGreeter = userGreeter ? userGreeter : "I will greet"
-      userDom.find("td.user-greeter a").text(userGreeter);
+      userDom.find("td.user-greeter a").text(greeterName);
     }, function() {
       alert("Could not change greeter - ask Kevin");
     });
-  }
-
-  $("td.user-greeter a").on("click", function(e) {
-    e.preventDefault();
-    var userGreeter = prompt("Enter your name", prevGreeter);
-    if (userGreeter === null) return;
-    prevGreeter = userGreeter;
-    if (userGreeter === "") userGreeter = null;
-
-    setCookie("greeter-name", prevGreeter); // save for next time
-
-    var userDom = $(this).closest("[data-id");
-    setUserGreeter(userDom, userGreeter);
   });
 
   ////////////////////////////////////////////////////
   // SHADOW EVENT LISTENER
-  var setUserShadow = function(userDom, userShadow) {
+  $("td.user-shadow a").on("click", function(e) {
+    e.preventDefault();
+    var userDom = $(this).closest("[data-id]");
     var userId = userDom.data("id");
-    var data = { shadow_greeter: userShadow };
+    var data = { shadow_greeter_id: greeterId };
     patch(userId, data, function() {
-      userShadow = userShadow ? userShadow : "I will shadow"
-      userDom.find("td.user-shadow a").text(userShadow);
+      userDom.find("td.user-shadow a").text(greeterName);
     }, function() {
       alert("Could not change shadow - ask Kevin");
     });
-  }
-
-  // use same prevGreeter, since it's the user
-  $("td.user-shadow a").on("click", function(e) {
-    e.preventDefault();
-    var userShadow = prompt("Enter your name", prevGreeter);
-    if (userShadow === null) return;
-    prevGreeter = userShadow;
-    if (userShadow === "") userShadow = null;
-
-    setCookie("greeter-name", prevGreeter); // save for next time
-
-    var userDom = $(this).closest("[data-id]");
-    setUserShadow(userDom, userShadow);
   });
 
   ////////////////////////////////////////////////////
@@ -472,12 +422,6 @@ $(document).ready(function() {
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this).closest("[data-id]");
-    var userGreeter = userDom.find("td.user-greeter a").text();
-    if (userGreeter == "I will greet") {
-      alert("First, click 'I will greet' and then send the email");
-      return;
-    }
-
     var maxIndex = emailTemplates.length;
     var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
     if (!templateIndex) return;
@@ -491,16 +435,16 @@ $(document).ready(function() {
     prevEmailTemplateIndex = templateIndex + 1;
     setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
 
-    var userName = userDom.find("td.user-name").text().trim();
-    var userEmail = userDom.find("td.user-email a").text().trim();
+    var newMemberName = userDom.find("td.user-name").text().trim();
+    var newMemberEmail = userDom.find("td.user-email a").text().trim();
     var data = {
-      name: userName,
-      greeter: userGreeter
+      name: newMemberName,
+      greeter: greeterName
     };
     var body = emailTemplates[templateIndex](data);
     body = encodeURIComponent(body);
     var subject = "Scheduling your welcome Zoom to Emergent Commons 👋🏼"
     // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
-    window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
   });
 });

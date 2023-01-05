@@ -13,10 +13,11 @@ module User::Operation
     def update_user(ctx, admin_name:, model:, params:, **)
       user_params = params[:user]
       user = User.find(params[:id])
-      timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
+      timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
       change_log = "#{user.change_log}#{timestamp} by #{admin_name}:\n"
       user_params.each_pair do |attr, val|
-        new_val = val.blank? ? "(blank)" : val
+        # check for association
+        new_val = val.blank? ? "(blank)" : (attr.to_s[-3,3] == "_id" ? User.find(val).name : val)
         old_val = user.send(attr).blank? ? "(blank)" : user.send(attr)
         change_log += "- #{attr} changed: #{old_val} -> #{new_val}\n"
 

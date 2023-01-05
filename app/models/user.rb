@@ -1,26 +1,14 @@
 class User < ActiveRecord::Base
+  belongs_to :greeter, class_name: "User", optional: true
+  belongs_to :shadow_greeter, class_name: "User", optional: true
   has_secure_token
-
-  def changes(params)
-    changed = {}
-    %w{notes status greeter shadow_greeter when_timestamp}.each do |attr|
-      attr = attr.to_sym
-      changed[attr] = changed?(attr, params[attr])
-    end
-    changed.compact
-  end
-
-  def changed?(attr, new_val)
-    old_val = send(attr)
-    (old_val == new_val) || (old_val.blank? && new_val.blank?) ? nil : [old_val, new_val]
-  end
 
   def ensure_token
     update(token: User.generate_unique_secure_token) if token.nil?
   end
 
   def generate_session_token
-    update(session_token: SecureRandom.urlsafe_base64)
+    update!(session_token: SecureRandom.urlsafe_base64)
     session_token
   end
 

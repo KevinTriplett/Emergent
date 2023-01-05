@@ -75,8 +75,8 @@ def create_user_with_result(params = {})
         questions_responses: params[:questions_responses] || mock_qna,
         notes: params[:notes] || "this are notes",
         referral: params[:referral] || "referral name",
-        greeter: params[:greeter],
-        shadow_greeter: params[:shadow_greeter],
+        greeter_id: params[:greeter_id],
+        shadow_greeter_id: params[:shadow_greeter_id],
         session_token: params[:session_token]
       }
     }

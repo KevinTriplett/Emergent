@@ -3,8 +3,8 @@ module User::Contract
     include Dry
 
     property :id
-    property :greeter
-    property :shadow_greeter
+    property :greeter_id
+    property :shadow_greeter_id
     property :when_timestamp
     property :notes
     property :status
@@ -12,8 +12,8 @@ module User::Contract
     validation do
       params do
         required(:id)
-        required(:greeter)
-        required(:shadow_greeter)
+        required(:greeter_id)
+        required(:shadow_greeter_id)
         required(:when_timestamp)
         required(:notes)
         required(:status)

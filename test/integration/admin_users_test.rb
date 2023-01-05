@@ -32,10 +32,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
   test "Admin page with users" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user({
-        greeter: random_user_name,
-        shadow_greeter: random_user_name
-      })
+      user = create_authorized_user
       set_authorization_cookie
 
       get admin_users_path
@@ -52,27 +49,21 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Notes"
 
       assert_select "td.user-name", user.name
-      assert_select "td.user-greeter", user.greeter
+      assert_select "td.user-greeter", ""
       assert_select "td.user-status", user.status
       assert_select "td.user-meeting-datetime", user.when_timestamp.picker_datetime
-      assert_select "td.user-shadow", user.shadow_greeter
+      assert_select "td.user-shadow", ""
       assert_select "td.user-notes", user.notes_abbreviated
-      
-      user.update(greeter: nil)
-      get admin_users_path
-      assert_select "td.user-greeter", ""
-
-      user.update(shadow_greeter: nil)
-      get admin_user_path(user.id)
-      assert_select "td.user-shadow", "I will shadow"
     end
   end
 
   test "Admin page with user" do
     DatabaseCleaner.cleaning do
+      greeter_1 = create_user
+      greeter_2 = create_user
       user = create_authorized_user({
-        greeter: random_user_name,
-        shadow_greeter: random_user_name
+        greeter_id: greeter_1.id,
+        shadow_greeter_id: greeter_2.id
       })
       set_authorization_cookie
 
@@ -92,11 +83,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td", "Notes"
       assert_select "td", "Questions"
 
-      assert_select "td.user-greeter", user.greeter
+      assert_select "td.user-greeter", user.greeter.name
       assert_select "td.user-email", user.email
       assert_select "td.user-status select option[selected='selected']", user.status
       assert_select "td.user-meeting-datetime input[value=?]", user.when_timestamp.picker_datetime
-      assert_select "td.user-shadow", user.shadow_greeter
+      assert_select "td.user-shadow", user.shadow_greeter.name
       assert_select "td.user-notes", user.notes
       
       user.questions_responses.split(" -:- ").each do |qna|
@@ -104,11 +95,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
         assert_select "td.user-questions li", "#{q}\n\n#{a}"
       end
 
-      user.update(greeter: nil)
+      user.update(greeter_id: nil)
       get admin_user_path(user.id)
       assert_select "td.user-greeter", "I will greet"
 
-      user.update(shadow_greeter: nil)
+      user.update(shadow_greeter_id: nil)
       get admin_user_path(user.id)
       assert_select "td.user-shadow", "I will shadow"
 

@@ -33,8 +33,8 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
-    data = Marshal.load ::Spider.get_message(name)
-    first_name, last_name = data[:first_name], data[:last_name]
+    data = ::Spider.get_message(name).split('|')
+    first_name, last_name = data[0], data[1]
     ApproveUserSpider.logger.info "APPROVING #{first_name} #{last_name}"
 
     ############################################
@@ -49,7 +49,7 @@ class ApproveUserSpider < EmergeSpider
     css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
     css_approve = "#{css_row} a.invite-list-item-approve-button"
     ApproveUserSpider.logger.debug "LOOKING FOR #{css_approve}"
-    browser.find(:css, css_approve).click if Rails.env.production? || Rails.env.staging?
+    browser.find(:css, css_approve).click # if Rails.env.production? || Rails.env.staging?
 
     ############################################
     # update the member's new id

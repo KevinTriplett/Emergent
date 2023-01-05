@@ -17,9 +17,9 @@
     - @users.each do |u|
       %tr{ data: {url: admin_user_url(u.id)}}
         %td.user-name= u.name
-        %td.user-greeter= u.greeter
+        %td.user-greeter= u.greeter_id ? u.greeter.name : nil
         %td.user-status= u.status
         %td.user-meeting-datetime= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
-        %td.user-shadow= u.shadow_greeter
+        %td.user-shadow= u.shadow_greeter_id ? u.shadow_greeter.name : nil
         %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
         %td.hidden= u.request_timestamp

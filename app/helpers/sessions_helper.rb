@@ -10,6 +10,7 @@ module SessionsHelper
     return unless user
     cookies.permanent.encrypted[:session_token] = user.generate_session_token
     cookies.permanent[:user_name] = user.name
+    cookies.permanent[:user_id] = user.id
   end
 
   def sign_out

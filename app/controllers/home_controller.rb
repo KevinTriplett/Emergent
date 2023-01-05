@@ -24,7 +24,7 @@ class HomeController < ApplicationController
     if user
       user.ensure_token
       UserMailer.with(user).send_magic_link.deliver_now
-      flash[:notice] = "Magic link sent, check your email"
+      flash[:notice] = "Magic link sent, check your SPAM folder"
     else
       flash[:error] = "Email not found - use your Mighty Networks email address"
     end

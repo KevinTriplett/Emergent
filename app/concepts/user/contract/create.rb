@@ -15,8 +15,8 @@ module User::Contract
     property :questions_responses
     property :notes
     property :referral
-    property :greeter
-    property :shadow_greeter
+    property :greeter_id
+    property :shadow_greeter_id
 
     validation do
       params do
@@ -33,8 +33,8 @@ module User::Contract
         required(:questions_responses).filled.value(:string)
         required(:notes)
         required(:referral)
-        required(:greeter)
-        required(:shadow_greeter)
+        required(:greeter_id)
+        required(:shadow_greeter_id)
       end
   
       rule(:email, :id) do

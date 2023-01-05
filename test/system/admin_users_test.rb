@@ -24,47 +24,10 @@ class AdminUsersTest < ApplicationSystemTestCase
     end
   end
 
-  test "Saves greeter name between prompts and page loads" do
-    DatabaseCleaner.cleaning do
-      user = login
-
-      visit admin_user_path(user.id)
-      assert_current_path admin_user_path(user.id)
-
-      accept_prompt(with: random_user_name) do
-        click_link('I will greet')
-      end
-      sleep 1
-      user.reload
-      assert_equal last_random_user_name, user.greeter
-
-      user.update!(greeter: nil)
-      visit admin_user_path(user.id)
-      assert_current_path admin_user_path(user.id)
-      accept_prompt do
-        click_link('I will greet')
-      end
-      sleep 1
-      user.reload
-      assert_equal last_random_user_name, user.greeter
-      user.update!(greeter: nil)
-
-      visit root_path
-      visit admin_user_path(user.id)
-      assert_current_path admin_user_path(user.id)
-
-      accept_prompt do
-        click_link('I will greet')
-      end
-      sleep 1
-      user.reload
-      assert_equal last_random_user_name, user.greeter
-    end
-  end
-
   test "Greeter can select a user to greet and shadow in show view" do
     DatabaseCleaner.cleaning do
-      user = login
+      admin = login
+      user = create_user
 
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
@@ -80,59 +43,17 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       ######################
       # GREETER
-      message = dismiss_prompt do
-        click_link('I will greet')
-      end
-      assert_equal "Enter your name", message
-      
+      click_link('I will greet')
       sleep 1
       user.reload
-      assert_nil user.greeter
-
-      accept_prompt(with: random_user_name) do
-        click_link('I will greet')
-      end
-      
-      sleep 1
-      user.reload
-      assert_equal last_random_user_name, user.greeter
-
-      accept_prompt(with: "") do
-        click_link(last_random_user_name)
-      end
-      
-      sleep 1
-      user.reload
-      assert_nil user.greeter
-      assert_selector "td.user-greeter a", text: "I will greet"
+      assert_equal admin.name, user.greeter.name
 
       ######################
       # SHADOW
-      message = dismiss_prompt do
-        click_link('I will shadow')
-      end
-      assert_equal "Enter your name", message
-      
+      click_link('I will shadow')
       sleep 1
       user.reload
-      assert_nil user.shadow_greeter
-
-      accept_prompt(with: random_user_name) do
-        click_link('I will shadow')
-      end
-      
-      sleep 1
-      user.reload
-      assert_equal last_random_user_name, user.shadow_greeter
-
-      accept_prompt(with: "") do
-        click_link(last_random_user_name)
-      end
-      
-      sleep 1
-      user.reload
-      assert_nil user.shadow_greeter
-      assert_selector "td.user-shadow a", text: "I will shadow"
+      assert_equal admin.name, user.shadow_greeter.name
     end
   end
 
@@ -157,7 +78,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal "Pending", user.status
       old_status = user.status
 
-      assert_selector "td.change-log", text: user.change_log
+      assert_selector "td.change-log", text: user.change_log.chomp
 
       ####################
       ## MEETING
@@ -215,19 +136,6 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
 
-      message = accept_alert do
-        click_link(user.email)
-      end
-      assert_equal "First, click 'I will greet' and then send the email", message
-      user.reload
-      assert_nil user.greeter
-      assert_equal old_status, user.status
-
-      accept_prompt(with: random_user_name) do
-        click_link('I will greet')
-      end
-      sleep 1
-    
       message = dismiss_prompt do
         click_link(user.email)
       end
@@ -248,10 +156,6 @@ class AdminUsersTest < ApplicationSystemTestCase
       message = accept_alert
       assert_equal "Choose an email template 1 through 5", message
       assert_equal old_status, user.status
-      
-      accept_prompt(with: "1") do
-        click_link(user.email)
-      end
     end
   end
 end
