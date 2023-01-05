@@ -4,7 +4,7 @@
   = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}")
   = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}")
 
-%table.user.table.table-bordered.table-striped{ data: {url: @update_url, token: @token, id: @user.id } }
+%table.user.table.table-bordered.table-striped{ data: {url: admin_users_url, token: @token, id: @user.id } }
   %tbody
     %tr
       %td.header Greeter
@@ -16,7 +16,7 @@
       %td.header Status
       %td.user-status
         %select
-          - @options.each do |o|
+          - User.get_status_options.each do |o|
             - selected = (o == @user.status ? "selected" : nil)
             %option{ selected: selected }= o
     %tr
