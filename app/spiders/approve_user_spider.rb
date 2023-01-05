@@ -23,11 +23,9 @@ class ApproveUserSpider < EmergeSpider
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
-    NewUserSpider.logger.info "SPIDER #{name} STARTING"
+    ApproveUserSpider.logger.info "SPIDER #{name} STARTING"
     request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
-
-    request_to :approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests"
-
+    request_to(:approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests")
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
     ::Spider.set_result(name, "failure")
@@ -35,26 +33,33 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
-    email = ::Spider.get_message(name)
-    ApproveUserSpider.logger.info "APPROVING USER WITH EMAIL #{email}"
-    ApproveUserSpider.logger.debug "ATTEMPTING TO FIND AND CLICK APPROVE BUTTON FOR USER WITH EMAIL #{email}"
+    data = Marshal.load ::Spider.get_message(name)
+    first_name, last_name = data[:first_name], data[:last_name]
+    ApproveUserSpider.logger.info "APPROVING #{first_name} #{last_name}"
+
+    ############################################
+    # wait until the modal dialog box is visible
     css = ".invite-list-container tr.invite-request-list-item"
     wait_until(css)
 
-    email_div = ".invite-list-item-email-text[title='#{email}']"
-    css += ":has(#{email_div})"
-    css += " a.invite-list-item-approve-button"
-    ApproveUserSpider.logger.debug "LOOKING FOR #{css}"
-    browser.find(:css, css).click # if Rails.env.production? || Rails.env.staging?
+    ############################################
+    # find approve button for this user
+    first_name_td = "td.invite-list-item-first-name[title='#{first_name}']"
+    last_name_td = "td.invite-list-item-last-name[title='#{last_name}']"
+    css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
+    css_approve = "#{css_row} a.invite-list-item-approve-button"
+    ApproveUserSpider.logger.debug "LOOKING FOR #{css_approve}"
+    browser.find(:css, css_approve).click if Rails.env.production? || Rails.env.staging?
 
+    ############################################
     # update the member's new id
+    sleep 4
     ApproveUserSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
-    css = "#{email_div} a"
-    wait_until(css)
-    link = browser.find(:css, css)["href"]
+    css_link = "#{css_row} .invite-list-item-first-name-text a"
+    link = browser.find(:css, css_link)["href"]
 
     member_id = link.split("/").last
-    ApproveUserSpider.logger.debug "GOT MEMBER ID '#{member_id}'"
+    ApproveUserSpider.logger.info "GOT MEMBER ID '#{member_id}'"
     ::Spider.set_result(name, member_id)
   end
 end

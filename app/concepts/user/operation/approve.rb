@@ -1,18 +1,3 @@
-# user = User.find(params[:id])
-# Spider.set_message("approve_user_spider", spider_data(user, "approve"))
-# ApproveUserSpider.crawl!
-# until result = Spider.get_result("approve_user_spider")
-#   sleep 1
-# end
-# user.reload
-# render json: {
-#   result: result,
-#   profile_url: user.profile_url,
-#   chat_url: user.chat_url,
-#   status: user.status
-# }
-
-
 module User::Operation
   class Approve < Trailblazer::Operation
 
@@ -22,7 +7,12 @@ module User::Operation
     step Contract::Persist()
 
     def activate_spider(ctx, model:, **)
-      Spider.set_message("approve_user_spider", model.email)
+      data = {
+        email: model.email,
+        first_name: model.first_name,
+        last_name: model.last_name
+      }
+      Spider.set_message("approve_user_spider", Marshal.dump(data))
       ApproveUserSpider.crawl!
       until result = Spider.get_result("approve_user_spider")
         sleep 1
@@ -36,6 +26,7 @@ module User::Operation
       model.profile_url = "https://emergent-commons.mn.co/members/#{model.member_id}"
       model.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{model.member_id}"
       timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-      model.change_log += "#{timestamp} Approved by #{admin.name}:\n"
+      model.change_log += "#{timestamp} Approved by #{admin.name}\n"
     end
   end
+end

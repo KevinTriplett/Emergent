@@ -241,7 +241,7 @@ var progressMessages = [
   "Contacting HQ ...",
   "Exchanging credentials ...",
   "Looking up member request ...",
-  "Sending request to #action ...",
+  "Sending request to approve ...",
   "Getting response ...",
   "Disconnecting from HQ ...",
   "Cleaning up channel ...",
@@ -293,8 +293,6 @@ $(document).ready(function() {
   $("a.user-approve").on("click", function(e) {
     e.preventDefault();
     self = $(this);
-    var action = self.attr("class").split(" ").pop().split("-").pop();
-    if (self.hasClass("disabled")) return;
     var url = $(this).attr("href");
     var token = $("table.users,table.user").data("token");
     $("#spinner").show();
@@ -303,8 +301,8 @@ $(document).ready(function() {
     
     // set up the spinner
     var count = 0;
-    var timer = setInterval(function() {
-      var msg = progressMessages[count++].replace("#action", action)
+    setInterval(function() {
+      var msg = progressMessages[count++];
       $(".progress-message").text(msg);
     }, 5000);
 
