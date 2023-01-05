@@ -199,8 +199,9 @@ var patch = function(userId, data, success, error) {
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 var loaded = false;
-var greeterName = getCookie("user_name").replace("+", " ");
-var greeterId = getCookie("user_id").replace("+", " ");
+var greeterName = getCookie("user_name");
+if (greeterName) greeterName = greeterName.replace("+", " ");
+var greeterId = getCookie("user_id");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 var format = {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,

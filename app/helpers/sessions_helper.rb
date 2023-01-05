@@ -9,8 +9,8 @@ module SessionsHelper
     user = User.find_by_token(params[:token])
     return unless user
     cookies.permanent.encrypted[:session_token] = user.generate_session_token
-    cookies.permanent[:user_name] = user.name
-    cookies.permanent[:user_id] = user.id
+    cookies.permanent[:user_name] = @current_user.name
+    cookies.permanent[:user_id] = @current_user.id
   end
 
   def sign_out
@@ -26,6 +26,10 @@ module SessionsHelper
     return unless cookies[:session_token]
     session_token = verify_and_decrypt_cookie(:session_token)
     @current_user ||= User.find_by_session_token(session_token)
+    # TODO: remove this after January 2022
+    cookies.permanent[:user_name] = @current_user.name
+    cookies.permanent[:user_id] = @current_user.id
+    @current_user
   end
 
   def signed_in?
