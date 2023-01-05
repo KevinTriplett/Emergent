@@ -8,22 +8,25 @@ module User::Operation
     
     step Subprocess(Present)
     step Contract::Validate(key: :user)
-    step :log_changes
-    step Contract::Persist()
+    step :update_user
 
-    def log_changes(ctx, model:, admin_name:, **)
-      user = User.find(model.id)
-      params = ctx[:params][:user]
-      changes = user.changes(params)
-      return true if changes.blank?
+    def update_user(ctx, admin_name:, model:, params:, **)
+      user_params = params[:user]
+      user = User.find(params[:id])
       timestamp = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
       change_log = "#{user.change_log}#{timestamp} by #{admin_name}:\n"
-      changes.each_pair do |key, val|
-        old_val = val[0].blank? ? "(blank)" : val[0]
-        new_val = val[1].blank? ? "(blank)" : val[1]
-        change_log += "- #{key} changed: #{old_val} -> #{new_val}\n"
+      user_params.each_pair do |attr, val|
+        new_val = val.blank? ? "(blank)" : val
+        old_val = user.send(attr).blank? ? "(blank)" : user.send(attr)
+        change_log += "- #{attr} changed: #{old_val} -> #{new_val}\n"
+
+        val = val.blank? ? nil : val
+        setter = attr.to_s + "="
+        user.send(setter, val)
       end
-      user.update(change_log: change_log)
+      changle_log = (user.change_log || "") + change_log
+      user.change_log = change_log
+      user.save
     end
   end
 end

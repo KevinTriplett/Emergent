@@ -12,10 +12,11 @@
     = stylesheet_link_tag "jquery-ui"
     = stylesheet_link_tag "dtsel"
     = stylesheet_link_tag "https://cdn.datatables.net/v/bs5/dt-1.13.1/fc-4.2.1/fh-3.3.1/r-2.4.0/datatables.min.css"
-    = javascript_include_tag "application", defer: true
 
     %script{ src: "/js/jquery-3.6.0.js" }
     %script{ src: "/js/jquery-ui.js" }
+    %script $.widget.bridge('uitooltip', $.ui.tooltip);
+    = javascript_include_tag "application", defer: true
     %script{ src: "/js/application.js" }
     %script{ src: "/js/dtsel.js" }
     %script{ src: "https://cdn.datatables.net/v/bs5/dt-1.13.1/fc-4.2.1/fh-3.3.1/r-2.4.0/datatables.min.js" }

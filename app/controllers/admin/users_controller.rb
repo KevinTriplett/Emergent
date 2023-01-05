@@ -20,8 +20,7 @@ module Admin
 
     def update_user
       _ctx = run User::Operation::Update, admin_name: current_user.name do |ctx|
-        user = {user: ctx[:model]}
-        return render json: user
+        return render json: {user: ctx[:model].reload}
       end
       return head(:bad_request)
     end

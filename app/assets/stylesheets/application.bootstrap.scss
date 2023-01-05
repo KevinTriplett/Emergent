@@ -150,6 +150,22 @@ p.timestamp {
   }
 }
 
+table.users tr {
+  cursor: pointer;
+  &:hover {
+    background-color: #beebf4;
+  }
+  .hidden {
+    display: none;
+  }
+}
+
+table.user {
+  td.user-notes textarea {
+    width: 100%
+  }
+}
+
 table.users, table.user {
   width: 100%;
   thead {

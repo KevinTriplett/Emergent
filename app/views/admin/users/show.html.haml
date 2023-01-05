@@ -8,7 +8,7 @@
   %tbody
     %tr
       %td.header Greeter
-      %td.user-greeter= link_to(@user.greeter ? @user.greeter : "I will greet", "#", class: "user-greeter")
+      %td.user-greeter= link_to((@user.greeter.blank? ? "I will greet" : @user.greeter), "#")
     %tr
       %td.header Email
       %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
@@ -25,11 +25,11 @@
         %br
         %span.tzinfo (GMT)
       %td.user-meeting-datetime
-        - datetime = @user.welcome_timestamp ? @user.welcome_timestamp.picker_datetime : nil
+        - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
     %tr
       %td.header Shadow
-      %td.user-shadow= link_to(@user.shadow_greeter ? @user.shadow_greeter : "I will shadow", "#", class: "shadow-greeter")
+      %td.user-shadow= link_to((@user.shadow_greeter.blank? ? "I will shadow" : @user.shadow_greeter), "#")
     %tr
       %td.header Notes
       %td.user-notes
@@ -49,12 +49,9 @@
           = link_to "Approve", |
             admin_approve_user_path(@user.id), |
             class: "btn btn-primary user-approve"
-          = link_to "Reject", |
-            admin_reject_user_path(@user.id), |
-            class: "btn btn-warning user-reject"
+          = link_to "Reject", "#", class: "btn btn-warning user-reject"
           .lds-hourglass#spinner
           %span.progress-message Working ...
-
     %tr
       %td.header ChangeLog
       %td.change-log!= @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"

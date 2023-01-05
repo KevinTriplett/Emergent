@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_02_034118) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_04_192536) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -47,7 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_02_034118) do
     t.string "greeter"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "welcome_timestamp"
+    t.datetime "when_timestamp"
     t.string "first_name"
     t.string "last_name"
     t.integer "member_id"

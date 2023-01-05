@@ -67,7 +67,7 @@ def create_user_with_result(params = {})
         email: params[:email] || random_email,
         profile_url: params[:profile_url] || "https://example.com/profile/12345",
         chat_url: params[:chat_url] || "https://example.com/chat/12345",
-        welcome_timestamp: params[:welcome_timestamp] || "07/12/2022",
+        when_timestamp: params[:when_timestamp] || "07/12/2022",
         request_timestamp: params[:request_timestamp] || "08/12/2022",
         join_timestamp: params[:join_timestamp] || "09/12/2022",
         status: params[:status] || "Joined!",

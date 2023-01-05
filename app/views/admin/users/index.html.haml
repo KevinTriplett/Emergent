@@ -5,27 +5,21 @@
     %tr
       %th Name
       %th Greeter
-      %th Email
       %th Status
       %th.meeting
-        When
+        When?
         %br
         %span.tzinfo (GMT)
       %th Shadow
-      %th Requested
+      %th Notes
+      %th.hidden Request
   %tbody
     - @users.each do |u|
-      %tr{ data: {id: u.id}}
-        %td.user-name= link_to(u.name, admin_user_url(u.id)) 
-        %td.user-greeter= link_to(u.greeter ? u.greeter : "I will greet", "#", class: "user-greeter")
-        %td.user-email= link_to u.email, "mailto:#{ u.email }"
-        %td.user-status
-          %select
-            - @options.each do |opt|
-              - selected = (opt == u.status ? "selected" : nil)
-              %option{ selected: selected }= opt
-        %td.user-meeting-datetime
-          - datetime = u.welcome_timestamp ? u.welcome_timestamp.picker_datetime : nil
-          %input.datetime-picker.utc-time{ type: "text", value: datetime }
-        %td.user-shadow= link_to(u.shadow_greeter ? u.shadow_greeter : "I will shadow", "#", class: "shadow-greeter")
-        %td.user-requested-date= u.request_timestamp.picker_date
+      %tr{ data: {url: admin_user_url(u.id)}}
+        %td.user-name= u.name
+        %td.user-greeter= u.greeter
+        %td.user-status= u.status
+        %td.user-meeting-datetime= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
+        %td.user-shadow= u.shadow_greeter
+        %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
+        %td.hidden= u.request_timestamp

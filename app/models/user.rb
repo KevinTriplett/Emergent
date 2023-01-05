@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 
   def changes(params)
     changed = {}
-    %w{notes status greeter shadow_greeter welcome_timestamp}.each do |attr|
+    %w{notes status greeter shadow_greeter when_timestamp}.each do |attr|
       attr = attr.to_sym
       changed[attr] = changed?(attr, params[attr])
     end
@@ -26,6 +26,14 @@ class User < ActiveRecord::Base
 
   def has_role(role)
     true # TODO: implement
+  end
+
+  def notes_abbreviated
+    notes ? "#{notes[0..16]}#{notes_ellipsis(16)}" : nil
+  end
+
+  def notes_ellipsis(len)
+    notes.length > len ? "..." : nil
   end
 
   def self.get_status_options

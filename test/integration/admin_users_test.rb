@@ -46,25 +46,24 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
       assert_select "th", "Name"
       assert_select "th", "Greeter"
-      assert_select "th", "Email"
       assert_select "th", "Status"
-      assert_select "th.meeting", "When\n\n(GMT)"
+      assert_select "th.meeting", "When?\n\n(GMT)"
       assert_select "th", "Shadow"
-      assert_select "th", "Requested"
+      assert_select "th", "Notes"
 
+      assert_select "td.user-name", user.name
       assert_select "td.user-greeter", user.greeter
-      assert_select "td.user-email", user.email
-      assert_select "td.user-status select option[selected='selected']", user.status
-      assert_select "td.user-meeting-datetime input[value=?]", user.welcome_timestamp.picker_datetime
+      assert_select "td.user-status", user.status
+      assert_select "td.user-meeting-datetime", user.when_timestamp.picker_datetime
       assert_select "td.user-shadow", user.shadow_greeter
-      assert_select "td.user-requested-date", user.request_timestamp.picker_date
+      assert_select "td.user-notes", user.notes_abbreviated
       
       user.update(greeter: nil)
       get admin_users_path
-      assert_select "td.user-greeter", "I will greet"
+      assert_select "td.user-greeter", ""
 
       user.update(shadow_greeter: nil)
-      get admin_users_path
+      get admin_user_path(user.id)
       assert_select "td.user-shadow", "I will shadow"
     end
   end
@@ -96,7 +95,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td.user-greeter", user.greeter
       assert_select "td.user-email", user.email
       assert_select "td.user-status select option[selected='selected']", user.status
-      assert_select "td.user-meeting-datetime input[value=?]", user.welcome_timestamp.picker_datetime
+      assert_select "td.user-meeting-datetime input[value=?]", user.when_timestamp.picker_datetime
       assert_select "td.user-shadow", user.shadow_greeter
       assert_select "td.user-notes", user.notes
       
