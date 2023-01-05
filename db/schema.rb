@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_04_192536) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_05_033140) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -44,7 +44,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_192536) do
     t.text "questions_responses"
     t.text "notes"
     t.string "referral"
-    t.string "greeter"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "when_timestamp"
@@ -53,10 +52,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_192536) do
     t.integer "member_id"
     t.string "time_zone"
     t.string "country"
-    t.string "shadow_greeter"
     t.string "token"
     t.string "session_token"
     t.text "change_log"
+    t.integer "greeter_id"
+    t.integer "shadow_greeter_id"
     t.index ["email"], name: "index_users_on_email"
     t.index ["session_token"], name: "index_users_on_session_token", unique: true
     t.index ["status"], name: "index_users_on_status"
