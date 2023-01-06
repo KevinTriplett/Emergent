@@ -7,7 +7,7 @@ set :deploy_to, "/home/deploy/#{fetch :application}/#{fetch :stage}/"
 
 # ref https://stackoverflow.com/questions/72918950/error-when-uploading-ruby-on-rails-application-with-capistrano
 set :passenger_environment_variables, {
-  'PASSENGER_INSTANCE_REGISTRY_DIR' => '/var/run/passenger-instreg'
+  'PASSENGER_INSTANCE_REGISTRY_DIR' => '/tmp'
 }
 
 # Default deploy_to directory is /var/www/my_app_name
