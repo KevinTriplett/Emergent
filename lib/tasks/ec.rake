@@ -20,3 +20,19 @@ namespace :ec do
     User.import_users
   end
 end
+
+namespace :ec do
+  desc "Backup database"
+  task backup: :environment do
+    yml = YAML.load_file('config/database.yml')[Rails.env]
+    `pg_dump --no-privileges --no-owner -U #{yml['username']} #{yml['database']} > ~/backups/#{Rails.env}.sql`
+  end
+end
+
+namespace :ec do
+  desc "Backup database"
+  task backup: :environment do
+    yml = YAML.load_file('config/database.yml')[Rails.env]
+    `psql -d #{yml['database']} < ~/backups/#{Rails.env}.sql`
+  end
+end
