@@ -38,9 +38,8 @@ namespace :ec do
 end
 
 namespace :ec do
-  desc "Ingest production database into staging"
-  task restore: :environment do
-    yml = YAML.load_file('config/database.yml')[Rails.env]
+  desc "Transfer production database into staging (backup production first)"
+  task transfer: :environment do
     `psql -d emergent-staging < ~/backups/production.sql`
   end
 end
