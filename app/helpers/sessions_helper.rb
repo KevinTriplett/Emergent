@@ -14,8 +14,10 @@ module SessionsHelper
   end
 
   def sign_out
-    cookies.permanent[:session_token] = nil
-    cookies.permanent[:user_name] = nil
+    current_user.update(session_token: nil) if current_user
+    cookies.delete :session_token
+    cookies.delete :user_name
+    cookies.delete :user_id
   end
 
   def signed_in_user
@@ -26,8 +28,8 @@ module SessionsHelper
     return unless cookies[:session_token]
     session_token = verify_and_decrypt_cookie(:session_token)
     user = User.find_by_session_token(session_token)
-    return nil unless user
-    # TODO: remove this after January 2022
+    # TODO: remove the rest of this after January 2022
+    return unless user
     cookies.permanent[:user_name] = user.name
     cookies.permanent[:user_id] = user.id
     user

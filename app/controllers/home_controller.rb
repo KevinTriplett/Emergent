@@ -9,12 +9,12 @@ class HomeController < ApplicationController
     sign_in
     return redirect_to root_url unless current_user
     return redirect_to admin_users_url if current_user.has_role(:greeter)
-    render :show
+    redirect_to root_url
   end
 
   def logout
-    current_user.update(session_token: nil)
-    cookies.delete :session_token
+    sign_out
+    flash[:notice] = "You have logged out"
     redirect_to root_url
   end
 
@@ -33,6 +33,7 @@ class HomeController < ApplicationController
 
   def unsubscribe
     #TODO: do something
+    flash[:notice] = "You have been successfully unsubscribed"
     redirect_to root_url
   end
 end

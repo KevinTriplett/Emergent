@@ -8,6 +8,8 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "User can get a magic link on first visit" do
     DatabaseCleaner.cleaning do
       user = create_authorized_user
+      visit logout_path
+      assert_current_path root_path
 
       visit admin_users_path
       assert_current_path root_path
