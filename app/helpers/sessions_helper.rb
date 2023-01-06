@@ -27,12 +27,12 @@ module SessionsHelper
   def current_user
     return unless cookies[:session_token]
     session_token = verify_and_decrypt_cookie(:session_token)
-    user = User.find_by_session_token(session_token)
+    @current_user = User.find_by_session_token(session_token)
     # TODO: remove the rest of this after January 2022
-    return unless user
-    cookies.permanent[:user_name] = user.name
-    cookies.permanent[:user_id] = user.id
-    user
+    return unless @current_user
+    cookies.permanent[:user_name] = @current_user.name
+    cookies.permanent[:user_id] = @current_user.id
+    @current_user
   end
 
   def signed_in?

@@ -29,6 +29,7 @@
             .row.alert.alert-info
               .col.flash{class: type}= msg
         .col-sm-4.right
+          = "Hi #{@current_user.first_name} ^_^"
           = link_to "Logout", logout_url
       .row
         .col-sm-12
