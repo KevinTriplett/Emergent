@@ -26,6 +26,7 @@ module SessionsHelper
     return unless cookies[:session_token]
     session_token = verify_and_decrypt_cookie(:session_token)
     user = User.find_by_session_token(session_token)
+    return nil unless user
     # TODO: remove this after January 2022
     cookies.permanent[:user_name] = user.name
     cookies.permanent[:user_id] = user.id
