@@ -49,7 +49,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Notes"
 
       assert_select "td.user-name", user.name
-      assert_select "td.user-greeter", ""
+      assert_select "td.user-greeter", "I will greet"
       assert_select "td.user-status", user.status
       assert_select "td.user-meeting-datetime", user.when_timestamp.picker_datetime
       assert_select "td.user-shadow", ""
