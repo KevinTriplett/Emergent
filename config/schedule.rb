@@ -22,8 +22,8 @@ if 'production' == @environment
   every 1.hour do
     rake "ec:nm_crawl_new"
   end
+end
 
-  every 1.day do
-    rake "ec:backup"
-  end
+every 1.day do
+  rake "ec:backup"
 end
