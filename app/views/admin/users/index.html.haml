@@ -19,7 +19,7 @@
         %td.user-name= link_to(u.name, u.profile_url)
         %td.user-greeter= link_to((u.greeter_id ? u.greeter.name : "I will greet"), "#")
         %td.user-status= u.status
-        %td.user-meeting-datetime= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
+        %td.user-meeting-datetime.utc-time= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
         %td.user-shadow= u.shadow_greeter_id ? u.shadow_greeter.name : nil
         %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
         %td.hidden= u.request_timestamp

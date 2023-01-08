@@ -148,7 +148,8 @@ function debounce(func, wait, immediate) {
 
 ////////////////////////////////////////////////////
 // UTILS
-var convertTimeFromUTC = function(utc) {
+var months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+var convertDtselTimeFromUTC = function(utc, dtPicker) {
   if (!utc) return null;
   var dt = (new Date(utc)).toLocaleString("en-GB").substring(0,17);
   // convert to iso 8601 format
@@ -156,6 +157,18 @@ var convertTimeFromUTC = function(utc) {
   var d = t.shift();
   d = d.split("/");
   return `${d[2]}-${d[1]}-${d[0]} ${t[0]}`;
+}
+
+var convertTimeFromUTC = function(utc, dtPicker) {
+  if (!utc) return null;
+  var dt = (new Date(utc)).toLocaleString("en-US");
+  // convert to iso 8601 format
+  var t = dt.split(", ");
+  var d = t.shift();
+  d = d.split("/");
+  t = t[0].split(" ");
+  t[0] = t[0].substring(0,5)
+  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0]} ${t[1]}`;
 }
 
 var convertTimeToUTC = function(datetime) {
@@ -252,9 +265,17 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // CONVERT ALL UTC TIMES TO LOCAL
-  $(".utc-time").each( function(i, el) {
+  $(".user-meeting-datetime.utc-time").each( function(i, el) {
     el = $(el);
-    var datetime = convertTimeFromUTC(el.val());
+    if (!el.text()) return;
+    var datetime = convertTimeFromUTC(el.text());
+    el.text(datetime);
+  });
+
+  $(".datetime-picker.utc-time").each( function(i, el) {
+    el = $(el);
+    if (!el.val()) return;
+    var datetime = convertDtselTimeFromUTC(el.val());
     el.val(datetime);
   });
 
@@ -320,9 +341,9 @@ $(document).ready(function() {
       timeFormat: "HH:MM"
     };
     var css = `[data-id="${userId}"] input.datetime-picker`;
-    el.data("picker", new dtsel.DTS(css, options));
-    el.blur(); // now simulate opening the picker
-    el.focus();
+    el.data("picker", new dtsel.DTS(css, options))
+      .blur() // now simulate opening the picker
+      .focus();
   }).on("change", debounce(setUserMeeting, 1000))
   .on("keydown", function(e) {
     switch(e.key) {

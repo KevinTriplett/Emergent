@@ -160,4 +160,18 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal old_status, user.status
     end
   end
+
+  test "Greeter can sort members in index view" do
+    DatabaseCleaner.cleaning do
+      user1 = login(name: "A B", request_timestamp: Time.now-3.days)
+      user2 = create_user(name: "A C", request_timestamp: Time.now-2.days)
+      user3 = create_user(name: "A D", request_timestamp: Time.now-1.days)
+      puts "user2 = #{user2.inspect}"
+
+      visit admin_users_path
+      assert_current_path admin_users_path
+
+      assert_equal page.all(".user-name").collect(&:text), [user3.name, user2.name, user1.name]
+    end
+  end
 end
