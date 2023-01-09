@@ -49,12 +49,6 @@ def mock_qna
   "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a"
 end
 
-def create_authorized_user(params = {})
-  user = create_user(params)
-  user.update(session_token: "H5_LTSXsGWDKkP7V_-aHvA")
-  user
-end
-
 def set_authorization_cookie
   cookies["session_token"] = "gir7nKs/L502O3MpBzkF7RwmUbjZpCw3AU/wEYILeSj8mR75jiqctml0U77UwkSII0v8LjsjlZMI2Vxx8VOtIQhAtmb1DxMwAThapI1GE9e2xgHInVo2sOXu9i6mh5Jnpw==--P972pwxiT1N1w2jV--Jr7SHvdlHtGCYVeUTJRtTw=="
 end
@@ -83,14 +77,20 @@ def create_user_with_result(params = {})
   )
 end
 
+def create_user(params = {})
+  create_user_with_result(params)[:model]
+end
+
+def create_authorized_user(params = {})
+  user = create_user(params)
+  user.update(session_token: "H5_LTSXsGWDKkP7V_-aHvA")
+  user
+end
+
 def login(params = {})
   user = create_authorized_user(params)
   visit login_url(token: user.token)
   user
-end
-
-def create_user(params = {})
-  create_user_with_result(params)[:model]
 end
 
 def get_magic_link(user)
