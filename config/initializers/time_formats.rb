@@ -30,7 +30,7 @@ class ActiveSupport::TimeWithZone
 
   # 2023-01-26
   def picker_date
-    strftime("%Y %m %d")
+    strftime("%Y-%m-%d")
   end
 
   # 8:40 pm (Tue 1/26)
