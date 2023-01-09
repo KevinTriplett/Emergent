@@ -148,7 +148,7 @@ function debounce(func, wait, immediate) {
 
 ////////////////////////////////////////////////////
 // UTILS
-var months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+var months = "NA Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 var convertDtselTimeFromUTC = function(utc, dtPicker) {
   if (!utc) return null;
   var dt = (new Date(utc)).toLocaleString("en-GB").substring(0,17);
