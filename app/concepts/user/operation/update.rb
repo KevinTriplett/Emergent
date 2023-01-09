@@ -22,6 +22,9 @@ module User::Operation
         old_val = user.send(attr)
         old_val = old_val.blank? ? "(blank)" : (mattr[-3,3] == "_id" ? User.find(old_val).name : old_val)
         mattr = mattr[-3,3] == "_id" ? mattr[0,mattr.length-3] : mattr
+        # don't save notes unless small
+        new_val = mattr == "notes" && new_val.length > 100 ? "(too long)" : new_val
+        old_val = mattr == "notes" && old_val.length > 100 ? "(too long)" : old_val
         change_log += "- #{mattr} changed: #{old_val} -> #{new_val}\n"
 
         val = val.blank? ? nil : val

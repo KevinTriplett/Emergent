@@ -221,10 +221,17 @@ class AdminUsersTest < ApplicationSystemTestCase
       user.reload
       assert_equal old_notes + keys, user.notes
       assert_selector "td.user-notes span", text: "saved"
+      page.find("td.change-log").text.match /notes changed: this are notes -> this are notes hello this is new notes/
 
       keys = " hello this is more stuff"
       find(notes_css).send_keys(keys)
       assert_selector "td.user-notes span", text: ""
+
+      keys = ""
+      100.times {|i| keys += i.to_s}
+      find(notes_css).send_keys(keys)
+      sleep 2
+      page.find("td.change-log").text.match /notes changed: this are notes hello this is new notes hello this is more stuff -> (too long)/
     end
   end
 
