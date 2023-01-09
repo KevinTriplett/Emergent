@@ -299,7 +299,7 @@ $(document).ready(function() {
     
     // set up the spinner
     var count = 0;
-    setInterval(function() {
+    var msgTimer = setInterval(function() {
       var msg = progressMessages[count++];
       $(".progress-message").text(msg);
     }, 5000);
@@ -318,8 +318,11 @@ $(document).ready(function() {
         window.location.assign(data.url);
       },
       error: function(data) {
+        clearInterval(msgTimer);
         $("#spinner").hide();
-        $(".progress-message").text("Something went wrong -- ask Kevin");
+        $(".progress-message")
+          .text("Something went wrong -- ask Kevin")
+          .addClass("failure");
       }
 
     });

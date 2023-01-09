@@ -22,7 +22,7 @@ module User::Operation
       model.profile_url = "https://emergent-commons.mn.co/members/#{model.member_id}"
       model.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{model.member_id}"
       timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
-      model.change_log = "#{model.change_log}#{timestamp} Join request approved by #{admin.name}\n"
+      model.change_log = "#{model.change_log}#{timestamp}\n- Join request approved by #{admin.name}\n"
       model.save
     end
   end
