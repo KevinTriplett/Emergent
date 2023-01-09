@@ -16,16 +16,18 @@ module User::Operation
       timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
       change_log = "#{user.change_log}#{timestamp} by #{admin_name}:\n"
       user_params.each_pair do |attr, val|
-        # check for association
-        new_val = val.blank? ? "(blank)" : (attr.to_s[-3,3] == "_id" ? User.find(val).name : val)
-        old_val = user.send(attr).blank? ? "(blank)" : user.send(attr)
-        change_log += "- #{attr} changed: #{old_val} -> #{new_val}\n"
+        # check for association - yuck
+        mattr = attr.to_s
+        new_val = val.blank? ? "(blank)" : (mattr[-3,3] == "_id" ? User.find(val).name : val)
+        old_val = user.send(attr)
+        old_val = old_val.blank? ? "(blank)" : (mattr[-3,3] == "_id" ? User.find(old_val).name : old_val)
+        mattr = mattr[-3,3] == "_id" ? mattr[0,mattr.length-3] : mattr
+        change_log += "- #{mattr} changed: #{old_val} -> #{new_val}\n"
 
         val = val.blank? ? nil : val
         setter = attr.to_s + "="
-        user.send(setter, val)
+        user.send(setter, val) # here is where we update the user
       end
-      changle_log = (user.change_log || "") + change_log
       user.change_log = change_log
       user.save
     end

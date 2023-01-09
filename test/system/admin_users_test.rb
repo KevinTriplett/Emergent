@@ -55,6 +55,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       user.reload
       assert_equal admin.name, user.greeter.name
       assert_selector "td.user-greeter a", text: admin.name
+      page.find("td.change-log").text.match /greeter changed: \(blank\) -> #{admin.name}/
 
       # check when removing greeter
       message = dismiss_prompt do
@@ -105,6 +106,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       user.reload
       assert_equal admin.id, user.shadow_greeter.id
       assert_selector "td.user-shadow a", text: admin.name
+      page.find("td.change-log").text.match /shadow_greeter changed: \(blank\) -> #{admin.name}/
 
       # check when removing shadow greeter
       message = dismiss_prompt do
@@ -168,6 +170,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       old_status = user.status
 
       assert_selector "td.change-log", text: user.change_log.chomp
+      visit admin_user_path(user.id)
+      assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       ####################
       ## MEETING
@@ -179,6 +183,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 2
       user.reload
       assert_equal "2023-10-09T20:45:00Z", user.when_timestamp.picker_datetime
+      assert_selector "td.change-log", text: user.change_log.chomp
       input.send_keys [:escape]
 
       # check date format in index view
