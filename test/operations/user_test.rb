@@ -150,8 +150,8 @@ class UserOperationTest < MiniTest::Spec
         new_change_log += "#{timestamp} by #{admin.name}:\n"
         new_change_log += "- notes changed: (blank) -> Replacing all the notes\n"
         new_change_log += "- when_timestamp changed: #{existing_user.when_timestamp} -> #{when_timestamp}\n"
-        new_change_log += "- greeter_id changed: (blank) -> #{greeter_1.name}\n"
-        new_change_log += "- shadow_greeter_id changed: (blank) -> #{greeter_2.name}\n"
+        new_change_log += "- greeter changed: (blank) -> #{greeter_1.name}\n"
+        new_change_log += "- shadow_greeter changed: (blank) -> #{greeter_2.name}\n"
         assert_equal new_change_log, existing_user.reload.change_log
       end
     end
