@@ -199,6 +199,7 @@ class NewUserSpider < EmergeSpider
       NewUserSpider.logger.info "#{user ? "updating" : "creating"} user: #{u[:name]}"
       user.update(profile_url: u[:profile_url]) if user
       user.update(chat_url: u[:chat_url]) if user
+      user.update(status: u[:status]) if user && user.status == "Pending" # user may have joined
       User.create!(u) unless user
     rescue => error
       logger.fatal "ERROR in new_user_spider#create_users: #{error.message}"
