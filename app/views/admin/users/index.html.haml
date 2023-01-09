@@ -17,7 +17,7 @@
     - @users.each do |u|
       %tr{ data: {url: admin_user_url(u.id), id: u.id}}
         %td.user-name= link_to(u.name, u.profile_url)
-        %td.user-greeter= link_to((u.greeter_id ? u.greeter.name : "I will greet"), "#")
+        %td.user-greeter= u.greeter_id ? u.greeter.name : ""
         %td.user-status= u.status
         %td.user-meeting-datetime.utc-time= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
         %td.user-shadow= u.shadow_greeter_id ? u.shadow_greeter.name : nil
