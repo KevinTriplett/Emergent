@@ -167,8 +167,8 @@ var convertTimeFromUTC = function(utc, dtPicker) {
   var d = t.shift();
   d = d.split("/");
   t = t[0].split(" ");
-  t[0] = t[0].substring(0,5)
-  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0]} ${t[1]}`;
+  t[0] = t[0].split(":");
+  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0][0]}:${t[0][1]} ${t[1]}`;
 }
 
 var convertTimeToUTC = function(datetime) {
