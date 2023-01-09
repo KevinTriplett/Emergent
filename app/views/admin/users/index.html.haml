@@ -12,7 +12,7 @@
         %span.tzinfo (GMT)
       %th.shadow Shadow
       %th.notes Notes
-      %th.request Request
+      %th.request Requested
   %tbody
     - @users.each do |u|
       %tr{ data: {url: admin_user_url(u.id), id: u.id}}
