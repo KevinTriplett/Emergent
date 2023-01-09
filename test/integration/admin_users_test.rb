@@ -18,13 +18,14 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
   test "Admin page with authorized user" do
     DatabaseCleaner.cleaning do
-      create_authorized_user
+      user = create_authorized_user
       set_authorization_cookie
 
       get admin_users_path
       assert_response :success
       assert_not_nil assigns(:users)
 
+      assert_select ".current-user", "Hi  ^_^\nLogout"
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Existing Members"
     end
@@ -49,7 +50,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Notes"
 
       assert_select "td.user-name", user.name
-      assert_select "td.user-greeter", "I will greet"
+      assert_select "td.user-greeter", ""
       assert_select "td.user-status", user.status
       assert_select "td.user-meeting-datetime", user.when_timestamp.picker_datetime
       assert_select "td.user-shadow", ""

@@ -3,15 +3,15 @@
 %table.users.table.table-bordered.table-striped{ data: {url: @update_url, token: @token} }
   %thead
     %tr
-      %th Name
-      %th Greeter
-      %th Status
+      %th.name Name
+      %th.greeter Greeter
+      %th.status Status
       %th.meeting
         When?
         %br
         %span.tzinfo (GMT)
-      %th Shadow
-      %th Notes
+      %th.shadow Shadow
+      %th.notes Notes
       %th.hidden Request
   %tbody
     - @users.each do |u|

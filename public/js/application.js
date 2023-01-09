@@ -397,11 +397,24 @@ $(document).ready(function() {
   // GREETER EVENT LISTENER
   $("td.user-greeter a").on("click", function(e) {
     e.preventDefault();
-    var userDom = $(this).closest("[data-id");
+    var self = $(this);
+    var result = true;
+    var currentGreeterId = self.closest("td").data("greeter-id");
+    var newGreeterId = greeterId;
+    if (currentGreeterId == greeterId) {
+      result = confirm("Remove yourself as greeter?");
+      newGreeterId = result ? null : id;
+    } else if (currentGreeterId) {
+      result = confirm("You will greet instead?");
+    }
+    if (!result) return;
+    var userDom = $(this).closest("[data-id]");
     var userId = userDom.data("id");
-    var data = { greeter_id: greeterId };
+    var data = { greeter_id: newGreeterId };
     patch(userId, data, function() {
-      userDom.find("td.user-greeter a").text(greeterName);
+      var text = newGreeterId ? greeterName : "I will greet";
+      self.closest("td").data("greeter-id", newGreeterId);
+      userDom.find("td.user-greeter a").text(text);
     }, function() {
       alert("Could not change greeter - ask Kevin");
     });
@@ -411,11 +424,24 @@ $(document).ready(function() {
   // SHADOW EVENT LISTENER
   $("td.user-shadow a").on("click", function(e) {
     e.preventDefault();
+    var self = $(this);
+    var result = true;
+    var currentGreeterId = self.closest("td").data("greeter-id");
+    var newGreeterId = greeterId;
+    if (currentGreeterId == greeterId) {
+      result = confirm("Remove yourself as shadow greeter?");
+      newGreeterId = result ? null : id;
+    } else if (currentGreeterId) {
+      result = confirm("You will be the shadow greeter instead?\n(we prefer only one shadow greeter)");
+    }
+    if (!result) return;
     var userDom = $(this).closest("[data-id]");
     var userId = userDom.data("id");
-    var data = { shadow_greeter_id: greeterId };
+    var data = { shadow_greeter_id: newGreeterId };
     patch(userId, data, function() {
-      userDom.find("td.user-shadow a").text(greeterName);
+      var text = newGreeterId ? greeterName : "I will shadow";
+      self.closest("td").data("greeter-id", newGreeterId);
+      userDom.find("td.user-shadow a").text(text);
     }, function() {
       alert("Could not change shadow - ask Kevin");
     });

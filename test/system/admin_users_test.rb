@@ -26,12 +26,17 @@ class AdminUsersTest < ApplicationSystemTestCase
     end
   end
 
-  test "Greeter can select a user to greet and shadow in show view" do
+  test "Greeter can select a user from index view then change greeter and shadow in show view" do
     DatabaseCleaner.cleaning do
       admin = login
+      admin2 = create_user
+      admin3 = create_user
       user = create_user
 
-      visit admin_user_path(user.id)
+      visit admin_users_path
+      assert_current_path admin_users_path
+      page.find("tr[data-id='#{user.id}'] td.user-name").click
+      sleep 1
       assert_current_path admin_user_path(user.id)
 
       assert_selector "h3", text: user.name
@@ -49,13 +54,95 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_equal admin.name, user.greeter.name
+      assert_selector "td.user-greeter a", text: admin.name
+
+      # check when removing greeter
+      message = dismiss_prompt do
+        click_link(admin.name)
+      end
+      assert_equal "Remove yourself as greeter?", message
+      user.reload
+      assert_equal admin.id, user.greeter_id
+      assert_selector "td.user-greeter a", text: admin.name
+      
+      accept_prompt do
+        click_link(admin.name)
+      end
+      sleep 1
+      user.reload
+      assert_nil user.greeter_id
+      assert_selector "td.user-greeter a", text: "I will greet"
+
+      # check when changing greeter
+      user.update(greeter_id: admin2.id)
+      visit admin_user_path(user.id)
+      assert_selector "td.user-greeter a", text: admin2.name
+
+      message = dismiss_prompt do
+        click_link(admin2.name)
+      end
+      assert_equal "You will greet instead?", message
+      user.reload
+      assert_equal admin2.id, user.greeter_id
+      assert_selector "td.user-greeter a", text: admin2.name
+      
+      accept_prompt do
+        click_link(admin2.name)
+      end
+      sleep 1
+      user.reload
+      assert_equal admin.id, user.greeter_id
+      assert_selector "td.user-greeter a", text: admin.name
+
+      # clean up
+      user.update(greeter_id: nil)
+      visit admin_user_path(user.id)
 
       ######################
       # SHADOW
       click_link('I will shadow')
       sleep 1
       user.reload
-      assert_equal admin.name, user.shadow_greeter.name
+      assert_equal admin.id, user.shadow_greeter.id
+      assert_selector "td.user-shadow a", text: admin.name
+
+      # check when removing shadow greeter
+      message = dismiss_prompt do
+        click_link(admin.name)
+      end
+      assert_equal "Remove yourself as shadow greeter?", message
+      user.reload
+      assert_equal admin.id, user.shadow_greeter_id
+      assert_selector "td.user-shadow a", text: admin.name
+      
+      accept_prompt do
+        click_link(admin.name)
+      end
+      sleep 1
+      user.reload
+      assert_nil user.shadow_greeter_id
+      assert_selector "td.user-shadow a", text: "I will shadow"
+
+      # check when changing greeter
+      user.update(shadow_greeter_id: admin3.id)
+      visit admin_user_path(user.id)
+      assert_selector "td.user-shadow a", text: admin3.name
+
+      message = dismiss_prompt do
+        click_link(admin3.name)
+      end
+      assert_equal "You will be the shadow greeter instead?\n(we prefer only one shadow greeter)", message
+      user.reload
+      assert_equal admin3.id, user.shadow_greeter_id
+      assert_selector "td.user-shadow a", text: admin3.name
+      
+      accept_prompt do
+        click_link(admin3.name)
+      end
+      sleep 1
+      user.reload
+      assert_equal admin.id, user.shadow_greeter_id
+      assert_selector "td.user-shadow a", text: admin.name
     end
   end
 
@@ -94,6 +181,12 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal "2023-10-09T20:45:00Z", user.when_timestamp.picker_datetime
       input.send_keys [:escape]
 
+      # check date format in index view
+      visit admin_users_path
+      assert_selector ".user-meeting-datetime", text: "2023-Oct-9 @ 3:45 PM"
+      visit admin_user_path(user.id)
+
+      # now check ability to delete
       input.click
       input.value.length.times { input.send_keys [:arrow_right] }
       input.value.length.times { input.send_keys [:backspace] }
@@ -163,14 +256,17 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can sort members in index view" do
     DatabaseCleaner.cleaning do
-      user1 = login(name: "A B", request_timestamp: Time.now-3.days)
-      user2 = create_user(name: "A C", request_timestamp: Time.now-2.days)
-      user3 = create_user(name: "A D", request_timestamp: Time.now-1.days)
-      puts "user2 = #{user2.inspect}"
+      user1 = login({name: "A B", request_timestamp: (Time.now-3.days).strftime("%Y-%m-%dT%H:%M:%SZ")})
+      user2 = create_user({name: "A C", request_timestamp: (Time.now-1.days).strftime("%Y-%m-%dT%H:%M:%SZ")})
+      user3 = create_user({name: "A D", request_timestamp: (Time.now-2.days).strftime("%Y-%m-%dT%H:%M:%SZ")})
 
       visit admin_users_path
       assert_current_path admin_users_path
 
+      assert_equal page.all(".user-name").collect(&:text), [user2.name, user3.name, user1.name]
+      page.find("th.name").click
+      assert_equal page.all(".user-name").collect(&:text), [user1.name, user2.name, user3.name]
+      page.find("th.name").click
       assert_equal page.all(".user-name").collect(&:text), [user3.name, user2.name, user1.name]
     end
   end
