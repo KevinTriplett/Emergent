@@ -314,9 +314,14 @@ $(document).ready(function() {
       headers: {
         'X-CSRF-Token': token
       },
-      function(data) {
-        document.location(data.url);
+      success: function(data) {
+        window.location.assign(data.url);
+      },
+      error: function(data) {
+        $("#spinner").hide();
+        $(".progress-message").text("Something went wrong -- ask Kevin");
       }
+
     });
   });
 

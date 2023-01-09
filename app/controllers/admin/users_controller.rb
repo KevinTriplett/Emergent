@@ -17,9 +17,10 @@ module Admin
 
     def update_user
       _ctx = run User::Operation::Update, admin_name: current_user.name do |ctx|
+        flash[:notice] = "User approved -- thank you!"
         return render json: { user: ctx[:model].reload }
       end
-      return head(:bad_request)
+        return head(:bad_request)
     end
 
     def approve_user

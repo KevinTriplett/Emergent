@@ -3,8 +3,7 @@ module User::Operation
 
     step Model(User, :find_by)
     step :activate_spider
-    step :update_user
-    step Contract::Persist()
+    step :update_model
 
     def activate_spider(ctx, model:, **)
       data = [model.first_name,model.last_name].join('|')
@@ -13,16 +12,18 @@ module User::Operation
       until result = Spider.get_result("approve_user_spider")
         sleep 1
       end
-      ctx[:model].member_id = result
+      return false if result.to_i == 0
+      ctx[:model].member_id = result.to_i
     end
 
-    def update_user(ctx, model:, admin:, **)
+    def update_model(ctx, model:, admin:, **)
       model.status= "Joined!"
       model.greeter_id = admin.id
       model.profile_url = "https://emergent-commons.mn.co/members/#{model.member_id}"
       model.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{model.member_id}"
       timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
-      model.change_log = "#{model.change_log}#{timestamp} Approved by #{admin.name}\n"
+      model.change_log = "#{model.change_log}#{timestamp} Join request approved by #{admin.name}\n"
+      model.save
     end
   end
 end

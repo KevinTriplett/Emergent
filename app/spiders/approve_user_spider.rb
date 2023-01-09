@@ -29,7 +29,7 @@ class ApproveUserSpider < EmergeSpider
     ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
     ::Spider.set_result(name, "failure")
-    ApproveUserSpider.logger.fatal "#{name} COMPLETED FAILURE: #{error.message}"
+    ApproveUserSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
   end
 
   def approve_user(response, url:, data: {})
@@ -49,7 +49,11 @@ class ApproveUserSpider < EmergeSpider
     css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
     css_approve = "#{css_row} a.invite-list-item-approve-button"
     ApproveUserSpider.logger.debug "LOOKING FOR #{css_approve}"
-    browser.find(:css, css_approve).click # if Rails.env.production? || Rails.env.staging?
+    begin
+      browser.find(:css, css_approve).click
+    rescue Selenium::WebDriver::Error::ElementNotInteractableError
+      # continue
+    end
 
     ############################################
     # update the member's new id
