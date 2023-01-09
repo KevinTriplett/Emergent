@@ -12,7 +12,7 @@
         %span.tzinfo (GMT)
       %th.shadow Shadow
       %th.notes Notes
-      %th.hidden Request
+      %th.request Request
   %tbody
     - @users.each do |u|
       %tr{ data: {url: admin_user_url(u.id), id: u.id}}
@@ -22,4 +22,4 @@
         %td.user-meeting-datetime.utc-time= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
         %td.user-shadow= u.shadow_greeter_id ? u.shadow_greeter.name : nil
         %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
-        %td.hidden= u.request_timestamp
+        %td.user-request= u.request_timestamp.picker_date
