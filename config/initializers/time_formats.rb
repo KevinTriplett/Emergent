@@ -23,7 +23,7 @@ class ActiveSupport::TimeWithZone
     strftime("%a %l:%M %p").gsub('  ', ' ')
   end
 
-  # 2023-01-26 20:40
+  # 2023-01-26T20:40:30Z
   def picker_datetime
     strftime("%Y-%m-%dT%H:%M:%SZ")
   end
