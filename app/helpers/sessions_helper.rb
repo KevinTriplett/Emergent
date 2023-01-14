@@ -26,10 +26,13 @@ module SessionsHelper
 
   def current_user
     return unless cookies[:session_token]
+    puts "found session_token cookie #{cookies[:session_token]}"
     session_token = verify_and_decrypt_cookie(:session_token)
+    puts "found session_token #{session_token}"
     @current_user = User.find_by_session_token(session_token)
     # TODO: remove the rest of this after January 2022
     return unless @current_user
+    puts "found user #{@current_user.name}"
     cookies.permanent[:user_name] = @current_user.name
     cookies.permanent[:user_id] = @current_user.id
     @current_user
