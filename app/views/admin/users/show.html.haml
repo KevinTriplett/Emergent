@@ -33,6 +33,9 @@
       %td.user-shadow{ data: {greeter_id: @user.shadow_greeter_id.to_s} }
         = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
     %tr
+      %td.header Request Date
+      %td.user-request= @user.request_timestamp.human_date
+    %tr
       %td.header Notes
       %td.user-notes
         %textarea{ cols: "40" }= @user.notes
