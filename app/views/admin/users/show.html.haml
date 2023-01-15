@@ -17,7 +17,7 @@
       %td.header Status
       %td.user-status
         %select
-          - User.get_status_options.each do |o|
+          - @status_options.each do |o|
             - selected = (o == @user.status ? "selected" : nil)
             %option{ selected: selected }= o
     %tr
