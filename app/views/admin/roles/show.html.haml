@@ -1,0 +1,58 @@
+%h3= @user.name
+%p
+  =link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
+  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}")
+  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}")
+
+%table.user.table.table-bordered.table-striped{ data: {url: admin_users_url, token: @token, id: @user.id } }
+  %tbody
+    %tr
+      %td.header Greeter
+      %td.user-greeter{ data: {greeter_id: @user.greeter_id.to_s} }
+        = link_to((@user.greeter_id ? @user.greeter.name : "I will greet"), "#")
+    %tr
+      %td.header Email
+      %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
+    %tr
+      %td.header Status
+      %td.user-status
+        %select
+          - User.get_status_options.each do |o|
+            - selected = (o == @user.status ? "selected" : nil)
+            %option{ selected: selected }= o
+    %tr
+      %td.header.meeting
+        When
+        %br
+        %span.tzinfo (GMT)
+      %td.user-meeting-datetime
+        - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
+        %input.datetime-picker.utc-time{ type: "text", value: datetime }
+    %tr
+      %td.header Shadow
+      %td.user-shadow{ data: {greeter_id: @user.shadow_greeter_id.to_s} }
+        = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
+    %tr
+      %td.header Notes
+      %td.user-notes
+        %textarea{ cols: "40" }= @user.notes
+        %span.save-status
+    %tr
+      %td.header Questions
+      %td.user-questions
+        %ol
+          - @user.questions_responses.split(" -:- ").each do |qna|
+            - q, a = *qna.split("\\")
+            %li
+              %span.question= q
+              %br
+              %span.answer= a
+        - if @user.status == "Pending"
+          - url = @user.email.blank? ? "#" : admin_approve_user_path(@user.id)
+          = link_to "Approve", url, class: "btn btn-primary user-approve"
+          = link_to "Reject", "#", class: "btn btn-warning user-reject"
+          .lds-hourglass#spinner
+          %span.progress-message Working ...
+    %tr
+      %td.header ChangeLog
+      %td.change-log!= @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"

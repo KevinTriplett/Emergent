@@ -1,0 +1,6 @@
+%h5= @user.name
+
+- if @user.has_role?(:greeter)
+  =link_to "Greeter App", admin_users_url, class: "btn btn btn-primary"
+
+=link_to "Edit Profile", edit_user_url(token: @user.token)

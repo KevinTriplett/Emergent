@@ -1,0 +1,13 @@
+%h5 Editing profile
+
+= simple_form_for @form, as: :user, url: user_url(@model.token), method: :patch do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :email, placeholder: "Email", label: false
+  .row
+    .col= f.input :notifications, as: :boolean, label: "Notifications"
+  .row
+    .col= f.button :submit, "Update", class: "btn-primary"
+.row
+  .col= link_to "Cancel", users_url

@@ -1,31 +1,25 @@
-module Admin
+module Greeters
   class UsersController < ApplicationController
-    layout "admin"
+    layout "greeters"
     before_action :signed_in_user
 
     def index
-      @search_url = admin_search_users_url
-      @user_url = admin_users_url
+      date = Time.now - 2.months
+      @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
+      @update_url = admin_users_url
+      @token = form_authenticity_token
     end
 
-    def search
-      return render json: {
-        users: User.where("name like ?", "%#{params[:search]}%")
-      }
-    end
-
-    def edit
-      _ctx = run User::Operation::Update::Present, admin_name: current_user.name do |ctx|
-        return render json: { user: ctx[:model].reload }
-      end
-      return head(:bad_request)
+    def show
+      @user = User.find(params[:id])
+      @token = form_authenticity_token
     end
 
     def update_user
       _ctx = run User::Operation::Update, admin_name: current_user.name do |ctx|
         return render json: { user: ctx[:model].reload }
       end
-      return head(:bad_request)
+        return head(:bad_request)
     end
 
     def approve_user

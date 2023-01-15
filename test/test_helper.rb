@@ -71,7 +71,9 @@ def create_user_with_result(params = {})
         referral: params[:referral] || "referral name",
         greeter_id: params[:greeter_id],
         shadow_greeter_id: params[:shadow_greeter_id],
-        session_token: params[:session_token]
+        session_token: params[:session_token],
+        notifications: params[:notifications],
+        roles: params[:roles]
       }
     }
   )

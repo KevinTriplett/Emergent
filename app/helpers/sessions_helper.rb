@@ -39,10 +39,6 @@ module SessionsHelper
     current_user.present?
   end
 
-  def current_user_has_role(role)
-    current_user && current_user.has_role(:greeter)
-  end
-
   # ref https://gist.github.com/wildjcrt/6359713fa770d277927051fdeb30ebbf
   def verify_and_decrypt_cookie(key, secret_key_base = Rails.application.secret_key_base, purpose = nil)
     raise "no cookie to decrypt" unless cookies[key]
