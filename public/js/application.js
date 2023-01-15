@@ -203,7 +203,7 @@ var patch = function(userId, data, success, error) {
     },
     success: function(data) {
       $("td.change-log").html(data.user.change_log.replace(/\n/g, "<br>"));
-      success();
+      success(data);
     },
     error: error
   });
@@ -460,19 +460,35 @@ $(document).ready(function() {
   var setUserStatus = function(userDom, userStatus) {
     var userId = userDom.data("id");
     var data = { status: userStatus || userDom.find("td.user-status select").val() };
-    patch(userId, data, function() {
-      userDom.find("td.user-status select").val(data.status);
+    patch(userId, data, function(result) {
+      var sel = document.createElement("select");
+      for (const option of result.status_options) {
+        var opt = document.createElement("option");
+        opt.text = option;
+        opt.value = option;
+        sel.add(opt, null);
+      };
+      userDom
+        .find("td.user-status")
+        .empty()
+        .append(sel);
+      initStatusSelectMenu("td.user-status select");
+      userDom.find("td.user-status select").val(result.user.status);
+      userDom.find("td.user-status .ui-selectmenu-text").text(result.user.status);
     }, function() {
       alert("Could not change status - ask Kevin");
     });
   }
 
-  $(".user-status select").selectmenu({
-    change: function(e) {
-      var userDom = $(this).closest("[data-id]");
-      setUserStatus(userDom, null);
-    }
-  });
+  var initStatusSelectMenu = function() {
+    $(".user-status select").selectmenu({
+      change: function(e) {
+        var userDom = $(this).closest("[data-id]");
+        setUserStatus(userDom, null);
+      }
+    });
+  }
+  initStatusSelectMenu("td.user-status select");
 
   ////////////////////////////////////////////////////
   // EMAIL EVENT LISTENER

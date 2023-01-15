@@ -12,12 +12,16 @@ module Admin
 
     def show
       @user = User.find(params[:id])
+      @status_options = @user.get_status_options
       @token = form_authenticity_token
     end
 
     def update_user
       _ctx = run User::Operation::Update, admin_name: current_user.name do |ctx|
-        return render json: { user: ctx[:model].reload }
+        return render json: { 
+          user: ctx[:model].reload,
+          status_options: ctx[:model].get_status_options
+        }
       end
         return head(:bad_request)
     end

@@ -25,7 +25,65 @@ class User < ActiveRecord::Base
     notes.length > len ? "..." : nil
   end
 
-  def self.get_status_options
+  def get_status_options
+    {
+      "Pending": [
+        "Joined!",
+        "Clarifying email sent"
+      ],
+      "Clarifying email sent": [
+        "Joined!",
+        "Rejected"
+      ],
+      "Joined!": [
+        "1st welcome email sent"
+      ],
+      "1st welcome email sent": [
+        "Scheduling zoom",
+        "Zoom scheduled",
+        "Zoom maybe later",
+        "Zoom declined (completed)",
+        "Chat done (completed)",
+        "No response (completed)"
+      ],
+      "Zoom maybe later": [
+        "Scheduling zoom",
+        "Zoom scheduled",
+        "Zoom declined (completed)",
+        "Chat done (completed)"
+      ],
+      "Scheduling zoom": [
+        "Zoom scheduled",
+        "Zoom declined (completed)",
+        "Chat done (completed)",
+        "No response (completed)"
+      ],
+      "Zoom scheduled": [
+        "Zoom done (completed)",
+        "Zoom declined (completed)",
+        "Chat done (completed)",
+        "No response (completed)"
+      ],
+      "2nd welcome email sent": [
+        "Scheduling zoom",
+        "Zoom scheduled",
+        "Zoom maybe later",
+        "Zoom done (completed)",
+        "Chat done (completed)",
+        "Zoom declined (completed)",
+        "No response (completed)",
+      ],
+      "Zoom declined (completed)": [
+        "Scheduling zoom"
+      ],
+      "No response (completed)": [
+        "Scheduling zoom"
+      ],
+      "Zoom done (completed)": [],
+      "Chat done (completed)": []
+    }[status.to_sym].insert(0, status)
+  # handle older greetings:
+  rescue NoMethodError
     return [
       "Pending",
       "Joined!",

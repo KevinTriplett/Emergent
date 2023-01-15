@@ -150,28 +150,29 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and set meeting in show view" do
     DatabaseCleaner.cleaning do
-      user = login(status: "Joined!")
+      user = login(status: "Pending")
       user.update!(when_timestamp: nil)
 
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
+      assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       ####################
       ## STATUS
       assert_selector "td.user-status span.ui-selectmenu-text", text: user.status
 
       find("td.user-status span.ui-selectmenu-text").click
-      find(".ui-menu-item-wrapper", text: "Pending", exact_text: true).click
-      assert_selector "td.user-status span.ui-selectmenu-text", text: "Pending"
+      find(".ui-menu-item-wrapper", text: "Joined!", exact_text: true).click
+      assert_selector "td.user-status span.ui-selectmenu-text", text: "Joined!"
+      assert_equal "Joined!", user.reload.status
 
-      sleep 1
-      user.reload
-      assert_equal "Pending", user.status
-      old_status = user.status
+      find("td.user-status span.ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: "1st welcome email sent", exact_text: true).click
+      assert_selector "td.user-status span.ui-selectmenu-text", text: "1st welcome email sent"
+      assert_equal "1st welcome email sent", user.reload.status
 
       assert_selector "td.change-log", text: user.change_log.chomp
       visit admin_user_path(user.id)
-      assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       ####################
       ## MEETING
@@ -199,7 +200,6 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 2
       user.reload
       assert_nil user.when_timestamp
-      assert_equal old_status, user.status
     end
   end
 
