@@ -8,7 +8,8 @@ class User < ActiveRecord::Base
   end
 
   def generate_session_token
-    update!(session_token: SecureRandom.urlsafe_base64)
+    # do not generate a new session_token bc that would break all other session_tokens
+    update(session_token: SecureRandom.urlsafe_base64) unless session_token
     session_token
   end
 
