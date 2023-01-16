@@ -72,23 +72,17 @@ class User < ActiveRecord::Base
         "Chat done (completed)",
         "Zoom declined (completed)",
         "No response (completed)",
-      ],
-      "Zoom declined (completed)": [
-        "Scheduling zoom"
-      ],
-      "No response (completed)": [
-        "Scheduling zoom"
-      ],
-      "Zoom done (completed)": [],
-      "Chat done (completed)": []
+      ]
     }[status.to_sym].insert(0, status)
   # handle older greetings:
   rescue NoMethodError
     return [
       "Pending",
+      "Rejected",
       "Joined!",
-      "1st Email Sent",
-      "2nd Email Sent",
+      "Clarifying email sent",
+      "1st email Sent",
+      "2nd email Sent",
       "Emailing",
       "No Response",
       "Rescheduling",
