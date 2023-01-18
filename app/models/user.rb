@@ -29,27 +29,27 @@ class User < ActiveRecord::Base
     {
       "Pending": [],
       "Request Declined": [],
-      "Scheduling zoom": [
-        "Zoom scheduled",
-        "Zoom declined (completed)",
-        "Chat done (completed)",
-        "No response (completed)"
+      "Scheduling Zoom": [
+        "Zoom Scheduled",
+        "Zoom Declined (completed)",
+        "Chat Done (completed)",
+        "No Response (completed)"
       ],
-      "Zoom scheduled": [
-        "Zoom done (completed)",
-        "Scheduling zoom"
+      "Zoom Scheduled": [
+        "Zoom Done (completed)",
+        "Scheduling Zoom"
       ],
-      "Zoom done (completed)":[
-        "Scheduling zoom"
+      "Zoom Done (completed)":[
+        "Scheduling Zoom"
       ],
-      "Zoom declined (completed)":[
-        "Scheduling zoom"
+      "Zoom Declined (completed)":[
+        "Scheduling Zoom"
       ],
-      "Chat done (completed)":[
-        "Scheduling zoom"
+      "Chat Done (completed)":[
+        "Scheduling Zoom"
       ],
-      "No response (completed)":[
-        "Scheduling zoom"
+      "No Response (completed)":[
+        "Scheduling Zoom"
       ]
     }[status.to_sym].insert(0, status)
   # handle older greetings:
