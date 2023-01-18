@@ -56,6 +56,7 @@ class NewUserSpider < EmergeSpider
       next if !user[:member_id] && User.find_by_email(user[:email])
       break if user[:member_id] && User.find_by_member_id(user[:member_id])
       users.push user
+      sleep 1
     end
     create_users(users)
   end
@@ -79,6 +80,7 @@ class NewUserSpider < EmergeSpider
   ##################################################
   ## EXTRACT USER DATA
   def extract_user_data(row)
+    joined = false
     first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
     last_name = row.css(".invite-list-item-last-name-text").text.strip
     full_name = "#{first_name} #{last_name}"
@@ -89,7 +91,7 @@ class NewUserSpider < EmergeSpider
     css = "tr.invite-request-list-item[data-id='#{id}']"
     NewUserSpider.logger.debug "css = #{css}"
 
-    if row.css("a.invite-list-item-status-text").count == 0
+    if row.css("a.invite-list-item-status-text").count == 0 || row.css("a.invite-list-item-status-text").text != "Joined!"
       status = "Pending"
       chat_url = profile_url = member_id = nil
       # for new requests, just click the nice button
@@ -106,6 +108,7 @@ class NewUserSpider < EmergeSpider
         return {}
       end
     else
+      joined = true
       status = row.css("a.invite-list-item-status-text").text.strip
       profile_url = row.css(".invite-list-item-email a").attr("href").value
       # https://emergent-commons.mn.co/members/7567995
@@ -174,7 +177,8 @@ class NewUserSpider < EmergeSpider
       member_id: member_id,
       request_timestamp: request_date,
       status: status,
-      questions_responses: questions_and_answers.join(" -:- ")
+      questions_responses: questions_and_answers.join(" -:- "),
+      joined: joined
     }
   end
 
@@ -200,6 +204,7 @@ class NewUserSpider < EmergeSpider
       user.update(profile_url: u[:profile_url]) if user
       user.update(chat_url: u[:chat_url]) if user
       user.update(status: u[:status]) if user && user.status == "Pending" # user may have joined
+      user.update(joined: u[:joined]) if user && !user.joined
       User.create!(u) unless user
     rescue => error
       logger.fatal "ERROR in new_user_spider#create_users: #{error.message}"
