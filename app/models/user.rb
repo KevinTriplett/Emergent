@@ -27,31 +27,8 @@ class User < ActiveRecord::Base
 
   def get_status_options
     {
-      "Pending": [
-        "Joined!",
-        "Clarifying email sent"
-      ],
-      "Clarifying email sent": [
-        "Joined!",
-        "Rejected"
-      ],
-      "Joined!": [
-        "1st welcome email sent"
-      ],
-      "1st welcome email sent": [
-        "Scheduling zoom",
-        "Zoom scheduled",
-        "Zoom maybe later",
-        "Zoom declined (completed)",
-        "Chat done (completed)",
-        "No response (completed)"
-      ],
-      "Zoom maybe later": [
-        "Scheduling zoom",
-        "Zoom scheduled",
-        "Zoom declined (completed)",
-        "Chat done (completed)"
-      ],
+      "Pending": [],
+      "Request Declined": [],
       "Scheduling zoom": [
         "Zoom scheduled",
         "Zoom declined (completed)",
@@ -60,18 +37,19 @@ class User < ActiveRecord::Base
       ],
       "Zoom scheduled": [
         "Zoom done (completed)",
-        "Zoom declined (completed)",
-        "Chat done (completed)",
-        "No response (completed)"
+        "Scheduling zoom"
       ],
-      "2nd welcome email sent": [
-        "Scheduling zoom",
-        "Zoom scheduled",
-        "Zoom maybe later",
-        "Zoom done (completed)",
-        "Chat done (completed)",
-        "Zoom declined (completed)",
-        "No response (completed)",
+      "Zoom done (completed)":[
+        "Scheduling zoom"
+      ],
+      "Zoom declined (completed)":[
+        "Scheduling zoom"
+      ],
+      "Chat done (completed)":[
+        "Scheduling zoom"
+      ],
+      "No response (completed)":[
+        "Scheduling zoom"
       ]
     }[status.to_sym].insert(0, status)
   # handle older greetings:
