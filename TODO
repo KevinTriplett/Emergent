@@ -30,6 +30,7 @@
 - [X] log changes to users
 - [X] add self referential greeter_id column to users table
 - [X] constrain user status options to next possible status
+- [X] check all records that are not joined on nm_crawl
 - [ ] consolidate change_log entries for notes and when_timestamps
 - [ ] expand notes box in show view
 - [ ] convert user show url to use user tokens
