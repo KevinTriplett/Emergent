@@ -70,7 +70,13 @@ class User < ActiveRecord::Base
       "Declined",
       "Welcomed",
       "Posted Intro",
-      "Completed"
+      "Completed",
+      "Scheduling Zoom",
+      "Zoom Scheduled",
+      "Zoom Declined (completed)",
+      "Chat Done (completed)",
+      "No Response (completed)",
+      "Zoom Done (completed)"
     ]
   end
 
