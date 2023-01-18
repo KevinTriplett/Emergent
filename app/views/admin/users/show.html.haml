@@ -50,7 +50,7 @@
               %span.question= q
               %br
               %span.answer= a
-        - unless @user.joined?
+        - unless @user.joined? || @user.status == "Request Declined"
           - url = @user.email.blank? ? "#" : admin_approve_user_path(@user.id)
           = link_to "Approve", url, class: "btn btn-primary user-approve"
           = link_to "Reject", "#", class: "btn btn-warning user-reject"
