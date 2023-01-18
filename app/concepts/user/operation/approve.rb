@@ -20,7 +20,8 @@ module User::Operation
     end
 
     def update_model(ctx, model:, admin:, **)
-      model.status = "Joined!" if model.status == "Pending"
+      # TODO can get out of sync, so make this programmatic from the hash
+      model.status = "Scheduling Zoom"
       model.joined = true
       model.greeter_id = admin.id unless model.greeter_id
       model.profile_url = "https://emergent-commons.mn.co/members/#{model.member_id}"
