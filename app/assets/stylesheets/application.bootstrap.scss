@@ -181,6 +181,9 @@ table.users, table.user {
     }
   }
   tbody {
+    tr.pending {
+      background-color: rgb(211, 244, 211);
+    }
     td.user-questions {
       li {
         margin-bottom: 7px;

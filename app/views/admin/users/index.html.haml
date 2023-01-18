@@ -15,7 +15,7 @@
       %th.request Requested
   %tbody
     - @users.each do |u|
-      %tr{ data: {url: admin_user_url(u.id), id: u.id}}
+      %tr{ data: {url: admin_user_url(u.id), id: u.id}, class: u.joined ? nil : "pending" }
         %td.user-name= u.name
         %td.user-greeter= u.greeter_id ? u.greeter.name : ""
         %td.user-status= u.status
