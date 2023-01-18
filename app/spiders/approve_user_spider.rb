@@ -43,23 +43,32 @@ class ApproveUserSpider < EmergeSpider
     wait_until(css)
 
     ############################################
-    # find approve button for this user
+    # see if user has already joined (database out of sync with MN database)
     first_name_td = "td.invite-list-item-first-name[title='#{first_name}']"
     last_name_td = "td.invite-list-item-last-name[title='#{last_name}']"
     css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
+    css_status = "#{css_row} .invite-list-item-status-text"
+    return get_member_id(css_row) if response_has(css_status, "Joined!")
+
+    ############################################
+    # find approve button for this user
     css_approve = "#{css_row} a.invite-list-item-approve-button"
     ApproveUserSpider.logger.debug "LOOKING FOR #{css_approve}"
     begin
       browser.find(:css, css_approve).click
+      wait_until(css_status, "Joined!")
     rescue Selenium::WebDriver::Error::ElementNotInteractableError
-      # continue
+      ApproveUserSpider.logger.fatal "Approve button not interactable on MN platform"
     end
 
     ############################################
     # update the member's new id
-    sleep 4
+    get_member_id(css_row)
+  end
+
+  def get_member_id(css)
     ApproveUserSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
-    css_link = "#{css_row} .invite-list-item-first-name-text a"
+    css_link = "#{css} .invite-list-item-first-name-text a"
     link = browser.find(:css, css_link)["href"]
 
     member_id = link.split("/").last
