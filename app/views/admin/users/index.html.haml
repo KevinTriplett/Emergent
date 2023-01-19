@@ -20,7 +20,7 @@
       - classnames.push("declined") if "Request Declined" == u.status
       - classnames.push("scheduling") if "Scheduling Zoom" == u.status
       - classnames.push("scheduled") if "Zoom Scheduled" == u.status
-      - classnames.push("complete") if u.status.index("(complete)")
+      - classnames.push("complete") if u.status.index("(completed)")
       %tr{ data: {url: admin_user_url(u.id), id: u.id}, class: classnames.join(" ") }
         %td.user-name= u.name
         %td.user-greeter= u.greeter_id ? u.greeter.name : ""
