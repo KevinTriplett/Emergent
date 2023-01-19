@@ -185,7 +185,7 @@ class NewUserSpider < EmergeSpider
       chat_url: chat_url,
       member_id: member_id,
       request_timestamp: request_date,
-      status: status,
+      status: "Joined!" == status ? "Scheduling Zoom" : status,
       questions_responses: questions_and_answers.join(" -:- "),
       joined: joined
     }
