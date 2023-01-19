@@ -170,7 +170,7 @@ table.users, table.user {
   width: 100%;
   thead {
     th {
-      background-color: cornflowerblue;
+      background-color: rgb(59, 94, 64);
       color: white;
       span.tzinfo {
         font-size: x-small;
@@ -182,6 +182,16 @@ table.users, table.user {
   }
   tbody {
     tr.pending {
+      background-color: rgb(253, 248, 169);
+    }
+    tr.declined {
+      background-color: rgb(142, 141, 141);
+      color: white;
+    }
+    tr.scheduling, tr.scheduled {
+      background-color: rgb(179, 212, 254);
+    }
+    tr.complete {
       background-color: rgb(211, 244, 211);
     }
     td.user-questions {
