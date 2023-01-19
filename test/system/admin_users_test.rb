@@ -150,7 +150,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and set meeting in show view" do
     DatabaseCleaner.cleaning do
-      user = login(status: "Pending")
+      user = login
       user.update!(when_timestamp: nil)
 
       visit admin_user_path(user.id)
@@ -159,17 +159,28 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       ####################
       ## STATUS
-      assert_selector "td.user-status span.ui-selectmenu-text", text: user.status
+      user.update(status: "Request Declined")
+      visit admin_user_path(user.id)
+      assert_selector ".ui-selectmenu-text", text: user.status
+      assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
-      find("td.user-status span.ui-selectmenu-text").click
-      find(".ui-menu-item-wrapper", text: "Joined!", exact_text: true).click
-      assert_selector "td.user-status span.ui-selectmenu-text", text: "Joined!"
-      assert_equal "Joined!", user.reload.status
+      user.update(status: "Scheduling Zoom")
+      user.update(joined: true)
+      visit admin_user_path(user.id)
+      assert_selector ".ui-selectmenu-text", text: user.status
+      assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
-      find("td.user-status span.ui-selectmenu-text").click
-      find(".ui-menu-item-wrapper", text: "1st welcome email sent", exact_text: true).click
-      assert_selector "td.user-status span.ui-selectmenu-text", text: "1st welcome email sent"
-      assert_equal "1st welcome email sent", user.reload.status
+      find(".ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
+      assert_selector ".ui-selectmenu-text", text: "Zoom Scheduled"
+      assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
+      assert_equal "Zoom Scheduled", user.reload.status
+
+      find(".ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: "Zoom Done (completed)", exact_text: true).click
+      assert_selector ".ui-selectmenu-text", text: "Zoom Done (completed)"
+      assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
+      assert_equal "Zoom Done (completed)", user.reload.status
 
       assert_selector "td.change-log", text: user.change_log.chomp
       visit admin_user_path(user.id)
