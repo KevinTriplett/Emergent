@@ -4,9 +4,9 @@ require 'active_support'
 module SessionsHelper
   class InvalidMessage < StandardError; end
 
-  def sign_in
+  def sign_in(user=nil)
     params.permit(:token)
-    user = User.find_by_token(params[:token])
+    user ||= User.find_by_token(params[:token])
     return unless user
     cookies.permanent.encrypted[:session_token] = user.generate_session_token
     cookies.permanent[:user_name] = user.name

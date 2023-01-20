@@ -2,4 +2,4 @@
 .center
   %form{action: send_magic_link_url, method: "put"}
     %input{name: "email", type: "text", placeholder: "Email"}
-    %button.btn.btn-warning Send My Magic Link
+    %button.btn.btn-warning= Rails.env.staging? ? "Log In" : "Send My Magic Link"

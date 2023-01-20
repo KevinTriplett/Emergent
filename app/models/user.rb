@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
 
   def ensure_token
     update(token: User.generate_unique_secure_token) if token.nil?
+    token
   end
 
   def generate_session_token

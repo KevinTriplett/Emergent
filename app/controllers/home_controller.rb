@@ -21,7 +21,9 @@ class HomeController < ApplicationController
   def send_magic_link
     params.permit(:email)
     user = User.find_by_email params[:email].downcase
-    if user
+    if user && Rails.env.staging?
+      sign_in(user)
+    elsif user
       user.ensure_token
       UserMailer.with(user).send_magic_link.deliver_now
       flash[:notice] = "Magic link sent, check your SPAM folder"
