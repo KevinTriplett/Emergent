@@ -473,20 +473,21 @@ $(document).ready(function() {
     var userId = userDom.data("id");
     var data = { status: userStatus || userDom.find("td.user-status select").val() };
     patch(userId, data, function(result) {
-      var sel = document.createElement("select");
+      var newSel = document.createElement("select");
       for (const option of result.status_options) {
-        var opt = document.createElement("option");
-        opt.text = option;
-        opt.value = option;
-        sel.add(opt, null);
+        var newOpt = document.createElement("option");
+        newOpt.text = option;
+        newOpt.value = option;
+        newSel.add(newOpt, null);
       };
       userDom
         .find("td.user-status")
         .empty()
-        .append(sel);
+        .append(newSel);
       initStatusSelectMenu("td.user-status select");
       userDom.find("td.user-status select").val(result.user.status);
       userDom.find("td.user-status .ui-selectmenu-text").text(result.user.status);
+      userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.user.whenTimestamp)
     }, function() {
       alert("Could not change status - ask Kevin");
     });

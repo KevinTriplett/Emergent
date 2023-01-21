@@ -151,14 +151,17 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "Greeter can change user status and set meeting in show view" do
     DatabaseCleaner.cleaning do
       user = login
-      user.update!(when_timestamp: nil)
+      assert user.when_timestamp
 
       visit admin_user_path(user.id)
       assert_current_path admin_user_path(user.id)
-      assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       ####################
-      ## STATUS
+      ## APPROVE BUTTON
+      assert !user.joined
+      assert_equal "Pending", user.status
+      assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
+
       user.update(status: "Request Declined")
       visit admin_user_path(user.id)
       assert_selector ".ui-selectmenu-text", text: user.status
@@ -170,17 +173,24 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".ui-selectmenu-text", text: user.status
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
+      ####################
+      ## STATUS AND MEETING DATE
+      # assert_selector ".user-meeting-datetime", text: "2022-Dec-7 @ 3:30 AM"
       find(".ui-selectmenu-text").click
       find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
       assert_selector ".ui-selectmenu-text", text: "Zoom Scheduled"
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
       assert_equal "Zoom Scheduled", user.reload.status
+      assert_selector ".user-meeting-datetime", text: ""
+      assert_nil user.reload.when_timestamp
 
+      user.update(when_timestamp: "2023 Jan 20 10:00")
       find(".ui-selectmenu-text").click
       find(".ui-menu-item-wrapper", text: "Zoom Done (completed)", exact_text: true).click
       assert_selector ".ui-selectmenu-text", text: "Zoom Done (completed)"
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
       assert_equal "Zoom Done (completed)", user.reload.status
+      assert_nil user.when_timestamp
 
       assert_selector "td.change-log", text: user.change_log.chomp
       visit admin_user_path(user.id)

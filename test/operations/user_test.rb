@@ -47,7 +47,7 @@ class UserOperationTest < MiniTest::Spec
         greeter = create_user
         existing_user = create_user
 
-        # user_hash = existing_user.attributes <-- this does not work
+        # NB: user_hash = existing_user.attributes <-- this does not work
         user_hash = {
           user: {
             greeter_id: greeter.id
@@ -59,6 +59,44 @@ class UserOperationTest < MiniTest::Spec
         assert result.success?
         existing_user.reload
         assert_equal greeter.name, existing_user.greeter.name
+      end
+    end
+
+    it "Clears when_timestamp on status change" do
+      DatabaseCleaner.cleaning do
+        test_date = "2023 Jan 20 10:00"
+        admin = create_user
+        existing_user = create_user(when_timestamp: test_date)
+        assert existing_user.when_timestamp
+
+        user_hash = {
+          user: {
+            status: "Zoom Scheduled"
+          },
+          id: existing_user.id
+        }
+        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        assert_nil existing_user.reload.when_timestamp
+        existing_user.update(when_timestamp: test_date)
+
+        user_hash = {
+          user: {
+            status: "Scheduling Zoom"
+          },
+          id: existing_user.id
+        }
+        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        assert_nil existing_user.reload.when_timestamp
+        existing_user.update(when_timestamp: test_date)
+
+        user_hash = {
+          user: {
+            status: "Zoom Done (completed)"
+          },
+          id: existing_user.id
+        }
+        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        assert_nil existing_user.reload.when_timestamp
       end
     end
 
@@ -128,12 +166,16 @@ class UserOperationTest < MiniTest::Spec
         }
         result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
         assert result.success?
-        timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
-        new_change_log = "#{timestamp} by #{admin.name}:\n- status changed: #{existing_user.status} -> New Status\n"
+        timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+        new_change_log = [
+          "#{timestamp} by #{admin.name}:",
+          "- status changed: #{existing_user.status} -> New Status",
+          "- when_timestamp changed: #{existing_user.when_timestamp} -> (blank)\n"
+        ].join("\n")
         assert_equal new_change_log, existing_user.reload.change_log
 
         random_user_name_1, random_user_name_2 = random_user_name, random_user_name
-        when_timestamp = Time.now
+        when_timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
         user_hash = {
           user: {
             notes: "Replacing all the notes",
@@ -143,13 +185,13 @@ class UserOperationTest < MiniTest::Spec
           },
           id: existing_user.id
         }
-        when_timestamp = when_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
+        # when_timestamp = when_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
         result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
         assert result.success?
-        timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
+        timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
         new_change_log += "#{timestamp} by #{admin.name}:\n"
         new_change_log += "- notes changed: (blank) -> Replacing all the notes\n"
-        new_change_log += "- when_timestamp changed: #{existing_user.when_timestamp} -> #{when_timestamp}\n"
+        new_change_log += "- when_timestamp changed: (blank) -> #{when_timestamp}\n"
         new_change_log += "- greeter changed: (blank) -> #{greeter_1.name}\n"
         new_change_log += "- shadow_greeter changed: (blank) -> #{greeter_2.name}\n"
         assert_equal new_change_log, existing_user.reload.change_log

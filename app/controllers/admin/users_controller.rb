@@ -23,7 +23,7 @@ module Admin
           status_options: ctx[:model].get_status_options
         }
       end
-        return head(:bad_request)
+      return head(:bad_request)
     end
 
     def approve_user
