@@ -247,6 +247,18 @@ $(document).ready(function() {
   $(document).uitooltip();
 
   ////////////////////////////////////////////////////
+  // RESIZE NOTES TEXTAREA
+  // ref https://stackoverflow.com/a/48460773/1204064
+  var scrollHeight = $(".user-notes textarea").prop("scrollHeight");
+  $(".user-notes textarea")
+    .css("height", "")
+    .css("height", scrollHeight * 1.04 + "px")
+    .on("input", function(e) {
+      this.style.height = "";
+      this.style.height = this.scrollHeight * 1.04 + "px";
+    });
+
+  ////////////////////////////////////////////////////
   // CONNECT DATATABLE
   // ref https://datatables.net/reference/index
   $("table.users").DataTable({
