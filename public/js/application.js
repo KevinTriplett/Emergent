@@ -186,6 +186,107 @@ var getUserNotes = function(userDom) {
   return userDom.find("td.user-notes textarea").val();
 }
 
+var noGreeter = function(userDom, userId) {
+  var userGreeterId = userDom.find("td.user-greeter").data("greeter-id");
+  if (!userGreeterId) {
+    if (!confirm("You will greet this new member?")) return true;
+    setUserGreeter(userDom, userId, greeterId);
+  } else if (userGreeterId != greeterId) {
+    if (!confirm("You will greet this new member instead?")) return true;
+    setUserGreeter(userDom, userId, greeterId);
+  }
+  return false;
+}
+
+var setUserGreeter = function(userDom, userId, newGreeterId) {
+  var data = { greeter_id: newGreeterId };
+  patch(userId, data, function() {
+    var text = newGreeterId ? greeterName : "I will greet";
+    userDom.find("td.user-greeter").data("greeter-id", newGreeterId);
+    userDom.find("td.user-greeter a").text(text);
+  }, function() {
+    alert("Could not change greeter - ask Kevin");
+  });
+}
+
+var resetUserStatus = function(userDom) {
+  var status = userDom.find("td.user-status").data("status");
+  userDom.find("td.user-status select").val(status);
+  userDom.find("td.user-status .ui-selectmenu-text").text(status);
+}
+
+var setStatus = function(userDom, userId) {
+  var status = userDom.find("td.user-status .ui-selectmenu-text").text();
+  if ("Scheduling Zoom" == status) {
+    if (!confirm("Set status to Zoom Scheduled?")) return true;
+    setUserStatus(userDom, userId, "Zoom Scheduled");
+  } else if ("Zoom Scheduled" != status) {
+    alert("Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time");
+    return true;
+  }
+  return false;
+}
+
+var setUserStatus = function(userDom, userId, userStatus) {
+  var data = { status: userStatus || userDom.find("td.user-status select").val() };
+  patch(userId, data, function(result) {
+    var newSel = document.createElement("select");
+    for (const option of result.status_options) {
+      var newOpt = document.createElement("option");
+      newOpt.text = option;
+      newOpt.value = option;
+      newSel.add(newOpt, null);
+    };
+    userDom
+      .find("td.user-status")
+      .empty()
+      .append(newSel);
+    initStatusSelectMenu("td.user-status select");
+    userDom.find("td.user-status").data("status", result.user.status);
+    userDom.find("td.user-status select").val(result.user.status);
+    userDom.find("td.user-status .ui-selectmenu-text").text(result.user.status);
+    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.user.whenTimestamp)
+  }, function() {
+    alert("Could not change status - ask Kevin");
+  });
+}
+
+var dateInPast = function(userDom, ts) {
+  if (!ts) return false;
+  if (Date.parse(ts) > (new Date).getTime()) return false;
+  if (!confirm("Are you sure you want to set the Zoom meeting in the past?")) {
+    var timestamp = userDom.find("td.user-meeting-datetime").data("timestamp");
+    timestamp ||= "";
+    userDom.find("td.user-meeting-datetime input").val(timestamp);
+    return true;
+  }
+  return false;
+}
+
+var setUserMeeting = function(e) {
+  var userDom = $(this).closest("[data-id");
+  var userId = userDom.data("id");
+  var data = { when_timestamp: getUserMeeting(userDom) };
+  if (dateInPast(userDom, data.when_timestamp)) return;
+  patch(userId, data, null, function() {
+    alert("Could not set meeting date and time - ask Kevin");
+  });
+}
+
+var initStatusSelectMenu = function() {
+  $(".user-status select").selectmenu({
+    change: function(e) {
+      var userDom = $(this).closest("[data-id]");
+      var userId = userDom.data("id");
+      if (noGreeter(userDom, userId)) {
+        resetUserStatus(userDom);
+        return;
+      }
+      setUserStatus(userDom, userId, null);
+    }
+  });
+}
+
 ////////////////////////////////////////////////////
 // PATCH
 var patch = function(userId, data, success, error) {
@@ -203,7 +304,7 @@ var patch = function(userId, data, success, error) {
     },
     success: function(data) {
       $("td.change-log").html(data.user.change_log.replace(/\n/g, "<br>"));
-      success(data);
+      if (success) success(data);
     },
     error: error
   });
@@ -342,38 +443,33 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // MEETING DATETIME PICKER LISTENER
-  var setUserMeeting = function(e) {
-    var userDom = $(this).closest("[data-id");
-    var userId = userDom.data("id");
-    var data = { when_timestamp: getUserMeeting(userDom) };
-    patch(userId, data, null, function() {
-      alert("Could not set meeting date and time - ask Kevin");
+  $( ".datetime-picker" )
+    .on("click", function(e) {
+      var el = $(this);
+      var userDom = el.closest("[data-id]");
+      var userId = userDom.data("id");
+      if (noGreeter(userDom, userId)) return;
+      if (setStatus(userDom, userId)) return;
+      if (el.data("picker")) return; // return if datetime picker already instantiated
+      var options = {
+        showTime: true,
+        timeFormat: "HH:MM"
+      };
+      var css = `[data-id="${userId}"] input.datetime-picker`;
+      el.data("picker", new dtsel.DTS(css, options))
+        .blur() // now simulate opening the picker
+        .focus();
+    })
+    .on("change", debounce(setUserMeeting, 1000))
+    .on("keydown", function(e) {
+      switch(e.key) {
+      case "Esc":
+      case "Escape":
+      case "Enter":
+      case "Return":
+        $(this).blur();
+      }
     });
-  }
-
-  $( ".datetime-picker" ).on("click", function(e) {
-    var el = $(this);
-    if (el.data("picker")) return; // return if datetime picker already instantiated
-    var userDom = el.closest("[data-id]");
-    var userId = userDom.data("id");
-    var options = {
-      showTime: true,
-      timeFormat: "HH:MM"
-    };
-    var css = `[data-id="${userId}"] input.datetime-picker`;
-    el.data("picker", new dtsel.DTS(css, options))
-      .blur() // now simulate opening the picker
-      .focus();
-  }).on("change", debounce(setUserMeeting, 1000))
-  .on("keydown", function(e) {
-    switch(e.key) {
-    case "Esc":
-    case "Escape":
-    case "Enter":
-    case "Return":
-      $(this).blur();
-    }
-  });
 
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
@@ -425,19 +521,11 @@ $(document).ready(function() {
       result = confirm("Remove yourself as greeter?");
       newGreeterId = result ? null : id;
     } else if (currentGreeterId) {
-      result = confirm("You will greet instead?");
+      if (!confirm("You will greet instead?")) return;
     }
-    if (!result) return;
     var userDom = $(this).closest("[data-id]");
     var userId = userDom.data("id");
-    var data = { greeter_id: newGreeterId };
-    patch(userId, data, function() {
-      var text = newGreeterId ? greeterName : "I will greet";
-      self.closest("td").data("greeter-id", newGreeterId);
-      userDom.find("td.user-greeter a").text(text);
-    }, function() {
-      alert("Could not change greeter - ask Kevin");
-    });
+    setUserGreeter(userDom, userId, newGreeterId);
   });
 
   ////////////////////////////////////////////////////
@@ -469,38 +557,6 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // STATUS EVENT LISTENER
-  var setUserStatus = function(userDom, userStatus) {
-    var userId = userDom.data("id");
-    var data = { status: userStatus || userDom.find("td.user-status select").val() };
-    patch(userId, data, function(result) {
-      var newSel = document.createElement("select");
-      for (const option of result.status_options) {
-        var newOpt = document.createElement("option");
-        newOpt.text = option;
-        newOpt.value = option;
-        newSel.add(newOpt, null);
-      };
-      userDom
-        .find("td.user-status")
-        .empty()
-        .append(newSel);
-      initStatusSelectMenu("td.user-status select");
-      userDom.find("td.user-status select").val(result.user.status);
-      userDom.find("td.user-status .ui-selectmenu-text").text(result.user.status);
-      userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.user.whenTimestamp)
-    }, function() {
-      alert("Could not change status - ask Kevin");
-    });
-  }
-
-  var initStatusSelectMenu = function() {
-    $(".user-status select").selectmenu({
-      change: function(e) {
-        var userDom = $(this).closest("[data-id]");
-        setUserStatus(userDom, null);
-      }
-    });
-  }
   initStatusSelectMenu("td.user-status select");
 
   ////////////////////////////////////////////////////
@@ -508,6 +564,8 @@ $(document).ready(function() {
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this).closest("[data-id]");
+    var userId = userDom.data("id");
+    if (noGreeter(userDom, userId)) return;
     var maxIndex = emailTemplates.length;
     var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
     if (!templateIndex) return;

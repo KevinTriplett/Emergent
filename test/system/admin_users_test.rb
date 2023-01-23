@@ -150,68 +150,109 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can change user status and set meeting in show view" do
     DatabaseCleaner.cleaning do
-      user = login
-      assert user.when_timestamp
+      admin = login
+      existing_user = create_user
+      assert existing_user.when_timestamp
 
-      visit admin_user_path(user.id)
-      assert_current_path admin_user_path(user.id)
+      visit admin_user_path(existing_user.id)
+      assert_current_path admin_user_path(existing_user.id)
 
       ####################
       ## APPROVE BUTTON
-      assert !user.joined
-      assert_equal "Pending", user.status
+      assert !existing_user.joined
+      assert_equal "Pending", existing_user.status
       assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
-      user.update(status: "Request Declined")
-      visit admin_user_path(user.id)
-      assert_selector ".ui-selectmenu-text", text: user.status
+      existing_user.update(status: "Request Declined")
+      visit admin_user_path(existing_user.id)
+      assert_selector ".ui-selectmenu-text", text: existing_user.status
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
-      user.update(status: "Scheduling Zoom")
-      user.update(joined: true)
-      visit admin_user_path(user.id)
-      assert_selector ".ui-selectmenu-text", text: user.status
+      existing_user.update(status: "Scheduling Zoom")
+      existing_user.update(joined: true)
+      visit admin_user_path(existing_user.id)
+      assert_selector ".ui-selectmenu-text", text: existing_user.status
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       ####################
       ## STATUS AND MEETING DATE
+      # cannot unless this admin is greeting
       # assert_selector ".user-meeting-datetime", text: "2022-Dec-7 @ 3:30 AM"
+      assert_nil existing_user.greeter_id
       find(".ui-selectmenu-text").click
-      find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
+      message = dismiss_prompt do
+        find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
+      end
+      assert_equal "You will greet this new member?", message
+      sleep 1
+      assert_nil existing_user.reload.greeter_id
+      
+      visit admin_user_path(existing_user.id)
+
+      find(".ui-selectmenu-text").click
+      accept_prompt do
+        find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
+      end
+      sleep 1
+      assert_equal admin.id, existing_user.reload.greeter_id
+
       assert_selector ".ui-selectmenu-text", text: "Zoom Scheduled"
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
-      assert_equal "Zoom Scheduled", user.reload.status
+      assert_equal "Zoom Scheduled", existing_user.reload.status
       assert_selector ".user-meeting-datetime", text: ""
-      assert_nil user.reload.when_timestamp
+      assert_nil existing_user.reload.when_timestamp
 
-      user.update(when_timestamp: "2023 Jan 20 10:00")
+      existing_user.update(when_timestamp: "2023 Jan 20 10:00")
       find(".ui-selectmenu-text").click
       find(".ui-menu-item-wrapper", text: "Zoom Done (completed)", exact_text: true).click
       assert_selector ".ui-selectmenu-text", text: "Zoom Done (completed)"
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
-      assert_equal "Zoom Done (completed)", user.reload.status
-      assert_nil user.when_timestamp
+      assert_equal "Zoom Done (completed)", existing_user.reload.status
+      assert_nil existing_user.when_timestamp
 
-      assert_selector "td.change-log", text: user.change_log.chomp
-      visit admin_user_path(user.id)
+      assert_selector "td.change-log", text: existing_user.change_log.chomp
+      visit admin_user_path(existing_user.id)
 
       ####################
       ## MEETING
-      assert_nil user.when_timestamp
       input = find("td.user-meeting-datetime input.datetime-picker")
+      input.click
+      message = accept_alert
+      assert_equal "Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time", message
+      find(".ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: "Scheduling Zoom", exact_text: true).click
+
+      input.click
+      message = dismiss_prompt
+      assert_equal "Set status to Zoom Scheduled?", message
+      sleep 1
+      assert_equal "Scheduling Zoom", existing_user.reload.status
+
+      input.click
+      accept_prompt
+      sleep 1
+      assert_equal "Zoom Scheduled", existing_user.reload.status
+
+      input.click
+      input.send_keys("2022-10-09 15:45")
+      input.send_keys [:enter]
+      message = dismiss_prompt
+      assert_equal "Are you sure you want to set the Zoom meeting in the past?", message
+      assert_selector "td.user-meeting-datetime input", text: ""
+      sleep 1
+      assert_nil existing_user.reload.when_timestamp
+
       input.click
       input.send_keys("2023-10-09 15:45")
       input.send_keys [:escape]
-      sleep 2
-      user.reload
-      assert_equal "2023-10-09T20:45:00Z", user.when_timestamp.picker_datetime
-      assert_selector "td.change-log", text: user.change_log.chomp
-      input.send_keys [:escape]
+      sleep 2 # cannot be 1 for some reason...
+      assert_equal "2023-10-09T20:45:00Z", existing_user.reload.when_timestamp.picker_datetime
+      assert_selector "td.change-log", text: existing_user.change_log.chomp
 
       # check date format in index view
       visit admin_users_path
       assert_selector ".user-meeting-datetime", text: "2023-Oct-9 @ 3:45 PM"
-      visit admin_user_path(user.id)
+      visit admin_user_path(existing_user.id)
 
       # now check ability to delete
       input.click
@@ -219,8 +260,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.value.length.times { input.send_keys [:backspace] }
       input.send_keys [:escape]
       sleep 2
-      user.reload
-      assert_nil user.when_timestamp
+      existing_user.reload
+      assert_nil existing_user.when_timestamp
     end
   end
 
@@ -258,32 +299,39 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can send email in show view" do
     DatabaseCleaner.cleaning do
-      user = login
-      old_status = user.status
+      admin = login
+      existing_user = create_user
+      old_status = existing_user.status
 
-      visit admin_user_path(user.id)
-      assert_current_path admin_user_path(user.id)
+      visit admin_user_path(existing_user.id)
+      assert_current_path admin_user_path(existing_user.id)
 
+      assert_nil existing_user.greeter_id
       message = dismiss_prompt do
-        click_link(user.email)
+        click_link(existing_user.email)
       end
-      assert_equal "Enter an email template 1 through 5", message
-      user.reload
-      assert_equal old_status, user.status
+      assert_equal "You will greet this new member?", message
+      existing_user.reload
+      assert_nil existing_user.greeter_id
       
+      click_link(existing_user.email)
+      accept_prompt
+      sleep 1
+      assert_equal admin.id, existing_user.reload.greeter_id
+      message = dismiss_prompt
       accept_prompt(with: "0") do
-        click_link(user.email)
+        click_link(existing_user.email)
       end
       message = accept_alert
       assert_equal "Choose an email template 1 through 5", message
-      assert_equal old_status, user.status
-      
+      assert_equal old_status, existing_user.status
+
       accept_prompt(with: "6") do
-        click_link(user.email)
+        click_link(existing_user.email)
       end
       message = accept_alert
       assert_equal "Choose an email template 1 through 5", message
-      assert_equal old_status, user.status
+      assert_equal old_status, existing_user.status
     end
   end
 

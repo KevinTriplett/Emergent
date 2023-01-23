@@ -1,8 +1,8 @@
 %h3= @user.name
 %p
   =link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}")
-  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}")
+  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
 %table.user.table.table-bordered.table-striped{ data: {url: admin_users_url, token: @token, id: @user.id } }
   %tbody
@@ -15,17 +15,17 @@
       %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
     %tr
       %td.header Status
-      %td.user-status
+      %td.user-status{ data: {status: @user.status} }
         %select
           - @status_options.each do |o|
             - selected = (o == @user.status ? "selected" : nil)
             %option{ selected: selected }= o
     %tr
       %td.header.meeting
-        When
+        Zoom Date/Time
         %br
         %span.tzinfo (GMT)
-      %td.user-meeting-datetime
+      %td.user-meeting-datetime{ data: {timestamp: @user.when_timestamp} }
         - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
     %tr
