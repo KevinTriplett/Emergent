@@ -404,7 +404,10 @@ $(document).ready(function() {
   $("a.user-approve").on("click", function(e) {
     e.preventDefault();
     self = $(this);
-    var url = $(this).attr("href");
+    var userDom = self.closest("[data-id]");
+    var userId = userDom.data("id");
+    if (noGreeter(userDom, userId)) return;
+    var url = self.attr("href");
     var token = $("table.users,table.user").data("token");
     $("#spinner").show();
     $(".progress-message").show();
