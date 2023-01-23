@@ -172,7 +172,7 @@ table.users, table.user {
     th {
       background-color: rgb(59, 94, 64);
       color: white;
-      span.tzinfo {
+      & span.tzinfo {
         font-size: x-small;
       }
     }
@@ -192,6 +192,14 @@ table.users, table.user {
     }
     tr.complete {
       background-color: rgb(211, 244, 211);
+    }
+    td.header .wordwrap {
+      line-height: 1.3em;
+      span.tzinfo {
+        display: inline-block;
+        line-height: 1.5em;
+        font-size: x-small;
+      }
     }
     td.user-questions {
       li {

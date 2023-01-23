@@ -22,9 +22,10 @@
             %option{ selected: selected }= o
     %tr
       %td.header.meeting
-        Zoom Date/Time
-        %br
-        %span.tzinfo (GMT)
+        .wordwrap
+          Zoom Date/Time
+          %br
+          %span.tzinfo (GMT)
       %td.user-meeting-datetime{ data: {timestamp: @user.when_timestamp} }
         - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
