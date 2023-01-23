@@ -396,6 +396,19 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // APPROVE AND REJECT BUTTONS
+  $("input#my-greetings").on("change", function() {
+    if (!this.checked) {
+      $("table.users tbody tr:hidden").show();
+    } else {
+      $("table.users tbody tr").each(function() {
+        var el = $(this);
+        if (el.find("td.user-greeter").text() != greeterName) el.hide();
+      });
+    }
+  });
+
+  ////////////////////////////////////////////////////
+  // APPROVE AND REJECT BUTTONS
   $("a.user-reject").on("click", function(e) {
     e.preventDefault();
     alert("Contact a Host to reject this request");

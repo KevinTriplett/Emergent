@@ -150,6 +150,17 @@ p.timestamp {
   }
 }
 
+input#my-greetings {
+  margin-top: 12px;
+  position: absolute;
+}
+
+input#my-greetings + label {
+  margin-top: 5px;
+  margin-left: 20px;
+  position: absolute;
+}
+
 table.users tr {
   cursor: pointer;
   &:hover {
