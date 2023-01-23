@@ -451,8 +451,10 @@ $(document).ready(function() {
       var el = $(this);
       var userDom = el.closest("[data-id]");
       var userId = userDom.data("id");
-      if (noGreeter(userDom, userId)) return;
-      if (setStatus(userDom, userId)) return;
+      if (noGreeter(userDom, userId) || setStatus(userDom, userId)) {
+        el.blur();
+        return;
+      }
       if (el.data("picker")) return; // return if datetime picker already instantiated
       var options = {
         showTime: true,
