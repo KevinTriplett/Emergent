@@ -49,6 +49,8 @@ class ApproveUserSpider < EmergeSpider
     css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
     css_status = "#{css_row} .invite-list-item-status-text"
     return get_member_id(css_row) if response_has(css_status, "Joined!")
+    # NB: do not approve except in production!
+    return ::Spider.set_result(name, "testing") unless Rails.env.production?
 
     ############################################
     # find approve button for this user
