@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[7.0].define(version: 2023_01_10_012151) do
+=======
+ActiveRecord::Schema[7.0].define(version: 2023_01_18_154458) do
+>>>>>>> main
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -59,6 +63,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_10_012151) do
     t.integer "shadow_greeter_id"
     t.boolean "notifications"
     t.string "roles"
+    t.boolean "joined"
     t.index ["email"], name: "index_users_on_email"
     t.index ["session_token"], name: "index_users_on_session_token", unique: true
     t.index ["status"], name: "index_users_on_status"

@@ -27,7 +27,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
       assert_select ".current-user", "Hi  ^_^\nLogout"
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Existing Members"
+      assert_select "h5", "Greeter View"
     end
   end
 
@@ -39,13 +39,13 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       get admin_users_path
       assert_response :success
       
-      assert_select "h5", "Existing Members"
+      assert_select "h5", "Greeter View"
       assert_select "h1", "Emergent Commons Volunteer App"
 
       assert_select "th", "Name"
       assert_select "th", "Greeter"
       assert_select "th", "Status"
-      assert_select "th.meeting", "When?\n\n(GMT)"
+      assert_select "th.meeting", "Zoom Meeting\n\n(GMT)"
       assert_select "th", "Shadow"
       assert_select "th", "Notes"
 
@@ -79,7 +79,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td", "Greeter"
       assert_select "td", "Email"
       assert_select "td", "Status"
-      assert_select "td.meeting", "When\n\n(GMT)"
+      assert_select "td.meeting", "Zoom Date/Time\n\n(GMT)"
       assert_select "td", "Shadow"
       assert_select "td", "Notes"
       assert_select "td", "Questions"

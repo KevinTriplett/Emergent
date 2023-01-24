@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
 
   def ensure_token
     update(token: User.generate_unique_secure_token) if token.nil?
+    token
   end
 
   def generate_session_token
@@ -58,68 +59,40 @@ class User < ActiveRecord::Base
 
   def get_status_options
     {
-      "Pending": [
-        "Joined!",
-        "Clarifying email sent"
+      "Pending": [],
+      "Request Declined": [],
+      "Scheduling Zoom": [
+        "Zoom Scheduled",
+        "Zoom Declined (completed)",
+        "Chat Done (completed)",
+        "No Response (completed)"
       ],
-      "Clarifying email sent": [
-        "Joined!",
-        "Rejected"
+      "Zoom Scheduled": [
+        "Zoom Done (completed)",
+        "Scheduling Zoom"
       ],
-      "Joined!": [
-        "1st welcome email sent"
+      "Zoom Done (completed)":[
+        "Scheduling Zoom"
       ],
-      "1st welcome email sent": [
-        "Scheduling zoom",
-        "Zoom scheduled",
-        "Zoom maybe later",
-        "Zoom declined (completed)",
-        "Chat done (completed)",
-        "No response (completed)"
+      "Zoom Declined (completed)":[
+        "Scheduling Zoom"
       ],
-      "Zoom maybe later": [
-        "Scheduling zoom",
-        "Zoom scheduled",
-        "Zoom declined (completed)",
-        "Chat done (completed)"
+      "Chat Done (completed)":[
+        "Scheduling Zoom"
       ],
-      "Scheduling zoom": [
-        "Zoom scheduled",
-        "Zoom declined (completed)",
-        "Chat done (completed)",
-        "No response (completed)"
-      ],
-      "Zoom scheduled": [
-        "Zoom done (completed)",
-        "Zoom declined (completed)",
-        "Chat done (completed)",
-        "No response (completed)"
-      ],
-      "2nd welcome email sent": [
-        "Scheduling zoom",
-        "Zoom scheduled",
-        "Zoom maybe later",
-        "Zoom done (completed)",
-        "Chat done (completed)",
-        "Zoom declined (completed)",
-        "No response (completed)",
-      ],
-      "Zoom declined (completed)": [
-        "Scheduling zoom"
-      ],
-      "No response (completed)": [
-        "Scheduling zoom"
-      ],
-      "Zoom done (completed)": [],
-      "Chat done (completed)": []
+      "No Response (completed)":[
+        "Scheduling Zoom"
+      ]
     }[status.to_sym].insert(0, status)
   # handle older greetings:
   rescue NoMethodError
     return [
       "Pending",
+      "Rejected",
       "Joined!",
-      "1st Email Sent",
-      "2nd Email Sent",
+      "Clarifying email sent",
+      "1st email Sent",
+      "2nd email Sent",
       "Emailing",
       "No Response",
       "Rescheduling",
@@ -129,7 +102,13 @@ class User < ActiveRecord::Base
       "Declined",
       "Welcomed",
       "Posted Intro",
-      "Completed"
+      "Completed",
+      "Scheduling Zoom",
+      "Zoom Scheduled",
+      "Zoom Declined (completed)",
+      "Chat Done (completed)",
+      "No Response (completed)",
+      "Zoom Done (completed)"
     ]
   end
 

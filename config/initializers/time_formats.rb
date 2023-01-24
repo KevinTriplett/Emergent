@@ -33,6 +33,11 @@ class ActiveSupport::TimeWithZone
     strftime("%Y-%m-%d")
   end
 
+  # 26 Jan 2023
+  def human_date
+    strftime("%d %b %Y")
+  end
+
   # 8:40 pm (Tue 1/26)
   def time_and_day
     strftime("%l:%M %P (%a %-m/%-d)")

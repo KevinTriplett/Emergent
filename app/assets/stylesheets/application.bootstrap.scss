@@ -150,6 +150,17 @@ p.timestamp {
   }
 }
 
+input#my-greetings {
+  margin-top: 12px;
+  position: absolute;
+}
+
+input#my-greetings + label {
+  margin-top: 5px;
+  margin-left: 20px;
+  position: absolute;
+}
+
 table.users tr {
   cursor: pointer;
   &:hover {
@@ -170,9 +181,9 @@ table.users, table.user {
   width: 100%;
   thead {
     th {
-      background-color: cornflowerblue;
+      background-color: rgb(59, 94, 64);
       color: white;
-      span.tzinfo {
+      & span.tzinfo {
         font-size: x-small;
       }
     }
@@ -181,6 +192,26 @@ table.users, table.user {
     }
   }
   tbody {
+    tr.pending {
+      background-color: rgb(253, 248, 169);
+    }
+    tr.declined {
+      background-color: rgb(142, 141, 141);
+    }
+    tr.scheduling, tr.scheduled {
+      background-color: rgb(179, 212, 254);
+    }
+    tr.complete {
+      background-color: rgb(211, 244, 211);
+    }
+    td.header .wordwrap {
+      line-height: 1.3em;
+      span.tzinfo {
+        display: inline-block;
+        line-height: 1.5em;
+        font-size: x-small;
+      }
+    }
     td.user-questions {
       li {
         margin-bottom: 7px;

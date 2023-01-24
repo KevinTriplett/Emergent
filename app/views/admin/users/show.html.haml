@@ -1,8 +1,8 @@
 %h3= @user.name
 %p
   =link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}")
-  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}")
+  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
 %table.user.table.table-bordered.table-striped{ data: {url: admin_users_url, token: @token, id: @user.id } }
   %tbody
@@ -15,23 +15,27 @@
       %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
     %tr
       %td.header Status
-      %td.user-status
+      %td.user-status{ data: {status: @user.status} }
         %select
           - @status_options.each do |o|
             - selected = (o == @user.status ? "selected" : nil)
             %option{ selected: selected }= o
     %tr
       %td.header.meeting
-        When
-        %br
-        %span.tzinfo (GMT)
-      %td.user-meeting-datetime
+        .wordwrap
+          Zoom Date/Time
+          %br
+          %span.tzinfo (GMT)
+      %td.user-meeting-datetime{ data: {timestamp: @user.when_timestamp} }
         - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
     %tr
       %td.header Shadow
       %td.user-shadow{ data: {greeter_id: @user.shadow_greeter_id.to_s} }
         = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
+    %tr
+      %td.header Request Date
+      %td.user-request= @user.request_timestamp.human_date
     %tr
       %td.header Notes
       %td.user-notes
@@ -47,7 +51,7 @@
               %span.question= q
               %br
               %span.answer= a
-        - if @user.status == "Pending"
+        - unless @user.joined? || @user.status == "Request Declined"
           - url = @user.email.blank? ? "#" : admin_approve_user_path(@user.id)
           = link_to "Approve", url, class: "btn btn-primary user-approve"
           = link_to "Reject", "#", class: "btn btn-warning user-reject"

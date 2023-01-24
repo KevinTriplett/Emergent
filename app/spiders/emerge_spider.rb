@@ -27,22 +27,22 @@ class EmergeSpider < Kimurai::Base
     raise "ERROR: #{name} could not find css #{css}" if response_has(css)
   end
 
-  def response_has(css)
-    browser.current_response.css(css).length > 0
+  def response_has(css, text=nil)
+    browser.current_response.css(css).length > 0 && (!text || browser.current_response.css(css).text == text)
   end
 
-  def wait_while(css)
+  def wait_while(css, text=nil)
     for i in 0..10
-      return true unless response_has(css)
+      return true unless response_has(css, text)
       EmergeSpider.logger.debug "#{name} WAITING WHILE #{css} ..."
       sleep 1
     end
     raise_error_if_response_has(css)
   end
 
-  def wait_until(css)
+  def wait_until(css, text=nil)
     for i in 0..10
-      return true if response_has(css)
+      return true if response_has(css, text)
       EmergeSpider.logger.debug "#{name} WAITING UNTIl #{css} ..."
       sleep 1
     end

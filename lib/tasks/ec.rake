@@ -1,7 +1,7 @@
 namespace :ec do
   desc "Crawls the Emergent Commons MN site for all member requests"
   task nm_crawl_all: :environment do
-    Spider.set_message("new_user_spider", "9999")
+    Spider.set_message("new_user_spider", "0")
     NewUserSpider.crawl!
   end
 end
@@ -9,7 +9,7 @@ end
 namespace :ec do
   desc "Crawls the Emergent Commons MN site only for new member requests"
   task nm_crawl_new: :environment do
-    Spider.set_message("new_user_spider", "0")
+    Spider.set_message("new_user_spider", "100")
     NewUserSpider.crawl!
   end
 end
