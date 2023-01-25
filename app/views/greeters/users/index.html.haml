@@ -1,13 +1,17 @@
-%h5= (@users.empty? ? "No " : "") + "Existing Members"
+%h5 Greeter View
 
-%table.users.table.table-bordered.table-striped{ data: {url: @update_url, token: @token} }
+.controls
+  %input#my-greetings{ type: "checkbox" }
+  %label{ for: "my-greetings" } Show only my greetings
+
+%table.users.table.table-bordered.table-striped{ data: {url: @search_url, token: @token} }
   %thead
     %tr
       %th.name Name
       %th.greeter Greeter
       %th.status Status
       %th.meeting
-        When?
+        Zoom Meeting
         %br
         %span.tzinfo (GMT)
       %th.shadow Shadow
@@ -15,7 +19,13 @@
       %th.request Requested
   %tbody
     - @users.each do |u|
-      %tr{ data: {url: admin_user_path(u.id), id: u.id}}
+      - classnames = []
+      - classnames.push("pending") unless u.joined?
+      - classnames.push("declined") if "Request Declined" == u.status
+      - classnames.push("scheduling") if "Scheduling Zoom" == u.status
+      - classnames.push("scheduled") if "Zoom Scheduled" == u.status
+      - classnames.push("complete") if u.status.index("(completed)")
+      %tr{ data: {url: admin_user_url(u.id), id: u.id}, class: classnames.join(" ") }
         %td.user-name= u.name
         %td.user-greeter= u.greeter_id ? u.greeter.name : ""
         %td.user-status= u.status

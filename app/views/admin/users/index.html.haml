@@ -1,35 +1,12 @@
-%h5= (@users.empty? ? "No " : "") + "Greeter View"
+%h5 Members
 
-.controls
-  %input#my-greetings{ type: "checkbox" }
-  %label{ for: "my-greetings" } Show only my greetings
-
-%table.users.table.table-bordered.table-striped{ data: {url: @update_url, token: @token} }
+%table.users.table.table-bordered.table-striped{ data: {url: @search_url, token: @token} }
   %thead
     %tr
       %th.name Name
-      %th.greeter Greeter
-      %th.status Status
-      %th.meeting
-        Zoom Meeting
-        %br
-        %span.tzinfo (GMT)
-      %th.shadow Shadow
-      %th.notes Notes
-      %th.request Requested
+      %th.roles Roles
   %tbody
     - @users.each do |u|
-      - classnames = []
-      - classnames.push("pending") unless u.joined?
-      - classnames.push("declined") if "Request Declined" == u.status
-      - classnames.push("scheduling") if "Scheduling Zoom" == u.status
-      - classnames.push("scheduled") if "Zoom Scheduled" == u.status
-      - classnames.push("complete") if u.status.index("(completed)")
-      %tr{ data: {url: admin_user_url(u.id), id: u.id}, class: classnames.join(" ") }
+      %tr{ data: {url: admin_user_url(u.id), id: u.id} }
         %td.user-name= u.name
-        %td.user-greeter= u.greeter_id ? u.greeter.name : ""
-        %td.user-status= u.status
-        %td.user-meeting-datetime.utc-time= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
-        %td.user-shadow= u.shadow_greeter_id ? u.shadow_greeter.name : nil
-        %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
-        %td.user-request= u.request_timestamp.picker_date
+        %td.user-greeter= u.get_roles.keys.collect(&:to_s).join(";")

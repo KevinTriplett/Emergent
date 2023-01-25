@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   post "/greeters/users(/:id)/update_user", to: "greeters/users#update_user", as: :greeter_update_user
   post "/greeters/users(/:id)/approve", to: "greeters/users#approve_user", as: :greeter_approve_user
 
-  get "/admin/users/search", to: "admin/users#search", as: :admin_search_users
+  get "/admin/users(/:search_terms)", to: "admin/users#search", as: :admin_search_users
 
   get "login(/:token)", to: "home#login", as: :login
   get "logout", to: "home#logout", as: :logout

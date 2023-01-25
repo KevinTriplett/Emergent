@@ -5,12 +5,13 @@ module Admin
 
     def index
       @search_url = admin_search_users_url
-      @user_url = admin_users_url
+      @users = [current_user]
     end
 
     def search
+      params.permit(:search_terms)
       return render json: {
-        users: User.where("name like ?", "%#{params[:search]}%")
+        users: User.where("name like ?", "%#{params[:search_terms]}%")
       }
     end
 

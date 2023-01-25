@@ -44,6 +44,10 @@ class User < ActiveRecord::Base
     get_roles[role]
   end
 
+  def list_roles
+    get_roles.keys
+  end
+
   def has_role?(role)
     !get_role(role).nil?
   end
