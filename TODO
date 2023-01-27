@@ -36,6 +36,8 @@
 - [X] *** automate database backup (see https://github.com/backup/backup)
 - [X] clear when_timestamp on status change and indicate change in changelog
 - [X] show only my greetings checkbox
+- [ ] hover over show view to give hints
+- [ ] convert status_hash to keys with human text?
 - [ ] convert user show url to use user tokens
 - [ ] send reminders on potential status change like meeting dates / follow up
 - [ ] create way for new members to specify dates and times they're available
