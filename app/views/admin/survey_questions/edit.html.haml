@@ -1,0 +1,17 @@
+%h5 Editing Survey Questions
+
+= simple_form_for @form, as: :survey, url: admin_survey_survey_question_path(survey_id: @survey.id, @model.id), method: :patch do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :question_type, placeholder: "Question Type", label: false
+  .row
+    .col= f.input :question, placeholder: "Question", label: false
+  .row
+    .col= f.input :answer_type, placeholder: "Answer Type", label: false
+  .row
+    .col= f.input :has_scale, as: :boolean, label: "Has Scale"
+  .row
+    .col= f.button :submit, "Update Survey Question", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_survey_path(@survey.id)

@@ -1,6 +1,8 @@
 class User < ActiveRecord::Base
   belongs_to :greeter, class_name: "User", optional: true
   belongs_to :shadow_greeter, class_name: "User", optional: true
+  has_many :survey_questions
+  has_many :surveys, through: :survey_questions
   has_secure_token
 
   def ensure_token

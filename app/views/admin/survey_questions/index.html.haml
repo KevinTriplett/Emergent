@@ -1,0 +1,9 @@
+%h5= (@survey_questionsq.empty? ? "No " : "") + "Existing Survey Questions"
+
+- @survey_questionsq.each do |sq|
+  %p
+    %span.survey-name= sq.question
+    = link_to "edit", edit_admin_survey_path(sq.id)
+    = link_to "delete", admin_survey_path(sq.id), data: { turbo_method: "delete", turbo_confirm: "Really delete #{sq.name}?" }
+
+= link_to "New Survey Question", new_admin_survey_survey_question_path(@survey.id), class: "btn btn-secondary"

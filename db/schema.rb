@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_18_154458) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_29_185448) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -30,6 +30,31 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_18_154458) do
     t.string "name"
     t.text "message"
     t.string "result"
+  end
+
+  create_table "survey_answers", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "survey_question_id"
+    t.text "answer"
+    t.integer "scale"
+    t.index ["survey_question_id"], name: "index_survey_answers_on_survey_question_id"
+    t.index ["user_id"], name: "index_survey_answers_on_user_id"
+  end
+
+  create_table "survey_questions", force: :cascade do |t|
+    t.integer "survey_id"
+    t.integer "order"
+    t.string "question_type"
+    t.text "question"
+    t.string "answer_type"
+    t.boolean "has_scale"
+    t.index ["survey_id"], name: "index_survey_questions_on_survey_id"
+  end
+
+  create_table "surveys", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.boolean "locked"
   end
 
   create_table "users", force: :cascade do |t|

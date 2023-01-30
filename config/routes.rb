@@ -10,9 +10,13 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users, only: [:index, :show, :update]
+    resources :surveys do
+      resources :survey_questions
+    end
   end
 
   resources :users, only: [:show, :edit, :update]
+  resources :survey_answers, only: [:new, :edit, :update]
 
   root to: "home#index"
 end
