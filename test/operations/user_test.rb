@@ -49,12 +49,12 @@ class UserOperationTest < MiniTest::Spec
 
         # NB: user_hash = existing_user.attributes <-- this does not work
         user_hash = {
-          user: {
+          model: {
             greeter_id: greeter.id
           },
           id: existing_user.id
         }
-        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
 
         assert result.success?
         existing_user.reload
@@ -70,32 +70,32 @@ class UserOperationTest < MiniTest::Spec
         assert existing_user.when_timestamp
 
         user_hash = {
-          user: {
+          model: {
             status: "Zoom Scheduled"
           },
           id: existing_user.id
         }
-        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert_nil existing_user.reload.when_timestamp
         existing_user.update(when_timestamp: test_date)
 
         user_hash = {
-          user: {
+          model: {
             status: "Scheduling Zoom"
           },
           id: existing_user.id
         }
-        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert_nil existing_user.reload.when_timestamp
         existing_user.update(when_timestamp: test_date)
 
         user_hash = {
-          user: {
+          model: {
             status: "Zoom Done (completed)"
           },
           id: existing_user.id
         }
-        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert_nil existing_user.reload.when_timestamp
       end
     end
@@ -159,12 +159,12 @@ class UserOperationTest < MiniTest::Spec
 
         assert_nil existing_user.change_log
         user_hash = {
-          user: {
+          model: {
             status: "New Status"
           },
           id: existing_user.id
         }
-        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert result.success?
         timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
         new_change_log = [
@@ -177,7 +177,7 @@ class UserOperationTest < MiniTest::Spec
         random_user_name_1, random_user_name_2 = random_user_name, random_user_name
         when_timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
         user_hash = {
-          user: {
+          model: {
             notes: "Replacing all the notes",
             when_timestamp: when_timestamp,
             greeter_id: greeter_1.id,
@@ -186,7 +186,7 @@ class UserOperationTest < MiniTest::Spec
           id: existing_user.id
         }
         # when_timestamp = when_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
-        result = User::Operation::Update.call(params: user_hash, admin_name: admin.name)
+        result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert result.success?
         timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
         new_change_log += "#{timestamp} by #{admin.name}:\n"

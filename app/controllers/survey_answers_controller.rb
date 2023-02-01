@@ -10,7 +10,7 @@ class SurveyAnswersController < AdminController
   def show
     # show all items in template
     get_survey_question
-    @survey_questions = Survey.where(name: @survey_question.name).order(order: :asc)
+    @survey_questions = Survey.where(name: @survey_question.name).order(position: :asc)
   end
 
   def edit

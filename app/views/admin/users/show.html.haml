@@ -4,7 +4,7 @@
   = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
   = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
-%table.user.table.table-bordered.table-striped{ data: {url: admin_users_url, token: @token, id: @user.id } }
+%table.user.table.table-bordered.table-striped{ data: {url: admin_user_patch_url(@user.id), token: @token, id: @user.id } }
   %tbody
     %tr
       %td.header Greeter

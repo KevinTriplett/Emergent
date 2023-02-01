@@ -1,0 +1,26 @@
+%h5= "Editing Survey Questions"
+
+%p.survey-name= "Survey: #{@survey.name}"
+
+%table.survey-questions.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th.question Question
+      %th.question-type Question Type
+      %th.answer-type Answer Type
+      %th.has-scale Scale?
+      %th.action Actions
+  %tbody#sortable
+    - @survey_questions.each do |sq|
+      %tr.ui-state-default{ data: {url: admin_survey_question_patch_url(sq.id), position: sq.position, token: @token, id: sq.id} }
+        %td.question= sq.question
+        %td.question-type= sq.question_type
+        %td.answer-type= sq.answer_type
+        %td.has-scale= sq.has_scale? ? "Yes" : "No"
+        %td.actions
+          = link_to "edit", edit_admin_survey_survey_question_path(sq.id, survey_id: @survey.id)
+          = link_to "delete", admin_survey_survey_question_path(sq.id, survey_id: @survey.id), data: { turbo_method: "delete", turbo_confirm: "Really delete question?" }
+
+= link_to "New Question", new_admin_survey_survey_question_path(@survey.id), class: "btn btn-secondary"
+%br
+= link_to "Back", admin_surveys_path

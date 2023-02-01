@@ -1,6 +1,6 @@
-%h5 Editing Survey Questions
+%h5 Editing Survey Question
 
-= simple_form_for @form, as: :survey, url: admin_survey_survey_question_path(survey_id: @survey.id, @model.id), method: :patch do |f|
+= simple_form_for @form, as: :survey_question, url: admin_survey_survey_question_path(@model.id, survey_id: @survey.id), method: :patch do |f|
   .row
     .col= f.error_notification
   .row
@@ -12,6 +12,6 @@
   .row
     .col= f.input :has_scale, as: :boolean, label: "Has Scale"
   .row
-    .col= f.button :submit, "Update Survey Question", class: "btn-primary"
+    .col= f.button :submit, "Update Question", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_survey_path(@survey.id)

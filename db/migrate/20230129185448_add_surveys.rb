@@ -8,7 +8,7 @@ class AddSurveys < ActiveRecord::Migration[7.0]
 
     create_table :survey_questions do |t|
       t.references :survey
-      t.integer :order
+      t.integer :position
       t.string :question_type
       t.text :question
       t.string :answer_type

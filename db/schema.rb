@@ -43,7 +43,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_29_185448) do
 
   create_table "survey_questions", force: :cascade do |t|
     t.integer "survey_id"
-    t.integer "order"
+    t.integer "position"
     t.string "question_type"
     t.text "question"
     t.string "answer_type"
@@ -82,6 +82,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_29_185448) do
     t.text "change_log"
     t.integer "greeter_id"
     t.integer "shadow_greeter_id"
+    t.boolean "notifications"
+    t.string "roles"
     t.boolean "joined"
     t.index ["email"], name: "index_users_on_email"
     t.index ["session_token"], name: "index_users_on_session_token", unique: true

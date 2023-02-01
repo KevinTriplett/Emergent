@@ -186,21 +186,21 @@ var getUserNotes = function(userDom) {
   return userDom.find("td.user-notes textarea").val();
 }
 
-var noGreeter = function(userDom, userId) {
+var noGreeter = function(userDom) {
   var userGreeterId = userDom.find("td.user-greeter").data("greeter-id");
   if (!userGreeterId) {
     if (!confirm("You will greet this new member?")) return true;
-    setUserGreeter(userDom, userId, greeterId);
+    setUserGreeter(userDom, greeterId);
   } else if (userGreeterId != greeterId) {
     if (!confirm("You will greet this new member instead?")) return true;
-    setUserGreeter(userDom, userId, greeterId);
+    setUserGreeter(userDom, greeterId);
   }
   return false;
 }
 
-var setUserGreeter = function(userDom, userId, newGreeterId) {
+var setUserGreeter = function(userDom, newGreeterId) {
   var data = { greeter_id: newGreeterId };
-  patch(userId, data, function() {
+  patch(userDom, data, function() {
     var text = newGreeterId ? greeterName : "I will greet";
     userDom.find("td.user-greeter").data("greeter-id", newGreeterId);
     userDom.find("td.user-greeter a").text(text);
@@ -215,11 +215,11 @@ var resetUserStatus = function(userDom) {
   userDom.find("td.user-status .ui-selectmenu-text").text(status);
 }
 
-var setStatus = function(userDom, userId) {
+var setStatus = function(userDom) {
   var status = userDom.find("td.user-status .ui-selectmenu-text").text();
   if ("Scheduling Zoom" == status) {
     if (!confirm("Set status to Zoom Scheduled?")) return true;
-    setUserStatus(userDom, userId, "Zoom Scheduled");
+    setUserStatus(userDom, "Zoom Scheduled");
   } else if ("Zoom Scheduled" != status) {
     alert("Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time");
     return true;
@@ -227,9 +227,9 @@ var setStatus = function(userDom, userId) {
   return false;
 }
 
-var setUserStatus = function(userDom, userId, userStatus) {
+var setUserStatus = function(userDom, userStatus) {
   var data = { status: userStatus || userDom.find("td.user-status select").val() };
-  patch(userId, data, function(result) {
+  patch(userDom, data, function(result) {
     var newSel = document.createElement("select");
     for (const option of result.status_options) {
       var newOpt = document.createElement("option");
@@ -242,10 +242,10 @@ var setUserStatus = function(userDom, userId, userStatus) {
       .empty()
       .append(newSel);
     initStatusSelectMenu("td.user-status select");
-    userDom.find("td.user-status").data("status", result.user.status);
-    userDom.find("td.user-status select").val(result.user.status);
-    userDom.find("td.user-status .ui-selectmenu-text").text(result.user.status);
-    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.user.whenTimestamp)
+    userDom.find("td.user-status").data("status", result.model.status);
+    userDom.find("td.user-status select").val(result.model.status);
+    userDom.find("td.user-status .ui-selectmenu-text").text(result.model.status);
+    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
   }, function() {
     alert("Could not change status - ask Kevin");
   });
@@ -264,11 +264,10 @@ var dateInPast = function(userDom, ts) {
 }
 
 var setUserMeeting = function(e) {
-  var userDom = $(this).closest("[data-id");
-  var userId = userDom.data("id");
+  var userDom = $(this).closest("[data-id]");
   var data = { when_timestamp: getUserMeeting(userDom) };
   if (dateInPast(userDom, data.when_timestamp)) return;
-  patch(userId, data, null, function() {
+  patch(userDom, data, null, function() {
     alert("Could not set meeting date and time - ask Kevin");
   });
 }
@@ -277,37 +276,41 @@ var initStatusSelectMenu = function() {
   $(".user-status select").selectmenu({
     change: function(e) {
       var userDom = $(this).closest("[data-id]");
-      var userId = userDom.data("id");
-      if (noGreeter(userDom, userId)) {
+      if (noGreeter(userDom)) {
         resetUserStatus(userDom);
         return;
       }
-      setUserStatus(userDom, userId, null);
+      setUserStatus(userDom, null);
     }
   });
 }
 
 ////////////////////////////////////////////////////
 // PATCH
-var patch = function(userId, data, success, error) {
-  var url = $("table.users,table.user").data("url");
-  var token = $("table.users,table.user").data("token");
+var patch = function(userDom, data, success, error) {
+  var url = userDom.dataset ? userDom.dataset.url : userDom.data("url");
+  var token = userDom.dataset ? userDom.dataset.token : userDom.data("token");
   $.ajax({
-    url: url + "/" + userId + "/update_user",
+    url: url,
     type: "POST",
-    data: JSON.stringify({"user": data}),
+    data: JSON.stringify({"model": data}),
     processData: false,
-    dataType: 'JSON',
-    contentType: 'application/json',
+    dataType: "JSON",
+    contentType: "application/json",
     headers: {
-      'X-CSRF-Token': token
+      "X-CSRF-Token": token
     },
-    success: function(data) {
-      $("td.change-log").html(data.user.change_log.replace(/\n/g, "<br>"));
-      if (success) success(data);
+    success: function(result) {
+      if (success) success(result);
+      updateChangeLog(result.model);
     },
     error: error
   });
+}
+
+var updateChangeLog = function(model) {
+  if (!model || !model.change_log) return;
+  $("td.change-log").html(model.change_log.replace(/\n/g, "<br>"));
 }
 
 ////////////////////////////////////////////////////
@@ -346,6 +349,26 @@ $(document).ready(function() {
   loaded = true;
   $("#spinner").hide();
   $(document).uitooltip();
+
+  ////////////////////////////////////////////////////
+  // SORTABLE SURVEY QUESTIONS
+  $("#sortable")
+    .sortable({
+      stop: function(e, ui) {
+        ui
+          .item
+          .closest("tbody")
+          .find("tr")
+          .each(function(i, tr) {
+            patch(tr, {position: i}, function(result) {
+              tr.dataset.position = result.model.position;
+            }, function() {
+              $("#sortable").sortable("cancel");
+              alert("something went wrong -- ask Kevin");
+            });
+          });
+      }
+    });
 
   ////////////////////////////////////////////////////
   // RESIZE NOTES TEXTAREA
@@ -418,8 +441,7 @@ $(document).ready(function() {
     e.preventDefault();
     self = $(this);
     var userDom = self.closest("[data-id]");
-    var userId = userDom.data("id");
-    if (noGreeter(userDom, userId)) return;
+    if (noGreeter(userDom)) return;
     var url = self.attr("href");
     var token = $("table.users,table.user").data("token");
     $("#spinner").show();
@@ -443,10 +465,10 @@ $(document).ready(function() {
       headers: {
         'X-CSRF-Token': token
       },
-      success: function(data) {
-        window.location.assign(data.url);
+      success: function(result) {
+        window.location.assign(result.url);
       },
-      error: function(data) {
+      error: function(result) {
         clearInterval(msgTimer);
         $("#spinner").hide();
         $(".progress-message")
@@ -463,8 +485,7 @@ $(document).ready(function() {
     .on("click", function(e) {
       var el = $(this);
       var userDom = el.closest("[data-id]");
-      var userId = userDom.data("id");
-      if (noGreeter(userDom, userId) || setStatus(userDom, userId)) {
+      if (noGreeter(userDom) || setStatus(userDom)) {
         el.blur();
         return;
       }
@@ -473,7 +494,7 @@ $(document).ready(function() {
         showTime: true,
         timeFormat: "HH:MM"
       };
-      var css = `[data-id="${userId}"] input.datetime-picker`;
+      var css = "input.datetime-picker";
       el.data("picker", new dtsel.DTS(css, options))
         .blur() // now simulate opening the picker
         .focus();
@@ -494,9 +515,8 @@ $(document).ready(function() {
   var setUserNotes = function(e) {
     var userNotesTextarea = $(this)
     var userDom = userNotesTextarea.closest("[data-id]");
-    var userId = userDom.data("id");
     var data = { notes: getUserNotes(userDom) };
-    patch(userId, data, function() {
+    patch(userDom, data, function() {
       userNotesTextarea
         .parent()
         .find("span.save-status")
@@ -542,8 +562,7 @@ $(document).ready(function() {
       if (!confirm("You will greet instead?")) return;
     }
     var userDom = $(this).closest("[data-id]");
-    var userId = userDom.data("id");
-    setUserGreeter(userDom, userId, newGreeterId);
+    setUserGreeter(userDom, newGreeterId);
   });
 
   ////////////////////////////////////////////////////
@@ -562,9 +581,8 @@ $(document).ready(function() {
     }
     if (!result) return;
     var userDom = $(this).closest("[data-id]");
-    var userId = userDom.data("id");
     var data = { shadow_greeter_id: newGreeterId };
-    patch(userId, data, function() {
+    patch(userDom, data, function() {
       var text = newGreeterId ? greeterName : "I will shadow";
       self.closest("td").data("greeter-id", newGreeterId);
       userDom.find("td.user-shadow a").text(text);
@@ -582,8 +600,7 @@ $(document).ready(function() {
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this).closest("[data-id]");
-    var userId = userDom.data("id");
-    if (noGreeter(userDom, userId)) return;
+    if (noGreeter(userDom)) return;
     var maxIndex = emailTemplates.length;
     var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
     if (!templateIndex) return;

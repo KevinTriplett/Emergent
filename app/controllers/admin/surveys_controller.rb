@@ -1,6 +1,7 @@
 module Admin
   class SurveysController < AdminController
     layout "admin"
+    before_action :signed_in_user
 
     def index
       @surveys = Survey.all
@@ -16,7 +17,7 @@ module Admin
     def create
       _ctx = run Survey::Operation::Create do |ctx|
         flash[:notice] = "Survey #{ctx[:model].name} was created"
-        return redirect_to new_admin_survey_question_url(survey_id: ctx[:model].id)
+        return redirect_to new_admin_survey_survey_question_url(survey_id: ctx[:model].id)
       end
     
       flash[:error] = _ctx[:flash]
@@ -27,7 +28,8 @@ module Admin
     def show
       # show all questions in survey
       @survey = Survey.find(params[:id])
-      @survey_questions = @survey.survey_questions.order(order: :asc)
+      @survey_questions = @survey.survey_questions.order(position: :asc)
+      @token = form_authenticity_token
     end
 
     def edit
@@ -40,7 +42,7 @@ module Admin
     def update
       _ctx = run Survey::Operation::Update do |ctx|
         flash[:notice] = "Survey #{ctx[:model].name} updated"
-        return redirect_to show_admin_survey_url(survey_id: ctx[:mode;].id)
+        return redirect_to admin_survey_url(ctx[:model].id)
       end
     
       flash[:error] = _ctx[:flash]

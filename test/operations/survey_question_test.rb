@@ -36,9 +36,26 @@ class SurveyQuestionOperationTest < MiniTest::Spec
       DatabaseCleaner.cleaning do
         existing_survey = create_survey
         existing_question_1 = create_survey_question(survey: existing_survey)
-        assert_equal 0, existing_question_1.order
+        assert_equal 0, existing_question_1.position
         existing_question_2 = create_survey_question(survey: existing_survey)
-        assert_equal 1, existing_question_2.order
+        assert_equal 1, existing_question_2.position
+      end
+    end
+
+    it "Updates {SurveyQuestion} with new order" do
+      DatabaseCleaner.cleaning do
+        existing_survey = create_survey
+        existing_question = create_survey_question(survey: existing_survey)
+        new_position = existing_question.position + 1
+        model_hash = {
+          model: {
+            position: new_position
+          },
+          id: existing_question.id
+        }
+        result = SurveyQuestion::Operation::Patch.call(params: model_hash)
+        assert result.success?
+        assert_equal new_position, existing_question.reload.position
       end
     end
 

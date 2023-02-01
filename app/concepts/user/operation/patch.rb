@@ -1,5 +1,5 @@
 module User::Operation
-  class Update < Trailblazer::Operation
+  class Patch < Trailblazer::Operation
 
     class Present < Trailblazer::Operation
       step Model(User, :find_by)
@@ -7,11 +7,11 @@ module User::Operation
     end
     
     step Subprocess(Present)
-    step Contract::Validate(key: :user)
+    step Contract::Validate(key: :model)
     step :update_user
 
     def update_user(ctx, admin_name:, model:, params:, **)
-      user_params = params[:user]
+      user_params = params[:model]
       user = User.find(params[:id])
       timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       new_change_log = "#{timestamp} by #{admin_name}:\n"

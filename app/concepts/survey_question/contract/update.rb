@@ -1,5 +1,5 @@
 module SurveyQuestion::Contract
-  class Create < Reform::Form
+  class Update < Reform::Form
     include Dry
 
     property :id
@@ -8,7 +8,7 @@ module SurveyQuestion::Contract
     property :question
     property :answer_type
     property :has_scale
-    property :order
+    property :position
 
     validation do
       params do
@@ -18,7 +18,7 @@ module SurveyQuestion::Contract
         required(:question).filled.value(:string)
         required(:answer_type).filled.value(:string)
         required(:has_scale)
-        required(:order).filled.value(:integer)
+        required(:position).filled.value(:integer)
       end
     end
   end

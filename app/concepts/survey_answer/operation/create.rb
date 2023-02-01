@@ -7,12 +7,12 @@ module SurveyAnswer::Operation
       step :initialize_survey_question_id
       step Contract::Build(constant: SurveyAnswer::Contract::Create)
 
-      def initialize_user_id(ctx, model:, **)
-        ctx[:user_id] && model.user_id = ctx[:user_id]
+      def initialize_user_id(ctx, model:, params:, **)
+        params[:user_id] && model.user_id = params[:user_id]
       end
   
-      def initialize_survey_question_id(ctx, model:, **)
-        ctx[:survey_question_id] && model.survey_question_id = ctx[:survey_question_id]
+      def initialize_survey_question_id(ctx, model:, params:, **)
+        params[:survey_question_id] && model.survey_question_id = params[:survey_question_id]
       end
     end
     

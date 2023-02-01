@@ -161,6 +161,17 @@ input#my-greetings + label {
   position: absolute;
 }
 
+table.survey-questions {
+  tbody tr {
+    cursor: pointer;
+    td.actions {
+      a {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
 table.users tr {
   cursor: pointer;
   &:hover {
