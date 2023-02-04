@@ -353,13 +353,12 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // USER SEARCH
   $("#user-search").on("blur", function() {
-    hideUserList();
+    // hideUserList(); // cannot do this or cannot select user from autocomplete box
   }).on("keyup", function() {
-
     var self = $(this);
     var value = self.val();
     if (value.length < 2) return;
-    // var token = self.data("token");
+    var token = self.data("token");
     var url = self.data("url");
     var data = {search_terms: value};
     $.ajax({
@@ -375,33 +374,46 @@ $(document).ready(function() {
     });
   });
 
+  var initUserList = function() {
+    $(".autocom-box").on("click", function(e) {
+      var li = $(e.target).closest("li");
+      var userName = li.find("span.user-name").text();
+      var userId = li.find("span.user-id").text();
+      $("#user-search").val(userName);
+      $("#survey_invite_user_id").val(userId);
+      hideUserList();
+    });
+  }
+  initUserList();
+
   var createUserList = function(users) {
     var list = document.createElement("ul");
     for (user of users) {
       var li = document.createElement("li");
       var spanName = document.createElement("span");
       var spanId = document.createElement("span");
-      spanName.className = "user_name";
-      spanId.className = "user_id";
-      spanName.innerText = u[1];
-      spanId.innerText = u[0];
+      spanName.className = "user-name";
+      spanId.className = "user-id";
+      spanName.innerText = user[1];
+      spanId.innerText = user[0];
       li.appendChild(spanName);
       li.appendChild(spanId);
       list.appendChild(li);
     }
-    $(".autocom")
+    $(".autocom-box")
       .empty()
       .append(list)
   };
 
   var showUserList = function() {
-    $(".autocom-box").addClass("active");
+    $(".autocom-box").show();
   }
   var hideUserList = function() {
-    $(".autocom-box").removeClass("active");
+    $(".autocom-box").hide()
   }
+  hideUserList();
 
-////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
   // SORTABLE SURVEY QUESTIONS
   $("#sortable")
     .sortable({

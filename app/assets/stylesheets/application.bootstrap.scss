@@ -265,14 +265,9 @@ table.users, table.user {
   color: #fff;
   background: #664AFF;
 }
-.search-input .autocom-box{
-  padding: 0;
-  opacity: 0;
-  pointer-events: none;
+#search-input .autocom-box{
   max-height: 280px;
   overflow-y: auto;
-}
-.search-input.active .autocom-box {
   padding: 10px 8px;
   opacity: 1;
   pointer-events: auto;
@@ -284,9 +279,10 @@ table.users, table.user {
   width: 100%;
   cursor: default;
   border-radius: 3px;
-}
-.search-input.active .autocom-box li {
   display: block;
+  span.user-id {
+    display: none;
+  }
 }
 .autocom-box li:hover {
   background: #efefef;

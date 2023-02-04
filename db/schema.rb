@@ -46,7 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_035441) do
   create_table "survey_invites", force: :cascade do |t|
     t.integer "survey_id"
     t.integer "user_id"
-    t.text "subject"
+    t.string "subject"
     t.text "body"
     t.datetime "sent_timestamp"
     t.string "token"

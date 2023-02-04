@@ -6,16 +6,20 @@
   .row
     .col= "Survey: #{@survey.name}"
   .row
-    .col.search-input
+    .col-sm-10#search-input
       %input.form-control#user-search{name: "user_search", placeholder: "Member Name", label: false, data: {url: user_search_path}}
       .autocom-box
-      = f.input :user_id, as: :hidden, label: false
+    .col-sm-2= f.input :user_id, label: false
   .row
     .col= f.input :subject, placeholder: "Subject Line", label: false
   .row
-    .col= f.input :body, placeholder: "Invitation Text", label: false
+    .col= f.input :body, as: :text, placeholder: "Invitation Text", label: false
   .row
     .col= f.button :submit, "Send Invite", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_survey_survey_invites_path
+%hr
+%ul
+  - @survey.survey_questions.each do |q|
+    %li= q.question
 

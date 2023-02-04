@@ -3,7 +3,7 @@ class AddSurveyInvites < ActiveRecord::Migration[7.0]
     create_table :survey_invites do |t|
       t.references :survey
       t.references :user
-      t.text :subject
+      t.string :subject
       t.text :body
       t.datetime :sent_timestamp
       t.string :token
