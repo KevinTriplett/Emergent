@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_29_185448) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_01_035441) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -37,8 +37,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_29_185448) do
     t.integer "survey_question_id"
     t.text "answer"
     t.integer "scale"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["survey_question_id"], name: "index_survey_answers_on_survey_question_id"
     t.index ["user_id"], name: "index_survey_answers_on_user_id"
+  end
+
+  create_table "survey_invites", force: :cascade do |t|
+    t.integer "survey_id"
+    t.integer "user_id"
+    t.text "subject"
+    t.text "body"
+    t.datetime "sent_timestamp"
+    t.string "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["survey_id"], name: "index_survey_invites_on_survey_id"
+    t.index ["token"], name: "index_survey_invites_on_token"
+    t.index ["user_id"], name: "index_survey_invites_on_user_id"
   end
 
   create_table "survey_questions", force: :cascade do |t|

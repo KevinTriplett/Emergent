@@ -351,6 +351,57 @@ $(document).ready(function() {
   $(document).uitooltip();
 
   ////////////////////////////////////////////////////
+  // USER SEARCH
+  $("#user-search").on("blur", function() {
+    hideUserList();
+  }).on("keyup", function() {
+
+    var self = $(this);
+    var value = self.val();
+    if (value.length < 2) return;
+    // var token = self.data("token");
+    var url = self.data("url");
+    var data = {search_terms: value};
+    $.ajax({
+      url: url,
+      type: "GET",
+      data: data,
+      dataType: 'JSON',
+      contentType: 'application/json',
+      success: function(result) {
+        createUserList(result.users);
+        showUserList();
+      }
+    });
+  });
+
+  var createUserList = function(users) {
+    var list = document.createElement("ul");
+    for (user of users) {
+      var li = document.createElement("li");
+      var spanName = document.createElement("span");
+      var spanId = document.createElement("span");
+      spanName.className = "user_name";
+      spanId.className = "user_id";
+      spanName.innerText = u[1];
+      spanId.innerText = u[0];
+      li.appendChild(spanName);
+      li.appendChild(spanId);
+      list.appendChild(li);
+    }
+    $(".autocom")
+      .empty()
+      .append(list)
+  };
+
+  var showUserList = function() {
+    $(".autocom-box").addClass("active");
+  }
+  var hideUserList = function() {
+    $(".autocom-box").removeClass("active");
+  }
+
+////////////////////////////////////////////////////
   // SORTABLE SURVEY QUESTIONS
   $("#sortable")
     .sortable({
@@ -499,7 +550,7 @@ $(document).ready(function() {
         .blur() // now simulate opening the picker
         .focus();
     })
-    .on("change", debounce(setUserMeeting, 1000))
+    .on("change", debounce(setUserMeeting, 500))
     .on("keydown", function(e) {
       switch(e.key) {
       case "Esc":
