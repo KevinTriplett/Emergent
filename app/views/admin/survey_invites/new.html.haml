@@ -17,7 +17,7 @@
   .row
     .col= f.button :submit, "Send Invite", class: "btn-primary"
 .row
-  .col= link_to "Cancel", admin_survey_survey_invites_path
+  .col= link_to "Back", admin_surveys_path
 %hr
 %ul
   - @survey.survey_questions.each do |q|

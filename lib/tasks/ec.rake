@@ -1,4 +1,12 @@
 namespace :ec do
+  desc "Send all queued survey invites"
+  task send_survey_invites: :environment do
+    return if SurveyInvite.queued.blank?
+    SurveyInviteSpider.crawl!
+  end
+end
+
+namespace :ec do
   desc "Crawls the Emergent Commons MN site for all member requests"
   task nm_crawl_all: :environment do
     Spider.set_message("new_user_spider", "0")

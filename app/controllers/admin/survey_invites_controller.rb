@@ -16,11 +16,10 @@ module Admin
         user = ctx[:model].user
         survey = ctx[:model].survey
         flash[:notice] = "Sent Survey Invite for #{user.name} to #{survey.name}"
-        return redirect_to new_admin_survey_survey_invite_url(survey_id: survey.id)
       end
     
       @survey = Survey.find(params[:survey_id])
-      flash[:error] = _ctx[:flash]
+      flash[:error] = _ctx[:flash] unless _ctx[:flash].blank?
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end

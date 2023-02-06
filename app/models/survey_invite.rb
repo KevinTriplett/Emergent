@@ -7,4 +7,8 @@ class SurveyInvite < ActiveRecord::Base
     update(token: SurveyInvite.generate_unique_secure_token) if token.nil?
     token
   end
+
+  def self.queued
+    where(sent_timestamp: nil)
+  end
 end
