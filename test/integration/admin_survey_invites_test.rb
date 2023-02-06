@@ -26,8 +26,8 @@ class AdminSurveyInvitesTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Create Survey Invitation"
-      assert_select "input#survey_survey_invite_", "Create Survey Invitation"
+      assert_select "h5", "Send Survey Invite"
+      assert_select "input#user-search", ""
     end
   end
 end
