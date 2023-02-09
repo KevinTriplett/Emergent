@@ -4,8 +4,8 @@ module Admin
     before_action :signed_in_user
 
     def index
-      date = Time.now - 2.months
-      @users = User.order(request_timestamp: :desc).where('request_timestamp >= ?', date)
+      date = Time.now - 1.month
+      @users = User.order(request_timestamp: :desc).where('request_timestamp >= ? OR greeter_id = ?', date, current_user.id)
       @update_url = admin_users_url
       @token = form_authenticity_token
     end
