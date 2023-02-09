@@ -30,8 +30,12 @@ class User < ActiveRecord::Base
 
   def get_status_options
     {
-      "Pending": [],
-      "Request Declined": [],
+      "Pending": [
+        "Request Declined"
+      ],
+      "Request Declined": [
+        "Pending"
+      ],
       "Scheduling Zoom": [
         "Zoom Scheduled",
         "Zoom Declined (completed)",

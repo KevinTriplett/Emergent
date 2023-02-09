@@ -251,7 +251,7 @@ var setUserStatus = function(userDom, userStatus) {
 }
 
 var dateInPast = function(userDom, ts) {
-  if (!ts) return false;
+  if (pastOkay || !ts) return false;
   if (Date.parse(ts) > (new Date).getTime()) return false;
   if (!confirm("Are you sure you want to set the Zoom meeting in the past?")) {
     var timestamp = userDom.find("td.user-meeting-datetime").data("timestamp");
@@ -259,6 +259,7 @@ var dateInPast = function(userDom, ts) {
     userDom.find("td.user-meeting-datetime input").val(timestamp);
     return true;
   }
+  pastOkay = true;
   return false;
 }
 
@@ -319,6 +320,7 @@ var greeterName = getCookie("user_name");
 if (greeterName) greeterName = greeterName.replace("+", " ");
 var greeterId = getCookie("user_id");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
+var pastOkay = false;
 var format = {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   hour12: false,
