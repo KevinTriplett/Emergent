@@ -4,7 +4,7 @@ module SurveyAnswer::Contract
 
     property :id
     property :survey_question_id
-    property :user_id
+    property :survey_invite_id
     property :answer
     property :scale
 
@@ -12,7 +12,7 @@ module SurveyAnswer::Contract
       params do
         required(:id)
         required(:survey_question_id).filled.value(:integer)
-        required(:user_id).filled.value(:integer)
+        required(:survey_invite_id).filled.value(:integer)
         required(:answer).filled.value(:string)
         required(:scale)
       end

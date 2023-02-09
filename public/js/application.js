@@ -163,12 +163,11 @@ var convertTimeFromUTC = function(utc, dtPicker) {
   if (!utc) return null;
   var dt = (new Date(utc)).toLocaleString("en-US");
   // convert to iso 8601 format
-  var t = dt.split(", ");
-  var d = t.shift();
-  d = d.split("/");
-  t = t[0].split(" ");
-  t[0] = t[0].split(":");
-  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0][0]}:${t[0][1]} ${t[1]}`;
+  var t = dt.split(", ")[1];
+  var d = dt.split(",")[0].split("/");
+  var ampm = t.split(" ")[1];
+  t = t.split(":");
+  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0]}:${t[1]} ${ampm}`;
 }
 
 var convertTimeToUTC = function(datetime) {

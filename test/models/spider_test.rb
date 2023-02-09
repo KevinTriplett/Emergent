@@ -1,7 +1,6 @@
 require 'test_helper'
 
-class GameTest < MiniTest::Spec
-  include ActionMailer::TestHelper
+class SpiderTest < MiniTest::Spec
   DatabaseCleaner.clean
 
   it "sets spider message and getting erases it" do

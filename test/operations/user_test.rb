@@ -2,7 +2,7 @@ require 'test_helper'
 
 class UserOperationTest < MiniTest::Spec
   include ActionMailer::TestHelper
-  default_date = "12/08/2022"
+  default_date = Time.now - 1.days
 
   describe "Create" do
     DatabaseCleaner.clean

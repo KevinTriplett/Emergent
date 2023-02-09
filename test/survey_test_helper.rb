@@ -49,9 +49,28 @@ def create_survey_question(params = {})
   create_survey_question_with_result(params)[:model]
 end
 
+def create_survey_invite_with_result(params = {})
+  survey_id = params[:survey_id] || (params[:survey] && params[:survey].id) || create_survey.id
+  user_id = params[:user_id] || (params[:user] && params[:user].id) || create_user.id
+  SurveyInvite::Operation::Create.call(
+    params: {
+      survey_invite: {
+        subject: params[:subject] || "This is hte subject",
+        body: params[:body] || "This is hte body"
+      },
+      survey_id: survey_id,
+      user_id: user_id
+    }
+  )
+end
+
+def create_survey_invite(params = {})
+  create_survey_invite_with_result(params)[:model]
+end
+
 def create_survey_answer_with_result(params = {})
   survey_question_id = params[:survey_question_id] || (params[:survey_question] && params[:survey_question].id) || create_survey_question.id
-  user_id = params[:user_id] || (params[:user] && params[:user].id) || create_user.id
+  survey_invite_id = params[:survey_invite_id] || (params[:survey_invite] && params[:survey_invite].id) || create_survey_invite.id
   SurveyAnswer::Operation::Create.call(
     params: {
       survey_answer: {
@@ -59,7 +78,7 @@ def create_survey_answer_with_result(params = {})
         scale: params[:scale]
       },
       survey_question_id: survey_question_id,
-      user_id: user_id
+      survey_invite_id: survey_invite_id
     }
   )
 end

@@ -49,5 +49,12 @@ class SurveyInviteSpider < EmergeSpider
     sleep 1
     browser.send_keys(@@survey_invite.body)
     browser.send_keys [:enter]
+    sleep 1
+    url = survey_invite_url(token: @@survey.token)
+    browser.send_keys(url)
+    browser.send_keys [:enter]
+    sleep 1
+    browser.send_keys("☝🏼 Here's your personal link to the survey 🙂")
+    browser.send_keys [:enter]
   end
 end

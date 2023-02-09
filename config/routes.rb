@@ -23,8 +23,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users, only: [:show, :edit, :update]
-  resources :survey_answers, only: [:new, :edit, :update]
+  resources :users, param: :token, only: [:show, :edit, :update]
+  resources :survey_invites, param: :token, only: [:show] do
+    resources :survey_answers, only: [:new, :create, :edit, :update]
+  end
 
   root to: "home#index"
 end
