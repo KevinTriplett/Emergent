@@ -1,25 +1,28 @@
-%h5= "Editing Survey Questions"
+%h5 Survey Questions
 
-%p.survey-name= "Survey: #{@survey.name}"
+%p.survey-name
+  = "Survey: #{@survey.name}"
+  = link_to "edit", edit_admin_survey_path(@survey)
+  = link_to "delete", admin_survey_path(@survey), data: { turbo_method: "delete", turbo_confirm: "Really delete survey?" }
 
 %table.survey-questions.table.table-bordered.table-striped
   %thead
     %tr
-      %th.question Question
+      %th.action Actions
       %th.question-type Question Type
+      %th.question Question
       %th.answer-type Answer Type
       %th.has-scale Scale?
-      %th.action Actions
   %tbody#sortable
     - @survey_questions.each do |sq|
       %tr.ui-state-default{ data: {url: admin_survey_question_patch_url(sq.id), position: sq.position, token: @token, id: sq.id} }
-        %td.question= sq.question
-        %td.question-type= sq.question_type
-        %td.answer-type= sq.answer_type
-        %td.has-scale= sq.has_scale? ? "Yes" : "No"
         %td.actions
           = link_to "edit", edit_admin_survey_survey_question_path(sq.id, survey_id: @survey.id)
-          = link_to "delete", admin_survey_survey_question_path(sq.id, survey_id: @survey.id), data: { turbo_method: "delete", turbo_confirm: "Really delete question?" }
+          = link_to "del", admin_survey_survey_question_path(sq.id, survey_id: @survey.id), data: { turbo_method: "delete", turbo_confirm: "Really delete question?" }
+        %td.question-type= sq.question_type
+        %td.question= sq.question
+        %td.answer-type= sq.answer_type
+        %td.has-scale= sq.has_scale? ? "Yes" : "No"
 
 = link_to "New Question", new_admin_survey_survey_question_path(@survey.id), class: "btn btn-secondary"
 %br

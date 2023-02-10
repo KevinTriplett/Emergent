@@ -4,11 +4,21 @@
   .row
     .col= f.error_notification
   .row
-    .col= f.input :question_type, placeholder: "Question Type", label: false
+    .col
+      %select
+        - SurveyQuestion::QUESTION_TYPES.each do |o|
+          - selected = (o == @model.question_type ? "selected" : nil)
+          %option{ selected: selected }= o
+      = f.input :question_type, as: :hidden
   .row
     .col= f.input :question, placeholder: "Question", label: false
   .row
-    .col= f.input :answer_type, placeholder: "Answer Type", label: false
+    .col
+      %select
+        - SurveyQuestion::ANSWER_TYPES.each do |o|
+          - selected = (o == @model.answer_type ? "selected" : nil)
+          %option{ selected: selected }= o
+      = f.input :answer_type, as: :hidden
   .row
     .col= f.input :has_scale, as: :boolean, label: "Has Scale"
   .row

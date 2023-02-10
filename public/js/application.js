@@ -240,7 +240,7 @@ var setUserStatus = function(userDom, userStatus) {
       .find("td.user-status")
       .empty()
       .append(newSel);
-    initStatusSelectMenu("td.user-status select");
+    initStatusSelectMenu();
     userDom.find("td.user-status").data("status", result.model.status);
     userDom.find("td.user-status select").val(result.model.status);
     userDom.find("td.user-status .ui-selectmenu-text").text(result.model.status);
@@ -281,6 +281,18 @@ var initStatusSelectMenu = function() {
         return;
       }
       setUserStatus(userDom, null);
+    }
+  });
+}
+
+var initSurveySelectMenu = function() {
+  $("#new_survey_question select, #edit_survey_question select").selectmenu({
+    change: function(e) {
+      var self = $(this);
+      self
+        .closest(".row")
+        .find("input[type='hidden']")
+        .val(self.val());
     }
   });
 }
@@ -657,7 +669,8 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // STATUS EVENT LISTENER
-  initStatusSelectMenu("td.user-status select");
+  initStatusSelectMenu();
+  initSurveySelectMenu();
 
   ////////////////////////////////////////////////////
   // EMAIL EVENT LISTENER

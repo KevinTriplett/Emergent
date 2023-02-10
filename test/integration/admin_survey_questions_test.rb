@@ -12,10 +12,12 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       get admin_survey_path(existing_survey.id)
 
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Editing Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}"
-      assert_select "a", {count: 0, text: "edit"}
-      assert_select "a", {count: 0, text: "delete"}
+      assert_select "h5", "Survey Questions"
+      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\ndelete"
+      assert_select ".survey-name a", "edit"
+      assert_select ".survey-name a", "delete"
+      assert_select "table.survey-questions a", {count: 0, text: "edit"}
+      assert_select "table.survey-questions a", {count: 0, text: "del"}
       assert_select "a.btn", "New Question"
     end
   end
@@ -31,8 +33,8 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Editing Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}"
+      assert_select "h5", "Survey Questions"
+      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\ndelete"
       assert_select "tr[data-url=?]", admin_survey_question_patch_url(existing_survey_question.id)
       assert_select "tr[data-id=?]", existing_survey_question.id.to_s
       assert_select "tr[data-position=?]", existing_survey_question.position.to_s
@@ -40,8 +42,8 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       assert_select "td.question", existing_survey_question.question
       assert_select "td.answer-type", existing_survey_question.answer_type
       assert_select "td.has-scale", existing_survey_question.has_scale? ? "Yes" : "No"
-      assert_select "a", "edit"
-      assert_select "a", "delete"
+      assert_select "table.survey-questions a", "edit"
+      assert_select "table.survey-questions a", "del"
       assert_select "a", "New Question"
       assert_select "a", "Back"
       assert_select "a[href=?]", admin_surveys_path
@@ -80,16 +82,14 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Editing Survey Question"
+      assert_select "h5", "Edit Survey Question"
       assert_select '#survey_question_question_type' do
         assert_select "[value=?]", existing_survey_question.question_type
       end
       assert_select '#survey_question_answer_type' do
         assert_select "[value=?]", existing_survey_question.answer_type
       end
-      assert_select '#survey_question_question' do
-        assert_select "[value=?]", existing_survey_question.question
-      end
+      assert_select '#survey_question_question', existing_survey_question.question
       assert_select "#survey_question_has_scale[checked]", false
       assert_select "a", "Cancel"
 

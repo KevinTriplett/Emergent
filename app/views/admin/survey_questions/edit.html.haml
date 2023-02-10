@@ -1,14 +1,24 @@
-%h5 Editing Survey Question
+%h5 Edit Survey Question
 
 = simple_form_for @form, as: :survey_question, url: admin_survey_survey_question_path(@model.id, survey_id: @survey.id), method: :patch do |f|
   .row
     .col= f.error_notification
   .row
-    .col= f.input :question_type, placeholder: "Question Type", label: false
+    .col
+      %select
+        - SurveyQuestion::QUESTION_TYPES.each do |o|
+          - selected = (o == @model.question_type ? "selected" : nil)
+          %option{ selected: selected }= o
+      = f.input :question_type, as: :hidden
   .row
-    .col= f.input :question, placeholder: "Question", label: false
+    .col= f.input :question, as: :text, placeholder: "Question", label: false
   .row
-    .col= f.input :answer_type, placeholder: "Answer Type", label: false
+    .col
+      %select
+        - SurveyQuestion::ANSWER_TYPES.each do |o|
+          - selected = (o == @model.answer_type ? "selected" : nil)
+          %option{ selected: selected }= o
+      = f.input :answer_type, as: :hidden
   .row
     .col= f.input :has_scale, as: :boolean, label: "Has Scale"
   .row
