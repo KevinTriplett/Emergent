@@ -36,6 +36,8 @@
 - [X] *** automate database backup (see https://github.com/backup/backup)
 - [X] clear when_timestamp on status change and indicate change in changelog
 - [X] show only my greetings checkbox
+- [X] show all greeter assignments past and future
+- [ ] search not only filters but adds users from server
 - [ ] request declined status is not visible in member request to join
 - [ ] use MN chat to send magic keys and survey invites to members
 - [ ] give better error message for send magic link
