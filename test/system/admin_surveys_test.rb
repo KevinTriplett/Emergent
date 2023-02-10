@@ -61,31 +61,54 @@ class AdminSurveysTest < ApplicationSystemTestCase
       click_link "New Question"
 
       assert_current_path new_admin_survey_survey_question_path(survey_id: existing_survey.id)
-      question_type = "question type"
-      answer_type = "answer type"
+
+      question_type = SurveyQuestion::QUESTION_TYPES[1]
+      find("#question-type .ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: question_type, exact_text: true).click
+      assert_selector ".ui-selectmenu-text", text: question_type
+
+      answer_type = SurveyQuestion::ANSWER_TYPES[1]
+      find("#answer-type .ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: answer_type, exact_text: true).click
+      assert_selector ".ui-selectmenu-text", text: answer_type
+
       question = "This is the querstion"
-      fill_in "Question Type", with: question_type
-      fill_in "Answer Type", with: answer_type
       fill_in "Question", with: question
+      uncheck "Has Scale"
+
       click_on "Create Question"
 
       sleep 1
       survey_question = SurveyQuestion.first
+      assert question_type, survey_question.question_type
+      assert answer_type, survey_question.answer_type
+      assert question, survey_question.question
+
       visit admin_survey_path(existing_survey.id)
       assert_selector "td.question-type", text: survey_question.question_type
       assert_selector "td.answer-type", text: survey_question.answer_type
       assert_selector "td.question", text: survey_question.question
       assert_selector "td.has-scale", text: survey_question.has_scale ? "Yes" : "No"
-      click_link "edit"
+      within("table.survey-questions") do
+        click_link "edit"
+      end
 
       assert_current_path edit_admin_survey_survey_question_path(survey_question.id, survey_id: existing_survey.id)
-      question_type = "new question type"
-      answer_type = "new answer type"
+
+      question_type = SurveyQuestion::QUESTION_TYPES[0]
+      find("#question-type .ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: question_type, exact_text: true).click
+      assert_selector ".ui-selectmenu-text", text: question_type
+
+      answer_type = SurveyQuestion::ANSWER_TYPES[0]
+      find("#answer-type .ui-selectmenu-text").click
+      find(".ui-menu-item-wrapper", text: answer_type, exact_text: true).click
+      assert_selector ".ui-selectmenu-text", text: answer_type
+
       question = "This is a revised querstion"
-      fill_in "Question Type", with: question_type
-      fill_in "Answer Type", with: answer_type
       fill_in "Question", with: question
       check "Has Scale"
+
       click_on "Update Question"
 
       sleep 1

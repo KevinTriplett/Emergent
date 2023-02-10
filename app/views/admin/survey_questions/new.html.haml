@@ -3,7 +3,7 @@
 = simple_form_for @form, as: :survey_question, url: admin_survey_survey_questions_path do |f|
   .row
     .col= f.error_notification
-  .row
+  .row#question-type
     .col
       %select
         - SurveyQuestion::QUESTION_TYPES.each do |o|
@@ -12,7 +12,7 @@
       = f.input :question_type, as: :hidden
   .row
     .col= f.input :question, placeholder: "Question", label: false
-  .row
+  .row#answer-type
     .col
       %select
         - SurveyQuestion::ANSWER_TYPES.each do |o|

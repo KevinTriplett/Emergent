@@ -286,7 +286,7 @@ var initStatusSelectMenu = function() {
 }
 
 var initSurveySelectMenu = function() {
-  $("#new_survey_question select, #edit_survey_question select").selectmenu({
+  $("#question-type select, #answer-type select").selectmenu({
     change: function(e) {
       var self = $(this);
       self
