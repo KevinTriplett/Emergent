@@ -27,7 +27,7 @@ class AdminSurveyInvitesTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Send Survey Invite"
-      assert_select "input#user-search", ""
+      assert_select "input[type='search']", ""
     end
   end
 end

@@ -35,7 +35,7 @@
         = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
     %tr
       %td.header Request Date
-      %td.user-request= @user.request_timestamp.human_date
+      %td.user-request= @user.request_timestamp ? @user.request_timestamp.human_date : nil
     %tr
       %td.header Notes
       %td.user-notes
@@ -45,7 +45,7 @@
       %td.header Questions
       %td.user-questions
         %ol
-          - @user.questions_responses.split(" -:- ").each do |qna|
+          - (@user.questions_responses || []).split(" -:- ").each do |qna|
             - q, a = *qna.split("\\")
             %li
               %span.question= q

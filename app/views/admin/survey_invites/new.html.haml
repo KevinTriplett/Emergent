@@ -6,10 +6,10 @@
   .row
     .col= "Survey: #{@survey.name}"
   .row
-    .col-sm-10#search-input
-      %input.form-control#user-search{name: "user_search", placeholder: "Member Name", label: false, data: {url: user_search_path}}
+    .col-sm-10#search
+      %input.form-control{type: "search", placeholder: "Member Name", data: {url: user_search_path}}
       .autocom-box
-    .col-sm-2= f.input :user_id, label: false
+    .col-sm-2= f.input :user_id, as: :hidden
   .row
     .col= f.input :subject, placeholder: "Subject Line", label: false
   .row

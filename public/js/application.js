@@ -364,16 +364,84 @@ $(document).ready(function() {
   $(document).uitooltip();
 
   ////////////////////////////////////////////////////
+  // CONNECT DATATABLE
+  // ref https://datatables.net/reference/index
+  $("table.users").DataTable({
+    order: [[6,"desc"]],
+    paging: false,
+    fixedHeader: true,
+    fixedColumn: true
+  });
+  $(".dataTables_wrapper input[type='search']").on("keyup", function() {
+    var self = $(this);
+    var value = self.val();
+    if (value.length < 3) return;
+    var url = self.closest("[data-url]").data("url");
+    var data = {q: value, source: "greeter"};
+    $.ajax({
+      url: url,
+      type: "GET",
+      data: data,
+      dataType: 'JSON',
+      contentType: 'application/json',
+      success: function(result) {
+        var tbody = document.querySelector("table.users tbody");
+        var tr, td;
+        $(tbody).find("tr.search").remove();
+        var ids = $(tbody).find("tr").map(function(i, row) {
+          return parseInt(row.dataset.id);
+        });
+        for (user of result.users) {
+          if (ids.index(user.id) != -1) continue;
+          tr = document.createElement("tr");
+          tr.dataset.url = user.url;
+          tr.dataset.id = user.id;
+          tr.className = `${user.classnames} search`;
+          td = document.createElement("td");
+          td.className = "user-name";
+          td.innerText = user.name;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-greeter";
+          td.innerText = user.greeter;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-status";
+          td.innerText = user.status;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-meeting";
+          td.innerText = user.when;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-shadow";
+          td.innerText = user.shadow;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-notes";
+          td.innerText = user.notes;
+          td.setAttribute("title", user.truncated);
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-request";
+          td.innerText = user.request;
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        }
+      }
+    });
+  });
+
+  ////////////////////////////////////////////////////
   // USER SEARCH
-  $("#user-search").on("blur", function() {
+  $("#search input[type='search']").on("blur", function() {
     // hideUserList(); // cannot do this or cannot select user from autocomplete box
   }).on("keyup", function() {
     var self = $(this);
     var value = self.val();
     if (value.length < 2) return;
-    var token = self.data("token");
     var url = self.data("url");
-    var data = {search_terms: value};
+    var data = {q: value};
     $.ajax({
       url: url,
       type: "GET",
@@ -459,20 +527,10 @@ $(document).ready(function() {
     });
 
   ////////////////////////////////////////////////////
-  // CONNECT DATATABLE
-  // ref https://datatables.net/reference/index
-  $("table.users").DataTable({
-    order: [[6,"desc"]],
-    paging: false,
-    fixedHeader: true,
-    fixedColumn: true
-  });
-
-  ////////////////////////////////////////////////////
   // MAKE TABLE ROWS CLICKABLE
-  $("table.users tbody tr").on("click", function(e) {
+  $("table.users tbody").on("click", function(e) {
     if (e.target.nodeName == "A") return;
-    document.location = this.closest("tr").dataset["url"];
+    document.location = $(e.target).closest("tr").data("url");
   });
 
   ////////////////////////////////////////////////////

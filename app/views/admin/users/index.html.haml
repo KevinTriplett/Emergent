@@ -1,35 +1,32 @@
 %h5 Greeter View
 
-.controls
-  %input#my-greetings{ type: "checkbox" }
-  %label{ for: "my-greetings" } Show only my greetings
+.row
+  .col.controls
+    %input#my-greetings{ type: "checkbox" }
+    %label{ for: "my-greetings" } Show only my greetings
 
-%table.users.table.table-bordered.table-striped
-  %thead
-    %tr
-      %th.name Name
-      %th.greeter Greeter
-      %th.status Status
-      %th.meeting
-        Zoom Meeting
-        %br
-        %span.tzinfo (GMT)
-      %th.shadow Shadow
-      %th.notes Notes
-      %th.request Requested
-  %tbody
-    - @users.each do |u|
-      - classnames = []
-      - classnames.push("pending") unless u.joined?
-      - classnames.push("declined") if "Request Declined" == u.status
-      - classnames.push("scheduling") if "Scheduling Zoom" == u.status
-      - classnames.push("scheduled") if "Zoom Scheduled" == u.status
-      - classnames.push("complete") if u.status.index("(completed)")
-      %tr{ data: {url: admin_user_url(u.id), id: u.id}, class: classnames.join(" ") }
-        %td.user-name= u.name
-        %td.user-greeter= u.greeter_id ? u.greeter.name : ""
-        %td.user-status= u.status
-        %td.user-meeting-datetime.utc-time= u.when_timestamp ? u.when_timestamp.picker_datetime : nil
-        %td.user-shadow= u.shadow_greeter_id ? u.shadow_greeter.name : nil
-        %td.user-notes{ title: truncate(u.notes, length: 500, separator: ' ') }= u.notes_abbreviated
-        %td.user-request= u.request_timestamp.picker_date
+.row
+  .col{ data: {url: user_search_path} }
+    %table.users.table.table-bordered.table-striped
+      %thead
+        %tr
+          %th.name Name
+          %th.greeter Greeter
+          %th.status Status
+          %th.meeting
+            Zoom Meeting
+            %br
+            %span.tzinfo (GMT)
+          %th.shadow Shadow
+          %th.notes Notes
+          %th.request Requested
+      %tbody
+        - @users.each do |u|
+          %tr{ data: {url: admin_user_url(u[:id]), id: u[:id]}, class: u[:classnames] }
+            %td.user-name= u[:name]
+            %td.user-greeter= u[:greeter]
+            %td.user-status= u[:status]
+            %td.user-meeting-datetime.utc-time= u[:when]
+            %td.user-shadow= u[:shadow]
+            %td.user-notes{ title: u[:truncated] }= u[:notes]
+            %td.user-request= u[:request]

@@ -372,4 +372,46 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal 3, page.all("tbody tr", visible: true).count
     end
   end
+
+  test "Greeter can search for members" do
+    DatabaseCleaner.cleaning do
+      old_time = (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+      admin = login({
+        name: random_user_name,
+        request_timestamp: old_time
+      })
+      user1 = create_user({
+        name: "Jote Bloow",
+        request_timestamp: (Time.now-7.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+      })
+      user2 = create_user({
+        name: "Jaean Dove",
+        request_timestamp: (Time.now-8.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+      })
+      user3 = create_user({
+        name: "Pati Ritte",
+        request_timestamp: (Time.now-9.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+      })
+      user4 = create_user({
+        name: "Tiomthy Barttun",
+        request_timestamp: old_time
+      })
+      user2_first_name = user2.name.split(" ")[0]
+
+      visit admin_users_path
+      assert_current_path admin_users_path
+      assert_equal page.all(".user-name").collect(&:text), [user1.name, user2.name, user3.name]
+
+      input = page.find("input[type='search']")
+      input.click
+      input.send_keys(user2_first_name)
+      assert_equal page.all(".user-name").collect(&:text), [user2.name]
+
+      input.click
+      user2_first_name.length.times { input.send_keys [:backspace] }
+      input.send_keys("Tio")
+      sleep 1
+      assert_equal page.all(".user-name").collect(&:text), [user4.name]
+    end
+  end
 end

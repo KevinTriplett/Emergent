@@ -8,8 +8,8 @@ class AdminSurveyInvitesTest < ApplicationSystemTestCase
     DatabaseCleaner.cleaning do
       admin = login
       existing_survey = create_survey
-      existing_user = create_user(name: "Kevin Triplett")
-      existing_user.update(first_name: "Kevin")
+      existing_user = create_user(name: "Mark Triplett")
+      existing_user.update(first_name: "Mark")
       existing_user.update(last_name: "Triplett")
 
       assert_nil SurveyInvite.first
@@ -22,7 +22,7 @@ class AdminSurveyInvitesTest < ApplicationSystemTestCase
       body = "This are the body"
       fill_in "Subject Line", with: subject
       fill_in "Invitation Text", with: body
-      search_input = find("#user-search")
+      search_input = find("input[type='search']")
       search_input.click
       search_input.send_keys(existing_user.first_name)
       assert_selector "span.user-name", text: existing_user.name
