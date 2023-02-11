@@ -20,7 +20,7 @@ class HomeController < ApplicationController
 
   def send_magic_link
     params.permit(:email)
-    user = User.find_by_email params[:email].downcase
+    user = User.find_by_email (params[:email] || "").downcase
     if user && Rails.env.staging?
       sign_in(user)
     elsif user
@@ -28,7 +28,7 @@ class HomeController < ApplicationController
       UserMailer.with(user).send_magic_link.deliver_now
       flash[:notice] = "Magic link sent, check your SPAM folder"
     else
-      flash[:error] = "Email not found - use your Mighty Networks email address"
+      flash[:error] = "Please enter your Mighty Networks email address"
     end
     redirect_to root_url
   end
