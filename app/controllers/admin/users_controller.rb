@@ -12,7 +12,7 @@ module Admin
     end
 
     def show
-      @user = User.find(params[:id])
+      @user = User.find_by_token(params[:token])
       @status_options = @user.get_status_options
       @token = form_authenticity_token
     end
@@ -52,6 +52,28 @@ module Admin
       render json: { users: users }
     end
 
+    def token_command
+      # params.permit(:command)
+      user = User.find_by_token(params[:token])
+      case params[:command]
+      when "generate"
+        user.generate_tokens
+        flash[:notice] = "Tokens generated"
+      when "regenerate"
+        user.regenerate_tokens
+        flash[:notice] = "Tokens regenerated"
+      when "revoke"
+        user.revoke_tokens
+        flash[:notice] = "Tokens revoked"
+      when "toggle_lock"
+        user.locked? ? user.unlock : user.lock
+        flash[:notice] = "User account #{user.locked? ? nil : "un"}locked"
+      else
+        flash[:error] = "Unknown action requested #{params[:command]}"
+      end
+      redirect_to admin_user_url(token: user.token)
+    end
+
     private
 
     def map_users_for_index_view(users)
@@ -71,7 +93,8 @@ module Admin
           "notes": u.notes_abbreviated,
           "truncated": u.notes ? u.notes.truncate(500, separator: ' ') : nil,
           "request": u.request_timestamp ? u.request_timestamp.picker_date : nil,
-          "url": admin_user_url(u.id),
+          "url": admin_user_url(token: u.token),
+          "token": u.token,
           "id": u.id,
           "classnames": classnames.join(" ")
         }

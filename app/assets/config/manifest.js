@@ -2,3 +2,4 @@
 //= link_tree ../builds
 //= link dtsel.css
 //= link jquery-ui.css
+//= link datatables.css

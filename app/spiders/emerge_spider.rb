@@ -6,6 +6,17 @@ class EmergeSpider < Kimurai::Base
     self.logger.progname
   end
 
+  def get_message
+    msg = ::Spider.get_message(name)
+    return msg if msg
+    EmergeSpider.logger.failure "#{name} MESSAGE WAS NIL, EXITING"
+    raise
+  end
+
+  def set_result(result)
+    ::Spider.set_result(name, result)
+  end
+
   def sign_in(response, url:, data: {})
     return if response_has("body.communities-app")
 

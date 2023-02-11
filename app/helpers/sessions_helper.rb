@@ -46,7 +46,8 @@ module SessionsHelper
 
   def create_auth_session_cookie(user)
     return unless user
-    cookies.permanent.encrypted[:session_token] = user.generate_session_token
+    user.generate_tokens
+    cookies.permanent.encrypted[:session_token] = user.session_token
     cookies.permanent[:user_name] = user.name
     cookies.permanent[:user_id] = user.id
   end

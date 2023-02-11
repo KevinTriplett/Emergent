@@ -2,7 +2,7 @@ module User::Operation
   class Patch < Trailblazer::Operation
 
     class Present < Trailblazer::Operation
-      step Model(User, :find_by)
+      step Model(User, :find_by, :token)
       step Contract::Build(constant: User::Contract::Update)
     end
     
@@ -12,7 +12,7 @@ module User::Operation
 
     def update_user(ctx, admin_name:, model:, params:, **)
       user_params = params[:model]
-      user = User.find(params[:id])
+      user = User.find_by_token(params[:token])
       timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       new_change_log = "#{timestamp} by #{admin_name}:\n"
       user_params.each_pair do |attr, val|

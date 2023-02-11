@@ -5,15 +5,24 @@ class User < ActiveRecord::Base
   has_many :surveys, through: :survey_invites
   has_secure_token
 
-  def ensure_token
+  def revoke_tokens
+    # update(token: nil) # nil token can break many views
+    update(session_token: nil)
+  end
+  def generate_tokens
     update(token: User.generate_unique_secure_token) if token.nil?
-    token
+    update(session_token: SecureRandom.urlsafe_base64) if session_token.nil?
+  end
+  def regenerate_tokens
+    revoke_tokens
+    generate_tokens
   end
 
-  def generate_session_token
-    # do not generate a new session_token bc that would break all other session_tokens
-    update(session_token: SecureRandom.urlsafe_base64) unless session_token
-    session_token
+  def lock
+    update locked: true
+  end
+  def unlock
+    update locked: false
   end
 
   def has_role(role)

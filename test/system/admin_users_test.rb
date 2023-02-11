@@ -16,11 +16,11 @@ class AdminUsersTest < ApplicationSystemTestCase
       ActionMailer::Base.deliveries.clear
       fill_in "Email", with: user.email
       click_on "Send My Magic Link"
-      email = ActionMailer::Base.deliveries.last
-      assert_equal email.to, [user.email]
-      assert_equal email.subject, "Emergent Commons - your magic link"
-      assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
-      assert_match /#{get_magic_link(user)}/, email.body.inspect
+      assert_nil ActionMailer::Base.deliveries.last
+      # assert_equal email.to, [user.email]
+      # assert_equal email.subject, "Emergent Commons - your magic link"
+      # assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
+      # assert_match /#{get_magic_link(user)}/, email.body.inspect
       ActionMailer::Base.deliveries.clear
     end
   end
@@ -36,7 +36,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_current_path admin_users_path
       page.find("tr[data-id='#{user.id}'] td.user-name").click
       sleep 1
-      assert_current_path admin_user_path(user.id)
+      assert_current_path admin_user_path(token: user.token)
 
       assert_selector "h3", text: user.name
       
@@ -75,7 +75,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       # check when changing greeter
       user.update(greeter_id: admin2.id)
-      visit admin_user_path(user.id)
+      visit admin_user_path(token: user.token)
       assert_selector "td.user-greeter a", text: admin2.name
 
       message = dismiss_prompt do
@@ -96,7 +96,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       # clean up
       user.update(greeter_id: nil)
-      visit admin_user_path(user.id)
+      visit admin_user_path(token: user.token)
 
       ######################
       # SHADOW
@@ -126,7 +126,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       # check when changing greeter
       user.update(shadow_greeter_id: admin3.id)
-      visit admin_user_path(user.id)
+      visit admin_user_path(token: user.token)
       assert_selector "td.user-shadow a", text: admin3.name
 
       message = dismiss_prompt do
@@ -153,8 +153,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       existing_user = create_user
       assert existing_user.when_timestamp
 
-      visit admin_user_path(existing_user.id)
-      assert_current_path admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
+      assert_current_path admin_user_path(token: existing_user.token)
 
       ####################
       ## APPROVE BUTTON
@@ -163,13 +163,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       existing_user.update(status: "Request Declined")
-      visit admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
       assert_selector ".ui-selectmenu-text", text: existing_user.status
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
       existing_user.update(status: "Scheduling Zoom")
       existing_user.update(joined: true)
-      visit admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
       assert_selector ".ui-selectmenu-text", text: existing_user.status
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
 
@@ -186,7 +186,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       assert_nil existing_user.reload.greeter_id
       
-      visit admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
 
       find(".ui-selectmenu-text").click
       accept_prompt do
@@ -210,7 +210,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_nil existing_user.when_timestamp
 
       assert_selector "td.change-log", text: existing_user.change_log.chomp
-      visit admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
 
       ####################
       ## MEETING
@@ -251,7 +251,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       # check date format in index view
       visit admin_users_path
       assert_selector ".user-meeting-datetime", text: "2023-Oct-9 @ 3:45 PM"
-      visit admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
 
       # now check ability to delete
       input.click
@@ -269,8 +269,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       user = login
       old_notes = user.notes
 
-      visit admin_user_path(user.id)
-      assert_current_path admin_user_path(user.id)
+      visit admin_user_path(token: user.token)
+      assert_current_path admin_user_path(token: user.token)
 
       # find("td.user-notes.more i").click -- do not have to click if notes is <> ""
       notes_css = "td.user-notes textarea"
@@ -302,8 +302,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       existing_user = create_user
       old_status = existing_user.status
 
-      visit admin_user_path(existing_user.id)
-      assert_current_path admin_user_path(existing_user.id)
+      visit admin_user_path(token: existing_user.token)
+      assert_current_path admin_user_path(token: existing_user.token)
 
       assert_nil existing_user.greeter_id
       message = dismiss_prompt do

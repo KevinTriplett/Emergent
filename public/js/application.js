@@ -325,6 +325,19 @@ var updateChangeLog = function(model) {
   $("td.change-log").html(model.change_log.replace(/\n/g, "<br>"));
 }
 
+var showOpt = function(show) {
+  if (!(show ^ optVisible)) return;
+  optVisible = show;
+  if (show)
+    $(".opt").show();
+  else {
+    var func = debounce(function() {
+      $(".opt").hide();
+    }, 1000);
+    func();
+  }
+}
+
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 var loaded = false;
@@ -333,6 +346,7 @@ if (greeterName) greeterName = greeterName.replace("+", " ");
 var greeterId = getCookie("user_id");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 var pastOkay = false;
+var optVisible = false;
 var format = {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   hour12: false,
@@ -361,7 +375,13 @@ $(document).ready(function() {
   if (loaded) return; // set listeners only once
   loaded = true;
   $("#spinner").hide();
-  $(document).uitooltip();
+  $(document)
+    .uitooltip()
+    .on("keydown", function(e) {
+      showOpt(e.altKey);
+    }).on("keyup", function(e) {
+      showOpt(e.altKey);
+    });
 
   ////////////////////////////////////////////////////
   // CONNECT DATATABLE

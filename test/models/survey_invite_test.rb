@@ -3,6 +3,12 @@ require 'test_helper'
 
 class SurveyInviteTest < MiniTest::Spec
   DatabaseCleaner.clean
+  it "creates a token on create" do
+    DatabaseCleaner.cleaning do
+      invite = create_survey_invite
+      assert invite.token
+    end
+  end
 
   it "reports the correct state" do
     DatabaseCleaner.cleaning do

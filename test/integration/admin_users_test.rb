@@ -68,7 +68,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       })
       set_authorization_cookie
 
-      get admin_user_path(user.id)
+      get admin_user_path(token: user.token)
       
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h3", user.name
@@ -97,11 +97,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       end
 
       user.update(greeter_id: nil)
-      get admin_user_path(user.id)
+      get admin_user_path(token: user.token)
       assert_select "td.user-greeter", "I will greet"
 
       user.update(shadow_greeter_id: nil)
-      get admin_user_path(user.id)
+      get admin_user_path(token: user.token)
       assert_select "td.user-shadow", "I will shadow"
 
       user.update(profile_url: nil)

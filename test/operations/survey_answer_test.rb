@@ -66,7 +66,6 @@ class SurveyAnswerOperationTest < MiniTest::Spec
       DatabaseCleaner.cleaning do
         existing_survey_question = create_survey_question({has_scale: true})
         result = create_survey_answer_with_result({
-          scale: nil,
           answer: "this is an answer",
           survey_question: existing_survey_question
         })

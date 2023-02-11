@@ -51,8 +51,7 @@ def create_user_with_result(params = {})
         notes: params[:notes] || "this are notes",
         referral: params[:referral] || "referral name",
         greeter_id: params[:greeter_id],
-        shadow_greeter_id: params[:shadow_greeter_id],
-        session_token: params[:session_token]
+        shadow_greeter_id: params[:shadow_greeter_id]
       }
     }
   )

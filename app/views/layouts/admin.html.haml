@@ -14,8 +14,7 @@
     = stylesheet_link_tag "application"
     = stylesheet_link_tag "jquery-ui"
     = stylesheet_link_tag "dtsel"
-    = stylesheet_link_tag "https://cdn.datatables.net/v/bs5/dt-1.13.1/fc-4.2.1/fh-3.3.1/r-2.4.0/datatables.min.css"
-    = stylesheet_link_tag "https://kit.fontawesome.com/d68be63700.css", crossorigin: "anonymous"
+    = stylesheet_link_tag "datatables"
 
     %script{ src: "/js/jquery-3.6.0.js" }
     %script{ src: "/js/jquery-ui.js" }
@@ -23,8 +22,7 @@
     = javascript_include_tag "application", defer: true
     %script{ src: "/js/application.js" }
     %script{ src: "/js/dtsel.js" }
-    %script{ src: "https://cdn.datatables.net/v/bs5/dt-1.13.1/fc-4.2.1/fh-3.3.1/r-2.4.0/datatables.min.js" }
-    -# %script{ src: "https://kit.fontawesome.com/d68be63700.js", crossorigin: "anonymous" }
+    %script{ src: "/js/datatables.js" }
 
   %body#admin
     .container

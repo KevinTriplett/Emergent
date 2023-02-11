@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   
-  post "/admin/users(/:id)/patch", to: "admin/users#patch", as: :admin_user_patch
-  post "/admin/users(/:id)/approve", to: "admin/users#approve_user", as: :admin_approve_user
+  get  "/admin/users(/:token)/token(/:command)", to: "admin/users#token_command", as: :admin_user_token
+  post "/admin/users(/:token)/patch", to: "admin/users#patch", as: :admin_user_patch
+  post "/admin/users(/:token)/approve", to: "admin/users#approve_user", as: :admin_approve_user
   post "/admin/survey_questions(/:id)/patch", to: "admin/survey_questions#patch", as: :admin_survey_question_patch
 
   get "login(/:token)", to: "home#login", as: :login
@@ -16,7 +17,7 @@ Rails.application.routes.draw do
   put "survey(/:token)/question(/:position)", to: "survey#update", as: :survey_answer
 
   namespace :admin do
-    resources :users, only: [:index, :show]
+    resources :users, param: :token, only: [:index, :show]
     resources :surveys do
       resources :survey_questions, only: [:new, :create, :edit, :update, :destroy]
       resources :survey_invites, only: [:new, :create]

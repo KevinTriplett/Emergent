@@ -65,6 +65,10 @@ body.home {
   }
 }
 
+.opt {
+  display: none;
+}
+
 // https://www.cssmine.com/ebook/css3-media-queries
 @media (orientation: portrait) and (min-width: 300px) {
   body.home .center {
