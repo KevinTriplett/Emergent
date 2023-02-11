@@ -7,6 +7,15 @@
   ref https://github.com/twbs/bootstrap-rubygem/issues/210
 */
 
+.alert:has(.flash.error) {
+  color: rgb(25, 25, 25);
+  background-color: rgb(253, 187, 187);
+}
+.alert:has(.flash.notice) {
+  color: rgb(25, 25, 25);
+  background-color: rgb(209, 254, 208);
+}
+
 /* test TODO: remove after testing */
 h1 {
   color: green;
