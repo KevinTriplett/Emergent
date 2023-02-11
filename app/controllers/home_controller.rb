@@ -20,7 +20,8 @@ class HomeController < ApplicationController
 
   def send_magic_link
     params.permit(:email)
-    user = User.find_by_email (params[:email] || "").downcase
+    email = params[:email].blank? ? "zzzzzzzzzzz" : params[:email]
+    user = User.find_by_email email.downcase
     if user && Rails.env.staging?
       sign_in(user)
     elsif user
