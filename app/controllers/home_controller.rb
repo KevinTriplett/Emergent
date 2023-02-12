@@ -19,9 +19,10 @@ class HomeController < ApplicationController
   end
 
   def send_magic_link
-    params.permit(:email)
+    params.permit(:email) # initially email, now email or name
     email = params[:email].blank? ? "zzzzzzzzzzz" : params[:email]
     user = User.find_by_email(email.downcase) || User.find_by_name(email)
+    user ||= User.where("name ILIKE #{email}")
     if user && !Rails.env.production?
       sign_in(user)
     elsif user

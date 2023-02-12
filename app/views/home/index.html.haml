@@ -1,5 +1,5 @@
 %img{ src: "/images/ec-elephant.jpg", width: "100%" }
 .center
   %form{action: send_magic_link_url, method: "put"}
-    %input{name: "email", type: "text", placeholder: "Email"}
+    %input{name: "email", type: "text", placeholder: "Email or Full Name"}
     %button.btn.btn-warning= Rails.env.staging? ? "Log In" : "Send My Magic Link"

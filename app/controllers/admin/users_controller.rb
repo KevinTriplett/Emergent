@@ -40,7 +40,7 @@ module Admin
       name = params[:q].chomp.gsub('  ', ' ')
       name = "%#{name}%" # do this outside the LIKE statement
       source = params[:source]
-      like_name = "name LIKE '%#{name}%'"
+      like_name = "name ILIKE '%#{name}%'"
       # puts "sql = #{User.where(like_name).order(last_name: :asc).to_sql}"
       users = User.where(like_name).order(last_name: :asc)
       users = case source
