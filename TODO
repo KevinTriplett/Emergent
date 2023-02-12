@@ -39,9 +39,11 @@
 - [X] show all greeter assignments past and future
 - [X] search not only filters but adds users from server
 - [X] use MN chat to send survey invites to members
-- [ ] use MN chat to send magic keys to members
+- [X] give better error message for send magic link
+- [X] ability to regenerate/revoke user tokens in case account is compromised or user leaves
+- [X] use MN chat to send magic keys to members
+- [ ] allow members to enter name instead of email address
 - [ ] request declined status is not visible in member request to join
-- [ ] give better error message for send magic link
 - [ ] allow name or email to retrieve magic link
 - [ ] default to only pending and greeter-picked entries
 - [ ] hover over tooltip for greeter main view for Pending "Click to begin"
