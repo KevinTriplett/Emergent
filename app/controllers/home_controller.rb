@@ -19,28 +19,25 @@ class HomeController < ApplicationController
   end
 
   def send_magic_link
-    params.permit(:email) # initially email, now email or name
-    email = params[:email].blank? ? "zzzzzzzzzzz" : params[:email]
-    user = User.find_by_email(email.downcase) || User.find_by_name(email)
-    user ||= User.where("name ILIKE #{email}")
-    if user && !Rails.env.production?
-      sign_in(user)
-    elsif user
-      user.generate_tokens
-      url = login_url(token: user.token, protocol: "https")
-      Spider.set_message("magic_link_spider", "#{url}|#{user.id}")
-      MagicLinkSpider.crawl!
-      until result = Spider.get_result("magic_link_spider")
-        sleep 1
-      end
-      if result == "success"
-        flash[:notice] = "Magic link sent, check your Emergent Commons chat channel"
+    params.permit(:email)
+    _ctx = run User::Operation::MagicLink, email_or_name: params[:email] do |ctx|
+      user = ctx[:user]
+      if user && Rails.env.staging?
+        sign_in(user)
       else
-        flash[:error] = "Failed to send your magic link"
+        user.generate_tokens
+        UserMailer.with(user).send_magic_link.deliver_now
+        if Rails.env.production?
+          url = login_url(token: user.token, protocol: "https")
+          Spider.set_message("magic_link_spider", "#{url}|#{user.id}")
+          MagicLinkSpider.crawl!
+        end
+        flash[:notice] = "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
       end
-    else
-      flash[:error] = "Please enter your Mighty Networks name or email address"
+      return redirect_to root_url
     end
+  
+    flash[:error] = _ctx[:flash] || "Unable to find '#{params[:email]}' -- please try again"
     redirect_to root_url
   end
 

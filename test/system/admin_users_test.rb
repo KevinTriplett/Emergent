@@ -14,13 +14,40 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_current_path root_path
 
       ActionMailer::Base.deliveries.clear
-      fill_in "Email", with: user.email
+      fill_in "Email or Full Name", with: user.email.upcase
       click_on "Send My Magic Link"
+      assert_selector ".flash", text: "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
+      email = ActionMailer::Base.deliveries.last
+      assert_equal email.to, [user.email]
+      assert_equal email.subject, "Emergent Commons - your magic link"
+      assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
+      assert_match /login\/#{user.token}/, email.body.inspect
+      ActionMailer::Base.deliveries.clear
+
+      ActionMailer::Base.deliveries.clear
+      fill_in "Email or Full Name", with: user.name.downcase
+      click_on "Send My Magic Link"
+      assert_selector ".flash", text: "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
+      email = ActionMailer::Base.deliveries.last
+      assert_equal email.to, [user.email]
+      assert_equal email.subject, "Emergent Commons - your magic link"
+      assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
+      assert_match /login\/#{user.token}/, email.body.inspect
+      ActionMailer::Base.deliveries.clear
+
+      user.update email: ""
+      ActionMailer::Base.deliveries.clear
+      click_on "Send My Magic Link"
+      assert_selector ".flash", text: "Please enter your Mighty Networks email address or name"
       assert_nil ActionMailer::Base.deliveries.last
-      # assert_equal email.to, [user.email]
-      # assert_equal email.subject, "Emergent Commons - your magic link"
-      # assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
-      # assert_match /#{get_magic_link(user)}/, email.body.inspect
+      ActionMailer::Base.deliveries.clear
+
+      garbage = "I like Pot Lucks"
+      ActionMailer::Base.deliveries.clear
+      fill_in "Email or Full Name", with: garbage
+      click_on "Send My Magic Link"
+      assert_selector ".flash", text: "Unable to find '#{garbage}' -- please try again"
+      assert_nil ActionMailer::Base.deliveries.last
       ActionMailer::Base.deliveries.clear
     end
   end
@@ -245,7 +272,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.send_keys("2023-10-09 15:45")
       input.send_keys [:escape]
       sleep 2 # cannot be 1 for some reason...
-      assert_equal "2023-10-09T20:45:00Z", existing_user.reload.when_timestamp.picker_datetime
+      assert_equal "2023-10-09T19:45:00Z", existing_user.reload.when_timestamp.picker_datetime
       assert_selector "td.change-log", text: existing_user.change_log.chomp
 
       # check date format in index view

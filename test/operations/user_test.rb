@@ -52,7 +52,7 @@ class UserOperationTest < MiniTest::Spec
           model: {
             greeter_id: greeter.id
           },
-          id: existing_user.id
+          token: existing_user.token
         }
         result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
 
@@ -73,7 +73,7 @@ class UserOperationTest < MiniTest::Spec
           model: {
             status: "Zoom Scheduled"
           },
-          id: existing_user.id
+          token: existing_user.token
         }
         result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert_nil existing_user.reload.when_timestamp
@@ -83,7 +83,7 @@ class UserOperationTest < MiniTest::Spec
           model: {
             status: "Scheduling Zoom"
           },
-          id: existing_user.id
+          token: existing_user.token
         }
         result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert_nil existing_user.reload.when_timestamp
@@ -93,7 +93,7 @@ class UserOperationTest < MiniTest::Spec
           model: {
             status: "Zoom Done (completed)"
           },
-          id: existing_user.id
+          token: existing_user.token
         }
         result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert_nil existing_user.reload.when_timestamp
@@ -162,7 +162,7 @@ class UserOperationTest < MiniTest::Spec
           model: {
             status: "New Status"
           },
-          id: existing_user.id
+          token: existing_user.token
         }
         result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)
         assert result.success?
@@ -183,7 +183,7 @@ class UserOperationTest < MiniTest::Spec
             greeter_id: greeter_1.id,
             shadow_greeter_id: greeter_2.id
           },
-          id: existing_user.id
+          token: existing_user.token
         }
         # when_timestamp = when_timestamp.strftime("%Y-%m-%d %H:%M:%S -0600")
         result = User::Operation::Patch.call(params: user_hash, admin_name: admin.name)

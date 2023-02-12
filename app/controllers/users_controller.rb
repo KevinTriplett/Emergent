@@ -14,11 +14,12 @@ class UsersController < ApplicationController
   end
 
   def update
-    _ctx = run User::Operation::Update(current_user: current_user) do |ctx|
+    _ctx = run User::Operation::Update do |ctx|
       flash[:notice] = "User profile updated"
-      return redirect_to user_url(ctx[:model].token)
+      return redirect_to user_url(token: ctx[:model].token)
     end
   
+    flash[:error] = "Unable to update profile, please correct errors"
     @form = _ctx["contract.default"]
     render :edit, status: :unprocessable_entity
   end

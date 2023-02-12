@@ -40,9 +40,12 @@ module Admin
       name = params[:q].chomp.gsub('  ', ' ')
       name = "%#{name}%" # do this outside the LIKE statement
       source = params[:source]
-      like_name = "name ILIKE '%#{name}%'"
-      # puts "sql = #{User.where(like_name).order(last_name: :asc).to_sql}"
-      users = User.where(like_name).order(last_name: :asc)
+      
+      like_clause = (Rails.env.staging? || Rails.env.staging?) ?
+      "name ILIKE '%#{name}%'" :
+      "UPPER(name) LIKE '#{name.upcase}'"
+
+      users = User.where(like_clause).order(last_name: :asc)
       users = case source
       when "greeter"
         map_users_for_index_view(users)

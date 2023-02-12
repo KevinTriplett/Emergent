@@ -3,7 +3,7 @@ module User::Operation
 
     class Present < Trailblazer::Operation
       step Model(User, :find_by, :token)
-      step Contract::Build(constant: User::Contract::Update)
+      step Contract::Build(constant: User::Contract::Patch)
     end
     
     step Subprocess(Present)
