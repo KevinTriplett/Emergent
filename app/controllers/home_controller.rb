@@ -22,7 +22,7 @@ class HomeController < ApplicationController
     params.permit(:email)
     _ctx = run User::Operation::MagicLink, email_or_name: params[:email] do |ctx|
       user = ctx[:user]
-      if user && Rails.env.staging?
+      if user && [Rails.env.staging? || Rails.env.development?]
         sign_in(user)
       else
         user.generate_tokens
