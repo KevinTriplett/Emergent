@@ -35,7 +35,9 @@ def create_survey_question_with_result(params = {})
         question_type: params[:question_type],
         question: params[:question],
         answer_type: params[:answer_type],
-        has_scale: params[:has_scale]
+        has_scale: params[:has_scale],
+        scale_label_left: params[:scale_label_left],
+        scale_label_right: params[:scale_label_right]
       },
       survey_id: survey_id
     }
@@ -46,6 +48,8 @@ def create_survey_question(params = {})
   params[:question_type] ||= "question"
   params[:question] ||= "What is your quest?"
   params[:answer_type] ||= "yes/no"
+  params[:scale_label_left] ||= "Left"
+  params[:scale_label_right] ||= "Right"
   create_survey_question_with_result(params)[:model]
 end
 

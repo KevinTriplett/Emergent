@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_12_152117) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -67,6 +67,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
     t.string "answer_type"
     t.boolean "has_scale"
     t.string "group_name"
+    t.string "scale_label_left"
+    t.string "scale_label_right"
     t.index ["survey_id"], name: "index_survey_questions_on_survey_id"
   end
 

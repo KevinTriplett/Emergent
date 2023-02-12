@@ -8,6 +8,7 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Question",
       "Instructions",
       "New Page",
+      "Scale",
       "Branch"
     ], SurveyQuestion::QUESTION_TYPES
   end

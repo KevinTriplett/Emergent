@@ -66,6 +66,8 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       assert_select '#survey_question_question'
       assert_select "#survey_question_has_scale"
       assert_select "#survey_question_has_scale[checked]", false
+      assert_select "#survey_question_scale_label_left"
+      assert_select "#survey_question_scale_label_right"
       assert_select "input[type=submit]"
       assert_select "a", "Cancel"
     end
@@ -91,6 +93,12 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       end
       assert_select '#survey_question_question', existing_survey_question.question
       assert_select "#survey_question_has_scale[checked]", false
+      assert_select "#survey_question_scale_label_left" do
+        assert_select "[value=?]", existing_survey_question.scale_label_left
+      end
+      assert_select "#survey_question_scale_label_right" do
+        assert_select "[value=?]", existing_survey_question.scale_label_right
+      end
       assert_select "a", "Cancel"
 
       existing_survey_question.update(has_scale: true)

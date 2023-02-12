@@ -11,11 +11,9 @@ module SurveyQuestion::Operation
       def initialize_survey_id(ctx, model:, params:, **)
         params[:survey_id] && model.survey_id = params[:survey_id]
       end
-
       def initialize_question_type(ctx, model:, **)
         model.question_type = "Question"
       end
-
       def initialize_answer_type(ctx, model:, **)
         model.answer_type = "Essay"
       end

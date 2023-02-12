@@ -22,6 +22,10 @@
   .row
     .col= f.input :has_scale, as: :boolean, label: "Has Scale"
   .row
+    .col= f.input :scale_label_left, placeholder: "Scale Label Left", label: false
+  .row
+    .col= f.input :scale_label_right, placeholder: "Scale Label Right", label: false
+  .row
     .col= f.button :submit, "Create Question", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_survey_path(@model.survey_id)
