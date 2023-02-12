@@ -42,20 +42,20 @@
 - [X] give better error message for send magic link
 - [X] ability to regenerate/revoke user tokens in case account is compromised or user leaves
 - [X] use MN chat to send magic keys to members
-- [ ] allow members to enter name instead of email address
+- [X] allow name or email to retrieve magic link
+SURVEYS
+- [X] add admin interface for sending survey invites (show survey view?)
+- [ ] create survey invites with take_survey_path and tokens to prevent hacking a survey
+- [ ] slider for answers (where are you on the practices v. social)
+- [ ] create nice user interface for surveys
+- [ ] rules for question branching / skipping
+GREETER APP
 - [ ] request declined status is not visible in member request to join
-- [ ] allow name or email to retrieve magic link
 - [ ] default to only pending and greeter-picked entries
 - [ ] hover over tooltip for greeter main view for Pending "Click to begin"
 - [ ] do not log notes change if it's the same
 - [ ] wizard for greeters for step-by-step
 - [ ] view-only state
-- [ ] create survey invites with take_survey_path and tokens to prevent hacking a survey
-- [ ] rules for question branching / skipping
-- [ ] multiple answers to questions?
-- [ ] slider for answers (where are you on the practices v. social)
-- [ ] add admin interface for sending survey invites (show survey view?)
-- [ ] create nice user interface for surveys
 - [ ] hover over show view to give hints
 - [ ] convert status_hash to keys with human text?
 - [ ] convert user show url to use user tokens
