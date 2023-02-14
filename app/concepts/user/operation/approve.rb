@@ -1,7 +1,7 @@
 module User::Operation
   class Approve < Trailblazer::Operation
 
-    step Model(User, :find_by)
+    step Model(User, :find_by, :token)
     step :activate_spider
     step :update_model
 
