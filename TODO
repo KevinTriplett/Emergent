@@ -45,7 +45,7 @@
 - [X] allow name or email to retrieve magic link
 SURVEYS
 - [X] add admin interface for sending survey invites (show survey view?)
-- [ ] create survey invites with take_survey_path and tokens to prevent hacking a survey
+- [X] create survey invites with tokens to prevent hacking a survey
 - [ ] slider for answers (where are you on the practices v. social)
 - [ ] create nice user interface for surveys
 - [ ] rules for question branching / skipping
