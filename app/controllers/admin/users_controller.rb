@@ -30,7 +30,7 @@ module Admin
     def approve_user
       _ctx = run User::Operation::Approve, admin: current_user do |ctx|
         flash[:notice] = "User approved -- thank you!"
-        return render json: { url: admin_user_url(ctx[:model].id) }
+        return render json: { url: admin_user_url(token: ctx[:model].token) }
       end
       return head(:bad_request)
     end
