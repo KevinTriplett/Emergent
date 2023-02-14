@@ -37,12 +37,12 @@ module Admin
 
     def search
       params.permit(:q, :source, user: {}) # TODO: why is an empty user hash being received?
-      name = params[:q].chomp.gsub('  ', ' ')
+      name = params[:q].chomp.gsub('  ', ' ').gsub(/[^a-zA-Z ]/, '')
       name = "%#{name}%" # do this outside the LIKE statement
       source = params[:source]
       
       like_clause = (Rails.env.staging? || Rails.env.staging?) ?
-      "name ILIKE '%#{name}%'" :
+      "name ILIKE '#{name}'" :
       "UPPER(name) LIKE '#{name.upcase}'"
 
       users = User.where(like_clause).order(last_name: :asc)
