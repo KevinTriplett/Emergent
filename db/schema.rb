@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_12_152117) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_12_190642) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -39,6 +39,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_12_152117) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "survey_invite_id"
+    t.string "token"
     t.index ["survey_invite_id"], name: "index_survey_answers_on_survey_invite_id"
     t.index ["survey_question_id"], name: "index_survey_answers_on_survey_question_id"
   end

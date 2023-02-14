@@ -1,43 +1,28 @@
 class SurveyAnswersController < AdminController
   layout "survey"
 
-  def new
-    run SurveyAnswer::Operation::Create::Present do |ctx|
-      @form = ctx["contract.default"]
-    end
-  end
-
-  def create
-    _ctx = run SurveyAnswer::Operation::Create do |ctx|
-      flash[:notice] = "Survey Answer was saved"
-      return redirect_to new_survey_answer_url(
-        position: ctx[:model].position,
-        survey_invite_token: ctx[:survey_invite].token
-      )
-    end
-  
-    flash[:error] = _ctx[:flash]
-    @form = _ctx["contract.default"]
-    render :new, status: :unprocessable_entity
-  end
-  
   def edit
-    run SurveyAnswer::Operation::Update::Present do |ctx|
-      @form = ctx["contract.default"]
-    end
+    get_survery_answer
   end
 
-  def update
-    _ctx = run SurveyAnswer::Operation::Update do |ctx|
-      flash[:notice] = "Question updated"
-      return redirect_to edit_survey_answer_url(
-        position: ctx[:model].position,
-        survey_invite_token: ctx[:survey_invite].token
-      )
+  def patch
+    get_survery_answer
+    params[:survey_answer].each_pair do |attr, val|
+      survey_answer.send("#{attr}=", val)
     end
-  
-    flash[:error] = _ctx[:flash]
-    @form = _ctx["contract.default"]
-    render :new, status: :unprocessable_entity
+    return survey_answer.save ? render json: {} : head(:bad_request)
+    # TODO delete the TRB concept files
+  end
+
+  private
+
+  def get_survery_answer
+    survey_invite = SurveyInvite.find_by_token(params[:survey_invite_token])
+    survey_question = survey_invite.survey_questions.where(position: params[:position])
+    survey_answer = survey_invite.survey_answers.where(survey_question_id: survey_question.id)
+    @survey_answer ||= SurveyAnswer.new({
+      survey_invite_id: survey_invite.id,
+      survey_question_id: survey_question.id
+    })
   end
 end
