@@ -18,7 +18,7 @@ module SurveyQuestion::Contract
         required(:id).filled.value(:integer)
         required(:survey_id).filled.value(:integer)
         required(:question_type).filled.value(:string)
-        required(:question).filled.value(:string)
+        required(:question)
         required(:answer_type).filled.value(:string)
         required(:has_scale)
         required(:position).filled.value(:integer)
@@ -27,8 +27,11 @@ module SurveyQuestion::Contract
         required(:scale_question)
       end
 
+      rule(:question, :question_type) do
+        key.failure('must be filled') unless values[:question_type] == "New Page" || values[:question]
+      end
       rule(:scale_question, :has_scale) do
-        key.failure('must be filled') if values[:has_scale] && values[:scale_question].blank?
+        key.failure('must be filled') unless values[:has_scale] == 0 || values[:scale_question]
       end
     end
   end

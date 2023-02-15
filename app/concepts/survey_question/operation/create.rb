@@ -15,7 +15,8 @@ module SurveyQuestion::Operation
         model.question_type = "Question"
       end
       def initialize_answer_type(ctx, model:, **)
-        model.answer_type = "Essay"
+        model.answer_type = ["New Page","Instructions"].index(model.question_type) ?
+          "NA" : "Essay"
       end
     end
     
@@ -23,7 +24,6 @@ module SurveyQuestion::Operation
     step Contract::Validate(key: :survey_question)
     step :determine_position
     step :nillify_labels
-    step :na_answer_type
     step Contract::Persist()
 
     def determine_position(ctx, model:, **)
@@ -35,11 +35,6 @@ module SurveyQuestion::Operation
     def nillify_labels(ctx, model:, **)
       model.answer_labels = nil if model.answer_labels.blank?
       model.scale_labels = nil if model.scale_labels.blank?
-      true
-    end
-
-    def na_answer_type(ctx, model:, **)
-      model.answer_type = "NA" if ["New Page","Instructions"].index(model.question_type) != -1
       true
     end
   end

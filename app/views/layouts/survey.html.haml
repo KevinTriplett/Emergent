@@ -1,0 +1,29 @@
+!!! XML
+!!!
+%html
+  %head
+    %title Emergent Commons Survey
+    %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag "jquery-ui"
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    %script{ src: "/js/jquery-3.6.0.js" }
+    %script{ src: "/js/jquery-ui.js" }
+    %script $.widget.bridge('uitooltip', $.ui.tooltip);
+    = javascript_include_tag "application", defer: true
+    %script{ src: "/js/application.js" }
+    %script{ src: "/js/datatables.js" }
+
+  %body#survey
+    .container
+      .row
+        .col-sm-12
+          - flash.each do |type, msg|
+            .row.alert.alert-info
+              .col.flash{class: type}= msg
+      .row
+        .col-sm-12
+          %h1 Emergent Commons Survey
+          = yield

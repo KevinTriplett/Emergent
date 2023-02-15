@@ -71,19 +71,22 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     #----------------------
     when "Essay"
       # output textarea
-      "<textarea col='80'>#{answer}</textarea>"
+      "<textarea cols='80'>#{answer}</textarea>"
     #----------------------
     when "Rating", "Scale"
       labels = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
       # output horizontal radio buttons "1-N" and labels describing rating system
-      "#{labels[0]} <input type='range' name='#{name}' min='#{labels[0]}' max='#{labels[1]}'> #{labels[1]}"
+      "<label>#{labels[0]}</label> <input type='range' name='#{name}' min='#{labels[0]}' max='#{labels[1]}'> <label>#{labels[1]}</label>"
     #----------------------
     when "Number"
       # output text input
       "<input type='text' id='#{name}' name='#{name}' value='#{answer}' />"
     #----------------------
+    when "NA"
+      # nothing
+    #----------------------
     else
-      "unknown answer type" unless "Instructions" == survey_question.question_type
+      "unknown answer type"
     end
   end
 
@@ -94,12 +97,11 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def scale
     return nil unless survey_question.has_scale?
     labels = (survey_question.scale_labels || "Not Important|Very Important").split("|")
-    "#{labels[0]} <input type='range' name='#{name}' min='#{labels[0]}' max='#{labels[1]}'> #{labels[1]}"
+    "<label>#{labels[0]}</label> <input type='range' name='#{name}' min='#{labels[0]}' max='#{labels[1]}'> <label>#{labels[1]}</label>"
   end
-  
-  def links
-    link_to "Prev", survey_path(token: survey_invite.token, position: position-1) unless survey_question.first_question?
-    link_to "Next", survey_path(token: survey_invite.token, position: position+1) unless survey_question.last_question?
-    link_to "Finish", survey_path(token: survey_invite.token, position: position+1) if survey_question.last_question?
+
+  def scale_question
+    return nil unless survey_question.has_scale?
+    survey_question.scale_question
   end
 end

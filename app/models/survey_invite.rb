@@ -5,7 +5,7 @@ class SurveyInvite < ActiveRecord::Base
   has_many :survey_questions, through: :survey
   has_secure_token
 
-  delegate :survey_questions, to: :survey
+  delegate :ordered_questions, to: :survey
 
   def update_state(key, write_to_database=true)
     return true unless state && state < STATUS[key]

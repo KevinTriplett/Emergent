@@ -20,6 +20,6 @@
   .col= link_to "Back", admin_surveys_path
 %hr
 %ul
-  - @survey.survey_questions.each do |q|
+  - @survey.ordered_questions.each do |q|
     %li= q.question
 

@@ -13,6 +13,7 @@ class SurveyQuestion < ActiveRecord::Base
     "Question",
     "Instructions",
     "New Page",
+    "Group Name",
     "Branch"
   ]
   ANSWER_TYPES = [

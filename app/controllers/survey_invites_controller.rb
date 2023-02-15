@@ -1,5 +1,5 @@
 class SurveyInvitesController < ApplicationController
-  layout "application"
+  layout "survey"
 
   def show
     unless get_survey
@@ -16,6 +16,10 @@ class SurveyInvitesController < ApplicationController
       :started
     end
     @survey_invite.update_state(state)
+    if :finished == state
+      flash[:notice] = "Thank you for completing the survey"
+      return redirect_to root_url # TODO: create nice finish page
+    end
   end
 
   private
@@ -23,14 +27,22 @@ class SurveyInvitesController < ApplicationController
   def get_survey
     @position = params[:position].to_i
     @survey_invite = SurveyInvite.find_by_token(params[:token])
-    return if @survey_invite.nil? || @survey_invite.user.nil?
+    return false if @survey_invite.nil? || @survey_invite.user.nil?
 
-    next_question = false
     @survey_questions = []
-    @survey_invite.survey_questions.each do |question|
-      next if next_question || question.position < @position
-      next_question = ("New Page" == question.question_type)
-      @survey_questions.push(question) unless next_question
+    @prev_position = @next_position = 0
+    puts "position = #{@position}"
+    @survey_invite.ordered_questions.each do |question|
+      if question.position+1 < @position
+        @prev_position = question.position+1 if "New Page" == question.question_type
+      end
+      next if question.position < @position
+      if "New Page" == question.question_type
+        @next_position = question.position+1
+        break
+      end
+      @survey_questions.push(question)
     end
+    true
   end
 end

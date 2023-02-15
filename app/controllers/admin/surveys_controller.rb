@@ -28,7 +28,7 @@ module Admin
     def show
       # show all questions in survey
       @survey = Survey.find(params[:id])
-      @survey_questions = @survey.survey_questions.order(position: :asc)
+      @survey_questions = @survey.ordered_questions
       @token = form_authenticity_token
     end
 

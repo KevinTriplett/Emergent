@@ -1,6 +1,16 @@
-%p this is the survey invite show view
-
 %p= "Survey: #{@survey_invite.survey.name}"
 
 - @survey_questions.each do |sq|
   = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})
+
+.row.survey-answer-links
+  .col
+    - first = @survey_questions.first
+    - last = @survey_questions.last
+    - prev_url = survey_path(token: @survey_invite.token, position: @prev_position)
+    - next_url = survey_path(token: @survey_invite.token, position: @next_position)
+    - finish_url = survey_path(token: @survey_invite.token, position: -1)
+    = link_to "Prev", prev_url, class: "btn btn-primary" unless first.first_question?
+    = link_to "Next", next_url, class: "btn btn-primary" unless last.last_question?
+    = link_to "Finish", finish_url, class: "btn btn-primary" if last.last_question?
+

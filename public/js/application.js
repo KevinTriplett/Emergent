@@ -537,8 +537,8 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // RESIZE NOTES TEXTAREA
   // ref https://stackoverflow.com/a/48460773/1204064
-  var scrollHeight = $(".user-notes textarea").prop("scrollHeight");
-  $(".user-notes textarea")
+  var scrollHeight = $("textarea").prop("scrollHeight");
+  $("textarea")
     .css("height", "")
     .css("height", scrollHeight * 1.04 + "px")
     .on("input", function(e) {
