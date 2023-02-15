@@ -5,9 +5,18 @@ class SurveyInvite < ActiveRecord::Base
   has_many :survey_questions, through: :survey
   has_secure_token
 
-  def generate_token
-    update(token: SurveyInvite.generate_unique_secure_token) if token.nil?
-    token
+  delegate :survey_questions, to: :survey
+
+  def update_state(key, write_to_database=true)
+    return true unless state && state < STATUS[key]
+    self.state = STATUS[key]
+    self.state_timestamp = Time.now
+    return true unless write_to_database
+    save
+  end
+
+  def self.queued
+    where(state: STATUS[:created])
   end
 
   STATUS = {

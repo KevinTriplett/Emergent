@@ -2,35 +2,35 @@ class SurveyInvitesController < ApplicationController
   layout "application"
 
   def show
-    get_survery
-    @survey_invite = SurveyInvite.find_by_token(params[:token])
-    if @survey_invite.nil? || @survey_invite.user.nil?
-      flash[:notice] = "I'm sorry, your survey was not found"
+    unless get_survey
+      flash[:notice] = "We're sorry, your survey was not found"
       return redirect_to root_url
     end
     sign_in(@survey_invite.user)
-    @survey_invite.update(state: SurveyInvite::STATUS[:opened]) unless @survey_invite.opened?
+    state = case @position.to_i
+    when nil
+      :opened
+    when -1
+      :finished
+    else
+      :started
+    end
+    @survey_invite.update_state(state)
   end
 
   private
 
-  def get_survey_and_position
-    @position = params[:position] || 0
+  def get_survey
+    @position = params[:position].to_i
     @survey_invite = SurveyInvite.find_by_token(params[:token])
-  end
+    return if @survey_invite.nil? || @survey_invite.user.nil?
 
-  def get_survery_questions
-    @survey_questions = @survey_invite.survey_questions.where("position >= #{@position}")
-    @survey_questions.select! {|sq| sq.question_type != }
-  end
-
-  def get_survery_answer
-    get_survey_and_position
-    @survey_question = survey_invite.survey.survey_questions.where(position: @position)
-    @survey_answer = survey_invite.survey_answers.where(survey_question_id: @survey_question.id) ||
-    SurveyAnswer.new({
-      survey_invite_id: survey_invite.id,
-      survey_question_id: survey_question.id
-    })
+    next_question = false
+    @survey_questions = []
+    @survey_invite.survey_questions.each do |question|
+      next if next_question || question.position < @position
+      next_question = ("New Page" == question.question_type)
+      @survey_questions.push(question) unless next_question
+    end
   end
 end

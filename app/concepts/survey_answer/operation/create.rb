@@ -5,9 +5,10 @@ module SurveyAnswer::Operation
       step :get_model
       step Contract::Build(constant: SurveyAnswer::Contract::Create)
 
-      def get_model(ctx, **)
-        survey_invite = SurveyInvite.find_by_token(ctx[:survey_invite_token])
-        survey_question = survey_invite.survey_questions.where(position: ctx[:position])
+      def get_model(ctx, params:, **)
+        survey_invite = SurveyInvite.find_by_token(params[:survey_invite_token])
+        return false unless survey_invite
+        survey_question = survey_invite.survey_questions.where(position: params[:position])
         survey_answer = survey_invite.survey_answers.where(survey_question_id: survey_question.id)
         ctx[:model] = survey_answer || SurveyAnswer.new({
           survey_invite_id: survey_invite.id,

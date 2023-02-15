@@ -1,0 +1,9 @@
+.row{ class: question_type_class }
+  .col= question
+.row{ class: answer_type_class }
+  .col= user_answer
+- if has_scale?
+  .row.survey-answer-scale
+    .col= scale
+.row.survey-answer-links
+  .col= links

@@ -405,10 +405,10 @@ $(document).ready(function() {
       dataType: 'JSON',
       contentType: 'application/json',
       success: function(result) {
-        var tbody = document.querySelector("table.users tbody");
+        var tbody = $(document.querySelector("table.users tbody"));
         var tr, td;
-        $(tbody).find("tr.search").remove();
-        var ids = $(tbody).find("tr").map(function(i, row) {
+        tbody.find("tr.search").remove();
+        var ids = tbody.find("tr").map(function(i, row) {
           return parseInt(row.dataset.id);
         });
         for (user of result.users) {
@@ -446,7 +446,7 @@ $(document).ready(function() {
           td.className = "user-request";
           td.innerText = user.request;
           tr.appendChild(td);
-          tbody.appendChild(tr);
+          tbody.append(tr);
         }
       }
     });
@@ -480,7 +480,7 @@ $(document).ready(function() {
       var li = $(e.target).closest("li");
       var userName = li.find("span.user-name").text();
       var userId = li.find("span.user-id").text();
-      $("#user-search").val(userName);
+      $("#search input[type='search']").val(userName);
       $("#survey_invite_user_id").val(userId);
       hideUserList();
     });

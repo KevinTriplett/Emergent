@@ -29,11 +29,12 @@ class SurveyInviteSpider < EmergeSpider
     survey_invites = SurveyInvite.queued
     survey_invites.each do |si|
       @@user = si.user
+      next if @@user.email == Rails.configuration.mn_username
       @@survey = si.survey
       @@survey_invite = si
       EmergeSpider.logger.info "SENDING INVITE TO #{@@user.name} FOR #{@@survey.name}"
       request_to(:send_invite, url: @@user.chat_url)
-      si.update(sent_timestamp: Time.now)
+      si.update(state_timestamp: Time.now)
     end
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
@@ -43,6 +44,7 @@ class SurveyInviteSpider < EmergeSpider
 
   def send_invite(response, url:, data: {})
     wait_until(".universal-input-form-body-container .fr-element.fr-view")
+    EmergeSpider.logger.debug "#{name} ATTEMPTING TO CLICK CHAT CHANNEL"
     browser.find(:css, ".universal-input-form-body-container .fr-element.fr-view").click
     browser.send_keys(@@survey_invite.subject)
     browser.send_keys [:enter]
@@ -50,11 +52,10 @@ class SurveyInviteSpider < EmergeSpider
     browser.send_keys(@@survey_invite.body)
     browser.send_keys [:enter]
     sleep 1
-    url = survey_invite_url(token: @@survey.token)
-    browser.send_keys(url)
+    browser.send_keys("Here's your personal link to the survey:")
     browser.send_keys [:enter]
     sleep 1
-    browser.send_keys("☝🏼 Here's your personal link to the survey 🙂")
+    browser.send_keys(@@survey_invite.url)
     browser.send_keys [:enter]
   end
 end

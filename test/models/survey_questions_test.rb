@@ -8,7 +8,6 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Question",
       "Instructions",
       "New Page",
-      "Scale",
       "Branch"
     ], SurveyQuestion::QUESTION_TYPES
   end
@@ -19,9 +18,26 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Multiple Choice",
       "Essay",
       "Rating",
+      "Scale",
       "Number",
       "NA"
     ], SurveyQuestion::ANSWER_TYPES
   end
+
+  it "reports whether or not it is the first question" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      survey_question_1 = create_survey_question(survey: survey)
+      survey_question_2 = create_survey_question(survey: survey)
+      survey_question_3 = create_survey_question(survey: survey)
+
+      assert  survey_question_1.first_question?
+      assert !survey_question_2.first_question?
+      assert !survey_question_3.first_question?
+
+      assert !survey_question_1.last_question?
+      assert !survey_question_2.last_question?
+      assert  survey_question_3.last_question?
+    end
+  end
 end
-    

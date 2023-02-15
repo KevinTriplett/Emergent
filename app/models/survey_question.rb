@@ -6,14 +6,13 @@ class SurveyQuestion < ActiveRecord::Base
     position == 0
   end
   def last_question?
-    position == survey.survey_questions.count
+    position == survey.survey_questions.count-1
   end
 
   QUESTION_TYPES = [
     "Question",
     "Instructions",
     "New Page",
-    "Scale",
     "Branch"
   ]
   ANSWER_TYPES = [
@@ -21,6 +20,7 @@ class SurveyQuestion < ActiveRecord::Base
     "Multiple Choice",
     "Essay",
     "Rating",
+    "Scale",
     "Number",
     "NA"
   ]

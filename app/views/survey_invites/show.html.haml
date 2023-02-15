@@ -2,5 +2,5 @@
 
 %p= "Survey: #{@survey_invite.survey.name}"
 
-- @survey_invite.survey_questions.where("position >= ?", @position)
-  = cell(SurveyInvite::Cell::SurveyQuestions, @survey_invite, @position)
+- @survey_questions.each do |sq|
+  = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})

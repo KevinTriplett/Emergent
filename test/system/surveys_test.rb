@@ -63,14 +63,14 @@ class SurveysTest < ApplicationSystemTestCase
         question: "This is the 5st question"
       })
 
-      visit survey_invite_path(survey_invite_token: survey_invite.token)
-      assert_current_path survey_invite_path(survey_invite_token: survey_invite.token)
+      visit survey_path(token: survey_invite.token)
+      assert_current_path survey_path(token: survey_invite.token)
       assert_selector ".survey-description", text: survey.description
       survey_question_id = "#survey-question-#{survey_question_0.id}"
       assert_selector "#{survey_question_id} .survey-question.instructions", text: survey_question_0.question
       click_link "Start"
 
-      assert_current_path survey_invite_survey_question_path(survey_invite_token: survey_invite, id: survey_question_2.id)
+      assert_current_path survey_invite_survey_question_path(token: survey_invite, id: survey_question_2.id)
 
       survey_question_id = "#survey-question-#{survey_question_2.id}"
       assert_selector "#{survey_question_id} .survey-question", text: survey_question_2.question
@@ -86,7 +86,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_selector "#{survey_question_id} .survey-question", text: survey_question_5.question
       click_link "Next"
 
-      assert_current_path survey_invite_survey_question_path(survey_invite_token: survey_invite, id: survey_question_7.id)
+      assert_current_path survey_invite_survey_question_path(token: survey_invite, id: survey_question_7.id)
       click_link "Next"
 
       # test "Prev" link

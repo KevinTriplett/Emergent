@@ -36,8 +36,9 @@ def create_survey_question_with_result(params = {})
         question: params[:question],
         answer_type: params[:answer_type],
         has_scale: params[:has_scale],
-        scale_label_left: params[:scale_label_left],
-        scale_label_right: params[:scale_label_right]
+        answer_labels: params[:answer_labels],
+        scale_labels: params[:scale_labels],
+        scale_question: params[:scale_question]
       },
       survey_id: survey_id
     }
@@ -48,8 +49,18 @@ def create_survey_question(params = {})
   params[:question_type] ||= "question"
   params[:question] ||= "What is your quest?"
   params[:answer_type] ||= "yes/no"
-  params[:scale_label_left] ||= "Left"
-  params[:scale_label_right] ||= "Right"
+  params[:scale_labels] ||= "Scale Left|Scale Right" if params[:has_scale]
+  params[:scale_question] ||= "How Important?" if params[:has_scale]
+  params[:answer_labels] ||= case params[:answer_type]
+  when "Yes/No"
+     "Yes|No"
+  when "Multiple Choice"
+    "One|Two|Three|Four|Five"
+  when "Rating"
+    "Low|High"
+  else
+    nil
+  end
   create_survey_question_with_result(params)[:model]
 end
 
@@ -63,7 +74,8 @@ def create_survey_invite_with_result(params = {})
         body: params[:body] || "This is hte body"
       },
       survey_id: survey_id,
-      user_id: user_id
+      user_id: user_id,
+      url: "https://domain.com/survey"
     }
   )
 end
@@ -73,22 +85,39 @@ def create_survey_invite(params = {})
 end
 
 def create_survey_answer_with_result(params = {})
-  survey_question_id = params[:survey_question_id] || (params[:survey_question] && params[:survey_question].id) || create_survey_question.id
-  survey_invite_id = params[:survey_invite_id] || (params[:survey_invite] && params[:survey_invite].id) || create_survey_invite.id
+  survey_question_position = params[:survey_question_position] || 
+    (params[:survey_question] && params[:survey_question].position) || 
+    create_survey_question.position
+  survey_invite_token = params[:survey_invite_token] || 
+    (params[:survey_invite] && params[:survey_invite].token) || 
+    create_survey_invite.token
   SurveyAnswer::Operation::Create.call(
     params: {
       survey_answer: {
         answer: params[:answer],
         scale: params[:scale]
       },
-      survey_question_id: survey_question_id,
-      survey_invite_id: survey_invite_id
+      position: survey_question_position,
+      survey_invite_token: survey_invite_token
     }
   )
+end
+
+def create_survey_answer_non_operation(params = {})
+  survey_invite = (params[:survey_invite_token] && SurveyInvite.find_by_token(params[:survey_invite_token])) || 
+  params[:survey_invite] || create_survey_invite
+  raise unless params[:survey_question_id]
+  SurveyAnswer.create({
+    survey_invite_id: survey_invite.id,
+    survey_question_id: params[:survey_question_id],
+    answer: params[:answer],
+    scale: params[:scale]
+  })
 end
 
 def create_survey_answer(params = {})
   params[:answer] ||= "this is my answer it is, yup"
   params[:scale] ||= 50
-  create_survey_answer_with_result(params)[:model]
+  # create_survey_answer_with_result(params)[:model]
+  create_survey_answer_non_operation(params)
 end

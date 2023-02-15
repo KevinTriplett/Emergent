@@ -22,9 +22,11 @@
   .row
     .col= f.input :has_scale, as: :boolean, label: "Has Scale"
   .row
-    .col= f.input :scale_label_left, placeholder: "Scale Label Left", label: false
+    .col= f.input :scale_labels, placeholder: "Scale Labels (separated by | delimiter)", label: false
   .row
-    .col= f.input :scale_label_right, placeholder: "Scale Label Right", label: false
+    .col= f.input :answer_labels, placeholder: "Answer Labels (separated by | delimiter)", label: false
+  .row
+    .col= f.input :scale_question, placeholder: "Scale Question", label: false
   .row
     .col= f.button :submit, "Create Question", class: "btn-primary"
 .row

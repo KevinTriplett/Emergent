@@ -22,11 +22,24 @@ module SurveyQuestion::Operation
     step Subprocess(Present)
     step Contract::Validate(key: :survey_question)
     step :determine_position
+    step :nillify_labels
+    step :na_answer_type
     step Contract::Persist()
 
     def determine_position(ctx, model:, **)
       survey = Survey.find(model.survey_id)
       model.position = survey.survey_questions.length
+      true
+    end
+
+    def nillify_labels(ctx, model:, **)
+      model.answer_labels = nil if model.answer_labels.blank?
+      model.scale_labels = nil if model.scale_labels.blank?
+      true
+    end
+
+    def na_answer_type(ctx, model:, **)
+      model.answer_type = "NA" if ["New Page","Instructions"].index(model.question_type) != -1
       true
     end
   end

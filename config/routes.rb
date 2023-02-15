@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get "unsubscribe/:token", to: "home#unsubscribe", as: :unsubscribe
   get "user_search", to: "admin/users#search", as: :user_search
   
-  get "survey/:token(/:position)", to: "survey_invites#show", as: :survey
+  get "survey(/:token)(/:position)", to: "survey_invites#show", as: :survey
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]

@@ -11,8 +11,10 @@ class SurveyAnswersTest < MiniTest::Spec
         survey: survey,
         user: user
       })
+      survey_question = create_survey_question(survey: survey)
       survey_answer = create_survey_answer({
-        survey_invite: survey_invite
+        survey_invite: survey_invite,
+        survey_question_id: survey_question.id
       })
 
       assert_equal user.id, survey_answer.user.id
@@ -22,8 +24,8 @@ class SurveyAnswersTest < MiniTest::Spec
 
   it "delegates survey_question attributes" do
     DatabaseCleaner.cleaning do
-      survey_answer = create_survey_answer
-      survey_question = survey_answer.survey_question
+      survey_question = create_survey_question
+      survey_answer = create_survey_answer(survey_question_id: survey_question.id)
 
       assert_equal survey_question.question_type, survey_answer.question_type
       assert_equal survey_question.question, survey_answer.question

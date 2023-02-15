@@ -9,8 +9,9 @@ module SurveyQuestion::Contract
     property :answer_type
     property :has_scale
     property :position
-    property :scale_label_left
-    property :scale_label_right
+    property :answer_labels
+    property :scale_labels
+    property :scale_question
 
     validation do
       params do
@@ -21,17 +22,13 @@ module SurveyQuestion::Contract
         required(:answer_type).filled.value(:string)
         required(:has_scale)
         required(:position).filled.value(:integer)
-        required(:scale_label_left)
-        required(:scale_label_right)
+        required(:answer_labels)
+        required(:scale_labels)
+        required(:scale_question)
       end
 
-      rule(:scale_label_left, :has_scale) do
-        return unless values[:has_scale]
-        key.failure('must be filled') unless values[:scale_label_left]
-      end
-      rule(:scale_label_right, :has_scale) do
-        return unless values[:has_scale]
-        key.failure('must be filled') unless values[:scale_label_right]
+      rule(:scale_question, :has_scale) do
+        key.failure('must be filled') if values[:has_scale] && values[:scale_question].blank?
       end
     end
   end
