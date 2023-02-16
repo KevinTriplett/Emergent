@@ -101,8 +101,7 @@ class NewUserSpider < EmergeSpider
     EmergeSpider.logger.debug "LOOKING AT USER #{full_name}"
     EmergeSpider.logger.debug "LOOKING FOR CSS = #{css}"
 
-
-    if joined
+    if joined && member_id
       # profile_url = https://emergent-commons.mn.co/members/7567995
       profile_url = "https://emergent-commons.mn.co/members/#{member_id}"
       chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
