@@ -19,7 +19,7 @@ module SurveyQuestion::Contract
         required(:survey_id).filled.value(:integer)
         required(:question_type).filled.value(:string)
         required(:question)
-        required(:answer_type).filled.value(:string)
+        required(:answer_type)
         required(:has_scale)
         required(:position).filled.value(:integer)
         required(:answer_labels)
@@ -28,10 +28,16 @@ module SurveyQuestion::Contract
       end
 
       rule(:question, :question_type) do
-        key.failure('must be filled') unless values[:question_type] == "New Page" || values[:question]
+        unless ["New Page","Instructions","Group Name","Branch"].index(values[:question_type])
+          key.failure('must be filled') if values[:question].blank?
+          key.failure('must be a string') unless values[:question].blank? || values[:question].is_a?(String)
+        end
       end
       rule(:scale_question, :has_scale) do
-        key.failure('must be filled') unless values[:has_scale] == 0 || values[:scale_question]
+        if "1" == values[:has_scale]
+          key.failure('must be filled') if values[:scale_question].blank?
+          key.failure('must be a string') unless values[:scale_question].blank? || values[:scale_question].is_a?(String)
+        end
       end
     end
   end

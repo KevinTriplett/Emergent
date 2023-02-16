@@ -5,6 +5,7 @@ module Admin
 
     def new
       run SurveyQuestion::Operation::Create::Present do |ctx|
+        @survey = Survey.find(params[:survey_id])
         @form = ctx["contract.default"]
       end
     end
@@ -22,6 +23,7 @@ module Admin
 
     def edit
       run SurveyQuestion::Operation::Update::Present do |ctx|
+        @survey = Survey.find(params[:survey_id])
         @form = ctx["contract.default"]
       end
     end

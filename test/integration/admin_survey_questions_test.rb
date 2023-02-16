@@ -13,7 +13,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\ndelete"
+      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\ndelete\n|\ntest"
       assert_select ".survey-name a", "edit"
       assert_select ".survey-name a", "delete"
       assert_select "table.survey-questions a", {count: 0, text: "edit"}
@@ -34,7 +34,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\ndelete"
+      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\ndelete\n|\ntest"
       assert_select "tr[data-url=?]", admin_survey_question_patch_url(existing_survey_question.id)
       assert_select "tr[data-id=?]", existing_survey_question.id.to_s
       assert_select "tr[data-position=?]", existing_survey_question.position.to_s
@@ -61,9 +61,9 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "New Survey Question"
-      assert_select '#survey_question_question_type'
-      assert_select '#survey_question_answer_type'
-      assert_select '#survey_question_question'
+      assert_select "#survey_question_question_type"
+      assert_select "#survey_question_answer_type"
+      assert_select "#survey_question_question"
       assert_select "#survey_question_has_scale"
       assert_select "#survey_question_has_scale[checked]", false
       assert_select "#survey_question_answer_labels"
@@ -86,17 +86,23 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Edit Survey Question"
-      assert_select '#survey_question_question_type' do
+      assert_select "#survey_question_question_type" do
         assert_select "[value=?]", existing_survey_question.question_type
       end
-      assert_select '#survey_question_answer_type' do
+      assert_select "#survey_question_answer_type" do
         assert_select "[value=?]", existing_survey_question.answer_type
       end
-      assert_select '#survey_question_question', existing_survey_question.question
+      assert_select "#survey_question_question", existing_survey_question.question
       assert_select "#survey_question_has_scale[checked]", false
-      assert_select "#survey_question_answer_labels", existing_survey_question.answer_labels
-      assert_select "#survey_question_scale_labels", existing_survey_question.scale_labels
-      assert_select "#survey_question_scale_question", existing_survey_question.scale_question
+      assert_select "#survey_question_answer_labels" do
+        assert_select "[value=?]", existing_survey_question.answer_labels
+      end
+      assert_select "#survey_question_scale_labels" do
+        assert_select "[value=?]", existing_survey_question.scale_labels
+      end
+      assert_select "#survey_question_scale_question" do
+        assert_select "[value=?]", existing_survey_question.scale_question
+      end
       assert_select "a", "Cancel"
 
       existing_survey_question.update(has_scale: true)

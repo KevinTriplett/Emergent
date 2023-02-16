@@ -8,7 +8,7 @@ class SurveyInvite < ActiveRecord::Base
   delegate :ordered_questions, to: :survey
 
   def update_state(key, write_to_database=true)
-    return true unless state && state < STATUS[key]
+    return true if state && state >= STATUS[key]
     self.state = STATUS[key]
     self.state_timestamp = Time.now
     return true unless write_to_database

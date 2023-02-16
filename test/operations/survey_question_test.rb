@@ -9,17 +9,23 @@ class SurveyQuestionOperationTest < MiniTest::Spec
     # happy path tests
     it "Creates {SurveyQuestion} model when given valid attributes" do
       DatabaseCleaner.cleaning do
-        question_type = "challenge"
+        question_type = "Question"
         question = "this is my question to you: who are you?"
-        answer_type = "truth or dare"
-        has_scale = false
-        existing_survey = create_survey
+        answer_type = "Yes/No"
+        has_scale = "1"
+        scale_question = "Scale question this is"
+        scale_labels = "Hi/Lo"
+        answer_labels = "Good/Bye"
 
+        existing_survey = create_survey
         result = create_survey_question_with_result({
           survey: existing_survey,
           question_type: question_type,
           question: question,
           answer_type: answer_type,
+          scale_question: scale_question,
+          scale_labels: scale_labels,
+          answer_labels: answer_labels,
           has_scale: has_scale
         })
 
@@ -28,7 +34,143 @@ class SurveyQuestionOperationTest < MiniTest::Spec
         assert_equal question_type, survey_question.question_type
         assert_equal question, survey_question.question
         assert_equal answer_type, survey_question.answer_type
-        assert_equal has_scale, survey_question.has_scale
+        assert survey_question.has_scale
+        assert_equal scale_question, survey_question.scale_question
+        assert_equal scale_labels, survey_question.scale_labels
+        assert_equal answer_labels, survey_question.answer_labels
+      end
+    end
+
+    it "initializes answer_type" do
+      DatabaseCleaner.cleaning do
+        existing_survey = create_survey
+        result = create_survey_question_with_result({
+          survey: existing_survey,
+          question_type: "New Page"
+        })
+        assert result.success?
+        survey_question_1 = result[:model]
+        assert_equal "NA", survey_question_1.answer_type
+
+        result = create_survey_question_with_result({
+          survey: existing_survey,
+          question_type: "Instructions"
+        })
+        assert result.success?
+        survey_question_2 = result[:model]
+        assert_equal "NA", survey_question_2.answer_type
+
+        result = create_survey_question_with_result({
+          survey: existing_survey,
+          question_type: "Group Name"
+        })
+        assert result.success?
+        survey_question_3 = result[:model]
+        assert_equal "NA", survey_question_3.answer_type
+        assert_nil survey_question_3.scale_labels
+        assert_nil survey_question_3.answer_labels
+
+        result = create_survey_question_with_result({
+          survey: existing_survey,
+          question_type: "Branch",
+          scale_labels: "",
+          answer_labels: ""
+        })
+        assert result.success?
+        survey_question_4 = result[:model]
+        assert_equal "NA", survey_question_4.answer_type
+        assert_nil survey_question_4.scale_labels
+        assert_nil survey_question_4.answer_labels
+
+        survey_question_1.update question_type: "Question"
+        survey_question_1.update answer_type: "Essay"
+        result = SurveyQuestion::Operation::Update.call(
+          params: {
+            survey_question: {
+              question_type: "New Page",
+              question: survey_question_1.question,
+              answer_type: survey_question_1.answer_type,
+              has_scale: survey_question_1.has_scale ? "1" : "0",
+              answer_labels: survey_question_1.answer_labels,
+              scale_labels: survey_question_1.scale_labels,
+              scale_question: survey_question_1.scale_question,
+              position: survey_question_1.position
+            },
+            survey_id: existing_survey.id,
+            id: survey_question_1.id
+          }
+        )
+        assert result.success?
+        survey_question_1 = result[:model]
+        assert_equal "NA", survey_question_1.reload.answer_type
+
+        survey_question_1.update question_type: "Question"
+        survey_question_1.update answer_type: "Essay"
+        result = SurveyQuestion::Operation::Update.call(
+          params: {
+            survey_question: {
+              question_type: "New Page",
+              question: survey_question_1.question,
+              answer_type: survey_question_1.answer_type,
+              has_scale: survey_question_1.has_scale ? "1" : "0",
+              answer_labels: survey_question_1.answer_labels,
+              scale_labels: survey_question_1.scale_labels,
+              scale_question: survey_question_1.scale_question,
+              position: survey_question_1.position
+            },
+            survey_id: existing_survey.id,
+            id: survey_question_1.id
+          }
+        )
+        assert result.success?
+        survey_question_1 = result[:model]
+        assert_equal "NA", survey_question_1.reload.answer_type
+
+        survey_question_1.update question_type: "Question"
+        survey_question_1.update answer_type: "Essay"
+        result = SurveyQuestion::Operation::Update.call(
+          params: {
+            survey_question: {
+              question_type: "New Page",
+              question: survey_question_1.question,
+              answer_type: survey_question_1.answer_type,
+              has_scale: survey_question_1.has_scale ? "1" : "0",
+              answer_labels: survey_question_1.answer_labels,
+              scale_labels: survey_question_1.scale_labels,
+              scale_question: survey_question_1.scale_question,
+              position: survey_question_1.position
+            },
+            survey_id: existing_survey.id,
+            id: survey_question_1.id
+          }
+        )
+        assert result.success?
+        survey_question_1 = result[:model]
+        assert_equal "NA", survey_question_1.reload.answer_type
+
+        survey_question_1.update question_type: "Question"
+        survey_question_1.update answer_type: "Essay"
+        result = SurveyQuestion::Operation::Update.call(
+          params: {
+            survey_question: {
+              question_type: "New Page",
+              question: survey_question_1.question,
+              answer_type: survey_question_1.answer_type,
+              has_scale: survey_question_1.has_scale ? "1" : "0",
+              answer_labels: "",
+              scale_labels: "",
+              scale_question: survey_question_1.scale_question,
+              position: survey_question_1.position
+            },
+            survey_id: existing_survey.id,
+            id: survey_question_1.id
+          }
+        )
+        assert result.success?
+        survey_question_1 = result[:model]
+        assert_equal "NA", survey_question_1.reload.answer_type
+        assert_nil survey_question_1.scale_labels
+        assert_nil survey_question_1.answer_labels
       end
     end
 
@@ -82,25 +224,16 @@ class SurveyQuestionOperationTest < MiniTest::Spec
 
     it "Fails with no and bad question attribute" do
       DatabaseCleaner.cleaning do
-        result = create_survey_question_with_result({question: nil})
+        result = create_survey_question_with_result(question_type: "Question")
         assert !result.success?
-        assert_equal(["question must be filled"], result["contract.default"].errors.full_messages_for(:question))
+        assert_equal(["question must be filled", "question must be a string"], result["contract.default"].errors.full_messages_for(:question))
 
-        result = create_survey_question_with_result({question: 0})
+        result = create_survey_question_with_result(question_type: "Question", question: 0)
         assert !result.success?
         assert_equal(["question must be a string"], result["contract.default"].errors.full_messages_for(:question))
-      end
-    end
 
-    it "Fails with no and bad answer_type attribute" do
-      DatabaseCleaner.cleaning do
-        result = create_survey_question_with_result({answer_type: nil})
-        assert !result.success?
-        assert_equal(["answer_type must be filled"], result["contract.default"].errors.full_messages_for(:answer_type))
-
-        result = create_survey_question_with_result({answer_type: 0})
-        assert !result.success?
-        assert_equal(["answer_type must be a string"], result["contract.default"].errors.full_messages_for(:answer_type))
+        result = create_survey_question_with_result(question_type: "New Page")
+        assert result.success?
       end
     end
   end

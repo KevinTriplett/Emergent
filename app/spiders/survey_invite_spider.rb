@@ -34,7 +34,7 @@ class SurveyInviteSpider < EmergeSpider
       @@survey_invite = si
       EmergeSpider.logger.info "SENDING INVITE TO #{@@user.name} FOR #{@@survey.name}"
       request_to(:send_invite, url: @@user.chat_url)
-      si.update(state_timestamp: Time.now)
+      si.update_state(:sent)
     end
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
