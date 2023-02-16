@@ -5,6 +5,7 @@ module Admin
 
     def index
       @surveys = Survey.all
+      @token = form_authenticity_token
     end
 
     def new
@@ -53,11 +54,19 @@ module Admin
     def destroy
       run Survey::Operation::Delete do |ctx|
         flash[:notice] = "Survey deleted"
-        return redirect_to admin_surveys_url, status: 303
+        return render json: { url: admin_surveys_url }
       end
+      return head(:bad_request)
+    end
 
-      flash[:notice] = "Unable to delete Survey"
-      render :index, status: :unprocessable_entity
+    def test
+      url = survey_url
+      _ctx = run Survey::Operation::Test, current_user: current_user, url: url do |ctx|
+        survey_invite = ctx[:survey_invite]
+        return redirect_to survey_url(token: survey_invite.token)
+      end
+      flash[:error] = _ctx[:flash]
+      return redirect_to admin_survey_url(ctx[:model].id)
     end
   end
 end

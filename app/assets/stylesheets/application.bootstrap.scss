@@ -28,6 +28,16 @@ body#admin {
 body#survey {
   background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
   color: rgb(52, 52, 52);
+  &.finished {
+    background-image: url(images/elephant-survey-bgnd.jpg);
+    background-size: 100%;
+    h1 {
+      color: white;
+      text-shadow: -2px 2px 0 #000,
+      2px 2px 0 #000,
+      2px -2px 0 #000;
+    }
+  }
 }
 
 body.root {

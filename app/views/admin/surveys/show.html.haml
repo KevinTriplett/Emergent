@@ -3,7 +3,10 @@
 %p.survey-name
   = "Survey: #{@survey.name}"
   = link_to "edit", edit_admin_survey_path(@survey)
-  = link_to "delete", admin_survey_path(@survey), data: { turbo_method: "delete", turbo_confirm: "Really delete survey?" }
+  |
+  = link_to "delete", admin_survey_path(@survey), data: { method: "delete", confirm: "Really delete survey?", token: @token }
+  |
+  = link_to "test", admin_survey_test_path(@survey)
 
 %table.survey-questions.table.table-bordered.table-striped
   %thead
@@ -15,10 +18,11 @@
       %th.has-scale Scale?
   %tbody#sortable
     - @survey_questions.each do |sq|
-      %tr.ui-state-default{ data: {url: admin_survey_question_patch_url(sq.id), position: sq.position, token: @token, id: sq.id} }
+      %tr.ui-state-default{ data: {url: admin_survey_question_patch_url(sq.id), position: sq.position, id: sq.id, token: @token} }
         %td.actions
           = link_to "edit", edit_admin_survey_survey_question_path(sq.id, survey_id: @survey.id)
-          = link_to "del", admin_survey_survey_question_path(sq.id, survey_id: @survey.id), data: { turbo_method: "delete", turbo_confirm: "Really delete question?" }
+          |
+          = link_to "del", admin_survey_survey_question_path(sq.id, survey_id: @survey.id), data: { method: "delete", confirm: "Really delete question?" }
         %td.question-type= sq.question_type
         %td.question= sq.question
         %td.answer-type= sq.answer_type

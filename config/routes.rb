@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get  "/admin/users/:token/token/:command", to: "admin/users#token_command", as: :admin_user_token
   post "/admin/users/:token/patch", to: "admin/users#patch", as: :admin_user_patch
   post "/admin/users/:token/approve", to: "admin/users#approve_user", as: :admin_approve_user
+  get  "/admin/surveys/:id/test", to: "admin/surveys#test", as: :admin_survey_test
   post "/admin/survey_questions/:id/patch", to: "admin/survey_questions#patch", as: :admin_survey_question_patch
 
   get "login/:token", to: "home#login", as: :login
@@ -11,7 +12,8 @@ Rails.application.routes.draw do
   get "unsubscribe/:token", to: "home#unsubscribe", as: :unsubscribe
   get "user_search", to: "admin/users#search", as: :user_search
   
-  get "survey(/:token)(/:position)", to: "survey_invites#show", as: :survey
+  get  "survey(/:token)(/:position)", to: "survey_invites#show", as: :survey
+  post "survey/:token/patch(/:position)", to: "survey_invites#patch", as: :survey_answer_patch
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]

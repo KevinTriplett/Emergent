@@ -131,7 +131,7 @@ ${data.greeter}`;
 // be triggered. The function will be called after it stops being called for
 // `wait` milliseconds. If `immediate = true` is passed, trigger the function
 // on the leading edge, instead of the trailing.
-function debounce(func, wait, immediate) {
+var debounce = function(func, wait, immediate) {
   var timeout;
   return function() {
       var context = this, args = arguments;
@@ -347,6 +347,7 @@ var greeterId = getCookie("user_id");
 var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 var pastOkay = false;
 var optVisible = false;
+var errorMsgCount = prevErrorMsgCount = 0;
 var format = {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   hour12: false,
@@ -382,6 +383,28 @@ $(document).ready(function() {
     }).on("keyup", function(e) {
       showOpt(e.altKey);
     });
+
+  ////////////////////////////////////////////////////
+  // DELETE LINKS
+  $("a[data-method='delete']").on("click", function(e) {
+    e.preventDefault();
+    if (!confirm(this.dataset["confirm"])) return;
+    var token = $(this).closest("[data-token]").data("token");
+    var url = this.href;
+    $.ajax({
+      url: url,
+      type: "DELETE",
+      headers: {
+        'X-CSRF-Token': token
+      },
+      success: function(result) {
+        window.location.assign(result.url);
+      },
+      error: function() {
+        alert("Unable to delete -- ask Kevin");
+      }
+    })
+  });
 
   ////////////////////////////////////////////////////
   // CONNECT DATATABLE
@@ -516,9 +539,10 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // SORTABLE SURVEY QUESTIONS
-  $("#sortable")
+  $("table.survey-questions #sortable")
     .sortable({
       stop: function(e, ui) {
+        prevErrorMsgCount = errorMsgCount;
         ui
           .item
           .closest("tbody")
@@ -528,7 +552,8 @@ $(document).ready(function() {
               tr.dataset.position = result.model.position;
             }, function() {
               $("#sortable").sortable("cancel");
-              alert("something went wrong -- ask Kevin");
+              if (errorMsgCount == prevErrorMsgCount) alert("something went wrong -- ask Kevin");
+              errorMsgCount++
             });
           });
       }
@@ -781,4 +806,35 @@ $(document).ready(function() {
     // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
     window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
   });
+
+  ////////////////////////////////////////////////////
+  // SURVEY
+  var saveEssay = function(e) {
+    var self = $(this);
+    var data = self.val();
+    surveyAnswerPatch(self, {answer: data});
+  }
+  $("#survey .survey-answer-essay textarea").on("keyup", debounce(saveEssay, 1000));
+
+  var surveyAnswerPatch = function(dom, data, success, error) {
+    var urlDom = dom.closest("[data-url]");
+    var position = dom.closest("[data-position]").data("position");
+    var token = urlDom.data("token");
+    var url = `${urlDom.data("url")}/${position}`;
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify({"survey_answer": data}),
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      headers: {
+        "X-CSRF-Token": token
+      },
+      success: function(result) {
+        if (success) success(result);
+      },
+      error: error
+    });
+  }
 });

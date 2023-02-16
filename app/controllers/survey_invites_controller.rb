@@ -16,10 +16,24 @@ class SurveyInvitesController < ApplicationController
       :started
     end
     @survey_invite.update_state(state)
+    @token = form_authenticity_token
     if :finished == state
-      flash[:notice] = "Thank you for completing the survey"
-      return redirect_to root_url # TODO: create nice finish page
+      if @survey_invite.subject = "Test Survey" && @survey_invite.body = "Test Survey"
+        @url = admin_survey_url(@survey_invite.survey_id)
+        @survey_invite.delete
+      end
+      @body_class = "finished"
+      return render template: "survey_invites/finished"
     end
+    @url = survey_answer_patch_url(token: @survey_invite.token)
+  end
+
+  def patch
+    survey_answer = get_survey_answer
+    params[:survey_answer].each_pair do |attr, val|
+      survey_answer.send("#{attr}=", val)
+    end
+    survey_answer.save ? (render json: {}) : (render head(:bad_request))
   end
 
   private
@@ -44,5 +58,17 @@ class SurveyInvitesController < ApplicationController
       @survey_questions.push(question)
     end
     true
+  end
+
+  def get_survey_answer
+    position = params[:position].to_i
+    survey_invite = SurveyInvite.find_by_token(params[:token])
+    survey_question = survey_invite.survey_questions.where(position: position).first
+    
+    survey_invite.survey_answers.where(survey_question_id: survey_question.id).first ||
+    SurveyAnswer.new({
+      survey_invite_id: survey_invite.id,
+      survey_question_id: survey_question.id
+    })
   end
 end
