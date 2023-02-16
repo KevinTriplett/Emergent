@@ -199,7 +199,7 @@ class NewUserSpider < EmergeSpider
     text.blank? ? nil : text
   end
   def get_member_id(row)
-    return unless response_has(".invite-list-item-last-name-text a")
+    return unless response_has(".invite-list-item-last-name-text a").attr("href").value.blank?
     row.css(".invite-list-item-last-name-text a").attr("href").value.split('/').last.to_i
   end
 
