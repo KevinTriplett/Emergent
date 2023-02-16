@@ -181,7 +181,7 @@ class NewUserSpider < EmergeSpider
       name: full_name,
       first_name: first_name,
       last_name: last_name,
-      email: email.downcase,
+      email: email,
       profile_url: profile_url,
       chat_url: chat_url,
       member_id: member_id,
@@ -196,7 +196,7 @@ class NewUserSpider < EmergeSpider
   ## EXTRACT EMAIL AND MEMBER_ID
   def get_email(row)
     text = row.css(".invite-list-item-email-text").text.strip
-    text.blank? ? nil : text
+    text.blank? ? nil : text.downcase
   end
   def get_member_id(row)
     href = row.css(".invite-list-item-last-name-text a").attr("href")
