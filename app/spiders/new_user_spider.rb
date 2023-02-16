@@ -85,8 +85,8 @@ class NewUserSpider < EmergeSpider
     joined = ("Joined!" == status)
 
     # skip if this user exists in the database with member_id or was rejected
-    email = get_email
-    member_id = get_member_id
+    email = get_email(row)
+    member_id = get_member_id(row)
     user = joined ? User.find_by_member_id(member_id) : User.find_by_email(email)
     return if user && (!user.member_id.blank? || "Request Declined" == user.status)
 
@@ -194,11 +194,11 @@ class NewUserSpider < EmergeSpider
 
   ##################################################
   ## EXTRACT EMAIL AND MEMBER_ID
-  def get_email
+  def get_email(row)
     text = row.css(".invite-list-item-email-text").text.strip
     text.blank? ? nil : text
   end
-  def get_member_id
+  def get_member_id(row)
     return unless response_has(".invite-list-item-last-name-text a")
     row.css(".invite-list-item-last-name-text a").attr("href").value.split('/').last.to_i
   end
