@@ -81,10 +81,14 @@ class NewUserSpider < EmergeSpider
   ##################################################
   ## EXTRACT USER DATA
   def extract_user_hash(row)
+    status = row.css(".invite-list-item-status-text").text.strip
+    joined = ("Joined!" == status)
+
     # skip if this user exists in the database with member_id or was rejected
-    email = row.css(".invite-list-item-email-text").text.strip
-    user = User.find_by_email(email)
-    return if user && (user.member_id || user.status == "Request Declined")
+    email = get_email
+    member_id = get_member_id
+    user = joined ? User.find_by_member_id(member_id) : User.find_by_email(email)
+    return if user && (!user.member_id.blank? || "Request Declined" == user.status)
 
     # member is not in our database or has not joined yet and is not rejected
     first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
@@ -97,13 +101,10 @@ class NewUserSpider < EmergeSpider
     EmergeSpider.logger.debug "LOOKING AT USER #{full_name}"
     EmergeSpider.logger.debug "LOOKING FOR CSS = #{css}"
 
-    status = row.css(".invite-list-item-status-text").text.strip
-    joined = ("Joined!" == status)
 
     if joined
       # profile_url = https://emergent-commons.mn.co/members/7567995
-      profile_url = row.css(".invite-list-item-email a").attr("href").value
-      member_id = profile_url.split('/').last.to_i
+      profile_url = "https://emergent-commons.mn.co/members/#{member_id}"
       chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
       # for joined users, do a little more to get to their answers:
       EmergeSpider.logger.debug "ATTEMPTING HOVER"
@@ -189,6 +190,17 @@ class NewUserSpider < EmergeSpider
       questions_responses: questions_and_answers.join(" -:- "),
       joined: joined
     }
+  end
+
+  ##################################################
+  ## EXTRACT EMAIL AND MEMBER_ID
+  def get_email
+    text = row.css(".invite-list-item-email-text").text.strip
+    text.blank? ? nil : text
+  end
+  def get_member_id
+    return unless response_has(".invite-list-item-last-name-text a")
+    row.css(".invite-list-item-last-name-text a").attr("href").value.split('/').last.to_i
   end
 
   ##################################################
