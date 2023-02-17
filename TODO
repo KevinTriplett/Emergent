@@ -46,12 +46,15 @@
 BUGS
 - [ ] greeter search is tangled with survey_invite search
 - [ ] need the ability for a greeter to log in themselves so that approval chats come from them
+- [ ] renew ssl certs
+- [ ] do not send to greeter app after survey
 SURVEYS
 - [X] add admin interface for sending survey invites (show survey view?)
 - [X] create survey invites with tokens to prevent hacking a survey
 - [ ] slider for answers (where are you on the practices v. social)
 - [ ] create nice user interface for surveys
 - [ ] rules for question branching / skipping
+- [ ] disable buttons until ajax calls resolve
 GREETER APP
 - [ ] request declined status is not visible in member request to join
 - [ ] default to only pending and greeter-picked entries
