@@ -110,8 +110,12 @@ class AdminSurveysTest < ApplicationSystemTestCase
       check "Has Scale"
 
       click_on "Update Question"
+      assert_current_path admin_survey_survey_question_path(survey_question.id, survey_id: existing_survey.id)
 
-      sleep 1
+      fill_in "Scale Question", with: "What's it to youi?"
+      fill_in "Scale Labels (separated by | delimiter)", with: "Lo|Hi"
+      click_on "Update Question"
+
       assert_current_path admin_survey_path(existing_survey.id)
       survey_question.reload
       assert_equal question_type, survey_question.question_type

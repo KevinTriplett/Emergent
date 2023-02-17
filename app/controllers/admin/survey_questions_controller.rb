@@ -18,6 +18,7 @@ module Admin
     
       flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
+      @survey = Survey.find(params[:survey_id])
       render :new, status: :unprocessable_entity
     end
 
@@ -36,6 +37,7 @@ module Admin
     
       flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
+      @survey = Survey.find(params[:survey_id])
       render :edit, status: :unprocessable_entity
     end
 
