@@ -19,7 +19,7 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Multiple Choice",
       "Essay",
       "Rating",
-      "Scale",
+      "Range",
       "Number",
       "NA"
     ], SurveyQuestion::ANSWER_TYPES

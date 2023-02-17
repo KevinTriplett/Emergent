@@ -25,7 +25,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     end
   end
 
-    def answer_type_class
+  def answer_type_class
     case survey_question.answer_type
     when "Yes/No"
       "survey-answer-yes-no"
@@ -35,15 +35,29 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       "survey-answer-essay"
     when "Rating"
       "survey-answer-rating"
-    when "Scale"
-      "survey-answer-scale"
+    when "Range"
+      "survey-answer-range"
     when "Number"
       "survey-answer-number"
     end
   end
 
+  def row_id
+    "survey-question-#{position}"
+  end
+
+  def answer_type?
+    survey_question.answer_type != "NA"
+  end
+
   def question
     survey_question.question
+  end
+  def answer
+    survey_answer.answer
+  end
+  def scale
+    survey_answer.scale
   end
 
   def survey_answer
@@ -55,8 +69,6 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def user_answer
-    answer = survey_answer.answer
-
     case survey_question.answer_type
     #----------------------
     when "Yes/No", "Multiple Choice"
@@ -73,10 +85,10 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       # output textarea
       "<textarea cols='80'>#{answer}</textarea>"
     #----------------------
-    when "Rating", "Scale"
-      labels = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
+    when "Rating", "Range"
+      left, right = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
       # output horizontal radio buttons "1-N" and labels describing rating system
-      "<label>#{labels[0]}</label> <input type='range' name='#{name}' min='#{labels[0]}' max='#{labels[1]}'> <label>#{labels[1]}</label>"
+      "<label>#{left}</label> <input type='range' name='#{name}' value='#{answer}' min='0' max='10'> <label>#{right}</label>"
     #----------------------
     when "Number"
       # output text input
@@ -94,10 +106,10 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     survey_question.has_scale?
   end
 
-  def scale
+  def answer_scale
     return nil unless survey_question.has_scale?
-    labels = (survey_question.scale_labels || "Not Important|Very Important").split("|")
-    "<label>#{labels[0]}</label> <input type='range' name='#{name}' min='#{labels[0]}' max='#{labels[1]}'> <label>#{labels[1]}</label>"
+    left, right = (survey_question.scale_labels || "Not Important|Very Important").split("|")
+    "<label>#{left}</label> <input type='range' name='#{name}' value='#{scale}' min='0' max='10'> <label>#{right}</label>"
   end
 
   def scale_question

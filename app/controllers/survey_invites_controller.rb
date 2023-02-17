@@ -45,7 +45,6 @@ class SurveyInvitesController < ApplicationController
 
     @survey_questions = []
     @prev_position = @next_position = 0
-    puts "position = #{@position}"
     @survey_invite.ordered_questions.each do |question|
       if question.position+1 < @position
         @prev_position = question.position+1 if "New Page" == question.question_type

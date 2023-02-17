@@ -21,7 +21,7 @@ class SurveyQuestion < ActiveRecord::Base
     "Multiple Choice",
     "Essay",
     "Rating",
-    "Scale",
+    "Range",
     "Number",
     "NA"
   ]

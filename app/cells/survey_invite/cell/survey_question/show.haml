@@ -1,9 +1,12 @@
-.row{ class: question_type_class }
-  .col= question
-.row{ class: answer_type_class, data: {position: position} }
-  .col= user_answer
-- if has_scale?
-  .row.survey-answer-scale-question
-    .col= scale_question
-  .row.survey-answer-scale{ data: {position: position} }
-    .col= scale
+.row{ id: row_id }
+  .col
+    .row{ class: question_type_class }
+      .col= question
+    - if answer_type?
+      .row{ class: answer_type_class, data: {position: position} }
+        .col= user_answer
+    - if has_scale?
+      .row.survey-answer-scale-question
+        .col= scale_question
+      .row.survey-answer-scale{ data: {position: position} }
+        .col= answer_scale

@@ -1,9 +1,10 @@
-%p= "Survey: #{@survey_invite.survey.name}"
+%p.survey-name= "Survey: #{@survey_invite.survey.name}"
+%p.survey-description= @survey_invite.survey.description
 
 .row.survey{ data: {url: @url, token: @token} }
   .col
-  - @survey_questions.each do |sq|
-    = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})
+    - @survey_questions.each do |sq|
+      = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})
 
   .row.survey-answer-links
     .col

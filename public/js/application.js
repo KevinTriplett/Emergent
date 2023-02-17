@@ -814,7 +814,29 @@ $(document).ready(function() {
     var data = self.val();
     surveyAnswerPatch(self, {answer: data});
   }
-  $("#survey .survey-answer-essay textarea").on("keyup", debounce(saveEssay, 1000));
+  $("#survey .survey-answer-essay textarea").on("keyup", debounce(saveEssay, 500));
+
+  var saveScale = function(e) {
+    var self = $(this);
+    var data = self.val();
+    surveyAnswerPatch(self, {scale: data});
+  }
+  $("#survey .survey-answer-scale input[type='range']").on("change", debounce(saveScale, 500));
+
+  var saveRange = function(e) {
+    var self = $(this);
+    var data = self.val();
+    surveyAnswerPatch(self, {answer: data});
+  }
+  $("#survey .survey-answer-range input[type='range']").on("change", debounce(saveRange, 500));
+
+  var saveChoice = function(e) {
+    var self = $(this);
+    var data = self.val();
+    surveyAnswerPatch(self, {answer: data});
+  }
+  $("#survey .survey-answer-yes-no input[type='radio']").on("change", saveChoice);
+  $("#survey .survey-answer-multiple-choice input[type='radio']").on("change", saveChoice);
 
   var surveyAnswerPatch = function(dom, data, success, error) {
     var urlDom = dom.closest("[data-url]");
