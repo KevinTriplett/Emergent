@@ -10,8 +10,7 @@ class SurveyAnswersController < AdminController
     params[:survey_answer].each_pair do |attr, val|
       survey_answer.send("#{attr}=", val)
     end
-    return survey_answer.save ? render json: {} : head(:bad_request)
-    # TODO delete the TRB concept files
+    survey_answer.save ? (render json: {}) : (render head(:bad_request))
   end
 
   private
