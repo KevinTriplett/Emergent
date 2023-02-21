@@ -9,7 +9,7 @@ class HomeController < ApplicationController
     sign_in
     return redirect_to root_url unless current_user
     return redirect_to admin_users_url if current_user.has_role(:greeter)
-    redirect_to root_url
+    redirect_back
   end
 
   def logout
@@ -24,6 +24,7 @@ class HomeController < ApplicationController
       user = ctx[:user]
       if user && (Rails.env.staging? || Rails.env.development?)
         sign_in(user)
+        return redirect_back
       else
         user.generate_tokens
         UserMailer.with(user).send_magic_link.deliver_now
