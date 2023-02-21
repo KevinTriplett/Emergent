@@ -55,7 +55,7 @@ body#survey {
     font-weight: normal;
     font-size: large;
     font-family: sans-serif;
-    margin-top: 30px;
+    margin-top: 60px;
   }
   .survey-answer-essay textarea {
     margin-bottom: 0px;
@@ -86,6 +86,10 @@ body#survey {
       width: 100px;
     }
   }  
+  .survey-answer-vote i {
+    cursor: pointer;
+    margin-right: 10px;
+  }
 }
 
 body.root {

@@ -23,6 +23,7 @@ class SurveyQuestion < ActiveRecord::Base
     "Rating",
     "Range",
     "Number",
+    "Vote",
     "NA"
   ]
 end

@@ -6,6 +6,7 @@ module SurveyQuestion::Operation
       step :initialize_survey_id
       step :initialize_answer_type
       step :nillify_labels
+      step :initialize_types
       step Contract::Build(constant: SurveyQuestion::Contract::Create)
 
       def initialize_survey_id(ctx, model:, params:, **)
@@ -23,6 +24,11 @@ module SurveyQuestion::Operation
         params[:survey_question][:answer_labels] = nil if params[:survey_question][:answer_labels].blank?
         params[:survey_question][:scale_labels] = nil if params[:survey_question][:scale_labels].blank?
         true
+      end
+
+      def initialize_types(ctx, model:, params:, **)
+        model.question_type ||= "Question"
+        model.answer_type ||= "Essay"
       end
     end
     

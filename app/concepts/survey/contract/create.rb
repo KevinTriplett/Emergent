@@ -5,6 +5,7 @@ module Survey::Contract
     property :id
     property :name
     property :description
+    property :vote_max
 
     validation do
       params do

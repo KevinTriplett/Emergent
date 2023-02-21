@@ -838,6 +838,17 @@ $(document).ready(function() {
   $("#survey .survey-answer-yes-no input[type='radio']").on("change", saveChoice);
   $("#survey .survey-answer-multiple-choice input[type='radio']").on("change", saveChoice);
 
+  $("#survey .vote-up, #survey .vote-down").on("click", function(e) {
+    var self = $(this);
+    var count = self.parent().find(".vote-count");
+    var data = parseInt(count.text());
+    data = (self.hasClass("vote-up") ? data+1 : data-1);
+    surveyAnswerPatch(self, {votes: data}, function(result) {
+      count.text(` ${result.vote_count}`);
+      self.parent().find(".votes-left").text(result.votes_left);
+    });
+  });
+
   var surveyAnswerPatch = function(dom, data, success, error) {
     var urlDom = dom.closest("[data-url]");
     var position = dom.closest("[data-position]").data("position");

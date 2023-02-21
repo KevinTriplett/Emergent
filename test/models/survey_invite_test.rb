@@ -110,4 +110,42 @@ class SurveyInviteTest < MiniTest::Spec
       assert invite.is_finished
     end
   end
+
+  it "reports the vote count left" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey(vote_max: 7)
+      question_1 = create_survey_question({
+        question_type: "Question",
+        question: "Do you like this?",
+        answer_type: "Vote"
+      })
+      question_2 = create_survey_question({
+        question_type: "Question",
+        question: "What about this?",
+        answer_type: "Vote"
+      })
+      question_3 = create_survey_question({
+        question_type: "Question",
+        question: "And this?",
+        answer_type: "Vote"
+      })
+      invite = create_survey_invite(survey: survey)
+      answer_1 = create_survey_answer(survey_invite: invite, survey_question_id: question_1.id)
+      answer_1.votes = 1
+      answer_1.save
+      assert_equal 6, invite.votes_left
+      answer_2 = create_survey_answer(survey_invite: invite, survey_question_id: question_2.id)
+      answer_2.votes =  2
+      answer_2.save
+      assert_equal 4, invite.reload.votes_left
+      answer_3 = create_survey_answer(survey_invite: invite, survey_question_id: question_3.id)
+      answer_3.votes =  3
+      answer_3.save
+      assert_equal 1, invite.reload.votes_left
+      answer_3.votes =  5
+      answer_3.save
+      assert_equal 0, invite.reload.votes_left
+      assert_equal 4, answer_3.votes
+    end 
+  end
 end

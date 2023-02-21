@@ -21,6 +21,7 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Rating",
       "Range",
       "Number",
+      "Vote",
       "NA"
     ], SurveyQuestion::ANSWER_TYPES
   end

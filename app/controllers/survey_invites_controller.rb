@@ -30,10 +30,16 @@ class SurveyInvitesController < ApplicationController
 
   def patch
     survey_answer = get_survey_answer
+    survey_invite = SurveyInvite.find_by_token(params[:token])
     params[:survey_answer].each_pair do |attr, val|
       survey_answer.send("#{attr}=", val)
     end
-    survey_answer.save ? (render json: {}) : (render head(:bad_request))
+    survey_answer.save ? (render json: {
+      answer: survey_answer.reload.answer,
+      scale: survey_answer.reload.scale,
+      vote_count: survey_answer.reload.vote_count,
+      votes_left: survey_invite.votes_left
+    }) : (render head(:bad_request))
   end
 
   private

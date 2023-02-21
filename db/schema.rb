@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_14_230001) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_21_153557) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -40,6 +40,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_230001) do
     t.datetime "updated_at", null: false
     t.integer "survey_invite_id"
     t.string "token"
+    t.integer "vote_count"
     t.index ["survey_invite_id"], name: "index_survey_answers_on_survey_invite_id"
     t.index ["survey_question_id"], name: "index_survey_answers_on_survey_question_id"
   end
@@ -79,6 +80,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_230001) do
     t.string "name"
     t.string "description"
     t.boolean "locked"
+    t.integer "vote_max"
   end
 
   create_table "users", force: :cascade do |t|

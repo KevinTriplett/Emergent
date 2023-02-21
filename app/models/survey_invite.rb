@@ -15,6 +15,18 @@ class SurveyInvite < ActiveRecord::Base
     save
   end
 
+  def votes_total
+    votes = survey_answers.select do |answer| 
+      answer.update(vote_count: 0) unless answer.vote_count
+      "Vote" == answer.survey_question.answer_type
+    end.collect(&:vote_count)
+    votes.sum(0)
+  end
+
+  def votes_left
+    (survey.vote_max || 0) - votes_total
+  end
+
   def self.queued
     where(state: STATUS[:created])
   end

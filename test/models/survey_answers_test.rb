@@ -33,5 +33,29 @@ class SurveyAnswersTest < MiniTest::Spec
       assert_equal survey_question.answer_type, survey_answer.answer_type
     end
   end
+
+  it "has votes that are a number" do
+    answer = SurveyAnswer.new
+    assert_equal 0, answer.votes
+  end
+
+  it "respects votes_left" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey(vote_max: 5)
+      question = create_survey_question(survey: survey, answer_type: "Vote")
+      invite = create_survey_invite(survey: survey)
+      answer = create_survey_answer(survey_invite: invite, survey_question_id: question.id)
+
+      assert_equal 5, invite.votes_left
+      answer.votes = 6
+      answer.save
+      assert_equal 5, answer.reload.votes
+      assert_equal 0, invite.reload.votes_left
+      answer.votes = -1
+      answer.save
+      assert_equal 0, answer.reload.votes
+      assert_equal 5, invite.reload.votes_left
+    end
+  end
 end
     

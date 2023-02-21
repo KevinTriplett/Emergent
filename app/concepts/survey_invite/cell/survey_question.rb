@@ -39,6 +39,8 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       "survey-answer-range"
     when "Number"
       "survey-answer-number"
+    when "Vote"
+      "survey-answer-vote"
     end
   end
 
@@ -88,11 +90,20 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     when "Rating", "Range"
       left, right = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
       # output horizontal radio buttons "1-N" and labels describing rating system
-      "<label>#{left}</label> <input type='range' name='#{name}' value='#{answer}' min='0' max='10'> <label>#{right}</label>"
+      "<label>#{left}</label>\
+      <input type='range' name='#{name}' value='#{answer}' min='0' max='10'>\
+      <label>#{right}</label>"
     #----------------------
     when "Number"
       # output text input
       "<input type='text' id='#{name}' name='#{name}' value='#{answer}' />"
+    #----------------------
+    when "Vote"
+      count = survey_answer.vote_count || 0
+      "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
+      <i class='vote-down bi-hand-thumbs-down-fill'></i>\
+      <span class='vote-count'>#{count}</span>\
+      (<span class='votes-left'>#{survey_invite.votes_left}</span> votes left)"
     #----------------------
     when "NA"
       # nothing

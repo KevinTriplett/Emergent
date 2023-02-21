@@ -15,7 +15,8 @@ def create_survey_with_result(params = {})
     params: {
       survey: {
         name: params[:name],
-        description: params[:description]
+        description: params[:description],
+        vote_max: params[:vote_max]
       }
     }
   )
@@ -24,6 +25,7 @@ end
 def create_survey(params = {})
   params[:name] ||= random_survey_name
   params[:description] ||= "this is the description"
+  params[:vote_max] ||= 5
   create_survey_with_result(params)[:model]
 end
 
@@ -106,8 +108,9 @@ end
 
 def create_survey_answer_non_operation(params = {})
   survey_invite = (params[:survey_invite_token] && SurveyInvite.find_by_token(params[:survey_invite_token])) || 
-  params[:survey_invite] || create_survey_invite
-  raise unless params[:survey_question_id]
+    params[:survey_invite] ||
+    create_survey_invite
+  raise "survey_question_id is missing from params hash" unless params[:survey_question_id]
   SurveyAnswer.create({
     survey_invite_id: survey_invite.id,
     survey_question_id: params[:survey_question_id],
