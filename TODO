@@ -51,7 +51,9 @@ BUGS
 SURVEYS
 - [X] add admin interface for sending survey invites (show survey view?)
 - [X] create survey invites with tokens to prevent hacking a survey
-- [ ] slider for answers (where are you on the practices v. social)
+- [X] slider for answers (where are you on the practices v. social)
+- [ ] use markdown for survey questions and instructions
+- [ ] allow groups for survey questions and notes
 - [ ] create nice user interface for surveys
 - [ ] rules for question branching / skipping
 - [ ] disable buttons until ajax calls resolve
