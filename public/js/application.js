@@ -390,7 +390,7 @@ $(document).ready(function() {
     e.preventDefault();
     if (!confirm(this.dataset["confirm"])) return;
     var token = $(this).closest("[data-token]").data("token");
-    var url = this.href || this.dataset["url"];
+    var url = this.href || $(this).data("url");
     $.ajax({
       url: url,
       type: "DELETE",
@@ -901,7 +901,11 @@ $(document).ready(function() {
     }
     notePatch(note, data, function(result) {
       flash(note.find(".bi-check"));
-      note.data("id", result.note.id);
+      if (!note.data("id")) {
+        note.data("id", result.note.id);
+        var deleteUrl = note.find("button.delete").data("url");
+        note.find("button.delete").data("url", deleteUrl + result.note.id);
+      }
       note.data("text", result.note.text);
       note.data("category", result.note.category);
     }, function() {
@@ -930,7 +934,7 @@ $(document).ready(function() {
     note.removeAttr("id").removeClass("hidden");
     $("#notes-container").append(note);
     note.show();
-    note.on("keydown", debounce(saveNote, 1000));
+    note.on("keydown", debounce(saveNote, 500));
     note.find(".delete").on("click", deleteNote);
   });
   
@@ -939,7 +943,7 @@ $(document).ready(function() {
   });
 
   $(".note")
-    .on("keydown", debounce(saveNote, 1000))
+    .on("keydown", debounce(saveNote, 500))
     .find(".delete")
     .on("click", deleteNote);
 

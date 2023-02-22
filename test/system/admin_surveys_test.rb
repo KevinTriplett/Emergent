@@ -4,6 +4,11 @@ class AdminSurveysTest < ApplicationSystemTestCase
   include ActionMailer::TestHelper
   DatabaseCleaner.clean
 
+  test "Regular user cannot create a survey" do
+    visit admin_surveys_path
+    assert_current_path root_path
+  end
+
   test "Admin can create and edit a survey" do
     DatabaseCleaner.cleaning do
       admin = login

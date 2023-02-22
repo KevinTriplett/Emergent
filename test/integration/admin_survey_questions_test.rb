@@ -13,7 +13,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\ndelete\n|\ntest"
+      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\nnotes\n|\ndelete\n|\ntest"
       assert_select ".survey-name a", "edit"
       assert_select ".survey-name a", "delete"
       assert_select "table.survey-questions a", {count: 0, text: "edit"}
@@ -34,7 +34,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\ndelete\n|\ntest"
+      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\nnotes\n|\ndelete\n|\ntest"
       assert_select "tr[data-url=?]", admin_survey_question_patch_url(existing_survey_question.id)
       assert_select "tr[data-id=?]", existing_survey_question.id.to_s
       assert_select "tr[data-position=?]", existing_survey_question.position.to_s
