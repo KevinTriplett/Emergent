@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     resources :surveys do
       resources :survey_questions, only: [:new, :create, :edit, :update, :destroy]
       resources :survey_invites, only: [:new, :create]
+      resources :notes, only: [:index, :create, :update, :destroy]
     end
   end
 

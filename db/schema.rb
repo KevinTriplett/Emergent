@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_21_153557) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_21_203539) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -19,6 +19,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_21_153557) do
     t.datetime "duration_days"
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.integer "survey_id"
+    t.string "category"
+    t.string "text"
+    t.string "coords"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["survey_id"], name: "index_notes_on_survey_id"
   end
 
   create_table "spaces", force: :cascade do |t|

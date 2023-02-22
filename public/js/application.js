@@ -386,11 +386,11 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // DELETE LINKS
-  $("a[data-method='delete']").on("click", function(e) {
+  var deleteThis = function(e, success, error) {
     e.preventDefault();
     if (!confirm(this.dataset["confirm"])) return;
     var token = $(this).closest("[data-token]").data("token");
-    var url = this.href;
+    var url = this.href || this.dataset["url"];
     $.ajax({
       url: url,
       type: "DELETE",
@@ -398,12 +398,21 @@ $(document).ready(function() {
         'X-CSRF-Token': token
       },
       success: function(result) {
+        if (success) success(result);
+      },
+      error: error
+    })
+  }
+
+  $("a[data-method='delete']").on("click", function(e) {
+    deleteThis.call(this, e,
+      function(result) {
         window.location.assign(result.url);
       },
-      error: function() {
+      function() {
         alert("Unable to delete -- ask Kevin");
       }
-    })
+    );
   });
 
   ////////////////////////////////////////////////////
@@ -870,4 +879,91 @@ $(document).ready(function() {
       error: error
     });
   }
+
+  ////////////////////////////////////////////////////
+  // NOTES
+  var flash = function(dom) {
+    dom.show();
+    var func = debounce(function() {
+      dom.hide();
+    }, 3000);
+    func();
+  }
+
+  var saveNote = function(e) {
+    var note = $(this);
+    var category = note.find(".note-category").text();
+    var text = note.find(".note-text").text();
+    if (text == note.data("text") && category == note.data("category")) return;
+    var data = {
+      category: category,
+      text: text
+    }
+    notePatch(note, data, function(result) {
+      flash(note.find(".bi-check"));
+      note.data("id", result.note.id);
+      note.data("text", result.note.text);
+      note.data("category", result.note.category);
+    }, function() {
+      flash(note.find(".bi-exclamation"));
+    });
+  }
+
+  var deleteNote = function(e) {
+    var note = $(this).closest(".note");
+    if (note.data("id")) {
+      deleteThis.call(this, e,
+        function() {
+          note.remove();
+        },
+        function() {
+          flash(note.find(".bi-exclamation"))
+        }
+      );
+    } else {
+      note.remove();
+    }
+  }
+
+  $("body#notes button.add").on("click", function(e) {
+    var note = $("#note-template").find(".note").clone();
+    note.removeAttr("id").removeClass("hidden");
+    $("#notes-container").append(note);
+    note.show();
+    note.on("keydown", debounce(saveNote, 1000));
+    note.find(".delete").on("click", deleteNote);
+  });
+  
+  $("body#notes").on("keydown", function(e) {
+    if (e.ctrlKey && e.keyCode == 83) e.preventDefault();
+  });
+
+  $(".note")
+    .on("keydown", debounce(saveNote, 1000))
+    .find(".delete")
+    .on("click", deleteNote);
+
+  var notePatch = function(dom, data, success, error) {
+    var id = dom.data("id") || "";
+    var url = `${dom.data("url")}/${id}`;
+    var token = dom.closest("[data-token]").data("token");
+    $.ajax({
+      url: url,
+      type: id ? "PATCH" : "POST",
+      data: JSON.stringify({"note": data}),
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      headers: {
+        "X-CSRF-Token": token
+      },
+      success: function(result) {
+        if (success) success(result);
+      },
+      error: error
+    });
+  }
+
+
 });
+

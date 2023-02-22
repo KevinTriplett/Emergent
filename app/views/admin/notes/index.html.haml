@@ -1,0 +1,9 @@
+%h5= "Notes for #{@survey.name}"
+
+.d-flex.flex-wrap#notes-container{ data: {url: @url, token: @token} }
+  - @notes.each do |note|
+    = cell(Note::Cell::Grid, {note: note, url: @url})
+.hidden#note-template
+  = cell(Note::Cell::Grid, {note: @template_note, url: @url})
+
+%button.add.btn.btn-primary "New Note"
