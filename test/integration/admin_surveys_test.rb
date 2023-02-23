@@ -22,18 +22,20 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
+      survey = create_survey
       get admin_surveys_path
       assert_response :success
       assert_not_nil assigns(:surveys)
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Existing Surveys"
-      assert_select ".survey-name", existing_survey.name
-      assert_select "a", "edit"
-      assert_select "a", "questions"
-      assert_select "a", "delete"
-      assert_select "a", "New Survey"
+      assert_select ".survey-name", survey.name
+      assert_select "a[href=?]", edit_admin_survey_path(survey.id), "edit"
+      assert_select "a[href=?]", admin_survey_notes_path(survey.id), "notes"
+      assert_select "a[href=?]", admin_survey_path(survey.id), "questions"
+      assert_select "a[href=?]", admin_survey_path(survey.id), "del"
+      assert_select "a[href=?]", admin_survey_test_path(survey.id), "test"
+      assert_select "a[href=?]", new_admin_survey_path, "New Survey"
     end
   end
 
@@ -42,7 +44,7 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
+      survey = create_survey
       get new_admin_survey_path
       assert_response :success
 
@@ -50,6 +52,7 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
       assert_select "h5", "New Survey"
       assert_select '#survey_name'
       assert_select '#survey_description'
+      assert_select "input[type='submit'][value=?]", "Create Survey"
       assert_select "a", "Cancel"
     end
   end
@@ -59,18 +62,15 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
-      get edit_admin_survey_path(existing_survey.id)
+      survey = create_survey
+      get edit_admin_survey_path(survey.id)
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Editing Survey"
-      assert_select '#survey_name' do
-        assert_select "[value=?]", existing_survey.name
-      end
-      assert_select '#survey_description' do
-        assert_select "[value=?]", existing_survey.description
-      end
+      assert_select "#survey_name[value=?]", survey.name
+      assert_select "#survey_description[value=?]", survey.description
+      assert_select "input[type='submit'][value=?]", "Update Survey"
       assert_select "a", "Cancel"
     end
   end

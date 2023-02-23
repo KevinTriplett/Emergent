@@ -2,10 +2,9 @@ class SurveyInvite < ActiveRecord::Base
   belongs_to :user
   belongs_to :survey
   has_many :survey_answers
-  has_many :survey_questions, through: :survey
   has_secure_token
 
-  delegate :ordered_questions, to: :survey
+  delegate :survey_groups, to: :survey
 
   def update_state(key, write_to_database=true)
     return true if state && state >= STATUS[key]
@@ -15,16 +14,9 @@ class SurveyInvite < ActiveRecord::Base
     save
   end
 
-  def votes_total
-    votes = survey_answers.select do |answer| 
-      answer.update(vote_count: 0) unless answer.vote_count
-      "Vote" == answer.survey_question.answer_type
-    end.collect(&:vote_count)
-    votes.sum(0)
-  end
-
-  def votes_left
-    (survey.vote_max || 0) - votes_total
+  def votes_total(group_id)
+    group_answers = survey_answers.select { |sa| sa.survey_group_id == group_id }
+    group_answers.select { |sa| "Vote" == sa.answer_type }.collect(&:votes).sum(0)
   end
 
   def self.queued

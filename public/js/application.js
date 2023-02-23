@@ -547,20 +547,20 @@ $(document).ready(function() {
   hideUserList();
 
   ////////////////////////////////////////////////////
-  // SORTABLE SURVEY QUESTIONS
-  $("table.survey-questions #sortable")
+  // SORTABLE SURVEY ELEMENTS
+  $(".sortable")
     .sortable({
       stop: function(e, ui) {
         prevErrorMsgCount = errorMsgCount;
         ui
           .item
-          .closest("tbody")
-          .find("tr")
-          .each(function(i, tr) {
-            patch(tr, {position: i}, function(result) {
-              tr.dataset.position = result.model.position;
+          .closest(".sortable")
+          .find(".ui-state-default")
+          .each(function(i, dom) {
+            patch(dom, {position: i}, function(result) {
+              dom.dataset.position = result.model.position;
             }, function() {
-              $("#sortable").sortable("cancel");
+              $(".sortable").sortable("cancel");
               if (errorMsgCount == prevErrorMsgCount) alert("something went wrong -- ask Kevin");
               errorMsgCount++
             });

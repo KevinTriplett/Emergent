@@ -18,10 +18,9 @@ module Admin
     def create
       _ctx = run Survey::Operation::Create do |ctx|
         flash[:notice] = "Survey #{ctx[:model].name} was created"
-        return redirect_to new_admin_survey_survey_question_url(survey_id: ctx[:model].id)
+        return redirect_to new_admin_survey_survey_group_url(survey_id: ctx[:model].id)
       end
     
-      flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +28,7 @@ module Admin
     def show
       # show all questions in survey
       @survey = Survey.find(params[:id])
-      @survey_questions = @survey.ordered_questions
+      @survey_groups = @survey.ordered_groups
       @token = form_authenticity_token
     end
 
@@ -46,7 +45,6 @@ module Admin
         return redirect_to admin_survey_url(ctx[:model].id)
       end
     
-      flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end

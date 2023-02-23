@@ -1,35 +1,62 @@
-%h5 Survey Questions
+%h5 Survey Groups and Questions
 
-%p.survey-name
-  = "Survey: #{@survey.name}"
-  = link_to "edit", edit_admin_survey_path(@survey)
-  |
-  = link_to "notes", admin_survey_notes_path(survey_id: @survey.id)
-  |
-  = link_to "delete", admin_survey_path(@survey), data: { method: "delete", confirm: "Really delete survey?", token: @token }
-  |
-  = link_to "test", admin_survey_test_path(@survey)
+.row
+  .col
+    %p.survey-name
+      = link_to "edit", edit_admin_survey_path(@survey)
+      |
+      = link_to "notes", admin_survey_notes_path(survey_id: @survey.id)
+      |
+      = link_to "del", admin_survey_path(@survey), data: { method: "delete", confirm: "Really delete survey?", token: @token }
+      |
+      = link_to "test", admin_survey_test_path(@survey)
+      = "------"
+      = "Survey: #{@survey.name}"
 
-%table.survey-questions.table.table-bordered.table-striped
-  %thead
-    %tr
-      %th.action Actions
-      %th.question-type Question Type
-      %th.question Question
-      %th.answer-type Answer Type
-      %th.has-scale Scale?
-  %tbody#sortable
-    - @survey_questions.each do |sq|
-      %tr.ui-state-default{ data: {url: admin_survey_question_patch_url(sq.id), position: sq.position, id: sq.id, token: @token} }
-        %td.actions
-          = link_to "edit", edit_admin_survey_survey_question_path(sq.id, survey_id: @survey.id)
-          |
-          = link_to "del", admin_survey_survey_question_path(sq.id, survey_id: @survey.id), data: { method: "delete", confirm: "Really delete question?" }
-        %td.question-type= sq.question_type
-        %td.question= sq.question
-        %td.answer-type= sq.answer_type
-        %td.has-scale= sq.has_scale? ? "Yes" : "No"
-
-= link_to "New Question", new_admin_survey_survey_question_path(@survey.id), class: "btn btn-secondary"
-%br
-= link_to "Back", admin_surveys_path
+.row.survey-groups
+  .col.sortable
+    - @survey_groups.each do |sg|
+      - position_url = admin_survey_group_patch_path(sg.id)
+      .row.ui-state-default{ data: {url: position_url, position: sg.position, id: sg.id, token: @token} }
+        .col
+          .row
+            .col
+              %p.survey-group-name
+                = link_to "edit", edit_admin_survey_survey_group_path(sg.id, survey_id: @survey.id)
+                |
+                = link_to "del", admin_survey_survey_group_path(sg.id, survey_id: @survey.id), data: { method: "delete", confirm: "Really delete question?" }
+                = "----"
+                = "Group: #{sg.name}"
+          .row
+            .col
+              %table.survey-group.survey-questions.table.table-bordered.table-striped
+                %thead
+                  %tr
+                    %th.action Actions
+                    %th.question-type Question Type
+                    %th.question Question
+                    %th.answer-type Answer Type
+                    %th.has-scale Scale?
+                %tbody.sortable
+                  - sg.ordered_questions.each do |sq|
+                    - position_url = admin_survey_question_patch_path(sq.id)
+                    - edit_url = edit_admin_survey_survey_group_survey_question_path(sq.id, survey_id: @survey.id, survey_group_id: sg.id)
+                    - delete_url = admin_survey_survey_group_survey_question_path(sq.id, survey_id: @survey.id, survey_group_id: sg.id)
+                    %tr.ui-state-default{ data: {url: position_url, position: sq.position, id: sq.id, token: @token} }
+                      %td.actions
+                        = link_to "edit", edit_url
+                        |
+                        = link_to "del", delete_url, data: { method: "delete", confirm: "Really delete question?" }
+                      %td.question-type= sq.question_type
+                      %td.question= sq.question
+                      %td.answer-type= sq.answer_type
+                      %td.has-scale= sq.has_scale? ? "Yes" : "No"
+          .row
+            .col
+              - new_question_url = new_admin_survey_survey_group_survey_question_path(survey_id: @survey.id, survey_group_id: sg.id)
+              = link_to "New Question", new_question_url, class: "btn btn-secondary"
+.row
+  .col
+    = link_to "New Group", new_admin_survey_survey_group_path(@survey.id), class: "btn btn-secondary"
+    %br
+    = link_to "Back", admin_surveys_path

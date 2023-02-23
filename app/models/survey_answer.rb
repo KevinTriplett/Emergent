@@ -4,15 +4,26 @@ class SurveyAnswer < ActiveRecord::Base
   has_secure_token
 
   delegate :user, :survey, to: :survey_invite
-  delegate :question_type, :question, :has_scale?, :answer_type, to: :survey_question
+  delegate :question_type, :question, :has_scale?, :answer_type, :survey_group, :survey_group_id, to: :survey_question
 
   def votes
     vote_count || 0
   end
 
   def votes=(count)
-    return vote_count if count.nil?
-    count = [[0, count].max, survey_invite.votes_left].min
+    count = [[0, count || 0].max, (votes + votes_left)].min
     self.vote_count = count
+  end
+
+  def votes_left
+    votes_max - votes_total
+  end
+
+  def votes_max
+    survey_group.votes_max || 0
+  end
+
+  def votes_total
+    survey_invite.votes_total(survey_group_id) || 0
   end
 end

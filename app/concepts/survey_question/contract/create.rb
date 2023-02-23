@@ -2,7 +2,7 @@ module SurveyQuestion::Contract
   class Create < Reform::Form
     include Dry
 
-    property :survey_id
+    property :survey_group_id
     property :question_type
     property :question
     property :answer_type
@@ -13,7 +13,7 @@ module SurveyQuestion::Contract
 
     validation do
       params do
-        required(:survey_id).filled.value(:integer)
+        required(:survey_group_id).filled.value(:integer)
         required(:question_type).filled.value(:string)
         required(:question)
         required(:answer_type)

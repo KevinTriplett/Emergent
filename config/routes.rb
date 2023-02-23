@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   post "/admin/users/:token/approve", to: "admin/users#approve_user", as: :admin_approve_user
   get  "/admin/surveys/:id/test", to: "admin/surveys#test", as: :admin_survey_test
   post "/admin/survey_questions/:id/patch", to: "admin/survey_questions#patch", as: :admin_survey_question_patch
+  post "/admin/survey_groups/:id/patch", to: "admin/survey_groups#patch", as: :admin_survey_group_patch
 
   get "login/:token", to: "home#login", as: :login
   get "logout", to: "home#logout", as: :logout
@@ -12,15 +13,17 @@ Rails.application.routes.draw do
   get "unsubscribe/:token", to: "home#unsubscribe", as: :unsubscribe
   get "user_search", to: "admin/users#search", as: :user_search
   
-  get  "survey(/:token)(/:position)", to: "survey_invites#show", as: :survey
+  get  "survey(/:token)(/:group_position)(/:question_position)", to: "survey_invites#show", as: :survey
   post "survey/:token/patch(/:position)", to: "survey_invites#patch", as: :survey_answer_patch
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]
     resources :surveys do
-      resources :survey_questions, only: [:new, :create, :edit, :update, :destroy]
       resources :survey_invites, only: [:new, :create]
       resources :notes, only: [:index, :create, :update, :destroy]
+      resources :survey_groups, only: [:new, :create, :edit, :update, :destroy] do
+        resources :survey_questions, only: [:new, :create, :edit, :update, :destroy]
+      end
     end
   end
 

@@ -372,6 +372,24 @@ table.users, table.user {
   margin-bottom: 10px;
 }
 
+.survey-groups .sortable {
+  margin-bottom: 15px;
+}
+
+.sortable {
+  .ui-state-default .survey-group-name a,
+  .ui-state-default tr a {
+    text-decoration: underline;
+    color: rgb(77, 112, 250);
+      &:hover {
+      color: blue;
+    }
+  }
+  .ui-state-default a.btn {
+    color: white;
+  }
+}
+
 
 /* SPINNER ----------------------------------- */
 

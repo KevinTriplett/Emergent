@@ -1,0 +1,16 @@
+%h5 New Survey Group
+
+= simple_form_for @form, as: :survey_group, url: admin_survey_survey_groups_path(survey_id: @model.survey_id) do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :name, placeholder: "Name", label: false
+  .row
+    .col= f.input :description, placeholder: "Description", label: false
+  .row
+    .col= f.input :votes_max, placeholder: "Total Votes", label: false
+  .row
+    .col= f.button :submit, "Create Group", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_survey_path(@model.survey_id)
+

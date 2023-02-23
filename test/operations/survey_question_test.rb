@@ -17,9 +17,9 @@ class SurveyQuestionOperationTest < MiniTest::Spec
         scale_labels = "Hi/Lo"
         answer_labels = "Good/Bye"
 
-        existing_survey = create_survey
+        survey_group = create_survey_group
         result = create_survey_question_with_result({
-          survey: existing_survey,
+          survey_group: survey_group,
           question_type: question_type,
           question: question,
           answer_type: answer_type,
@@ -43,9 +43,9 @@ class SurveyQuestionOperationTest < MiniTest::Spec
 
     it "initializes answer_type" do
       DatabaseCleaner.cleaning do
-        existing_survey = create_survey
+        survey_group = create_survey_group
         result = create_survey_question_with_result({
-          survey: existing_survey,
+          survey_group: survey_group,
           question_type: "New Page"
         })
         assert result.success?
@@ -53,7 +53,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
         assert_equal "NA", survey_question_1.answer_type
 
         result = create_survey_question_with_result({
-          survey: existing_survey,
+          survey_group: survey_group,
           question_type: "Instructions"
         })
         assert result.success?
@@ -61,7 +61,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
         assert_equal "NA", survey_question_2.answer_type
 
         result = create_survey_question_with_result({
-          survey: existing_survey,
+          survey_group: survey_group,
           question_type: "Group Name"
         })
         assert result.success?
@@ -71,7 +71,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
         assert_nil survey_question_3.answer_labels
 
         result = create_survey_question_with_result({
-          survey: existing_survey,
+          survey_group: survey_group,
           question_type: "Branch",
           scale_labels: "",
           answer_labels: ""
@@ -96,7 +96,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
               scale_question: survey_question_1.scale_question,
               position: survey_question_1.position
             },
-            survey_id: existing_survey.id,
+            survey_group_id: survey_group.id,
             id: survey_question_1.id
           }
         )
@@ -118,7 +118,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
               scale_question: survey_question_1.scale_question,
               position: survey_question_1.position
             },
-            survey_id: existing_survey.id,
+            survey_group_id: survey_group.id,
             id: survey_question_1.id
           }
         )
@@ -140,7 +140,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
               scale_question: survey_question_1.scale_question,
               position: survey_question_1.position
             },
-            survey_id: existing_survey.id,
+            survey_group_id: survey_group.id,
             id: survey_question_1.id
           }
         )
@@ -162,7 +162,7 @@ class SurveyQuestionOperationTest < MiniTest::Spec
               scale_question: survey_question_1.scale_question,
               position: survey_question_1.position
             },
-            survey_id: existing_survey.id,
+            survey_group_id: survey_group.id,
             id: survey_question_1.id
           }
         )
@@ -176,18 +176,21 @@ class SurveyQuestionOperationTest < MiniTest::Spec
 
     it "Creates {SurveyQuestion} model with next question order" do
       DatabaseCleaner.cleaning do
-        existing_survey = create_survey
-        existing_question_1 = create_survey_question(survey: existing_survey)
-        assert_equal 0, existing_question_1.position
-        existing_question_2 = create_survey_question(survey: existing_survey)
-        assert_equal 1, existing_question_2.position
+        group_1 = create_survey_group
+        group_2 = create_survey_group(survey_id: group_1.survey_id)
+        question_1 = create_survey_question(survey_group: group_1)
+        assert_equal 0, question_1.position
+        question_2 = create_survey_question(survey_group: group_1)
+        assert_equal 1, question_2.position
+        question_3 = create_survey_question(survey_group: group_2)
+        assert_equal 0, question_3.position
       end
     end
 
     it "Updates {SurveyQuestion} with new order" do
       DatabaseCleaner.cleaning do
-        existing_survey = create_survey
-        existing_question = create_survey_question(survey: existing_survey)
+        survey_group = create_survey_group
+        existing_question = create_survey_question(survey_group: survey_group)
         new_position = existing_question.position + 1
         model_hash = {
           model: {

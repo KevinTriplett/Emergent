@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_21_203539) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_22_161759) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -56,6 +56,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_21_203539) do
     t.index ["survey_question_id"], name: "index_survey_answers_on_survey_question_id"
   end
 
+  create_table "survey_groups", force: :cascade do |t|
+    t.integer "survey_id"
+    t.string "name"
+    t.string "description"
+    t.integer "votes_max"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["survey_id"], name: "index_survey_groups_on_survey_id"
+  end
+
   create_table "survey_invites", force: :cascade do |t|
     t.integer "survey_id"
     t.integer "user_id"
@@ -74,24 +85,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_21_203539) do
   end
 
   create_table "survey_questions", force: :cascade do |t|
-    t.integer "survey_id"
     t.integer "position"
     t.string "question_type"
     t.text "question"
     t.string "answer_type"
     t.boolean "has_scale"
-    t.string "group_name"
     t.string "answer_labels"
     t.string "scale_labels"
     t.string "scale_question"
-    t.index ["survey_id"], name: "index_survey_questions_on_survey_id"
+    t.integer "survey_group_id"
+    t.index ["survey_group_id"], name: "index_survey_questions_on_survey_group_id"
   end
 
   create_table "surveys", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "locked"
-    t.integer "vote_max"
   end
 
   create_table "users", force: :cascade do |t|

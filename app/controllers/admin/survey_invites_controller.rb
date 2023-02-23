@@ -7,7 +7,6 @@ module Admin
       @survey = Survey.find(params[:survey_id])
       run SurveyInvite::Operation::Create::Present do |ctx|
         @form = ctx["contract.default"]
-        render
       end
     end
     
@@ -19,7 +18,6 @@ module Admin
       end
     
       @survey = Survey.find(params[:survey_id])
-      flash[:error] = _ctx[:flash] unless _ctx[:flash].blank?
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end

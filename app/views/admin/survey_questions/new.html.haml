@@ -1,6 +1,6 @@
 %h5 New Survey Question
 
-= simple_form_for @form, as: :survey_question, url: admin_survey_survey_questions_path do |f|
+= simple_form_for @form, as: :survey_question, url: admin_survey_survey_group_survey_questions_path(survey_group_id: @model.survey_group_id, survey_id: @model.survey_id) do |f|
   .row
     .col= f.error_notification
   .row#question-type

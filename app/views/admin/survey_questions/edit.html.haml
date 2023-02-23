@@ -1,6 +1,6 @@
 %h5 Edit Survey Question
 
-= simple_form_for @form, as: :survey_question, url: admin_survey_survey_question_path(@model.id, survey_id: @survey.id), method: :patch do |f|
+= simple_form_for @form, as: :survey_question, url: admin_survey_survey_group_survey_question_path(@model.id, survey_id: @survey.id, survey_group_id: @model.survey_group_id), method: :patch do |f|
   .row
     .col= f.error_notification
   .row#question-type

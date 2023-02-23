@@ -45,24 +45,25 @@ class SurveyInvitesController < ApplicationController
   private
 
   def get_survey
-    @position = params[:position].to_i
     @survey_invite = SurveyInvite.find_by_token(params[:token])
     return false if @survey_invite.nil? || @survey_invite.user.nil?
 
+    group_position = params[:group_position].to_i
+    question_position = params[:question_position].to_i
+    survey = @survey_invite.survey
+    survey_group = @survey_invite.survey_groups.where(position: group_position).first
+    survey_question = survey_group.survey_questions.where(position: question_position).first
+
+    @prev_group_pos, @prev_question_pos = survey.get_prev_page_start_positions(survey_question)
+    @next_group_pos, @next_question_pos = survey.get_next_page_start_positions(survey_question)
+
     @survey_questions = []
-    @prev_position = @next_position = 0
-    @survey_invite.ordered_questions.each do |question|
-      if question.position+1 < @position
-        @prev_position = question.position+1 if "New Page" == question.question_type
-      end
-      next if question.position < @position
-      if "New Page" == question.question_type
-        @next_position = question.position+1
-        break
-      end
+    survey_group.ordered_questions.each do |question|
+      next if question.position < question_position
+      break if "New Page" == question.question_type
       @survey_questions.push(question)
     end
-    true
+    !@survey_questions.empty?
   end
 
   def get_survey_answer

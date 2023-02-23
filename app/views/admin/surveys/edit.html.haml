@@ -8,8 +8,6 @@
   .row
     .col= f.input :description, placeholder: "Description", label: false
   .row
-    .col= f.input :vote_max, placeholder: "Total Votes", label: false
-  .row
     .col= f.button :submit, "Update Survey", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_surveys_path

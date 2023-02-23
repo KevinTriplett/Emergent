@@ -8,17 +8,17 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
-      get admin_survey_path(existing_survey.id)
+      survey = create_survey
+      get admin_survey_path(survey.id)
 
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\nnotes\n|\ndelete\n|\ntest"
+      assert_select "h5", "Survey Groups and Questions"
+      assert_select "p.survey-name", "edit\n|\nnotes\n|\ndel\n|\ntest\n------\nSurvey: #{survey.name}"
       assert_select ".survey-name a", "edit"
-      assert_select ".survey-name a", "delete"
+      assert_select ".survey-name a", "del"
       assert_select "table.survey-questions a", {count: 0, text: "edit"}
       assert_select "table.survey-questions a", {count: 0, text: "del"}
-      assert_select "a.btn", "New Question"
+      assert_select "a.btn", "New Group"
     end
   end
 
@@ -27,26 +27,25 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
-      existing_survey_question = create_survey_question({survey: existing_survey})
-      get admin_survey_path(existing_survey.id)
+      question = create_survey_question
+      get admin_survey_path(question.survey_id)
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h5", "Survey Questions"
-      assert_select "p.survey-name", "Survey: #{existing_survey.name}\nedit\n|\nnotes\n|\ndelete\n|\ntest"
-      assert_select "tr[data-url=?]", admin_survey_question_patch_url(existing_survey_question.id)
-      assert_select "tr[data-id=?]", existing_survey_question.id.to_s
-      assert_select "tr[data-position=?]", existing_survey_question.position.to_s
-      assert_select "td.question-type", existing_survey_question.question_type
-      assert_select "td.question", existing_survey_question.question
-      assert_select "td.answer-type", existing_survey_question.answer_type
-      assert_select "td.has-scale", existing_survey_question.has_scale? ? "Yes" : "No"
+      assert_select "h5", "Survey Groups and Questions"
+      assert_select "p.survey-name", "edit\n|\nnotes\n|\ndel\n|\ntest\n------\nSurvey: #{question.survey.name}"
+      assert_select "tr[data-url=?]", admin_survey_question_patch_path(question.id)
+      assert_select "tr[data-id=?]", question.id.to_s
+      assert_select "tr[data-position=?]", question.position.to_s
+      assert_select "td.question-type", question.question_type
+      assert_select "td.question", question.question
+      assert_select "td.answer-type", question.answer_type
+      assert_select "td.has-scale", question.has_scale? ? "Yes" : "No"
       assert_select "table.survey-questions a", "edit"
       assert_select "table.survey-questions a", "del"
-      assert_select "a", "New Question"
-      assert_select "a", "Back"
-      assert_select "a[href=?]", admin_surveys_path
+      assert_select "a.btn", "New Question"
+      assert_select "a.btn", "New Group"
+      assert_select "a[href=?]", admin_surveys_path, "Back"
     end
   end
 
@@ -55,8 +54,8 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
-      get new_admin_survey_survey_question_path(survey_id: existing_survey.id)
+      group = create_survey_group
+      get new_admin_survey_survey_group_survey_question_path(group.id, survey_id: group.survey_id)
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
@@ -69,7 +68,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       assert_select "#survey_question_answer_labels"
       assert_select "#survey_question_scale_labels"
       assert_select "#survey_question_scale_question"
-      assert_select "input[type=submit]"
+      assert_select "input[type='submit'][value=?]", "Create Question"
       assert_select "a", "Cancel"
     end
   end
@@ -79,34 +78,28 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      existing_survey = create_survey
-      existing_survey_question = create_survey_question(survey: existing_survey)
-      get edit_admin_survey_survey_question_path(existing_survey_question.id, survey_id: existing_survey.id)
+      question = create_survey_question
+      get edit_admin_survey_survey_group_survey_question_path(id: question.id, survey_id: question.survey_id, survey_group_id: question.survey_group_id)
       assert_response :success
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Edit Survey Question"
       assert_select "#survey_question_question_type" do
-        assert_select "[value=?]", existing_survey_question.question_type
+        assert_select "[value=?]", question.question_type
       end
       assert_select "#survey_question_answer_type" do
-        assert_select "[value=?]", existing_survey_question.answer_type
+        assert_select "[value=?]", question.answer_type
       end
-      assert_select "#survey_question_question", existing_survey_question.question
+      assert_select "#survey_question_question", question.question
       assert_select "#survey_question_has_scale[checked]", false
-      assert_select "#survey_question_answer_labels" do
-        assert_select "[value=?]", existing_survey_question.answer_labels
-      end
-      assert_select "#survey_question_scale_labels" do
-        assert_select "[value=?]", existing_survey_question.scale_labels
-      end
-      assert_select "#survey_question_scale_question" do
-        assert_select "[value=?]", existing_survey_question.scale_question
-      end
+      assert_select "#survey_question_answer_labels[value=?]", question.answer_labels
+      assert_select "#survey_question_scale_labels[value=?]", question.scale_labels
+      assert_select "#survey_question_scale_question[value=?]", question.scale_question
+      assert_select "input[type='submit'][value=?]", "Update Question"
       assert_select "a", "Cancel"
 
-      existing_survey_question.update(has_scale: true)
-      get edit_admin_survey_survey_question_path(existing_survey_question.id, survey_id: existing_survey.id)
+      question.update(has_scale: true)
+      get edit_admin_survey_survey_group_survey_question_path(question.id, survey_id: question.survey_id, survey_group_id: question.survey_group_id)
       assert_select "#survey_question_has_scale[checked]", true
     end
   end
