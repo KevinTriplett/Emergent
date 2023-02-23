@@ -57,6 +57,7 @@ SURVEYS
 - [ ] create nice user interface for surveys
 - [ ] rules for question branching / skipping
 - [ ] disable buttons until ajax calls resolve
+- [ ] rename notes to survey_notes
 GREETER APP
 - [ ] request declined status is not visible in member request to join
 - [ ] default to only pending and greeter-picked entries
