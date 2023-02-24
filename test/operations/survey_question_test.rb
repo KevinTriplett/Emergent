@@ -189,18 +189,34 @@ class SurveyQuestionOperationTest < MiniTest::Spec
 
     it "Updates {SurveyQuestion} with new order" do
       DatabaseCleaner.cleaning do
-        survey_group = create_survey_group
-        existing_question = create_survey_question(survey_group: survey_group)
-        new_position = existing_question.position + 1
+        group = create_survey_group
+        question = create_survey_question(survey_group: group)
+        new_position = question.position + 1
         model_hash = {
           model: {
             position: new_position
           },
-          id: existing_question.id
+          id: question.id
         }
         result = SurveyQuestion::Operation::Patch.call(params: model_hash)
         assert result.success?
-        assert_equal new_position, existing_question.reload.position
+        assert_equal new_position, question.reload.position
+      end
+    end
+
+    it "Deletes {SurveyQuestion} and restores order" do
+      DatabaseCleaner.cleaning do
+        group = create_survey_group
+        question_1 = create_survey_question(survey_group: group)
+        question_2 = create_survey_question(survey_group: group)
+        question_3 = create_survey_question(survey_group: group)
+
+        result = SurveyQuestion::Operation::Delete.call(params: {id: question_2.id})
+        assert result.success?
+        assert_equal 2, SurveyQuestion.all.count
+        assert_equal 0, question_1.reload.position
+        assert_equal 1, question_3.reload.position
+
       end
     end
 

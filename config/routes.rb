@@ -13,8 +13,9 @@ Rails.application.routes.draw do
   get "unsubscribe/:token", to: "home#unsubscribe", as: :unsubscribe
   get "user_search", to: "admin/users#search", as: :user_search
   
-  get  "survey(/:token)(/:group_position)(/:question_position)", to: "survey_invites#show", as: :survey
-  post "survey/:token/patch(/:position)", to: "survey_invites#patch", as: :survey_answer_patch
+  # yes, these parameters need to be optional because they will be added by js in the view
+  get  "survey(/:token)(/:group_position/:question_position)", to: "survey_invites#show", as: :survey
+  post "survey/:token/patch(/:group_position/:question_position)", to: "survey_invites#patch", as: :survey_answer_patch
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]

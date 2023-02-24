@@ -860,9 +860,10 @@ $(document).ready(function() {
 
   var surveyAnswerPatch = function(dom, data, success, error) {
     var urlDom = dom.closest("[data-url]");
-    var position = dom.closest("[data-position]").data("position");
+    var groupPosition = dom.closest("[data-group-position]").data("group-position");
+    var questionPosition = dom.closest("[data-question-position]").data("question-position");
     var token = urlDom.data("token");
-    var url = `${urlDom.data("url")}/${position}`;
+    var url = `${urlDom.data("url")}/${groupPosition}/${questionPosition}`;
     $.ajax({
       url: url,
       type: "POST",
@@ -967,7 +968,4 @@ $(document).ready(function() {
       error: error
     });
   }
-
-
 });
-

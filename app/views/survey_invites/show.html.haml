@@ -1,18 +1,19 @@
 %p.survey-name= "Survey: #{@survey_invite.survey.name}"
 %p.survey-description= @survey_invite.survey.description
 
-.row.survey{ data: {url: @url, token: @token} }
+.row.survey{ data: {url: @patch_url, token: @token} }
   .col
-    - @survey_questions.each do |sq|
-      = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})
+    .row.survey-group
+      .col
+        %p.survey-group-name= @survey_group.name
+        %p.survey-group-description= @survey_group.description
+    .row.survey-questions
+      .col
+        - @survey_questions.each do |sq|
+          = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})
 
-.row.survey-answer-links
-  .col
-    - at_beginning = @survey_invite.survey.at_beginning?(@survey_questions.first)
-    - at_ending = @survey_invite.survey.at_ending?(@survey_questions.last)
-    - prev_url = survey_path(token: @survey_invite.token, group_position: @prev_group_pos, question_position: @prev_question_pos)
-    - next_url = survey_path(token: @survey_invite.token, group_position: @next_group_pos, question_position: @next_question_pos)
-    - finish_url = survey_path(token: @survey_invite.token, group_position: -1, question_position: -1)
-    = link_to "< Prev", prev_url, class: "btn btn-warning" unless at_beginning
-    = link_to "Next >", next_url, class: "btn btn-success" unless at_ending
-    = link_to "Finish", finish_url, class: "btn btn-primary" if at_ending
+    .row.survey-answer-links
+      .col
+        = link_to "< Prev", @prev_url, class: "btn btn-warning" if @prev_url
+        = link_to "Next >", @next_url, class: "btn btn-success" if @next_url
+        = link_to "Finish", @finish_url, class: "btn btn-primary" if @finish_url

@@ -4,6 +4,24 @@ class SurveyQuestion < ActiveRecord::Base
 
   delegate :survey, :survey_id, :ordered_questions, to: :survey_group
 
+  QUESTION_TYPES = [
+    "Question",
+    "Instructions",
+    "New Page",
+    "Group Name",
+    "Branch"
+  ]
+  ANSWER_TYPES = [
+    "Yes/No",
+    "Multiple Choice",
+    "Essay",
+    "Rating",
+    "Range",
+    "Number",
+    "Vote",
+    "NA"
+  ]
+
   def group_position
     survey_group.position
   end
@@ -31,23 +49,5 @@ class SurveyQuestion < ActiveRecord::Base
       sq.question_type == "New Page"
     end
   end
-
-  QUESTION_TYPES = [
-    "Question",
-    "Instructions",
-    "New Page",
-    "Group Name",
-    "Branch"
-  ]
-  ANSWER_TYPES = [
-    "Yes/No",
-    "Multiple Choice",
-    "Essay",
-    "Rating",
-    "Range",
-    "Number",
-    "Vote",
-    "NA"
-  ]
 end
   

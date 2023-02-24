@@ -9,11 +9,11 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def survey_question
     model[:survey_question]
   end
-  def position
-    survey_question.position
+  def group_position
+    survey_question.group_position
   end
-  def name
-    "sq#{position}"
+  def question_position
+    survey_question.position
   end
 
   def question_type_class
@@ -44,8 +44,12 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     end
   end
 
+  def name
+    "sq-#{group_position}-#{question_position}"
+  end
+
   def row_id
-    "survey-question-#{position}"
+    "survey-question-#{group_position}-#{question_position}"
   end
 
   def answer_type?
