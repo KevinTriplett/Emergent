@@ -1,7 +1,6 @@
 class Survey < ActiveRecord::Base
   has_many :survey_groups
   has_many :survey_questions, through: :survey_groups
-  has_many :notes
   has_many :survey_invites
   has_many :users, through: :survey_invites
 
@@ -16,10 +15,14 @@ class Survey < ActiveRecord::Base
     survey_groups.order(position: :asc)
   end
 
-  def last_note_category
-    default_category = "Category Name"
-    return default_category if notes.blank?
-    notes.order(created_at: :asc).last.category || default_category
+  def notes
+    survey_groups.collect(&:notes).flatten
+  end
+
+  def last_note_survey_group
+    default_group = survey_groups.first
+    return default_group if notes.blank?
+    Note.where(survey_group_id: survey_groups.collect(&:id)).order(created_at: :asc).last.survey_group
   end
 
   def first_group?(group_position)

@@ -5,7 +5,7 @@
     %p.survey-name
       = link_to "edit", edit_admin_survey_path(@survey)
       |
-      = link_to "notes", admin_survey_notes_path(survey_id: @survey.id)
+      = link_to "notes", admin_survey_notes_path(@survey.id)
       |
       = link_to "del", admin_survey_path(@survey), data: { method: "delete", confirm: "Really delete survey?", token: @token }
       |

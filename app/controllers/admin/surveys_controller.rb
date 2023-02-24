@@ -57,6 +57,18 @@ module Admin
       return head(:bad_request)
     end
 
+    def new_note
+      survey = Survey.find(params[:survey_id])
+      group = survey.last_note_survey_group
+      run Note::Operation::Create, survey_group_id: group.id do |ctx|
+        return render json: { 
+          note: ctx[:model],
+          group_name: group.name
+        }
+      end
+      return head(:bad_request)
+    end
+
     def test
       url = survey_url
       _ctx = run Survey::Operation::Test, current_user: current_user, url: url do |ctx|

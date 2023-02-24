@@ -13,20 +13,38 @@ class NotesTest < ApplicationSystemTestCase
 
   test "Admin can access, add, change and delete survey notes" do
     DatabaseCleaner.cleaning do
-      survey = create_survey
+      group_1 = create_survey_group
+      survey = group_1.survey
+      group_2 = create_survey_group(survey: survey)
       admin = login
 
-      visit admin_survey_notes_path(survey_id: survey.id)
-      assert_current_path admin_survey_notes_path(survey_id: survey.id)
+      visit admin_survey_notes_path(survey.id)
+      assert_current_path admin_survey_notes_path(survey.id)
       
       assert_selector "#notes-container .note", count: 0
       click_on "Add Note"
+      sleep 1
+      assert_equal 1, survey.reload.notes.count
+      note = survey.notes.first
+      assert_equal "Click here to edit", note.text
+      assert_equal group_1.name, note.reload.group_name
+      assert_selector ".note .note-text", text: note.text
+      assert_selector ".ui-selectmenu-text", text: group_1.name
 
       within("#notes-container") do
         assert_selector ".note", count: 1
-        find(".note button.delete").click
+        message = dismiss_prompt do
+          find(".note button.delete").click
+        end
+        assert_equal "Are you sure you want to delete this note?", message
+        assert_selector ".note", count: 1
+        accept_prompt do
+          find(".note button.delete").click
+        end
         assert_selector ".note", count: 0
       end
+      sleep 1
+      assert survey.reload.notes.empty?
 
       click_on "Add Note"
 
@@ -34,27 +52,14 @@ class NotesTest < ApplicationSystemTestCase
         assert_selector ".note", count: 1
         find(".note .note-text").click
         find(".note .note-text").send_keys([:command, "a"], "What is this?")
+
+        find(".note-group-name .ui-selectmenu-text").click
+        find(".ui-menu-item-wrapper", text: group_2.name, exact_text: true).click
+        assert_selector ".ui-selectmenu-text", text: group_2.name
         sleep 1
         note = survey.notes.first
         assert_equal "What is this?", note.text
-
-        find(".note .note-category").click
-        find(".note .note-category").send_keys([:command, "a"], "Dogegory")
-        sleep 1
-        assert_equal "Dogegory", note.reload.category
-
-        message = dismiss_prompt do
-          find(".note button.delete").click
-        end
-        assert_equal "Are you sure you want to delete this note?", message
-        sleep 1
-        assert_equal note.id, survey.reload.notes.first.id
-
-        accept_prompt do
-          find(".note button.delete").click
-        end
-        sleep 1
-        assert survey.reload.notes.empty?
+        assert_equal group_2.name, note.reload.group_name
       end
     end
   end

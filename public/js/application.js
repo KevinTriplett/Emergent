@@ -547,7 +547,7 @@ $(document).ready(function() {
   hideUserList();
 
   ////////////////////////////////////////////////////
-  // SORTABLE SURVEY ELEMENTS
+  // SORTABLE ELEMENTS
   $(".sortable")
     .sortable({
       stop: function(e, ui) {
@@ -893,11 +893,11 @@ $(document).ready(function() {
 
   var saveNote = function(e) {
     var note = $(this);
-    var category = note.find(".note-category").text();
+    var group_name = note.find(".note-group-name").text();
     var text = note.find(".note-text").text();
-    if (text == note.data("text") && category == note.data("category")) return;
+    if (text == note.data("text") && group_name == note.data("group-name")) return;
     var data = {
-      category: category,
+      group_name: group_name,
       text: text
     }
     notePatch(note, data, function(result) {
@@ -908,7 +908,7 @@ $(document).ready(function() {
         note.find("button.delete").data("url", deleteUrl + result.note.id);
       }
       note.data("text", result.note.text);
-      note.data("category", result.note.category);
+      note.data("group-name", result.group_name);
     }, function() {
       flash(note.find(".bi-exclamation"));
     });
@@ -931,12 +931,37 @@ $(document).ready(function() {
   }
 
   $("body#notes button.add").on("click", function(e) {
-    var note = $("#note-template").find(".note").clone();
-    note.removeAttr("id").removeClass("hidden");
-    $("#notes-container").append(note);
-    note.show();
-    note.on("keydown", debounce(saveNote, 500));
-    note.find(".delete").on("click", deleteNote);
+    var url = this.dataset["url"];
+    $.ajax({
+      url: url,
+      type: "GET",
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      success: function(result) {
+        var note = $("#notes-container").find(".note").clone();
+        note
+          .find(".note-text")
+          .text(result.note.text);
+        note
+          .find(".note-group-name select")
+          .val(result.group_name)
+          .on("change", saveNote);
+        note
+          .find(".note-group-name .ui-selectmenu-text")
+          .text(result.group_name);
+        note
+          .on("keydown", debounce(saveNote, 500))
+          .find(".delete")
+          .on("click", deleteNote)
+          .attr("style", `background-color: ${result.note.color};`);
+        $("#notes-container").append(note);
+      },
+      function() {
+        alert("something went wrong -- ask Kevin");
+      }
+    });
+
   });
   
   $("body#notes").on("keydown", function(e) {

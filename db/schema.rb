@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_22_161759) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_24_080054) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -22,14 +22,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_161759) do
   end
 
   create_table "notes", force: :cascade do |t|
-    t.integer "survey_id"
-    t.string "category"
     t.string "text"
     t.string "coords"
     t.string "color"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["survey_id"], name: "index_notes_on_survey_id"
+    t.integer "survey_group_id"
+    t.integer "position"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -78,6 +77,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_161759) do
     t.integer "state"
     t.datetime "state_timestamp"
     t.string "url"
+    t.boolean "enable_notes"
     t.index ["state"], name: "index_survey_invites_on_state"
     t.index ["survey_id"], name: "index_survey_invites_on_survey_id"
     t.index ["token"], name: "index_survey_invites_on_token"
@@ -101,6 +101,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_161759) do
     t.string "name"
     t.string "description"
     t.boolean "locked"
+    t.boolean "live_view"
   end
 
   create_table "users", force: :cascade do |t|

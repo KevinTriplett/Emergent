@@ -3,17 +3,18 @@ require 'test_helper'
 class SurveyTest < MiniTest::Spec
   DatabaseCleaner.clean
 
-  it "gets the last note group" do
+  it "gets the last note survey group" do
     DatabaseCleaner.cleaning do
-      survey = create_survey
-      assert_equal "Category Name", survey.last_note_category
+      group_1 = create_survey_group
+      survey = group_1.survey
+      assert_equal group_1.name, survey.last_note_survey_group.name
+      group_2 = create_survey_group(survey: survey)
+      assert_equal group_1.name, survey.last_note_survey_group.name
 
-      note_1 = create_note(survey: survey, category: "this 1")
-      assert_equal "this 1", survey.reload.last_note_category
-      note_2 = create_note(survey: survey, category: "this 2")
-      assert_equal "this 2", survey.reload.last_note_category
-      note_3 = create_note(survey: survey, category: "this 3")
-      assert_equal "this 3", survey.reload.last_note_category
+      create_note(survey: survey, survey_group: group_2)
+      assert_equal group_2.name, survey.reload.last_note_survey_group.name
+      create_note(survey: survey, survey_group: group_1)
+      assert_equal group_1.name, survey.reload.last_note_survey_group.name
     end
   end
 

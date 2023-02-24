@@ -15,7 +15,6 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
       assert_select "h5", "Notes for #{survey.name}"
       assert_select "button.add", count: 1
       assert_select "#notes-container .note", count: 0
-      assert_select "#note-template.hidden .note", count: 1
     end
   end
 
@@ -24,14 +23,13 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      survey = create_survey
+      group = create_survey_group
+      survey = group.survey
       text = "What's all this then?"
-      category = "dogatory"
       color = "#123456"
       note = create_note({
-        survey: survey,
+        survey_group_id: group.id,
         text: text,
-        category: category,
         color: color
       })
       get admin_survey_notes_path(survey.id)
@@ -41,9 +39,8 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
       assert_select "button.add", count: 1
       assert_select "#notes-container .note", count: 1
       assert_select "#notes-container .note .note-text", text
-      assert_select "#notes-container .note .note-category", category
+      assert_select "#notes-container .note .note-group-name", group.name
       assert_select "#notes-container .note[style='background-color: #{color};']", count: 1
-      assert_select "#note-template.hidden .note", count: 1
     end
   end
 end

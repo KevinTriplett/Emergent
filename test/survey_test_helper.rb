@@ -134,22 +134,23 @@ def create_survey_answer(params = {})
 end
 
 def create_note_with_result(params = {})
-  survey_id = params[:survey_id] || (params[:survey] && params[:survey].id) || create_survey.id
+  survey_group_id = params[:survey_group_id] || 
+    (params[:survey_group] && params[:survey_group].id) || 
+    create_survey_group.id
   Note::Operation::Create.call(
     params: {
       note: {
-        category: params[:category],
+        survey_group_id: survey_group_id,
         text: params[:text],
         color: params[:color],
         coords: params[:coords]
       },
-      survey_id: survey_id
+      survey_group_id: survey_group_id
     }
   )
 end
 
 def create_note(params = {})
-  params[:category] ||= "Category Name"
   params[:text] ||= "this is the text"
   params[:color] ||= "#ffffff"
   params[:coords] ||= "10:10"

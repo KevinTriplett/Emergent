@@ -9,12 +9,12 @@ class NoteOperationTest < MiniTest::Spec
     # happy path tests
     it "Creates {Note} model when given valid attributes" do
       DatabaseCleaner.cleaning do
-        category = "what a category"
+        group = create_survey_group
         text = "what is this text?"
         color = "#000000"
         coords = "1234:4321"
         result = create_note_with_result({
-          category: category, 
+          survey_group_id: group.id,
           text: text,
           color: color,
           coords: coords
@@ -22,10 +22,11 @@ class NoteOperationTest < MiniTest::Spec
 
         assert result.success?
         note = result[:model]
-        assert_equal category, note.category
+        assert_equal group.name, note.group_name
         assert_equal text, note.text
         assert_equal color, note.color
         assert_equal coords, note.coords
+        assert_equal 0, note.position
       end
     end
 
@@ -41,7 +42,8 @@ class NoteOperationTest < MiniTest::Spec
     it "Fails with no text attribute" do
       DatabaseCleaner.cleaning do
         result = create_note_with_result({
-          text: ""
+          text: "",
+          survey_group_id: 0
         })
 
         assert !result.success?
@@ -49,14 +51,14 @@ class NoteOperationTest < MiniTest::Spec
       end
     end
 
-    it "Fails with no category attribute" do
+    it "Fails with no survey_group attribute" do
       DatabaseCleaner.cleaning do
         result = create_note_with_result({
-          category: ""
+          survey_group_id: ""
         })
 
         assert !result.success?
-        assert_equal(["category must be filled"], result["contract.default"].errors.full_messages_for(:category))
+        assert_equal(["survey_group_id must be filled"], result["contract.default"].errors.full_messages_for(:survey_group_id))
       end
     end
   end

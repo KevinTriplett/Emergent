@@ -6,8 +6,14 @@ class Note::Cell::Grid < Cell::ViewModel
   def note
     model[:note]
   end
+  def group_name
+    note.group_name
+  end
+  def new_url
+    model[:new_url]
+  end
   def patch_url
-    model[:url]
+    model[:patch_url]
   end
   def delete_url
     "#{model[:url]}/#{note.id}"
@@ -17,8 +23,8 @@ class Note::Cell::Grid < Cell::ViewModel
     note.text
   end
 
-  def category
-    note.category
+  def survey_group_names
+    note.ordered_groups.collect(&:name)
   end
   
   def coords

@@ -2,7 +2,7 @@ class SurveyQuestion < ActiveRecord::Base
   belongs_to :survey_group
   has_many :survey_answers
 
-  delegate :survey, :survey_id, :ordered_questions, to: :survey_group
+  delegate :survey, :survey_id, :survey_questions, :ordered_questions, to: :survey_group
 
   QUESTION_TYPES = [
     "Question",

@@ -38,7 +38,7 @@ module SurveyQuestion::Operation
     step Contract::Persist()
 
     def determine_position(ctx, model:, **)
-      model.position = model.ordered_questions.count
+      model.position = model.survey_questions.count
       true
     end
   end

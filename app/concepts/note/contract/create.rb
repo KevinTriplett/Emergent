@@ -3,8 +3,7 @@ module Note::Contract
     include Dry
 
     property :id
-    property :survey_id
-    property :category
+    property :survey_group_id
     property :text
     property :color
     property :coords
@@ -12,8 +11,7 @@ module Note::Contract
     validation do
       params do
         required(:id)
-        required(:survey_id)
-        required(:category).filled.value(:string)
+        required(:survey_group_id).filled.value(:integer)
         required(:text).filled.value(:string)
       end
     end
