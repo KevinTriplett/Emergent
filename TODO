@@ -52,6 +52,15 @@ SURVEYS
 - [X] add admin interface for sending survey invites (show survey view?)
 - [X] create survey invites with tokens to prevent hacking a survey
 - [X] slider for answers (where are you on the practices v. social)
+- [X] associate notes to a survey_group
+- [ ] notes have dropdown for assigning to group (make sure notes update positions when moving)
+- [ ] enable sortable notes
+- [ ] survey_invite has a notes link when enabled (flag on survey_invite enables this link)
+- [ ] use a handwriting font for notes
+- [ ] voting on note (up / down)
+- [ ] survey has live view flag to update notes every 5 seconds
+- [ ] notes have a way to show total votes from others
+- [ ] add more tests
 - [ ] use markdown for survey questions and instructions
 - [ ] allow groups for survey questions and notes
 - [ ] create nice user interface for surveys
