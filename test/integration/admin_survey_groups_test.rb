@@ -61,6 +61,7 @@ class AdminSurveyGroupsTest < ActionDispatch::IntegrationTest
       assert_select '#survey_group_name'
       assert_select '#survey_group_description'
       assert_select '#survey_group_votes_max'
+      assert_select '#survey_group_note_color'
       assert_select "input[type='submit'][value=?]", "Create Group"
       assert_select "a", "Cancel"
     end
@@ -81,6 +82,7 @@ class AdminSurveyGroupsTest < ActionDispatch::IntegrationTest
       assert_select "#survey_group_name[value=?]", group.name
       assert_select "#survey_group_description[value=?]", group.description
       assert_select "#survey_group_votes_max[value=?]", group.votes_max.to_s
+      assert_select "#survey_group_note_color[value=?]", group.note_color
       assert_select "input[type='submit'][value=?]", "Update Group"
       assert_select "a", "Cancel"
     end

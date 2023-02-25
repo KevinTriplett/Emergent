@@ -10,6 +10,8 @@
   .row
     .col= f.input :votes_max, placeholder: "Total Votes", label: false
   .row
+    .col= f.input :note_color, placeholder: "Notes Color (rgb)", label: false
+  .row
     .col= f.button :submit, "Create Group", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_survey_path(@model.survey_id)

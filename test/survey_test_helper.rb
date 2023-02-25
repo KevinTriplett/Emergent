@@ -36,7 +36,8 @@ def create_survey_group_with_result(params = {})
       survey_group: {
         name: params[:name],
         description: params[:description],
-        votes_max: params[:votes_max]
+        votes_max: params[:votes_max],
+        note_color: params[:note_color]
       },
       survey_id: survey_id
     }
@@ -48,6 +49,7 @@ def create_survey_group(params = {})
   params[:name] ||= random_survey_name
   params[:description] ||= "this is the survey group description"
   params[:votes_max] ||= 5
+  params[:note_color] ||= "#aabb44"
   create_survey_group_with_result(params)[:model]
 end
 
@@ -141,7 +143,6 @@ def create_note_with_result(params = {})
     params: {
       note: {
         text: params[:text],
-        color: params[:color],
         coords: params[:coords]
       }
     },
@@ -151,7 +152,6 @@ end
 
 def create_note(params = {})
   params[:text] ||= "this is the text"
-  params[:color] ||= "#ffffff"
   params[:coords] ||= "10:10"
   create_note_with_result(params)[:model]
 end
