@@ -53,8 +53,8 @@ SURVEYS
 - [X] create survey invites with tokens to prevent hacking a survey
 - [X] slider for answers (where are you on the practices v. social)
 - [X] associate notes to a survey_group
-- [ ] notes have dropdown for assigning to group (make sure notes update positions when moving)
-- [ ] enable sortable notes
+- [X] notes have dropdown for assigning to group (make sure notes update positions when moving)
+- [X] enable sortable notes
 - [ ] survey_invite has a notes link when enabled (flag on survey_invite enables this link)
 - [ ] use a handwriting font for notes
 - [ ] voting on note (up / down)
