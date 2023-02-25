@@ -54,13 +54,13 @@ class NotesTest < ApplicationSystemTestCase
         find(".note .note-text").send_keys([:command, "a"], "What is this?")
 
         find(".note-group-name .ui-selectmenu-text").click
-        find(".ui-menu-item-wrapper", text: group_2.name, exact_text: true).click
-        assert_selector ".ui-selectmenu-text", text: group_2.name
-        sleep 1
-        note = survey.notes.first
-        assert_equal "What is this?", note.text
-        assert_equal group_2.name, note.reload.group_name
       end
+      find(".ui-menu-item-wrapper", text: group_2.name, exact_text: true).click
+      assert_selector "#notes-container .ui-selectmenu-text", text: group_2.name
+      sleep 1
+      note = survey.notes.first
+      assert_equal "What is this?", note.text
+      assert_equal group_2.name, note.reload.group_name
     end
   end
 end

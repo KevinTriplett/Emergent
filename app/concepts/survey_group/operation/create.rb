@@ -4,10 +4,15 @@ module SurveyGroup::Operation
     class Present < Trailblazer::Operation
       step Model(SurveyGroup, :new)
       step :initialize_survey_id
+      step :initialize_note_color
       step Contract::Build(constant: SurveyGroup::Contract::Create)
 
       def initialize_survey_id(ctx, model:, params:, **)
         params[:survey_id] && model.survey_id = params[:survey_id]
+      end
+
+      def initialize_note_color(ctx, model:, params:, **)
+        model.note_color = params[:note_color] || "#FFFF99"
       end
     end
     

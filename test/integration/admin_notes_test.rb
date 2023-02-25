@@ -23,14 +23,12 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      group = create_survey_group
+      group = create_survey_group(color: "#123456")
       survey = group.survey
       text = "What's all this then?"
-      color = "#123456"
       note = create_note({
         survey_group_id: group.id,
-        text: text,
-        color: color
+        text: text
       })
       get admin_survey_notes_path(survey.id)
 
@@ -40,7 +38,7 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
       assert_select "#notes-container .note", count: 1
       assert_select "#notes-container .note .note-text", text
       assert_select "#notes-container .note .note-group-name", group.name
-      assert_select "#notes-container .note[style='background-color: #{color};']", count: 1
+      assert_select "#notes-container .note[style='background-color: #{group.note_color};']", count: 1
     end
   end
 end
