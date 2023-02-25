@@ -66,9 +66,6 @@ class SurveyInvitesController < ApplicationController
     @survey = @survey_invite.survey
     @survey_group = @survey_invite.survey_groups.where(position: group_position).first
     @survey_question = @survey_group.survey_questions.where(position: question_position).first
-    puts "question = #{question_position}"
-    puts "group = #{group_position}"
-    puts "question = #{@survey_question.inspect}"
 
     @survey_questions = []
     @survey_group.ordered_questions.collect do |question|
