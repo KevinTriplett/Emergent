@@ -33,7 +33,8 @@ class SurveyInvitesController < ApplicationController
       answer: survey_answer.reload.answer,
       scale: survey_answer.scale,
       vote_count: survey_answer.vote_count,
-      votes_left: survey_answer.votes_left
+      votes_left: survey_answer.votes_left,
+      group_position: survey_answer.group_position
     }) : (render head(:bad_request))
   end
 
@@ -65,6 +66,9 @@ class SurveyInvitesController < ApplicationController
     @survey = @survey_invite.survey
     @survey_group = @survey_invite.survey_groups.where(position: group_position).first
     @survey_question = @survey_group.survey_questions.where(position: question_position).first
+    puts "question = #{question_position}"
+    puts "group = #{group_position}"
+    puts "question = #{@survey_question.inspect}"
 
     @survey_questions = []
     @survey_group.ordered_questions.collect do |question|

@@ -555,7 +555,7 @@ $(document).ready(function() {
         ui
           .item
           .closest(".sortable")
-          .find(".ui-state-default")
+          .find("> .ui-state-default")
           .each(function(i, dom) {
             patch(dom, {position: i}, function(result) {
               dom.dataset.position = result.model.position;
@@ -855,7 +855,11 @@ $(document).ready(function() {
     data = (self.hasClass("vote-up") ? data+1 : data-1);
     surveyAnswerPatch(self, {votes: data}, function(result) {
       count.text(` ${result.vote_count}`);
-      self.parent().find(".votes-left").text(result.votes_left);
+      self
+        .closest(".survey")
+        .find(`.survey-answer-vote[data-group-position='${result.group_position}']`)
+        .find(".votes-left")
+        .text(result.votes_left);
     });
   });
 

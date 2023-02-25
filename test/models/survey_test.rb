@@ -49,14 +49,14 @@ class SurveyTest < MiniTest::Spec
       question_0_3 = create_survey_question(survey_group: group_0, question_type: "New Page")
       question_0_4 = create_survey_question(survey_group: group_0)
       question_1_0 = create_survey_question(survey_group: group_1, question_type: "New Page")
-      question_1_1 = create_survey_question(survey_group: group_1, question_type: "New Page")
+      question_1_1 = create_survey_question(survey_group: group_1)
       question_1_2 = create_survey_question(survey_group: group_1)
       question_1_3 = create_survey_question(survey_group: group_1)
       question_1_4 = create_survey_question(survey_group: group_1)
       question_2_0 = create_survey_question(survey_group: group_2)
       question_2_1 = create_survey_question(survey_group: group_2, question_type: "New Page")
       question_2_2 = create_survey_question(survey_group: group_2)
-      question_2_3 = create_survey_question(survey_group: group_2, question_type: "New Page")
+      question_2_3 = create_survey_question(survey_group: group_2)
       question_2_4 = create_survey_question(survey_group: group_2, question_type: "New Page")
       question_3_0 = create_survey_question(survey_group: group_3)
       question_3_1 = create_survey_question(survey_group: group_3)
@@ -72,25 +72,22 @@ class SurveyTest < MiniTest::Spec
       assert_equal [-1, -1], survey.get_prev_page_start_positions(question_0_0)
       assert_equal [0, 4], survey.get_next_page_start_positions(question_0_0)
 
-      # TODO: test for this wacked condition
-      # assert_equal [0, 4], survey.get_prev_page_start_positions(question_1_2)
-      # assert_equal [2, 0], survey.get_next_page_start_positions(question_1_2)
+      assert_equal [0, 4], survey.get_prev_page_start_positions(question_1_1)
+      assert_equal [2, 0], survey.get_next_page_start_positions(question_1_2)
 
-      assert_equal [1, 2], survey.get_prev_page_start_positions(question_2_0)
+      assert_equal [1, 1], survey.get_prev_page_start_positions(question_2_0)
       assert_equal [2, 2], survey.get_next_page_start_positions(question_2_0)
 
       assert_equal [2, 2], survey.get_prev_page_start_positions(question_3_0)
       assert_equal [3, 4], survey.get_next_page_start_positions(question_3_0)
 
-      # TODO: test for this wacked condition
-      # assert_equal [0, 0], survey.get_prev_page_start_positions(question_0_4)
-      # assert_equal [1, 2], survey.get_next_page_start_positions(question_0_4)
+      assert_equal [0, 0], survey.get_prev_page_start_positions(question_0_4)
+      assert_equal [1, 1], survey.get_next_page_start_positions(question_0_4)
 
       # there is no second set for group_1 questions
 
-      # TODO: test for this wacked condition
-      # assert_equal [2, 0], survey.get_prev_page_start_positions(question_2_2)
-      # assert_equal [3, 0], survey.get_next_page_start_positions(question_2_2)
+      assert_equal [2, 0], survey.get_prev_page_start_positions(question_2_2)
+      assert_equal [3, 0], survey.get_next_page_start_positions(question_2_2)
 
       assert_equal [3, 0], survey.get_prev_page_start_positions(question_3_4)
       assert_equal [-1, -1], survey.get_next_page_start_positions(question_3_4)

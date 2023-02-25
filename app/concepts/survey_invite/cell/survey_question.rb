@@ -107,7 +107,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
       <i class='vote-down bi-hand-thumbs-down-fill'></i>\
       <span class='vote-count'>#{count}</span>\
-      (<span class='votes-left'>#{survey_invite.votes_left}</span> votes left)"
+      (<span class='votes-left'>#{survey_answer.votes_left}</span> votes left)"
     #----------------------
     when "NA"
       # nothing

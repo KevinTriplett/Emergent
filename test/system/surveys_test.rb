@@ -10,6 +10,7 @@ class SurveysTest < ApplicationSystemTestCase
       survey = survey_invite.survey
       group_0 = create_survey_group(survey: survey)
       group_1 = create_survey_group(survey: survey)
+      group_2 = create_survey_group(survey: survey, votes_max: 10)
       user = survey_invite.user
 
       survey_question_0 = create_survey_question({
@@ -58,7 +59,7 @@ class SurveysTest < ApplicationSystemTestCase
       })
       survey_question_7 = create_survey_question({
         survey_group: group_1,
-        question_type: "Question",
+        question_type: "Vote",
         question: "This is the 4st question overall but the 1st of Group 2"
       })
       survey_question_8 = create_survey_question({
@@ -75,30 +76,53 @@ class SurveysTest < ApplicationSystemTestCase
         answer_type: "Multiple Choice",
         answer_labels: "Hero|Heroine|Villian|Outcast|Warrior|Adventurer|Professor|Wizard|Witch|Shaman"
       })
+      survey_question_10 = create_survey_question({
+        survey_group: group_1,
+        question_type: "New Page"
+      })
+      survey_question_11 = create_survey_question({
+        survey_group: group_2,
+        question_type: "Question",
+        question: "I want to do this",
+        answer_type: "Vote"
+        })
+      survey_question_12 = create_survey_question({
+        survey_group: group_2,
+        question_type: "Question",
+        question: "I want to do that",
+        answer_type: "Vote"
+      })
+      survey_question_13 = create_survey_question({
+        survey_group: group_2,
+        question_type: "Question",
+        question: "I want to do neither",
+        answer_type: "Vote"
+      })
+      survey_answer_3 = survey_answer_4 = survey_answer_5 = survey_answer_8 = survey_answer_9 = nil
 
+      # ------------------------------------------------------------------------------
       # make sure position assignment is correct
       assert_equal [0,1], [group_0,group_1].map(&:position)
       assert_equal [0,1,2,3,4,5], [survey_question_0,survey_question_1,survey_question_2,survey_question_3,survey_question_4,survey_question_5].map(&:position)
-      assert_equal [0,1,2,3], [survey_question_6,survey_question_7,survey_question_8,survey_question_9].map(&:position)
-
-      survey_answer_3 = survey_answer_4 = survey_answer_5 = survey_answer_8 = survey_answer_9 = nil
+      assert_equal [0,1,2,3,4], [survey_question_6,survey_question_7,survey_question_8,survey_question_9,survey_question_10].map(&:position)
+      assert_equal [0,1,2], [survey_question_11,survey_question_12,survey_question_13].map(&:position)
 
       visit survey_path(token: survey_invite.token)
+
       assert_current_path survey_path(token: survey_invite.token)
-      
       assert_selector "a", count: 1
       assert_selector ".survey-name", text: survey.name
       assert_selector ".survey-description", text: survey.description
+      assert_selector "#survey-question-#{survey_question_1.group_position}-#{survey_question_1.position}", count: 0
 
       within "#survey-question-#{survey_question_0.group_position}-#{survey_question_0.position}" do
         assert_selector ".survey-question-instructions", text: survey_question_0.question
         assert_selector "input", count: 0
       end
 
-      assert_selector "#survey-question-#{survey_question_1.group_position}-#{survey_question_1.position}", count: 0
-      
+      # ------------------------------------------------------------------------------
+
       click_link "Next >"
-      puts "Next"
 
       params_hash = {
         token: survey_invite.token,
@@ -106,7 +130,6 @@ class SurveysTest < ApplicationSystemTestCase
         question_position: survey_question_2.position
       }
       assert_current_path survey_path(params_hash)
-
       assert_selector "a", count: 2
       assert_selector "#survey-question-#{survey_question_1.group_position}-#{survey_question_1.position}", count: 0
 
@@ -159,8 +182,9 @@ class SurveysTest < ApplicationSystemTestCase
         assert_equal "Sort Of", survey_answer_5.answer
       end
 
-      puts "Next"
       click_link "Next >"
+
+      # ------------------------------------------------------------------------------
 
       params_hash = {
         token: survey_invite.token,
@@ -168,8 +192,10 @@ class SurveysTest < ApplicationSystemTestCase
         question_position: survey_question_6.position
       }
       assert_current_path survey_path(params_hash)
+      assert_selector "a", count: 2
+
+      # ------------------------------------------------------------------------------
       
-      puts "Prev"
       click_link "< Prev"
 
       params_hash = {
@@ -199,8 +225,9 @@ class SurveysTest < ApplicationSystemTestCase
         assert find(".survey-answer-yes-no input[value='Sort Of']").selected?
       end
       
-      puts "Next"
       click_link "Next >"
+
+      # ------------------------------------------------------------------------------
 
       params_hash = {
         token: survey_invite.token,
@@ -248,8 +275,140 @@ class SurveysTest < ApplicationSystemTestCase
         assert_equal "Villian", survey_answer_9.answer
       end
 
-      puts "Finish"
+      click_link "Next >"
+
+      # ------------------------------------------------------------------------------
+
+      params_hash = {
+        token: survey_invite.token,
+        group_position: survey_question_11.group_position,
+        question_position: survey_question_11.position
+      }
+      assert_current_path survey_path(params_hash)
+      assert_selector "a", count: 2
+
+      within "#survey-question-#{survey_question_11.group_position}-#{survey_question_11.position}" do
+        assert_selector ".survey-question-question", text: survey_question_11.question
+        assert_selector "textarea", count: 0
+        assert_selector "input", count: 0
+        assert_selector ".vote-up", count: 1
+        assert_selector ".vote-down", count: 1
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".votes-left", text: "10"
+      end
+
+      within "#survey-question-#{survey_question_12.group_position}-#{survey_question_12.position}" do
+        assert_selector ".survey-question-question", text: survey_question_12.question
+        assert_selector "textarea", count: 0
+        assert_selector "input", count: 0
+        assert_selector ".vote-up", count: 1
+        assert_selector ".vote-down", count: 1
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".votes-left", text: "10"
+      end
+
+      within "#survey-question-#{survey_question_13.group_position}-#{survey_question_13.position}" do
+        assert_selector ".survey-question-question", text: survey_question_13.question
+        assert_selector "textarea", count: 0
+        assert_selector "input", count: 0
+        assert_selector ".vote-up", count: 1
+        assert_selector ".vote-down", count: 1
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".votes-left", text: "10"
+      end
+
+      within "#survey-question-#{survey_question_12.group_position}-#{survey_question_12.position}" do
+        find(".vote-up").click
+        sleep 1
+        assert_selector ".vote-count", text: "1"
+        assert_selector ".votes-left", text: "9"
+      end
+      within "#survey-question-#{survey_question_11.group_position}-#{survey_question_11.position}" do
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".votes-left", text: "9"
+      end
+      within "#survey-question-#{survey_question_13.group_position}-#{survey_question_13.position}" do
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".votes-left", text: "9"
+      end
+
+      within "#survey-question-#{survey_question_13.group_position}-#{survey_question_13.position}" do
+        find(".vote-up").click
+        find(".vote-up").click
+        find(".vote-up").click
+        find(".vote-up").click
+        sleep 1
+        assert_selector ".vote-count", text: "4"
+        assert_selector ".votes-left", text: "5"
+      end
+      within "#survey-question-#{survey_question_11.group_position}-#{survey_question_11.position}" do
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".votes-left", text: "5"
+      end
+      within "#survey-question-#{survey_question_12.group_position}-#{survey_question_12.position}" do
+        assert_selector ".vote-count", text: "1"
+        assert_selector ".votes-left", text: "5"
+      end
+      
+      within "#survey-question-#{survey_question_11.group_position}-#{survey_question_11.position}" do
+        find(".vote-up").click
+        find(".vote-up").click
+        sleep 1
+        assert_selector ".vote-count", text: "2"
+        assert_selector ".votes-left", text: "3"
+      end
+      within "#survey-question-#{survey_question_12.group_position}-#{survey_question_12.position}" do
+        assert_selector ".vote-count", text: "1"
+        assert_selector ".votes-left", text: "3"
+      end
+      within "#survey-question-#{survey_question_13.group_position}-#{survey_question_13.position}" do
+        assert_selector ".vote-count", text: "4"
+        assert_selector ".votes-left", text: "3"
+      end
+
+      within "#survey-question-#{survey_question_13.group_position}-#{survey_question_13.position}" do
+        find(".vote-down").click
+        find(".vote-down").click
+        sleep 1
+        assert_selector ".vote-count", text: "2"
+        assert_selector ".votes-left", text: "5"
+      end
+      within "#survey-question-#{survey_question_11.group_position}-#{survey_question_11.position}" do
+        assert_selector ".vote-count", text: "2"
+        assert_selector ".votes-left", text: "5"
+      end
+      within "#survey-question-#{survey_question_12.group_position}-#{survey_question_12.position}" do
+        assert_selector ".vote-count", text: "1"
+        assert_selector ".votes-left", text: "5"
+      end
+      
+      click_link "< Prev"
+
+      # ------------------------------------------------------------------------------
+
+      params_hash = {
+        token: survey_invite.token,
+        group_position: survey_question_6.group_position,
+        question_position: survey_question_6.position
+      }
+      assert_current_path survey_path(params_hash)
+      assert_selector "a", count: 2
+      
+      click_link "Next >"
+
+      # ------------------------------------------------------------------------------
+
+      params_hash = {
+        token: survey_invite.token,
+        group_position: survey_question_11.group_position,
+        question_position: survey_question_11.position
+      }
+      assert_current_path survey_path(params_hash)
+      assert_selector "a", count: 2
+      
       click_link "Finish"
+
+      # ------------------------------------------------------------------------------
 
       params_hash = {
         token: survey_invite.token,
