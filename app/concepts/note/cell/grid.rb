@@ -13,10 +13,13 @@ class Note::Cell::Grid < Cell::ViewModel
     model[:new_url]
   end
   def patch_url
-    model[:patch_url]
+    "#{model[:patch_url]}/#{note.id}/patch"
   end
   def delete_url
-    "#{model[:url]}/#{note.id}"
+    "#{model[:delete_url]}/#{note.id}"
+  end
+  def token
+    model[:token]
   end
   
   def text

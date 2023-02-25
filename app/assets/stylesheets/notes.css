@@ -34,8 +34,8 @@ body#notes .note {
   background-color: #fff;
   box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.1);
   margin: 30px 20px;
-  height: 400px;
-  width: 400px;
+  height: 350px;
+  width: 350px;
   overflow-y: hidden;
 }
 

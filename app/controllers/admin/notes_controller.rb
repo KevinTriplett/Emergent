@@ -7,6 +7,7 @@ module Admin
       @survey = Survey.find(params[:survey_id])
       @patch_url = admin_note_patch_path
       @new_url = new_admin_survey_note_path(@survey.id)
+      @delete_url = admin_survey_notes_path(@survey.id)
       @notes = @survey.notes
       @token = form_authenticity_token
     end
@@ -23,11 +24,11 @@ module Admin
 
     def patch
       note = Note.find(params[:id])
-      params[:note].each_pair do |attr, val|
+      params[:model].each_pair do |attr, val|
         note.send("#{attr}=", val)
       end
       note.save ? (render json: { 
-        note: note.reload,
+        model: note.reload,
         group_name: note.group_name
       }) : (render head(:bad_request))
     end

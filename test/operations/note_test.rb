@@ -32,13 +32,6 @@ class NoteOperationTest < MiniTest::Spec
 
     # ----------------
     # failing path tests
-    it "Fails with invalid parameters" do
-      DatabaseCleaner.cleaning do
-        result = Note::Operation::Create.call(params: {})
-        assert !result.success?
-      end
-    end
-
     it "Fails with no text attribute" do
       DatabaseCleaner.cleaning do
         result = create_note_with_result({

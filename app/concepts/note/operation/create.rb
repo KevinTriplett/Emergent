@@ -7,13 +7,13 @@ module Note::Operation
       step :initialize_note
       step Contract::Build(constant: Note::Contract::Create)
 
-      def initialize_survey_group_id(ctx, model:, params:, **)
-        params[:survey_group_id] && model.survey_group_id = params[:survey_group_id]
+      def initialize_survey_group_id(ctx, model:, survey_group_id:, **)
+        survey_group_id && model.survey_group_id = survey_group_id
       end
 
       def initialize_note(ctx, model:, params:, **)
-        params[:note][:text] ||= "Click here to edit"
-        params[:note][:color] ||= "#FFFF99"
+        model.text = "Click here to edit"
+        model.color = "#FFFF99"
         true
       end
     end

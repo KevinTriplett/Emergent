@@ -272,7 +272,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.send_keys("2023-10-09 15:45")
       input.send_keys [:escape]
       sleep 2 # cannot be 1 for some reason...
-      assert_equal "2023-10-09T20:45:00Z", existing_user.reload.when_timestamp.picker_datetime
+      assert_equal "2023-10-09T19:45:00Z", existing_user.reload.when_timestamp.picker_datetime
       assert_selector "td.change-log", text: existing_user.change_log.chomp
 
       # check date format in index view

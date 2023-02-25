@@ -58,12 +58,17 @@ module Admin
     end
 
     def new_note
-      survey = Survey.find(params[:survey_id])
+      survey = Survey.find(params[:id])
       group = survey.last_note_survey_group
+      # make like it came from a form:
+      params[:survey_group_id] = group.id
+      params.delete(:id)
+      params[:note] = params
       run Note::Operation::Create, survey_group_id: group.id do |ctx|
         return render json: { 
-          note: ctx[:model],
-          group_name: group.name
+          model: ctx[:model],
+          group_name: group.name,
+          first_note_url: admin_survey_notes_path(survey.id)
         }
       end
       return head(:bad_request)

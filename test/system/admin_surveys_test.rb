@@ -218,9 +218,9 @@ class AdminSurveysTest < ApplicationSystemTestCase
     DatabaseCleaner.cleaning do
       admin = login
       survey = create_survey
-      group_1 = create_survey_group(survey: survey)
-      group_2 = create_survey_group(survey: survey)
-      group_3 = create_survey_group(survey: survey)
+      group_1 = create_survey_group(survey: survey, name: "Group 1")
+      group_2 = create_survey_group(survey: survey, name: "Group 2")
+      group_3 = create_survey_group(survey: survey, name: "Group 3")
       assert_equal 0, group_1.position
       assert_equal 1, group_2.position
       assert_equal 2, group_3.position
@@ -229,8 +229,8 @@ class AdminSurveysTest < ApplicationSystemTestCase
       assert_selector ".survey-groups > .col > .ui-state-default:nth-child(1) .survey-group-name", text: "edit | del ---- Group: #{group_1.name}"
       assert_selector ".survey-groups > .col > .ui-state-default:nth-child(2) .survey-group-name", text: "edit | del ---- Group: #{group_2.name}"
       assert_selector ".survey-groups > .col > .ui-state-default:nth-child(3) .survey-group-name", text: "edit | del ---- Group: #{group_3.name}"
-      source = page.find(".survey-groups > .col > .ui-state-default:nth-child(1)")
-      target = page.find(".survey-groups > .col > .ui-state-default:nth-child(3)")
+      source = page.find(".survey-groups > .col > .ui-state-default:nth-child(3)")
+      target = page.find(".survey-groups > .col > .ui-state-default:nth-child(1)")
       source.drag_to(target)
       assert_selector ".survey-groups > .col > .ui-state-default:nth-child(1) .survey-group-name", text: "edit | del ---- Group: #{group_2.name}"
       assert_selector ".survey-groups > .col > .ui-state-default:nth-child(2) .survey-group-name", text: "edit | del ---- Group: #{group_3.name}"

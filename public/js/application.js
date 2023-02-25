@@ -564,8 +564,9 @@ $(document).ready(function() {
               if (errorMsgCount == prevErrorMsgCount) alert("something went wrong -- ask Kevin");
               errorMsgCount++
             });
-          });
-      }
+          }
+        )},
+      cancel: ".contenteditable"
     });
 
   ////////////////////////////////////////////////////
@@ -892,8 +893,8 @@ $(document).ready(function() {
   }
 
   var saveNote = function(e) {
-    var note = $(this);
-    var group_name = note.find(".note-group-name").text();
+    var note = $(this).closest(".note");
+    var group_name = note.find(".note-group-name .ui-selectmenu-text").text();
     var text = note.find(".note-text").text();
     if (text == note.data("text") && group_name == note.data("group-name")) return;
     var data = {
@@ -902,12 +903,7 @@ $(document).ready(function() {
     }
     notePatch(note, data, function(result) {
       flash(note.find(".bi-check"));
-      if (!note.data("id")) {
-        note.data("id", result.note.id);
-        var deleteUrl = note.find("button.delete").data("url");
-        note.find("button.delete").data("url", deleteUrl + result.note.id);
-      }
-      note.data("text", result.note.text);
+      note.data("text", result.model.text);
       note.data("group-name", result.group_name);
     }, function() {
       flash(note.find(".bi-exclamation"));
@@ -916,18 +912,14 @@ $(document).ready(function() {
 
   var deleteNote = function(e) {
     var note = $(this).closest(".note");
-    if (note.data("id")) {
-      deleteThis.call(this, e,
-        function() {
-          note.remove();
-        },
-        function() {
-          flash(note.find(".bi-exclamation"))
-        }
-      );
-    } else {
-      note.remove();
-    }
+    deleteThis.call(this, e,
+      function() {
+        note.remove();
+      },
+      function() {
+        flash(note.find(".bi-exclamation"))
+      }
+    );
   }
 
   $("body#notes button.add").on("click", function(e) {
@@ -939,23 +931,24 @@ $(document).ready(function() {
       dataType: "JSON",
       contentType: "application/json",
       success: function(result) {
-        var note = $("#notes-container").find(".note").clone();
+        var note = $("#notes-container").find(".note").first().clone(true); // true: copy handlers also
+        if (note.length == 0) window.location.assign(result.first_note_url);
         note
           .find(".note-text")
-          .text(result.note.text);
+          .text(result.model.text);
         note
-          .find(".note-group-name select")
-          .val(result.group_name)
-          .on("change", saveNote);
-        note
-          .find(".note-group-name .ui-selectmenu-text")
+          .find(".note-group-name")
+          .find(".ui-selectmenu-text, .user-status select")
           .text(result.group_name);
+        var url = note
+          .closest("[data-url")
+          .data("url")
+          .replace(/(^.+)\/\d+\/patch/, `$1/${result.model.id}/patch`);
         note
-          .on("keydown", debounce(saveNote, 500))
-          .find(".delete")
-          .on("click", deleteNote)
-          .attr("style", `background-color: ${result.note.color};`);
-        $("#notes-container").append(note);
+          .closest("[data-url")
+          .data("url", url);
+        note.attr("style", `background-color: ${result.model.color};`);
+        $("#notes-container").prepend(note);
       },
       function() {
         alert("something went wrong -- ask Kevin");
@@ -968,19 +961,27 @@ $(document).ready(function() {
     if (e.ctrlKey && e.keyCode == 83) e.preventDefault();
   });
 
-  $(".note")
-    .on("keydown", debounce(saveNote, 500))
-    .find(".delete")
-    .on("click", deleteNote);
+  $(".note .note-text").on("keydown", debounce(saveNote, 500));
+  $(".note .delete").on("click", deleteNote);
+  $(".note .note-group-name select").selectmenu({
+    change: function(e) {
+      var self = $(this);
+      self
+        .closest(".row")
+        .find("input[type='hidden']")
+        .val(self.val());
+      saveNote.call(this);
+      }
+  });
+  
 
   var notePatch = function(dom, data, success, error) {
-    var id = dom.data("id") || "";
-    var url = `${dom.data("url")}/${id}`;
+    var url = dom.closest("[data-url]").data("url");
     var token = dom.closest("[data-token]").data("token");
     $.ajax({
       url: url,
-      type: id ? "PATCH" : "POST",
-      data: JSON.stringify({"note": data}),
+      type: "POST",
+      data: JSON.stringify({"model": data}),
       processData: false,
       dataType: "JSON",
       contentType: "application/json",
@@ -993,4 +994,6 @@ $(document).ready(function() {
       error: error
     });
   }
+
+
 });

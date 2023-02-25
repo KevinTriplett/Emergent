@@ -16,7 +16,7 @@ class Survey < ActiveRecord::Base
   end
 
   def notes
-    survey_groups.collect(&:notes).flatten
+    ordered_groups.collect(&:ordered_notes).flatten
   end
 
   def last_note_survey_group

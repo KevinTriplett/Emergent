@@ -1,7 +1,7 @@
 %h5= "Notes for #{@survey.name}"
 
-.d-flex.flex-wrap.sortable#notes-container{ data: {url: @patch_url, token: @token} }
+.d-flex.flex-wrap.sortable#notes-container
   - @notes.each do |note|
-    = cell(Note::Cell::Grid, {note: note, patch_url: @patch_url, new_url: @new_url})
+    = cell(Note::Cell::Grid, {note: note, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
 
 %button.add.btn.btn-primary{ data: {url: @new_url} } Add Note

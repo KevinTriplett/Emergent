@@ -13,6 +13,8 @@ module Note::Contract
         required(:id)
         required(:survey_group_id).filled.value(:integer)
         required(:text).filled.value(:string)
+        required(:color)
+        required(:coords)
       end
     end
   end

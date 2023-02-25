@@ -140,13 +140,12 @@ def create_note_with_result(params = {})
   Note::Operation::Create.call(
     params: {
       note: {
-        survey_group_id: survey_group_id,
         text: params[:text],
         color: params[:color],
         coords: params[:coords]
-      },
-      survey_group_id: survey_group_id
-    }
+      }
+    },
+    survey_group_id: survey_group_id
   )
 end
 

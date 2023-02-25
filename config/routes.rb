@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   
   get  "/admin/surveys/:id/test", to: "admin/surveys#test", as: :admin_survey_test
   get  "/admin/surveys/:id/notes/new", to: "admin/surveys#new_note", as: :new_admin_survey_note
-  get  "/admin/notes(/:id/patch)", to: "admin/notes#patch", as: :admin_note_patch
+  post "/admin/notes(/:id/patch)", to: "admin/notes#patch", as: :admin_note_patch
   post "/admin/survey_groups/:id/patch", to: "admin/survey_groups#patch", as: :admin_survey_group_patch
   post "/admin/survey_questions/:id/patch", to: "admin/survey_questions#patch", as: :admin_survey_question_patch
 

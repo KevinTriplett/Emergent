@@ -7,8 +7,8 @@ class Note < ActiveRecord::Base
   end
 
   def group_name=(name)
-    group = survey.groups.where(name: name).first
-    survey_group_id = group.id
+    group = survey.survey_groups.where(name: name).first
+    self.survey_group_id = group.id
   end
 
   def ordered_groups
