@@ -17,6 +17,8 @@ class NotesTest < ApplicationSystemTestCase
       survey = group_1.survey
       group_2 = create_survey_group(survey: survey)
       admin = login
+      assert survey.reload.notes.empty?
+      assert survey.survey_questions.empty?
 
       visit admin_survey_notes_path(survey.id)
       assert_current_path admin_survey_notes_path(survey.id)
@@ -24,11 +26,16 @@ class NotesTest < ApplicationSystemTestCase
       assert_selector "#notes-container .note", count: 0
       click_on "Add Note"
       sleep 1
+
       assert_equal 1, survey.reload.notes.count
-      note = survey.notes.first
-      assert_equal "Click here to edit", note.text
-      assert_equal group_1.name, note.reload.group_name
-      assert_selector ".note .note-text", text: note.text
+      assert_equal 1, survey.survey_questions.count
+      assert_equal survey.survey_questions.first.question, survey.reload.notes.first.text
+      assert_equal survey.survey_questions.first.group_name, survey.reload.notes.first.group_name
+      note_1 = survey.notes.first
+      assert_equal group_1.name, note_1.reload.group_name
+      assert_equal "Click here to edit", note_1.text
+      assert_equal group_1.name, note_1.reload.group_name
+      assert_selector ".note .note-text", text: note_1.text
       assert_selector ".ui-selectmenu-text", text: group_1.name
 
       within("#notes-container") do
@@ -45,8 +52,12 @@ class NotesTest < ApplicationSystemTestCase
       end
       sleep 1
       assert survey.reload.notes.empty?
+      assert survey.survey_questions.empty?
 
       click_on "Add Note"
+      sleep 1
+      assert_equal 1, survey.reload.notes.count
+      assert_equal 1, survey.survey_questions.count
 
       within("#notes-container") do
         assert_selector ".note", count: 1
@@ -58,9 +69,17 @@ class NotesTest < ApplicationSystemTestCase
       find(".ui-menu-item-wrapper", text: group_2.name, exact_text: true).click
       assert_selector "#notes-container .ui-selectmenu-text", text: group_2.name
       sleep 1
-      note = survey.notes.first
-      assert_equal "What is this?", note.text
-      assert_equal group_2.name, note.reload.group_name
+      note_1 = survey.notes.first
+      assert_equal "What is this?", note_1.text
+      assert_equal group_2.name, note_1.reload.group_name
+
+      click_on "Add Note"
+      sleep 1
+
+      assert_equal 2, survey.reload.notes.count
+      assert_equal 2, survey.survey_questions.count
+      note_2 = survey.notes.first
+      assert_equal group_2.name, note_1.reload.group_name
     end
   end
 end

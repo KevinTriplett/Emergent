@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   belongs_to :greeter, class_name: "User", optional: true
   belongs_to :shadow_greeter, class_name: "User", optional: true
-  has_many :survey_invites
+  has_many :survey_invites, dependent: :destroy
   has_many :surveys, through: :survey_invites
   has_secure_token
 

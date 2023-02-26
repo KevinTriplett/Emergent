@@ -27,10 +27,15 @@ module Admin
       params[:model].each_pair do |attr, val|
         note.send("#{attr}=", val)
       end
-      note.save ? (render json: { 
-        model: note.reload,
-        group_name: note.group_name
-      }) : (render head(:bad_request))
+      if note.save
+        note.update_survey_question
+        render json: { 
+          model: note.reload,
+          group_name: note.group_name
+        }
+      else
+        render head(:bad_request)
+      end
     end
 
     def destroy

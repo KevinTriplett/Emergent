@@ -24,6 +24,7 @@ class NoteOperationTest < MiniTest::Spec
         assert_equal text, note.text
         assert_equal coords, note.coords
         assert_equal 0, note.position
+        assert note.survey_question_id
       end
     end
 

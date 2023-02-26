@@ -1,7 +1,7 @@
 class SurveyGroup < ActiveRecord::Base
   belongs_to :survey
-  has_many :survey_questions
-  has_many :notes
+  has_many :survey_questions, dependent: :destroy
+  has_many :notes, dependent: :destroy
 
   delegate :ordered_groups, to: :survey
 

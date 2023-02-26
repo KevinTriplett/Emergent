@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_25_020143) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_26_011918) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -29,6 +29,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_25_020143) do
     t.datetime "updated_at", null: false
     t.integer "survey_group_id"
     t.integer "position"
+    t.integer "survey_question_id"
+    t.index ["survey_question_id"], name: "index_notes_on_survey_question_id"
   end
 
   create_table "spaces", force: :cascade do |t|

@@ -78,7 +78,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
       user = create_authorized_user
       set_authorization_cookie
 
-      question = create_survey_question
+      question = create_survey_question(has_scale: true)
       get edit_admin_survey_survey_group_survey_question_path(id: question.id, survey_id: question.survey_id, survey_group_id: question.survey_group_id)
       assert_response :success
 
@@ -91,7 +91,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
         assert_select "[value=?]", question.answer_type
       end
       assert_select "#survey_question_question", question.question
-      assert_select "#survey_question_has_scale[checked]", false
+      assert_select "#survey_question_has_scale[checked]"
       assert_select "#survey_question_answer_labels[value=?]", question.answer_labels
       assert_select "#survey_question_scale_labels[value=?]", question.scale_labels
       assert_select "#survey_question_scale_question[value=?]", question.scale_question

@@ -78,8 +78,8 @@ def create_survey_question(params = {})
   params[:question] ||= "What is your quest?"
   params[:answer_type] ||= "Yes/No"
   params[:has_scale] ||= "0"
-  params[:scale_labels] ||= "Scale Left|Scale Right" if params[:has_scale]
-  params[:scale_question] ||= "How Important?" if params[:has_scale]
+  params[:scale_labels] ||= "Scale Left|Scale Right" if params[:has_scale] != "0"
+  params[:scale_question] ||= "How Important?" if params[:has_scale] != "0"
   params[:answer_labels] ||= case params[:answer_type]
   when "Yes/No"
      "Yes|No"

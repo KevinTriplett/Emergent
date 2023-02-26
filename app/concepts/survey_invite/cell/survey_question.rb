@@ -41,6 +41,8 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       "survey-answer-number"
     when "Vote"
       "survey-answer-vote"
+    when "Email"
+      "survey-answer-email"
     end
   end
 
@@ -108,6 +110,9 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       <i class='vote-down bi-hand-thumbs-down-fill'></i>\
       <span class='vote-count'>#{count}</span>\
       (<span class='votes-left'>#{survey_answer.votes_left}</span> votes left)"
+    #----------------------
+    when "Email"
+      "<input type='email' id='#{name}' name='#{name}' value='#{answer}' />"
     #----------------------
     when "NA"
       # nothing

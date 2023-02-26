@@ -21,6 +21,7 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Range",
       "Number",
       "Vote",
+      "Email",
       "NA"
     ], SurveyQuestion::ANSWER_TYPES
   end
@@ -46,6 +47,25 @@ class SurveyQuestionsTest < MiniTest::Spec
 
       group.update(position: 5)
       assert_equal question.reload.group_position, group.position
+    end
+  end
+
+  it "gets and sets group_name" do
+    DatabaseCleaner.cleaning do
+      group_1 = create_survey_group
+      survey = group_1.survey
+      group_2 = create_survey_group(survey: survey)
+      group_3 = create_survey_group
+      question = create_survey_question(survey_group: group_1)
+      
+      assert_equal group_1.name, question.group_name
+      
+      question.group_name = group_2.name
+      assert_equal group_2.name, question.group_name
+      assert_equal group_1.name, question.reload.group_name
+      
+      question.group_name = group_3.name # group_3 is not linked to survey
+      assert_equal group_1.name, question.reload.group_name
     end
   end
 
@@ -82,21 +102,21 @@ class SurveyQuestionsTest < MiniTest::Spec
       assert [question_1,question_2,question_3,question_4].all?(&:at_group_ending?)
 
       # TODO: check for these wack conditions
-      # question_1.update question_type: "New Page"
-      # question_2.update question_type: "New Page"
-      # question_3.update question_type: "Question"
-      # question_4.update question_type: "Question"
+      question_1.update question_type: "New Page"
+      question_2.update question_type: "Question"
+      question_3.update question_type: "Question"
+      question_4.update question_type: "Question"
 
-      # assert [question_1,question_2,question_3,question_4].all?(&:at_group_beginning?)
-      # assert [question_1,question_2,question_3,question_4].all?(&:at_group_ending?)
+      assert [question_1,question_2,question_3,question_4].all?(&:at_group_beginning?)
+      assert [question_1,question_2,question_3,question_4].all?(&:at_group_ending?)
 
-      # question_1.update question_type: "Question"
-      # question_2.update question_type: "Question"
-      # question_3.update question_type: "New Page"
-      # question_4.update question_type: "New Page"
+      question_1.update question_type: "Question"
+      question_2.update question_type: "Question"
+      question_3.update question_type: "Question"
+      question_4.update question_type: "New Page"
 
-      # assert [question_1,question_2,question_3,question_4].all?(&:at_group_beginning?)
-      # assert [question_1,question_2,question_3,question_4].all?(&:at_group_ending?)
+      assert [question_1,question_2,question_3,question_4].all?(&:at_group_beginning?)
+      assert [question_1,question_2,question_3,question_4].all?(&:at_group_ending?)
     end
   end
 
