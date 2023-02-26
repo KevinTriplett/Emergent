@@ -55,14 +55,11 @@ body#notes .note .tools button {
   margin-left: 0.5rem;
 }
 
-body#notes .note textarea {
-  outline: none;
-  font-family: inherit;
-  font-size: 1.2rem;
-  border: none;
-  height: 400px;
-  width: 100%;
-  padding: 20px;
+body#notes .note .note-text {
+  font-family: 'architects_daughterregular', Arial, sans-serif;
+  font-weight: bold;
+  font-style: normal;
+  font-size: x-large;
 }
 
 body#notes .main {

@@ -1,6 +1,31 @@
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons';
 
+@font-face {
+  font-family: 'indie_flowerregular';
+  src: url('fonts/indieflower-regular-webfont.woff2') format('woff2'),
+       url('fonts/indieflower-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'neucharegular';
+  src: url('fonts/neucha-regular-webfont.woff2') format('woff2'),
+       url('fonts/neucha-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'architects_daughterregular';
+  src: url('fonts/architectsdaughter-regular-webfont.woff2') format('woff2'),
+       url('fonts/architectsdaughter-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
 /* Application styles */
 /* 
   ref https://github.com/twbs/bootstrap-rubygem/blob/main/assets/stylesheets/bootstrap/_variables.scss
