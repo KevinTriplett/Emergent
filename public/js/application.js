@@ -963,13 +963,8 @@ $(document).ready(function() {
         alert("something went wrong -- ask Kevin");
       }
     });
-
   });
   
-  $("body#notes").on("keydown", function(e) {
-    if (e.ctrlKey && e.keyCode == 83) e.preventDefault();
-  });
-
   $(".note .note-text")
     .on("keydown", debounce(saveNote, 500))
     .on("keydown", function(e) {
@@ -987,7 +982,6 @@ $(document).ready(function() {
       saveNote.call(this);
     }
   });
-  
 
   var notePatch = function(dom, data, success, error) {
     var url = dom.closest("[data-url]").data("url");
