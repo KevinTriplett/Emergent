@@ -27,7 +27,7 @@ module Admin
       params[:model].each_pair do |attr, val|
         note.send("#{attr}=", val)
       end
-      note.save ?
+      !note.save ?
         (render json: { 
           model: note.reload,
           group_name: note.group_name

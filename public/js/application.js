@@ -134,15 +134,15 @@ ${data.greeter}`;
 var debounce = function(func, wait, immediate) {
   var timeout;
   return function() {
-      var context = this, args = arguments;
-      var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
   };
 };
 
@@ -331,10 +331,9 @@ var showOpt = function(show) {
   if (show)
     $(".opt").show();
   else {
-    var func = debounce(function() {
+    debounce(function() {
       $(".opt").hide();
-    }, 1000);
-    func();
+    }, 1000)();
   }
 }
 
@@ -888,12 +887,15 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // NOTES
-  var flash = function(dom) {
-    dom.show();
-    var func = debounce(function() {
-      dom.hide();
-    }, 3000);
-    func();
+  var flashGood = function(note) {
+    note.find(".bi-check").show();
+  }
+  var flashBad = function(note) {
+    note.find(".bi-exclamation").show();
+  }
+  var flashHide = function(note) {
+    note.find(".bi-check").hide();
+    note.find(".bi-exclamation").hide();
   }
 
   var saveNote = function(e) {
@@ -905,23 +907,25 @@ $(document).ready(function() {
       group_name: group_name,
       text: text
     }
+    flashHide(note);
     notePatch(note, data, function(result) {
-      flash(note.find(".bi-check"));
+      flashGood(note);
       note.data("text", result.model.text);
       note.data("group-name", result.group_name);
     }, function() {
-      flash(note.find(".bi-exclamation"));
+      flashBad(note);
     });
   }
 
   var deleteNote = function(e) {
     var note = $(this).closest(".note");
+    flashHide(note);
     deleteThis.call(this, e,
       function() {
         note.remove();
       },
       function() {
-        flash(note.find(".bi-exclamation"))
+        flashBad(note)
       }
     );
   }
@@ -937,6 +941,7 @@ $(document).ready(function() {
       success: function(result) {
         var note = $("#notes-container").find(".note").first().clone(true); // true: copy handlers also
         if (note.length == 0) window.location.assign(result.first_note_url);
+        flashHide(note);
         note
           .find(".note-text")
           .text(result.model.text);
@@ -965,7 +970,12 @@ $(document).ready(function() {
     if (e.ctrlKey && e.keyCode == 83) e.preventDefault();
   });
 
-  $(".note .note-text").on("keydown", debounce(saveNote, 500));
+  $(".note .note-text")
+    .on("keydown", debounce(saveNote, 500))
+    .on("keydown", function(e) {
+      if (e.key == "Meta" || e.key == "Alt" || e.key == "Control") return;
+      flashHide($(this).closest(".note"));
+    });
   $(".note .delete").on("click", deleteNote);
   $(".note .note-group-name select").selectmenu({
     change: function(e) {
@@ -975,7 +985,7 @@ $(document).ready(function() {
         .find("input[type='hidden']")
         .val(self.val());
       saveNote.call(this);
-      }
+    }
   });
   
 

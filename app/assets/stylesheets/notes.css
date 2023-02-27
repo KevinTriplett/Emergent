@@ -65,6 +65,26 @@ body#notes .note .tools {
   padding: 0.5rem;
 }
 
+body#notes .note .tools .move {
+  position: relative;
+  top: 2px;
+  left: -13px;
+  transform: scale(2, 2);
+}
+
+body#notes .note .tools .bi-check {
+  color: darkgreen;
+}
+
+body#notes .note .tools .bi-exclamation {
+  color: red;
+}
+
+body#notes .note .tools .note-group-name {
+  position: relative;
+  top: 12px;
+}
+
 body#notes .note .tools button {
   background-color: transparent;
   border: none;
