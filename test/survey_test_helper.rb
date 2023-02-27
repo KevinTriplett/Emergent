@@ -5,9 +5,58 @@ SURVEY_NAMES = %w(fabulous outstanding amazing spectacular impressive survey que
 def random_survey_name
   @_last_random_survey_name = "#{ SURVEY_NAMES.sample } #{ SURVEY_NAMES.sample } #{ SURVEY_NAMES.sample }"
 end
-
 def last_random_survey_name
   @_last_random_survey_name
+end
+
+SURVEY_QUESTIONS = [
+  "What's all this then?",
+  "How do you work this?",
+  "How did I get here?",
+  "Where is my beautiful spouse?",
+  "Where is that large automobile?",
+  "What is that beautiful house?",
+  "Where does that highway go to?",
+  "Am I right?...Am I wrong?",
+  "My God!...What have I done?",
+  "What you gonna do when you get out of jail?",
+  "What do you consider fun?",
+  "Who took the money?",
+  "Who took the money away?",
+  "What was the place, what was the name?",
+  "What do you know?",
+  "Why, why, why, why start it over?",
+]
+def random_survey_question
+  SURVEY_QUESTIONS.sample
+end
+
+SURVEY_LABELS = %w(Scale Left Right Oh Yeah Hell Up Down In Out Maybe Very Not Wow Lots Loads Tons Little Meh)
+def random_survey_labels
+  "#{ SURVEY_LABELS.sample } #{ SURVEY_LABELS.sample }|#{ SURVEY_LABELS.sample } #{ SURVEY_LABELS.sample }"
+end
+
+NOTE_TEXT = [
+  "Here's a short note",
+  "Here's a really long note but not really that long now that I look at it",
+  "I think I'll switch to Lorem Ipsum text now",
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris rutrum mi dolor. Proin eu diam nulla. Vivamus hendrerit metus risus, sollicitudin blandit nisi lacinia vitae. Aliquam sollicitudin elit vel congue pulvinar.",
+  "Aenean at egestas dui, eget tristique sem. Aliquam iaculis consectetur est ut varius. Suspendisse potenti. Etiam in est velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+  "Nunc a nunc vel ex convallis convallis. Mauris consequat dui nec pulvinar sagittis. Ut viverra dapibus nibh sit amet aliquet.",
+  "t lectus libero, volutpat eget nunc vel, viverra varius dui. Morbi id orci mattis, pellentesque dolor in, egestas arcu. Ut a placerat dui. Fusce auctor augue interdum ante varius, nec porta dui scelerisque.",
+  "Donec quis pretium nunc. Curabitur rutrum augue ornare libero malesuada rhoncus. Phasellus convallis vel mi tempor tincidunt. Phasellus dapibus et nulla vitae egestas. Etiam et lacinia nisl, sed blandit tortor.",
+  "Maecenas tincidunt consectetur lacus maximus vehicula. Aliquam tincidunt velit a varius varius. Nullam condimentum feugiat risus at eleifend. In ullamcorper pellentesque imperdiet. Ut varius velit id ex porttitor auctor.",
+  "Proin non orci non nunc blandit euismod et congue ex. Sed quis nisl laoreet, consequat nulla a, viverra turpis. Maecenas ac metus dignissim, dignissim ex in, ultricies odio. Quisque finibus nibh ut magna lacinia, a accumsan nisl lacinia.",
+  "Proin iaculis venenatis varius. Cras sagittis dapibus varius.",
+  "In id augue sit amet nunc tempus ultricies. Sed quis commodo ex.",
+  "Etiam interdum et felis nec volutpat. Donec non orci ac arcu sagittis fringilla sit amet ac tortor.",
+  "Cras sem nisl, efficitur porttitor ultrices id, sagittis et elit.",
+  "Suspendisse accumsan ipsum quis arcu malesuada, a volutpat magna consequat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+  "Sed id tincidunt sapien. In non porttitor turpis, at ultrices sem. Praesent at sem tortor. Praesent finibus urna metus, non vestibulum tellus feugiat non.",
+  "Morbi pharetra accumsan massa eget faucibus. Vivamus porta vestibulum neque ut venenatis."
+]
+def random_note_text
+  NOTE_TEXT.sample
 end
 
 def create_survey_with_result(params = {})
@@ -75,10 +124,10 @@ end
 
 def create_survey_question(params = {})
   params[:question_type] ||= "Question"
-  params[:question] ||= "What is your quest?"
+  params[:question] ||= random_survey_question
   params[:answer_type] ||= "Yes/No"
   params[:has_scale] ||= "0"
-  params[:scale_labels] ||= "Scale Left|Scale Right" if params[:has_scale] != "0"
+  params[:scale_labels] ||= random_survey_labels if params[:has_scale] != "0"
   params[:scale_question] ||= "How Important?" if params[:has_scale] != "0"
   params[:answer_labels] ||= case params[:answer_type]
   when "Yes/No"
@@ -151,7 +200,7 @@ def create_note_with_result(params = {})
 end
 
 def create_note(params = {})
-  params[:text] ||= "this is the text"
+  params[:text] ||= random_note_text
   params[:coords] ||= "10:10"
   create_note_with_result(params)[:model]
 end

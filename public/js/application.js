@@ -926,7 +926,7 @@ $(document).ready(function() {
     );
   }
 
-  $("body#notes button.add").on("click", function(e) {
+  $("body#notes button.add-note").on("click", function(e) {
     var url = this.dataset["url"];
     $.ajax({
       url: url,

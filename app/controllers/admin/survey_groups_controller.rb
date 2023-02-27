@@ -4,6 +4,10 @@ module Admin
     before_action :signed_in_user
 
     def new
+      @return = params["return_to_notes"]
+      @cancel_url = @return ? 
+        admin_survey_notes_url(params[:survey_id]) :
+        admin_survey_url(params[:survey_id])
       run SurveyGroup::Operation::Create::Present do |ctx|
         @form = ctx["contract.default"]
         render
@@ -14,7 +18,9 @@ module Admin
       _ctx = run SurveyGroup::Operation::Create do |ctx|
         flash[:notice] = "Group #{ctx[:model].name} was created"
         sg = ctx[:model]
-        return redirect_to new_admin_survey_survey_group_survey_question_url(survey_id: sg.survey_id, survey_group_id: sg.id)
+        return redirect_to params["return_to_notes"] ? 
+          admin_survey_notes_url(sg.survey_id) :
+          new_admin_survey_survey_group_survey_question_url(survey_id: sg.survey_id, survey_group_id: sg.id)
       end
     
       @form = _ctx["contract.default"]

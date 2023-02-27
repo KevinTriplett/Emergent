@@ -12,7 +12,10 @@
   .row
     .col= f.input :note_color, placeholder: "Notes Color (rgb)", label: false
   .row
+    .col
+      %input{name: "return_to_notes", type: "hidden", value: @return_param}
+  .row
     .col= f.button :submit, "Create Group", class: "btn-primary"
 .row
-  .col= link_to "Cancel", admin_survey_path(@model.survey_id)
+  .col= link_to "Cancel", @cancel_url
 

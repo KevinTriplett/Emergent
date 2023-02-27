@@ -10,8 +10,12 @@ class SurveyQuestion < ActiveRecord::Base
     "Question",
     "Instructions",
     "New Page",
-    "Notes"
+    "Note"
   ]
+  QUESTION_TYPES.each do |qt|
+    define_method("#{qt.downcase.gsub(/\s+/, "_")}?") { qt == question_type }
+  end
+
   ANSWER_TYPES = [
     "Yes/No",
     "Multiple Choice",
@@ -23,6 +27,9 @@ class SurveyQuestion < ActiveRecord::Base
     "Email",
     "NA"
   ]
+  ANSWER_TYPES.each do |at|
+    define_method("#{at.downcase.gsub(/\s+/, "_")}?") { at == answer_type }
+  end
 
   def group_position
     survey_group.position

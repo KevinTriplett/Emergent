@@ -36,6 +36,48 @@ class SurveyTest < MiniTest::Spec
     end
   end
 
+  it "reports if there is a notes question_type in this survey_question's group" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      group_1 = create_survey_group(survey: survey, name: "1")
+      group_2 = create_survey_group(survey: survey, name: "2")
+      group_3 = create_survey_group(survey: survey, name: "3")
+      question_1 = create_survey_question(survey_group: group_1, question: "1", question_type: "Question")
+      question_2 = create_survey_question(survey_group: group_1, question: "2", question_type: "New Page")
+      question_3 = create_survey_question(survey_group: group_1, question: "3", question_type: "Question")
+      question_4 = create_survey_question(survey_group: group_2, question: "4", question_type: "Note")
+      question_5 = create_survey_question(survey_group: group_2, question: "5", question_type: "Note")
+      question_6 = create_survey_question(survey_group: group_3, question: "6", question_type: "Question")
+      question_7 = create_survey_question(survey_group: group_3, question: "7", question_type: "Question")
+
+      assert !survey.notes_next?(question_1)
+      assert  survey.notes_next?(question_3)
+      assert !survey.notes_next?(question_6)
+      assert !survey.notes_next?(question_7)
+
+      assert !survey.notes_prev?(question_1)
+      assert !survey.notes_prev?(question_3)
+      assert  survey.notes_prev?(question_6)
+      assert  survey.notes_prev?(question_7)
+
+      SurveyQuestion.order(created_at: :asc).each_with_index do |sq, i|
+        sq.survey_group_id = group_1.id
+        sq.position = i
+        sq.save
+      end
+
+      assert !survey.notes_next?(question_1.reload)
+      assert  survey.notes_next?(question_3.reload)
+      assert !survey.notes_next?(question_6.reload)
+      assert !survey.notes_next?(question_7.reload)
+
+      assert !survey.notes_prev?(question_1)
+      assert !survey.notes_prev?(question_3)
+      assert  survey.notes_prev?(question_6)
+      assert  survey.notes_prev?(question_7)
+    end
+  end
+
   it "gives previous and next group and question" do
     DatabaseCleaner.cleaning do
       survey = create_survey
@@ -43,6 +85,7 @@ class SurveyTest < MiniTest::Spec
       group_1 = create_survey_group(survey: survey)
       group_2 = create_survey_group(survey: survey)
       group_3 = create_survey_group(survey: survey)
+      group_4 = create_survey_group(survey: survey)
       question_0_0 = create_survey_question(survey_group: group_0)
       question_0_1 = create_survey_question(survey_group: group_0)
       question_0_2 = create_survey_question(survey_group: group_0, question_type: "New Page")
@@ -63,34 +106,50 @@ class SurveyTest < MiniTest::Spec
       question_3_2 = create_survey_question(survey_group: group_3, question_type: "New Page")
       question_3_3 = create_survey_question(survey_group: group_3, question_type: "New Page")
       question_3_4 = create_survey_question(survey_group: group_3)
+      question_4_0 = create_survey_question(survey_group: group_4)
+      question_4_1 = create_survey_question(survey_group: group_4, question_type: "Note")
+      question_4_2 = create_survey_question(survey_group: group_4, question_type: "Note")
+      question_4_3 = create_survey_question(survey_group: group_4)
+      question_4_4 = create_survey_question(survey_group: group_4)
 
       assert_equal [0,1,2,3,4], [question_0_0,question_0_1,question_0_2,question_0_3,question_0_4].map(&:position)
       assert_equal [0,1,2,3,4], [question_1_0,question_1_1,question_1_2,question_1_3,question_1_4].map(&:position)
       assert_equal [0,1,2,3,4], [question_2_0,question_2_1,question_2_2,question_2_3,question_2_4].map(&:position)
       assert_equal [0,1,2,3,4], [question_3_0,question_3_1,question_3_2,question_3_3,question_3_4].map(&:position)
+      assert_equal [0,1,2,3,4], [question_4_0,question_4_1,question_4_2,question_4_3,question_4_4].map(&:position)
 
+      # -----------------------------------------------------------------
+      
       assert_equal [-1, -1], survey.get_prev_page_start_positions(question_0_0)
       assert_equal [0, 4], survey.get_next_page_start_positions(question_0_0)
 
       assert_equal [0, 4], survey.get_prev_page_start_positions(question_1_1)
-      assert_equal [2, 0], survey.get_next_page_start_positions(question_1_2)
-
+      assert_equal [2, 0], survey.get_next_page_start_positions(question_1_1)
+      
       assert_equal [1, 1], survey.get_prev_page_start_positions(question_2_0)
       assert_equal [2, 2], survey.get_next_page_start_positions(question_2_0)
 
       assert_equal [2, 2], survey.get_prev_page_start_positions(question_3_0)
       assert_equal [3, 4], survey.get_next_page_start_positions(question_3_0)
 
+      assert_equal [3, 4], survey.get_prev_page_start_positions(question_4_0)
+      assert_equal [4, 3], survey.get_next_page_start_positions(question_4_0)
+
+      # -----------------------------------------------------------------
+
       assert_equal [0, 0], survey.get_prev_page_start_positions(question_0_4)
       assert_equal [1, 1], survey.get_next_page_start_positions(question_0_4)
 
-      # there is no second set for group_1 questions
+      # NB: there is no second set of questions for group_1 questions
 
       assert_equal [2, 0], survey.get_prev_page_start_positions(question_2_2)
       assert_equal [3, 0], survey.get_next_page_start_positions(question_2_2)
 
       assert_equal [3, 0], survey.get_prev_page_start_positions(question_3_4)
-      assert_equal [-1, -1], survey.get_next_page_start_positions(question_3_4)
+      assert_equal [4, 0], survey.get_next_page_start_positions(question_3_4)
+
+      assert_equal [4, 0], survey.get_prev_page_start_positions(question_4_3)
+      assert_equal [-1, -1], survey.get_next_page_start_positions(question_4_3)
     end
   end
 end

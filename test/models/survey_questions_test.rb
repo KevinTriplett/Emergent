@@ -8,8 +8,17 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Question",
       "Instructions",
       "New Page",
-      "Notes"
+      "Note"
     ], SurveyQuestion::QUESTION_TYPES
+  end
+
+  it "reports the question_type using ? method" do
+    question = SurveyQuestion.new
+    SurveyQuestion::QUESTION_TYPES.each do |qt|
+      question.question_type = qt
+      qt = qt.downcase.gsub(/\s+/, "_") + "?"
+      assert question.send(qt.to_sym)
+    end
   end
 
   it "has class-scope ansswer_types array" do
@@ -24,6 +33,15 @@ class SurveyQuestionsTest < MiniTest::Spec
       "Email",
       "NA"
     ], SurveyQuestion::ANSWER_TYPES
+  end
+
+  it "reports the answer_type using ? method" do
+    question = SurveyQuestion.new
+    SurveyQuestion::ANSWER_TYPES.each do |at|
+      question.answer_type = at
+      at = at.downcase.gsub(/\s+/, "_") + "?"
+      assert question.send(at.to_sym)
+    end
   end
 
   it "delegates ordered_questions to survey_group" do

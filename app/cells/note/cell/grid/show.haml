@@ -1,15 +1,15 @@
 .note.ui-state-default{ data: {url: patch_url, token: token}, style: "background-color: #{color};" }
   .tools
+    %i.bi-check.hidden
+    %i.bi-exclamation.hidden
+    %button.move
+      %i.bi-list.my-sortable-handle
     %p.note-group-name{ data: {group_name: group_name} }
       %select
         - survey_group_names.each do |o|
           - selected = (o == note.group_name ? "selected" : nil)
           %option{ selected: selected }= o
-    %button.move
-      %i.bi-list.my-sortable-handle
     %button.delete{ data: {url: delete_url, method: "delete", confirm: "Are you sure you want to delete this note?"} }
       %i.bi-trash3
-    %i.bi-check.hidden
-    %i.bi-exclamation.hidden
   .main
     %p.note-text.contenteditable{ contenteditable: true }= text

@@ -14,16 +14,35 @@ body#notes {
   padding-top: 3rem;
 }
 
-body#notes .add {
+body#notes .container {
+  margin: 0px;
+  max-width: 100%;
+}
+
+body#notes .btn {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
   color: #fff;
   border: none;
   border-radius: 3px;
   padding: 0.5rem 1rem;
   cursor: pointer;
   z-index: 10;
+  width: 150px;
+}
+
+body#notes .add-note {
+  top: 1rem;
+  right: 2rem;
+}
+
+body#notes .new-group {
+  top: 5rem;
+  right: 1rem;
+}
+
+body#notes .return {
+  top: 9rem;
+  right: 1rem;
 }
 
 body#notes .add:active {
