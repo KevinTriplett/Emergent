@@ -2,6 +2,14 @@
 // Kailash Nadh (c) 2020.
 // MIT License.
 
+// dragmove(target, handler, onStart(target, x, y), onEnd(target, x, y)).
+// onStart and onEnd are optional callbacks that receive target element, and x, y coordinates.
+// example:
+// dragmove(document.querySelector("#box"), document.querySelector("#box .drag-handle"), onStart, onEnd);
+// where:
+// onStart(target, lastX, lastY);
+// onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
+
 let _loaded = false;
 let _callbacks = [];
 const _isTouch = window.ontouchstart !== undefined;
