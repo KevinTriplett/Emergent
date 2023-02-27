@@ -930,6 +930,24 @@ $(document).ready(function() {
     );
   }
 
+  var onDragStart = function(target, x, y) {
+    flashHide($(target));
+  }
+  var onDragEnd = function(target, x, y) {
+    var note = $(target);
+    var data = {coords: `${x}:${y}`};
+    notePatch(note, data, function(result) {
+      flashGood(note);
+      note.data("coords", result.model.coords);
+    }, function() {
+      flashBad(note);
+    });
+  }
+
+  $("body#notes .note").each(function(i, note) {
+    dragmove(note, note.querySelector("button.move"), onDragStart, onDragEnd);
+  });
+
   $("body#notes button.add-note").on("click", function(e) {
     var url = this.dataset["url"];
     $.ajax({
@@ -942,7 +960,10 @@ $(document).ready(function() {
         var note = $("#notes-container").find(".note").first().clone(true); // true: copy handlers also
         if (note.length == 0) window.location.assign(result.first_note_url);
         flashHide(note);
+        var left = parseInt(result.model.coords ? result.model.coords.split(":")[0] : "0");
+        var top  = parseInt(result.model.coords ? result.model.coords.split(":")[1] : "0");
         note
+          .position({top: top, left: left})
           .find(".note-text")
           .text(result.model.text);
         note
@@ -964,7 +985,7 @@ $(document).ready(function() {
       }
     });
   });
-  
+
   $(".note .note-text")
     .on("keydown", debounce(saveNote, 500))
     .on("keydown", function(e) {

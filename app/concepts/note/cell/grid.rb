@@ -30,8 +30,15 @@ class Note::Cell::Grid < Cell::ViewModel
     note.ordered_groups.collect(&:name)
   end
   
-  def coords
-    note.coords.split(":")
+  def top
+    note.coords ? note.coords.split(":")[1] : "0px"
+  end
+  def left
+    note.coords ? note.coords.split(":")[0] : "0px"
+  end
+
+  def id
+    "note-#{note.id}"
   end
 
   def color

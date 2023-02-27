@@ -56,6 +56,7 @@ body#notes .note {
   height: 350px;
   width: 350px;
   overflow-y: hidden;
+  position: absolute;
 }
 
 body#notes .note .tools {
@@ -70,6 +71,13 @@ body#notes .note .tools .move {
   top: 2px;
   left: -13px;
   transform: scale(2, 2);
+}
+
+body#notes .note .tools .feedback {
+  position: relative;
+  top: 25px;
+  left: -13px;
+  transform: scale(2.5, 2.5);
 }
 
 body#notes .note .tools .bi-check {

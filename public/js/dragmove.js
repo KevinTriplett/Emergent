@@ -14,7 +14,7 @@ let _loaded = false;
 let _callbacks = [];
 const _isTouch = window.ontouchstart !== undefined;
 
-export const dragmove = function(target, handler, onStart, onEnd) {
+var dragmove = function(target, handler, onStart, onEnd) {
   // Register a global event to capture mouse moves (once).
   if (!_loaded) {
     document.addEventListener(_isTouch ? "touchmove" : "mousemove", function(e) {
@@ -49,8 +49,8 @@ export const dragmove = function(target, handler, onStart, onEnd) {
     }
 
     isMoving = true;
-    startX = target.offsetLeft - c.clientX;
-    startY = target.offsetTop - c.clientY;
+    startX = target.offsetLeft - e.target.offsetLeft - 10 - c.clientX;
+    startY = target.offsetTop - e.target.offsetHeight - 7 - c.clientY;
   });
 
   // On leaving click, stop moving.
@@ -89,5 +89,3 @@ export const dragmove = function(target, handler, onStart, onEnd) {
     target.style.top = lastY + "px";
   });
 }
-
-export { dragmove as default };
