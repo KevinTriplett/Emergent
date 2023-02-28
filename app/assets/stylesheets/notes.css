@@ -6,7 +6,7 @@
 }
 
 body#notes {
-  background-color: #7bdaf3;
+  background-color: #9fc0c8;
   font-family: 'Poppins', sans-serif;
   display: flex;
   flex-wrap: wrap;
@@ -66,6 +66,15 @@ body#notes .note .tools {
   padding: 0.5rem;
 }
 
+body#notes .note .tools button {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
 body#notes .note .tools .move {
   position: relative;
   top: 2px;
@@ -73,11 +82,27 @@ body#notes .note .tools .move {
   transform: scale(2, 2);
 }
 
+body#notes .note .tools .colorpicker {
+  position: relative;
+  top: 20px;
+  left: -10px;
+  border-radius: 15px;
+  height: 18px;
+}
+
+body#notes .note .tools .colorpicker .bi-circle {
+  top: -4px;
+  position: relative;
+  margin: -10px;
+  height: 5px;
+  color: black
+}
+
 body#notes .note .tools .feedback {
   position: relative;
-  top: 25px;
-  left: -13px;
-  transform: scale(2.5, 2.5);
+  top: 13px;
+  left: 17px;
+  transform: scale(2, 2);
 }
 
 body#notes .note .tools .bi-check {
@@ -91,15 +116,6 @@ body#notes .note .tools .bi-exclamation {
 body#notes .note .tools .note-group-name {
   position: relative;
   top: 12px;
-}
-
-body#notes .note .tools button {
-  background-color: transparent;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-left: 0.5rem;
 }
 
 body#notes .note .note-text {

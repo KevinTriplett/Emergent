@@ -30,7 +30,9 @@ module Admin
       note.save ?
         (render json: { 
           model: note.reload,
-          group_name: note.group_name
+          color: note.color,
+          group_name: note.group_name,
+          group_position: note.group_position
         }) :
         head(:bad_request)
     end

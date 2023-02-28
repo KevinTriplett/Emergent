@@ -20,6 +20,7 @@ class SurveyInvitesController < ApplicationController
     end
 
     get_survey
+    get_survey_questions
     get_urls
     @token = form_authenticity_token
   end
@@ -33,6 +34,7 @@ class SurveyInvitesController < ApplicationController
     sign_in(@survey_invite.user)
 
     get_survey
+    get_notes_and_survey_answers
     get_notes_urls
     @token = form_authenticity_token
   end
@@ -88,12 +90,23 @@ class SurveyInvitesController < ApplicationController
     @survey = @survey_invite.survey
     @survey_group = @survey_invite.survey_groups.where(position: group_position).first
     @survey_question = @survey_group.survey_questions.where(position: question_position).first
+  end
 
+  def get_survey_questions
     @survey_questions = []
     @survey_group.ordered_questions.collect do |question|
       next if question.position < question_position
       break if "New Page" == question.question_type
       @survey_questions.push(question)
+    end
+    initialize_answers
+  end
+
+  def get_notes_and_survey_answers
+    @notes = @survey.ordered_notes
+    @survey_answers = []
+    @notes.each do |note|
+      @survey_answers.push @survey_invite.survey_answers.where(survey_question_id: note.survey_question_id).first
     end
   end
 
@@ -110,8 +123,8 @@ class SurveyInvitesController < ApplicationController
     @next_url = at_ending ? nil : survey_path(token: @survey_invite.token, group_position: next_group_pos, question_position: next_question_pos)
     @finish_url = at_ending ? survey_path(token: @survey_invite.token, group_position: -1, question_position: -1) : nil
     @patch_url = survey_answer_patch_url(token: @survey_invite.token)
-    @next_url = survey_notes_url(token: @survey_invite.token) if notes_next
-    @prev_url = survey_notes_url(token: @survey_invite.token) if notes_prev
+    @next_url = survey_notes_url(token: @survey_invite.token) if notes_next # override
+    @prev_url = survey_notes_url(token: @survey_invite.token) if notes_prev # override
   end
 
   def get_notes_urls
@@ -120,15 +133,11 @@ class SurveyInvitesController < ApplicationController
 
     at_beginning = @survey_question.at_beginning?
     at_ending = @survey_question.at_ending?
-    notes_next = @survey.notes_next?(@survey_question)
-    notes_prev = @survey.notes_prev?(@survey_question)
     
     @prev_url = at_beginning ? nil : survey_path(token: @survey_invite.token, group_position: prev_group_pos, question_position: prev_question_pos)
     @next_url = at_ending ? nil : survey_path(token: @survey_invite.token, group_position: next_group_pos, question_position: next_question_pos)
     @finish_url = at_ending ? survey_path(token: @survey_invite.token, group_position: -1, question_position: -1) : nil
     @patch_url = survey_answer_patch_url(token: @survey_invite.token)
-    @next_url = survey_notes_url(token: @survey_invite.token) if notes_next
-    @prev_url = survey_notes_url(token: @survey_invite.token) if notes_prev
   end
 
   def get_survey_answer
@@ -139,10 +148,24 @@ class SurveyInvitesController < ApplicationController
     survey_group = survey_invite.survey_groups.where(position: group_position).first
     survey_question = survey_group.survey_questions.where(position: question_position).first
 
-    survey_invite.survey_answers.where(survey_question_id: survey_question.id).first ||
-    SurveyAnswer.new({
-      survey_invite_id: survey_invite.id,
-      survey_question_id: survey_question.id
-    })
+    survey_invite.survey_answers.where(survey_question_id: survey_question.id).first
+  end
+
+  def initialize_answers
+    return if @survey_invite.survey_answers.count != @survey.survey_questions.count
+    sa_sq_ids = @survey_invite.survey_answers.collect(&:survey_question_id)
+    sq_ids = @survey.survey_questions.collect(&:id)
+    sq_ids.each do |sq_id|
+      next if sa_sq_ids.index(sq_id) # skip if answer already exists
+      @survey_invite.survey_answers.create({
+        survey_invite_id: @survey_invite.id,
+        survey_question_id: sq_id.id,
+        vote_count: 0
+      })
+    end
+    sa_sq_ids.each do |sa_sq_id|
+      next if sq_ids.index(sa_sq_id) # skip if question exists
+      @survey_invite.survey_answers.where(survey_question_id: sa_sq_id).destroy_all
+    end
   end
 end

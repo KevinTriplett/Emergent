@@ -13,7 +13,7 @@ module Note::Operation
 
       def initialize_note(ctx, model:, params:, **)
         model.text = "Click here to edit"
-        model.color = model.survey_group.note_color || "#FFFF99"
+        model.coords = "0:0"
       end
     end
     

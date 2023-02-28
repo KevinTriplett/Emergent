@@ -1,10 +1,13 @@
-class Note::Cell::Grid < Cell::ViewModel
+class Note::Cell::Admin < Cell::ViewModel
   def show
-    render # renders app/cells/survey_invite/cell/survey_answer/show.haml
+    render # renders app/cells/note/cell/admin/show.haml
   end
 
   def note
     model[:note]
+  end
+  def group_id
+    note.survey_group_id
   end
   def group_name
     note.group_name
@@ -43,5 +46,14 @@ class Note::Cell::Grid < Cell::ViewModel
 
   def color
     note.color || "#FFFF99"
+  end
+
+  def voting_controls
+    votes = note.survey_answer.votes
+    votes_left = note.survey_answer.votes_left
+    "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
+    <i class='vote-down bi-hand-thumbs-down-fill'></i>\
+    <span class='vote-count'>#{votes}</span>\
+    (<span class='votes-left'>#{votes_left}</span> votes left)"
   end
 end

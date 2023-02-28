@@ -2,7 +2,7 @@
 
 .d-flex.flex-wrap#notes-container
   - @notes.each do |note|
-    = cell(Note::Cell::Grid, {note: note, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
+    = cell(Note::Cell::Admin, {note: note, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
 
 %button.add-note.btn.btn-primary{ data: {url: @new_url} } Add Note
 = link_to "New Group", new_admin_survey_survey_group_path(@survey, return_to_notes: true), class: "new-group btn btn-primary"

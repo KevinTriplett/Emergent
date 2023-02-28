@@ -1,0 +1,7 @@
+.d-flex.flex-wrap#notes-container
+  - @notes.each do |note|
+    = cell(Note::Cell::Survey, {note: note, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
+
+= link_to "< Prev", @prev_url, class: "prev btn btn-primary" if @prev_url
+= link_to "Next >", @next_url, class: "next btn btn-primary" if @next_url
+= link_to "Finish", @finish_url, class: "finish btn btn-primary" if @finish_url

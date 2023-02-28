@@ -900,18 +900,26 @@ $(document).ready(function() {
 
   var saveNote = function(e) {
     var note = $(this).closest(".note");
-    var group_name = note.find(".note-group-name .ui-selectmenu-text").text();
+    var groupName = note.find(".note-group-name .ui-selectmenu-text").text();
     var text = note.find(".note-text").text();
-    if (text == note.data("text") && group_name == note.data("group-name")) return;
+    if (text == note.data("text") && groupName == note.data("group-name")) return;
     var data = {
-      group_name: group_name,
+      group_name: groupName,
       text: text
     }
     flashHide(note);
     notePatch(note, data, function(result) {
       flashGood(note);
-      note.data("text", result.model.text);
-      note.data("group-name", result.group_name);
+      note
+        .data("text", result.model.text)
+        .attr("data-group", result.model.survey_group_id)
+        .data("group-name", groupName)
+        .css("background-color", result.color)
+        .find("button.colorpicker")
+        .css("background-color", result.color);
+      note
+        .find("input.colorpicker")
+        .val(result.color);
     }, function() {
       flashBad(note);
     });
@@ -944,8 +952,114 @@ $(document).ready(function() {
     });
   }
 
-  $("body#notes .note").each(function(i, note) {
+  var setAllGroupNotesColor = function(data) {
+    $(`#notes-container .color-style[data-group='${data.group}']`)
+      .each(function(i, node) {
+        $(node).css("background-color", data.color);
+      });
+  }
+
+  var setNoteColor = function(r, g, b, a) {
+    var color = this.color(r, g, b, a);
+    var data = {color: color}
+    var note = $(this.source).closest(".note");
+    notePatch(note, data, function(result) {
+      note.find("input.colorpicker").val(color);
+      setAllGroupNotesColor({
+        group: result.model.survey_group_id,
+        color: result.color
+      });
+      flashGood(note);
+    }, function() {
+      flashBad(note);
+    })
+  }
+
+  var initializeColorPicker = function(note) {
+    var picker = new CP(note.querySelector("input.colorpicker"), note.dataset.color);
+    var button = note.querySelector("button.colorpicker");
+    // picker.on("blur", () => {});
+    picker.on("focus", () => {});
+    button.addEventListener("click", function(e) {
+      if (e.target.nodeName != "I") return;
+      picker[picker.visible ? "exit" : "enter"](button);
+      picker.fit([
+        button.offsetLeft - 25,
+        button.offsetTop + button.offsetHeight + 50
+      ]);
+    });
+    picker
+      .on("change", debounce(setNoteColor, 250))
+      .on("change", function(r, g, b, a) {
+        var color = this.color(r, g, b, a);
+        var note = $(this.source).closest(".note");
+        setAllGroupNotesColor({
+          group: note.data("group"),
+          color: color
+        });
+      });
+  }
+
+  var installNoteListeners = function(note) {
     dragmove(note, note.querySelector("button.move"), onDragStart, onDragEnd);
+    initializeColorPicker(note);
+    note = $(note);
+    note
+      .find(".note-text")
+      .on("keydown", debounce(saveNote, 500))
+      .on("keydown", function(e) {
+        if (e.key == "Meta" || e.key == "Alt" || e.key == "Control") return;
+        flashHide($(this).closest(".note"));
+      });
+    note.
+      find(".delete")
+      .on("click", deleteNote);
+    note
+      .find(".note-group-name select")
+      .selectmenu({
+        change: function(e) {
+          saveNote.call(this);
+        }
+      });
+  }
+
+  var cloneNewNote = function(result) {
+    var note = $("#notes-container").find(".note").first(); // true: copy handlers also
+    if (note.length == 0) window.location.assign(result.first_note_url);
+    note = note.clone(); // do not clone event handlers, they are installed afterwards
+    flashHide(note);
+    var left = parseInt(result.model.coords ? result.model.coords.split(":")[0] : "0");
+    var top  = parseInt(result.model.coords ? result.model.coords.split(":")[1] : "0");
+    note.position({top: top, left: left});
+        note
+        note
+          .position({top: top, left: left})
+    note
+          .position({top: top, left: left})
+      .find(".note-text")
+      .text(result.model.text);
+    note
+      .attr("data-group", result.model.survey_group_id)
+      .find(".note-group-name")
+      .find(".ui-selectmenu-text, .user-status select")
+      .text(result.group_name);
+    var url = note
+      .closest("[data-url")
+      .data("url")
+      .replace(/(^.+)\/\d+\/patch/, `$1/${result.model.id}/patch`);
+    note
+      .closest("[data-url")
+      .data("url", url);
+    setAllGroupNotesColor({
+      group: result.model.survey_group_id,
+      color: result.color
+    });
+    installNoteListeners(note.get());
+    $("#notes-container").append(note);
+  }
+
+  $("body#notes .note").each(function(i, note) {
+    installNoteListeners(note);
   });
 
   $("body#notes button.add-note").on("click", function(e) {
@@ -956,52 +1070,11 @@ $(document).ready(function() {
       processData: false,
       dataType: "JSON",
       contentType: "application/json",
-      success: function(result) {
-        var note = $("#notes-container").find(".note").first().clone(true); // true: copy handlers also
-        if (note.length == 0) window.location.assign(result.first_note_url);
-        flashHide(note);
-        var left = parseInt(result.model.coords ? result.model.coords.split(":")[0] : "0");
-        var top  = parseInt(result.model.coords ? result.model.coords.split(":")[1] : "0");
-        note
-          .position({top: top, left: left})
-          .find(".note-text")
-          .text(result.model.text);
-        note
-          .find(".note-group-name")
-          .find(".ui-selectmenu-text, .user-status select")
-          .text(result.group_name);
-        var url = note
-          .closest("[data-url")
-          .data("url")
-          .replace(/(^.+)\/\d+\/patch/, `$1/${result.model.id}/patch`);
-        note
-          .closest("[data-url")
-          .data("url", url);
-        note.attr("style", `background-color: ${result.model.color};`);
-        $("#notes-container").prepend(note);
-      },
-      function() {
+      success: cloneNewNote,
+      error: function() {
         alert("something went wrong -- ask Kevin");
       }
     });
-  });
-
-  $(".note .note-text")
-    .on("keydown", debounce(saveNote, 500))
-    .on("keydown", function(e) {
-      if (e.key == "Meta" || e.key == "Alt" || e.key == "Control") return;
-      flashHide($(this).closest(".note"));
-    });
-  $(".note .delete").on("click", deleteNote);
-  $(".note .note-group-name select").selectmenu({
-    change: function(e) {
-      var self = $(this);
-      self
-        .closest(".row")
-        .find("input[type='hidden']")
-        .val(self.val());
-      saveNote.call(this);
-    }
   });
 
   var notePatch = function(dom, data, success, error) {

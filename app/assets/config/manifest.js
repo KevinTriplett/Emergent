@@ -4,3 +4,4 @@
 //= link jquery-ui.css
 //= link datatables.css
 //= link notes.css
+//= link colorpicker.css
