@@ -18,7 +18,7 @@ module Admin
       _ctx = run SurveyGroup::Operation::Create do |ctx|
         flash[:notice] = "Group #{ctx[:model].name} was created"
         sg = ctx[:model]
-        return redirect_to params["return_to_notes"] ? 
+        return redirect_to params["return_to_notes"] == "true" ? 
           admin_survey_notes_url(sg.survey_id) :
           new_admin_survey_survey_group_survey_question_url(survey_id: sg.survey_id, survey_group_id: sg.id)
       end

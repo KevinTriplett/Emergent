@@ -169,4 +169,28 @@ class SurveyQuestionsTest < MiniTest::Spec
       assert  question_2_2.at_ending?
     end
   end
+
+  it "can update its note" do
+    DatabaseCleaner.cleaning do
+      group_1 = create_survey_group
+      survey = group_1.survey
+      group_2 = create_survey_group(survey: survey)
+      note = create_note(survey_group: group_1, text: "What is all of this, then?")
+      question = note.survey_question
+
+      assert_equal question.question, note.text
+      assert_equal question.group_name, note.group_name
+      
+      question.update_note
+      assert_equal question.question, note.text
+      assert_equal question.reload.group_name, note.reload.group_name
+      
+      question.question = "'ere now, what's all this then?"
+      question.group_name = group_2.name
+      question.save
+      question.update_note
+      assert_equal question.reload.question, note.reload.text
+      assert_equal question.group_name, note.group_name
+    end
+  end
 end

@@ -698,7 +698,7 @@ $(document).ready(function() {
                 if (isFirst) {
                     onEvents(EVENTS_DOWN, source, doClick);
                     delay(function () {
-                        // fire('change', theColor);
+                        // fire('change', theColor); // KMT
                     }, 1);
                 } else {
                     onEvents(EVENTS_DOWN, SV, doDownSV);

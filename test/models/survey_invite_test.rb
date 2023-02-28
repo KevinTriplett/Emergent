@@ -11,6 +11,31 @@ class SurveyInviteTest < MiniTest::Spec
     end
   end
 
+  it "reports total votes" do
+    DatabaseCleaner.cleaning do
+      group_1 = create_survey_group(votes_max: 6)
+      survey = group_1.survey
+      group_2 = create_survey_group(survey: survey, votes_max: 6)
+      question_1_1 = create_survey_question(survey: survey, survey_group: group_1, answer_type: "Vote")
+      question_1_2 = create_survey_question(survey: survey, survey_group: group_1, answer_type: "Vote")
+      question_2_1 = create_survey_question(survey: survey, survey_group: group_2, answer_type: "Vote")
+      question_2_2 = create_survey_question(survey: survey, survey_group: group_2, answer_type: "Vote")
+      invite = create_survey_invite(survey: survey)
+      answer_1_1 = create_survey_answer(survey_invite: invite, survey_question: question_1_1)
+      answer_1_2 = create_survey_answer(survey_invite: invite, survey_question: question_1_2)
+      answer_2_1 = create_survey_answer(survey_invite: invite, survey_question: question_2_1)
+      answer_2_2 = create_survey_answer(survey_invite: invite, survey_question: question_2_2)
+
+      answer_1_1.update vote_count: 3
+      answer_1_2.update vote_count: 1
+      answer_2_1.update vote_count: 2
+      answer_2_2.update vote_count: 4
+
+      assert_equal 4, invite.reload.votes_total(group_1.id)
+      assert_equal 6, invite.votes_total(group_2.id)
+    end
+  end
+
   it "updates the state" do
     DatabaseCleaner.cleaning do
       survey_invite = create_survey_invite
@@ -106,6 +131,29 @@ class SurveyInviteTest < MiniTest::Spec
       assert !invite.is_started
       assert invite.finished?
       assert invite.is_finished
+    end
+  end
+
+  it "finds its survey_answer based on survey_question_id" do
+    DatabaseCleaner.cleaning do
+      group_1 = create_survey_group
+      survey = group_1.survey
+      group_2 = create_survey_group(survey: survey)
+      question_1_1 = create_survey_question(survey: survey, survey_group: group_1)
+      question_1_2 = create_survey_question(survey: survey, survey_group: group_1)
+      question_2_1 = create_survey_question(survey: survey, survey_group: group_2)
+      question_2_2 = create_survey_question(survey: survey, survey_group: group_2)
+      invite = create_survey_invite(survey: survey)
+      answers_hash = {}
+      survey.ordered_questions.each do |sq|
+        answer = create_survey_answer(survey_invite: invite, survey_question: sq)
+        answers_hash[answer.id] = sq.id
+      end
+
+      survey.ordered_questions.each do |sq|
+        answer = invite.get_survey_answer(sq.id)
+        assert_equal answers_hash[answer.id], sq.id
+      end
     end
   end
 end

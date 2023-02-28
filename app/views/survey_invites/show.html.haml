@@ -1,7 +1,7 @@
 %p.survey-name= "Survey: #{@survey_invite.survey.name}"
 %p.survey-description= @survey_invite.survey.description
 
-.row.survey{ data: {url: @patch_url, token: @token} }
+.row#survey-container
   .col
     .row.survey-group
       .col
@@ -10,9 +10,9 @@
     .row.survey-questions
       .col
         - @survey_questions.each do |sq|
-          = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq})
+          = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq, patch_url: @patch_url, token: @token})
 
-    .row.survey-answer-links
+    .row.links
       .col
         = link_to "< Prev", @prev_url, class: "btn btn-warning" if @prev_url
         = link_to "Next >", @next_url, class: "btn btn-success" if @next_url

@@ -14,9 +14,13 @@ class SurveyInvite < ActiveRecord::Base
     save
   end
 
+  def get_survey_answer(survey_question_id)
+    survey_answers.where(survey_question_id: survey_question_id).first
+  end
+
   def votes_total(group_id)
     group_answers = survey_answers.select { |sa| sa.survey_group_id == group_id }
-    group_answers.select { |sa| "Vote" == sa.answer_type }.collect(&:votes).sum(0)
+    group_answers.select { |sa| sa.survey_question.vote? }.collect(&:votes).sum(0)
   end
 
   def self.queued

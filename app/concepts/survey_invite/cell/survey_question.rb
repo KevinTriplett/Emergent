@@ -9,6 +9,17 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def survey_question
     model[:survey_question]
   end
+  def survey_answer
+    survey_invite.get_survey_answer(survey_question.id)
+  end
+
+  def patch_url
+    "#{model[:patch_url]}/#{survey_question.id}"
+  end
+  def token
+    model[:token]
+  end
+
   def group_position
     survey_question.group_position
   end
@@ -17,33 +28,11 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def question_type_class
-    case survey_question.question_type
-    when "Instructions"
-      "survey-question-instructions"
-    when "Question"
-      "survey-question-question"
-    end
+    "survey-question-#{survey_question.question_type.downcase.gsub(" ", "-").gsub("/", "-")}"
   end
 
   def answer_type_class
-    case survey_question.answer_type
-    when "Yes/No"
-      "survey-answer-yes-no"
-    when "Multiple Choice"
-      "survey-answer-multiple-choice"
-    when "Essay"
-      "survey-answer-essay"
-    when "Rating"
-      "survey-answer-rating"
-    when "Range"
-      "survey-answer-range"
-    when "Number"
-      "survey-answer-number"
-    when "Vote"
-      "survey-answer-vote"
-    when "Email"
-      "survey-answer-email"
-    end
+    "survey-answer-#{survey_question.answer_type.downcase.gsub(" ", "-").gsub("/", "-")}"
   end
 
   def name
@@ -66,14 +55,6 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
   def scale
     survey_answer.scale
-  end
-
-  def survey_answer
-    survey_invite.survey_answers.where(survey_question_id: survey_question.id).first ||
-    SurveyAnswer.new({
-      survey_invite_id: survey_invite.id,
-      survey_question_id: survey_question.id
-    })
   end
 
   def user_answer

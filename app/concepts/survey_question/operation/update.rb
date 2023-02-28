@@ -24,5 +24,10 @@ module SurveyQuestion::Operation
     step Subprocess(Present)
     step Contract::Validate(key: :survey_question)
     step Contract::Persist()
+    step :update_note
+
+    def update_note(ctx, model:, **)
+      model.note ? model.update_note : true
+    end
   end
 end

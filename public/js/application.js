@@ -186,7 +186,7 @@ var getUserNotes = function(userDom) {
 }
 
 var noGreeter = function(userDom) {
-  var userGreeterId = userDom.find("td.user-greeter").data("greeter-id");
+  var userGreeterId = userDom.find("td.user-greeter").attr("data-greeter-id");
   if (!userGreeterId) {
     if (!confirm("You will greet this new member?")) return true;
     setUserGreeter(userDom, greeterId);
@@ -201,7 +201,7 @@ var setUserGreeter = function(userDom, newGreeterId) {
   var data = { greeter_id: newGreeterId };
   patch(userDom, data, function() {
     var text = newGreeterId ? greeterName : "I will greet";
-    userDom.find("td.user-greeter").data("greeter-id", newGreeterId);
+    userDom.find("td.user-greeter").attr("data-greeter-id", newGreeterId);
     userDom.find("td.user-greeter a").text(text);
   }, function() {
     alert("Could not change greeter - ask Kevin");
@@ -209,13 +209,12 @@ var setUserGreeter = function(userDom, newGreeterId) {
 }
 
 var resetUserStatus = function(userDom) {
-  var status = userDom.find("td.user-status").data("status");
-  userDom.find("td.user-status select").val(status);
-  userDom.find("td.user-status .ui-selectmenu-text").text(status);
+  var status = userDom.find("td.user-status").attr("data-status");
+  userDom.find("td.user-status select").val(status).selectmenu("refresh");
 }
 
 var setStatus = function(userDom) {
-  var status = userDom.find("td.user-status .ui-selectmenu-text").text();
+  var status = userDom.find("td.user-status select").val();
   if ("Scheduling Zoom" == status) {
     if (!confirm("Set status to Zoom Scheduled?")) return true;
     setUserStatus(userDom, "Zoom Scheduled");
@@ -241,9 +240,8 @@ var setUserStatus = function(userDom, userStatus) {
       .empty()
       .append(newSel);
     initStatusSelectMenu();
-    userDom.find("td.user-status").data("status", result.model.status);
-    userDom.find("td.user-status select").val(result.model.status);
-    userDom.find("td.user-status .ui-selectmenu-text").text(result.model.status);
+    userDom.find("td.user-status").attr("data-status", result.model.status);
+    userDom.find("td.user-status select").val(result.model.status).selectmenu("refresh");
     userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
   }, function() {
     alert("Could not change status - ask Kevin");
@@ -254,7 +252,7 @@ var dateInPast = function(userDom, ts) {
   if (pastOkay || !ts) return false;
   if (Date.parse(ts) > (new Date).getTime()) return false;
   if (!confirm("Are you sure you want to set the Zoom meeting in the past?")) {
-    var timestamp = userDom.find("td.user-meeting-datetime").data("timestamp");
+    var timestamp = userDom.find("td.user-meeting-datetime").attr("data-timestamp");
     timestamp ||= "";
     userDom.find("td.user-meeting-datetime input").val(timestamp);
     return true;
@@ -300,8 +298,8 @@ var initSurveySelectMenu = function() {
 ////////////////////////////////////////////////////
 // PATCH
 var patch = function(userDom, data, success, error) {
-  var url = userDom.dataset ? userDom.dataset.url : userDom.data("url");
-  var token = userDom.dataset ? userDom.dataset.token : userDom.data("token");
+  var url = userDom.dataset ? userDom.dataset.url : userDom.attr("data-url");
+  var token = userDom.dataset ? userDom.dataset.token : userDom.attr("data-token");
   $.ajax({
     url: url,
     type: "POST",
@@ -388,8 +386,8 @@ $(document).ready(function() {
   var deleteThis = function(e, success, error) {
     e.preventDefault();
     if (!confirm(this.dataset["confirm"])) return;
-    var token = $(this).closest("[data-token]").data("token");
-    var url = this.href || $(this).data("url");
+    var token = $(this).closest("[data-token]").attr("data-token");
+    var url = this.href || $(this).attr("data-url");
     $.ajax({
       url: url,
       type: "DELETE",
@@ -427,7 +425,7 @@ $(document).ready(function() {
     var self = $(this);
     var value = self.val();
     if (value.length < 3) return;
-    var url = self.closest("[data-url]").data("url");
+    var url = self.closest("[data-url]").attr("data-url");
     var data = {q: value, source: "greeter"};
     $.ajax({
       url: url,
@@ -491,7 +489,7 @@ $(document).ready(function() {
     var self = $(this);
     var value = self.val();
     if (value.length < 2) return;
-    var url = self.data("url");
+    var url = self.attr("data-url");
     var data = {q: value};
     $.ajax({
       url: url,
@@ -584,7 +582,7 @@ $(document).ready(function() {
   // MAKE TABLE ROWS CLICKABLE
   $("table.users tbody").on("click", function(e) {
     if (e.target.nodeName == "A") return;
-    document.location = $(e.target).closest("tr").data("url");
+    document.location = $(e.target).closest("tr").attr("data-url");
   });
 
   ////////////////////////////////////////////////////
@@ -631,7 +629,7 @@ $(document).ready(function() {
     var userDom = self.closest("[data-id]");
     if (noGreeter(userDom)) return;
     var url = self.attr("href");
-    var token = $("table.users,table.user").data("token");
+    var token = $("table.users,table.user").attr("data-token");
     $("#spinner").show();
     $(".progress-message").show();
     $(".user-approve,.user-reject").hide();
@@ -677,13 +675,13 @@ $(document).ready(function() {
         el.blur();
         return;
       }
-      if (el.data("picker")) return; // return if datetime picker already instantiated
+      if (el.attr("data-picker")) return; // return if datetime picker already instantiated
       var options = {
         showTime: true,
         timeFormat: "HH:MM"
       };
       var css = "input.datetime-picker";
-      el.data("picker", new dtsel.DTS(css, options))
+      el.attr("data-picker", new dtsel.DTS(css, options))
         .blur() // now simulate opening the picker
         .focus();
     })
@@ -741,7 +739,7 @@ $(document).ready(function() {
     e.preventDefault();
     var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").data("greeter-id");
+    var currentGreeterId = self.closest("td").attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as greeter?");
@@ -759,7 +757,7 @@ $(document).ready(function() {
     e.preventDefault();
     var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").data("greeter-id");
+    var currentGreeterId = self.closest("td").attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as shadow greeter?");
@@ -772,7 +770,7 @@ $(document).ready(function() {
     var data = { shadow_greeter_id: newGreeterId };
     patch(userDom, data, function() {
       var text = newGreeterId ? greeterName : "I will shadow";
-      self.closest("td").data("greeter-id", newGreeterId);
+      self.closest("td").attr("data-greeter-id", newGreeterId);
       userDom.find("td.user-shadow a").text(text);
     }, function() {
       alert("Could not change shadow - ask Kevin");
@@ -823,51 +821,50 @@ $(document).ready(function() {
     var data = self.val();
     surveyAnswerPatch(self, {answer: data});
   }
-  $("#survey .survey-answer-essay textarea").on("keyup", debounce(saveEssay, 500));
+  $("#survey-container .survey-answer-essay textarea").on("keyup", debounce(saveEssay, 500));
 
   var saveScale = function(e) {
     var self = $(this);
     var data = self.val();
     surveyAnswerPatch(self, {scale: data});
   }
-  $("#survey .survey-answer-scale input[type='range']").on("change", debounce(saveScale, 500));
+  $("#survey-container .survey-answer-scale input[type='range']").on("change", debounce(saveScale, 500));
 
   var saveRange = function(e) {
     var self = $(this);
     var data = self.val();
     surveyAnswerPatch(self, {answer: data});
   }
-  $("#survey .survey-answer-range input[type='range']").on("change", debounce(saveRange, 500));
+  $("#survey-container .survey-answer-range input[type='range']").on("change", debounce(saveRange, 500));
 
   var saveChoice = function(e) {
     var self = $(this);
     var data = self.val();
     surveyAnswerPatch(self, {answer: data});
   }
-  $("#survey .survey-answer-yes-no input[type='radio']").on("change", saveChoice);
-  $("#survey .survey-answer-multiple-choice input[type='radio']").on("change", saveChoice);
+  $("#survey-container .survey-answer-yes-no input[type='radio']").on("change", saveChoice);
+  $("#survey-container .survey-answer-multiple-choice input[type='radio']").on("change", saveChoice);
 
-  $("#survey .vote-up, #survey .vote-down").on("click", function(e) {
+  var processVote = function(e) {
     var self = $(this);
     var count = self.parent().find(".vote-count");
     var data = parseInt(count.text());
     data = (self.hasClass("vote-up") ? data+1 : data-1);
     surveyAnswerPatch(self, {votes: data}, function(result) {
-      count.text(` ${result.vote_count}`);
+      count.text(result.vote_count);
       self
-        .closest(".survey")
+        .closest("#survey-container, #notes-container")
         .find(`.survey-answer-vote[data-group-position='${result.group_position}']`)
         .find(".votes-left")
         .text(result.votes_left);
     });
-  });
+  }
+  $("#survey-container .vote-up, #survey-container .vote-down").on("click", processVote);
 
   var surveyAnswerPatch = function(dom, data, success, error) {
     var urlDom = dom.closest("[data-url]");
-    var groupPosition = dom.closest("[data-group-position]").data("group-position");
-    var questionPosition = dom.closest("[data-question-position]").data("question-position");
-    var token = urlDom.data("token");
-    var url = `${urlDom.data("url")}/${groupPosition}/${questionPosition}`;
+    var token = urlDom.attr("data-token");
+    var url = urlDom.attr("data-url");
     $.ajax({
       url: url,
       type: "POST",
@@ -900,9 +897,9 @@ $(document).ready(function() {
 
   var saveNote = function(e) {
     var note = $(this).closest(".note");
-    var groupName = note.find(".note-group-name .ui-selectmenu-text").text();
+    var groupName = note.find(".note-group-name select").val();
     var text = note.find(".note-text").text();
-    if (text == note.data("text") && groupName == note.data("group-name")) return;
+    if (text == note.attr("data-text") && groupName == note.attr("data-group-name")) return;
     var data = {
       group_name: groupName,
       text: text
@@ -911,9 +908,9 @@ $(document).ready(function() {
     notePatch(note, data, function(result) {
       flashGood(note);
       note
-        .data("text", result.model.text)
+        .attr("data-text", result.model.text)
         .attr("data-group", result.model.survey_group_id)
-        .data("group-name", groupName)
+        .attr("data-group-name", groupName)
         .css("background-color", result.color)
         .find("button.colorpicker")
         .css("background-color", result.color);
@@ -946,7 +943,7 @@ $(document).ready(function() {
     var data = {coords: `${x}:${y}`};
     notePatch(note, data, function(result) {
       flashGood(note);
-      note.data("coords", result.model.coords);
+      note.attr("data-coords", result.model.coords);
     }, function() {
       flashBad(note);
     });
@@ -954,8 +951,8 @@ $(document).ready(function() {
 
   var setAllGroupNotesColor = function(data) {
     $(`#notes-container .color-style[data-group='${data.group}']`)
-      .each(function(i, node) {
-        $(node).css("background-color", data.color);
+      .each(function() {
+        $(this).css("background-color", data.color);
       });
   }
 
@@ -994,16 +991,22 @@ $(document).ready(function() {
         var color = this.color(r, g, b, a);
         var note = $(this.source).closest(".note");
         setAllGroupNotesColor({
-          group: note.data("group"),
+          group: note.attr("data-group"),
           color: color
         });
       });
   }
 
+  var reorderZ = function(e) {
+    var self = $(this);
+    var notes = $("#notes-container .note");
+    notes.each(function(i, note) {
+      $(note).css("z-index", i);
+    });
+    self.css("z-index", notes.length)
+  }
+
   var installNoteListeners = function(note) {
-    dragmove(note, note.querySelector("button.move"), onDragStart, onDragEnd);
-    initializeColorPicker(note);
-    note = $(note);
     note
       .find(".note-text")
       .on("keydown", debounce(saveNote, 500))
@@ -1011,9 +1014,13 @@ $(document).ready(function() {
         if (e.key == "Meta" || e.key == "Alt" || e.key == "Control") return;
         flashHide($(this).closest(".note"));
       });
-    note.
-      find(".delete")
+    note
+      .on("mousedown", reorderZ)
+      .find(".delete")
       .on("click", deleteNote);
+    note
+      .find(".note-group-name select ~ span")
+      .remove()
     note
       .find(".note-group-name select")
       .selectmenu({
@@ -1021,45 +1028,65 @@ $(document).ready(function() {
           saveNote.call(this);
         }
       });
-  }
-
-  var cloneNewNote = function(result) {
-    var note = $("#notes-container").find(".note").first(); // true: copy handlers also
-    if (note.length == 0) window.location.assign(result.first_note_url);
-    note = note.clone(); // do not clone event handlers, they are installed afterwards
-    flashHide(note);
-    var left = parseInt(result.model.coords ? result.model.coords.split(":")[0] : "0");
-    var top  = parseInt(result.model.coords ? result.model.coords.split(":")[1] : "0");
-    note.position({top: top, left: left});
-        note
-        note
-          .position({top: top, left: left})
     note
-          .position({top: top, left: left})
+      .find(".vote-up, .vote-down")
+      .on("click", processVote);
+    note
+      .find(".survey-answer-vote")
+      .on("dblclick", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      
+    if ($("body#survey").length > 0) return; // stop if user view
+    note = note.get()[0];
+    initializeColorPicker(note);
+    dragmove(note, note.querySelector("button.move"), onDragStart, onDragEnd);
+  }
+  
+  var cloneNewNote = function(result) {
+    var note = $("#note-template .note").first().clone(false); // do not clone event handlers, they are installed afterwards
+    flashHide(note);
+    var coords = result.model.coords || "0:0"
+    var left = parseInt(coords.split(":")[0]);
+    var top  = parseInt(coords.split(":")[1]);
+    var patchUrl = note
+      .attr("data-url")
+      .replace(/xxxx/, result.model.id);
+    var deleteUrl = note
+      .find("button.delete")
+      .attr("data-url")
+      .replace(/xxxx/, result.model.id);
+    var id = note
+      .attr("id")
+      .replace(/xxxx/, result.model.id);
+    note
+      .css("top", top)
+      .css("left", left)
+      .attr("data-url", patchUrl)
+      .attr("id", id)
+      .find("button.delete")
+      .attr("data-url", deleteUrl)
+    note
       .find(".note-text")
       .text(result.model.text);
     note
       .attr("data-group", result.model.survey_group_id)
       .find(".note-group-name")
-      .find(".ui-selectmenu-text, .user-status select")
-      .text(result.group_name);
-    var url = note
-      .closest("[data-url")
-      .data("url")
-      .replace(/(^.+)\/\d+\/patch/, `$1/${result.model.id}/patch`);
-    note
-      .closest("[data-url")
-      .data("url", url);
+      .find("select")
+      .val(result.group_name);
     setAllGroupNotesColor({
       group: result.model.survey_group_id,
       color: result.color
     });
-    installNoteListeners(note.get());
+    reorderZ.call(note);
+    installNoteListeners(note);
     $("#notes-container").append(note);
+    note.show();
   }
 
-  $("body#notes .note").each(function(i, note) {
-    installNoteListeners(note);
+  $("#notes-container .note").each(function() {
+    installNoteListeners($(this));
   });
 
   $("body#notes button.add-note").on("click", function(e) {
@@ -1078,8 +1105,8 @@ $(document).ready(function() {
   });
 
   var notePatch = function(dom, data, success, error) {
-    var url = dom.closest("[data-url]").data("url");
-    var token = dom.closest("[data-token]").data("token");
+    var url = dom.closest("[data-url]").attr("data-url");
+    var token = dom.closest("[data-token]").attr("data-token");
     $.ajax({
       url: url,
       type: "POST",

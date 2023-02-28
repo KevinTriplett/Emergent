@@ -16,14 +16,23 @@ class Note < ActiveRecord::Base
 
   def group_name=(name)
     group = survey.survey_groups.where(name: name).first
-    self.survey_group_id = group.id if group
+    return unless group
+    self.survey_group_id = group.id
+    self.position = group.notes.count
   end
+
   def group_position
     survey_group.position
   end
 
   def ordered_groups
     survey_group.ordered_groups
+  end
+
+  def update_from_survey_question
+    self.text = survey_question.question
+    self.group_name = survey_question.group_name
+    save
   end
 
   def update_survey_question

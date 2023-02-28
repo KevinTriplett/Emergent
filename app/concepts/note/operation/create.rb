@@ -32,7 +32,7 @@ module Note::Operation
         params: {
           survey_question: {
             question: params[:note][:text] || model.text,
-            question_type: "Question",
+            question_type: "Note",
             answer_type: "Vote"    
           },
           survey_group_id: model.survey_group_id,

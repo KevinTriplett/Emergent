@@ -28,17 +28,13 @@ class NoteOperationTest < MiniTest::Spec
       end
     end
 
-    it "Defaults note_color to group color or #FFFF99" do
+    it "Delegates color to group note_color" do
       DatabaseCleaner.cleaning do
         group = create_survey_group(note_color: "#123456")
         assert_equal "#123456", group.note_color
 
         note = create_note(survey_group: group)
         assert_equal group.note_color, note.color
-
-        group.update note_color: nil
-        note = create_note(survey_group: group)
-        assert_equal "#FFFF99", note.color
       end
     end
 

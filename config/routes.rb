@@ -17,10 +17,9 @@ Rails.application.routes.draw do
   get "user_search", to: "admin/users#search", as: :user_search
   
   # yes, these parameters need to be optional because they will be modified by js
+  get  "survey/notes/:token", to: "survey_invites#notes", as: :survey_notes
+  post "survey/patch/:token(/:id)", to: "survey_invites#patch", as: :survey_patch
   get  "survey(/:token)(/:group_position/:question_position)", to: "survey_invites#show", as: :survey
-  get  "survey/:token/notes", to: "survey_invites#notes", as: :survey_notes
-  get  "survey/:token/vote/:id", to: "survey_invites#vote", as: :survey_vote
-  post "survey/:token/patch(/:group_position/:question_position)", to: "survey_invites#patch", as: :survey_answer_patch
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]

@@ -75,10 +75,8 @@ module Admin
     end
 
     def test
-      url = survey_url
-      _ctx = run Survey::Operation::Test, current_user: current_user, url: url do |ctx|
-        survey_invite = ctx[:survey_invite]
-        return redirect_to survey_url(token: survey_invite.token)
+      _ctx = run Survey::Operation::Test, current_user: current_user, url: survey_url do |ctx|
+        return redirect_to survey_url(token: ctx[:survey_invite].token)
       end
       flash[:error] = _ctx[:flash]
       return redirect_to admin_survey_url(ctx[:model].id)

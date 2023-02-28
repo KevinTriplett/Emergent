@@ -40,13 +40,19 @@ class SurveyQuestion < ActiveRecord::Base
   end
   def group_name=(name)
     group = survey.survey_groups.where(name: name).first
-    self.survey_group_id = group.id if group
+    return unless group
+    self.survey_group_id = group.id
+    self.position = group.survey_questions.count
   end
 
   def update_from_note
     self.question = note.text
     self.group_name = note.group_name
-    self.save
+    save
+  end
+
+  def update_note
+    note ? note.update_from_survey_question : true
   end
 
   def at_beginning?
@@ -69,8 +75,8 @@ class SurveyQuestion < ActiveRecord::Base
     state = STATES[:seeking]
     !ordered_questions.any? do |sq|
       break if sq.position >= position
-      state = STATES[:question_found] if "New Page" != sq.question_type
-      "New Page" == sq.question_type && STATES[:question_found] == state
+      state = STATES[:question_found] if sq.question? || sq.instructions?
+      sq.new_page? && STATES[:question_found] == state
     end
   end
 
@@ -78,8 +84,8 @@ class SurveyQuestion < ActiveRecord::Base
     state = STATES[:seeking]
     !ordered_questions.reverse.any? do |sq|
       break if sq.position <= position
-      state = STATES[:question_found] if "New Page" != sq.question_type
-      "New Page" == sq.question_type && STATES[:question_found] == state
+      state = STATES[:question_found] if sq.question? || sq.instructions?
+      sq.new_page? && STATES[:question_found] == state
     end
   end
 end
