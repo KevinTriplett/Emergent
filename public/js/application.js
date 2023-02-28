@@ -1075,13 +1075,13 @@ $(document).ready(function() {
       .find(".note-group-name")
       .find("select")
       .val(result.group_name);
+    reorderZ.call(note);
+    installNoteListeners(note);
+    $("#notes-container").append(note);
     setAllGroupNotesColor({
       group: result.model.survey_group_id,
       color: result.color
     });
-    reorderZ.call(note);
-    installNoteListeners(note);
-    $("#notes-container").append(note);
     note.show();
   }
 
