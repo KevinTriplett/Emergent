@@ -83,6 +83,17 @@ class NewUserSpider < EmergeSpider
   def extract_user_hash(row)
     # skip if this user exists in the database with member_id or was rejected
     email = row.css(".invite-list-item-email-text").text.strip
+
+
+    # MN is cloaking member emails so ...
+    # check for existing members by member_id and do not overwrite DB email
+    # pseudocode:
+    #   determine new requests by MN state
+    #   extract member_id
+    #   
+
+
+
     user = User.find_by_email(email)
     return if user && (user.member_id || user.status == "Request Declined")
 
