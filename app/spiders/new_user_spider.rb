@@ -85,10 +85,20 @@ class NewUserSpider < EmergeSpider
     joined = ("Joined!" == status)
 
     # skip if this user exists in the database with member_id or was rejected
-    email = get_email(row)
-    member_id = get_member_id(row)
-    user = joined ? User.find_by_member_id(member_id) : User.find_by_email(email)
-    return if user && (!user.member_id.blank? || "Request Declined" == user.status)
+    email = row.css(".invite-list-item-email-text").text.strip
+
+
+    # MN is cloaking member emails so ...
+    # check for existing members by member_id and do not overwrite DB email
+    # pseudocode:
+    #   determine new requests by MN state
+    #   extract member_id
+    #   
+
+
+
+    user = User.find_by_email(email)
+    return if user && (user.member_id || user.status == "Request Declined")
 
     # member is not in our database or has not joined yet and is not rejected
     first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
