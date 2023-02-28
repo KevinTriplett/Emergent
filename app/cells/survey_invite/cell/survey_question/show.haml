@@ -1,0 +1,12 @@
+.row{ id: row_id, data: {url: patch_url, token: token} }
+  .col
+    .row{ class: question_type_class }
+      .col= question
+    - if answer_type?
+      .row{ class: answer_type_class, data: {group_position: group_position, question_position: question_position} }
+        .col= user_answer
+    - if has_scale?
+      .row.survey-answer-scale-question
+        .col= scale_question
+      .row.survey-answer-scale{ data: {group_position: group_position, question_position: question_position} }
+        .col= answer_scale

@@ -10,13 +10,7 @@ module Survey::Contract
       params do
         required(:id)
         required(:name).filled.value(:string)
-        required(:description)
-      end
-
-      rule(:name, :id) do
-        name, id = values[:name], values[:id].to_i
-        survey = Survey.find_by_name(name)
-        key.failure('must be unique') if !survey.nil? && survey.id != id
+        required(:description).filled.value(:string)
       end
     end
   end

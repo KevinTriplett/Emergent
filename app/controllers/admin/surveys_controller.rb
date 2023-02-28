@@ -5,6 +5,7 @@ module Admin
 
     def index
       @surveys = Survey.all
+      @token = form_authenticity_token
     end
 
     def new
@@ -17,10 +18,9 @@ module Admin
     def create
       _ctx = run Survey::Operation::Create do |ctx|
         flash[:notice] = "Survey #{ctx[:model].name} was created"
-        return redirect_to new_admin_survey_survey_question_url(survey_id: ctx[:model].id)
+        return redirect_to new_admin_survey_survey_group_url(survey_id: ctx[:model].id)
       end
     
-      flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end
@@ -28,7 +28,7 @@ module Admin
     def show
       # show all questions in survey
       @survey = Survey.find(params[:id])
-      @survey_questions = @survey.survey_questions.order(position: :asc)
+      @survey_groups = @survey.ordered_groups
       @token = form_authenticity_token
     end
 
@@ -45,7 +45,6 @@ module Admin
         return redirect_to admin_survey_url(ctx[:model].id)
       end
     
-      flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end
@@ -53,11 +52,34 @@ module Admin
     def destroy
       run Survey::Operation::Delete do |ctx|
         flash[:notice] = "Survey deleted"
-        return redirect_to admin_surveys_url, status: 303
+        return render json: { url: admin_surveys_url }
       end
+      return head(:bad_request)
+    end
 
-      flash[:notice] = "Unable to delete Survey"
-      render :index, status: :unprocessable_entity
+    def new_note
+      survey = Survey.find(params[:id])
+      group = survey.last_note_survey_group
+      # make like it came from a form:
+      params[:survey_group_id] = group.id
+      params.delete(:id)
+      params[:note] = params
+      run Note::Operation::Create, survey_group_id: group.id do |ctx|
+        return render json: { 
+          model: ctx[:model],
+          group_name: group.name,
+          first_note_url: admin_survey_notes_path(survey.id)
+        }
+      end
+      return head(:bad_request)
+    end
+
+    def test
+      _ctx = run Survey::Operation::Test, current_user: current_user, url: survey_url do |ctx|
+        return redirect_to survey_url(token: ctx[:survey_invite].token)
+      end
+      flash[:error] = _ctx[:flash]
+      return redirect_to admin_survey_url(ctx[:model].id)
     end
   end
 end

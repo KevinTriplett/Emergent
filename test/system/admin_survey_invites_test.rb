@@ -4,6 +4,14 @@ class AdminSurveyInvitesTest < ApplicationSystemTestCase
   include ActionMailer::TestHelper
   DatabaseCleaner.clean
 
+  test "Regular user cannot create a survey invite" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      visit new_admin_survey_survey_invite_path(survey_id: survey.id)
+      assert_current_path root_path
+    end
+  end
+
   test "Admin can create a survey invite" do
     DatabaseCleaner.cleaning do
       admin = login

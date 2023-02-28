@@ -54,7 +54,7 @@ class EmergeSpider < Kimurai::Base
   def wait_until(css, text=nil)
     for i in 0..10
       return true if response_has(css, text)
-      EmergeSpider.logger.debug "#{name} WAITING UNTIl #{css} ..."
+      EmergeSpider.logger.debug "#{name} WAITING UNTIL #{css} ..."
       sleep 1
     end
     raise_error_unless_response_has(css)

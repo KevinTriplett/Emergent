@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   belongs_to :greeter, class_name: "User", optional: true
   belongs_to :shadow_greeter, class_name: "User", optional: true
-  has_many :survey_invites
+  has_many :survey_invites, dependent: :destroy
   has_many :surveys, through: :survey_invites
   has_secure_token
 
@@ -35,6 +35,43 @@ class User < ActiveRecord::Base
 
   def notes_ellipsis(len)
     notes.length > len ? "..." : nil
+  end
+
+  # NB: role order is zero-based
+  def add_role(role, role_hash)
+    return true if has_role?(role)
+    if role_hash[:order].present?
+      # NB: this will take time with large number of users
+      users_with_role = User.all.select {|u| id && u.has_role?(role)}
+      role_hash[:order] = users_with_role.length
+    end
+    update_role(role, role_hash)
+  end
+
+  def remove_role(role)
+    return true unless has_role?(role)
+    user_role_order = delete_role(role)[:order]
+    return unless user_role_order.present?
+
+    # NB: this will take time with large number of users
+    User.all.each do |u|
+      role_hash = u.get_role(role)
+      next unless role_hash && role_hash[:order] > user_role_order
+      role_hash[:order] -= 1
+      u.update_role(role, role_hash)
+    end
+  end
+
+  def get_role(role)
+    get_roles[role]
+  end
+
+  def list_roles
+    get_roles.keys
+  end
+
+  def has_role?(role)
+    !get_role(role).nil?
   end
 
   def get_status_options
@@ -150,5 +187,25 @@ class User < ActiveRecord::Base
         })
       end
     end
+  end
+
+  protected
+
+  def get_roles
+    roles ? Marshal.load(roles) : {}
+  end
+
+  def update_role(role, role_hash)
+    new_roles = get_roles
+    new_roles[role] = role_hash
+    update(roles: Marshal.dump(new_roles))
+    new_roles[role]
+  end
+
+  def delete_role(role)
+    new_roles = get_roles
+    old_role = new_roles.delete(role)
+    update(roles: Marshal.dump(new_roles))
+    old_role
   end
 end

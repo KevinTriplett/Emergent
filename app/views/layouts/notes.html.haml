@@ -1,0 +1,29 @@
+!!! XML
+!!!
+%html
+  %head
+    %title Emergent Commons Jamboard
+    %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag "jquery-ui"
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = stylesheet_link_tag "notes"
+    = stylesheet_link_tag "colorpicker"
+
+    %script{ src: "/js/jquery-3.6.0.js" }
+    %script{ src: "/js/jquery-ui.js" }
+    %script $.widget.bridge('uitooltip', $.ui.tooltip);
+    = javascript_include_tag "application", defer: true
+    %script{ src: "/js/dragmove.js" }
+    %script{ src: "/js/colorpicker.js" }
+    %script{ src: "/js/application.js" }
+    %script{ src: "/js/datatables.js" }
+
+  %body#notes{ class: @body_class }
+    .container
+      .row
+        .col-sm-12
+          %h1 Emergent Commons Jamboard
+          = yield

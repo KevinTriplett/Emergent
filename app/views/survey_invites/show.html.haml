@@ -1,7 +1,19 @@
-%p this is the survey invite show view
+%p.survey-name= "Survey: #{@survey_invite.survey.name}"
+%p.survey-description= @survey_invite.survey.description
 
-%p= "Survey: #{@survey_invite.survey.name}"
+.row#survey-container
+  .col
+    .row.survey-group
+      .col
+        %p.survey-group-name= @survey_group.name
+        %p.survey-group-description= @survey_group.description
+    .row.survey-questions
+      .col
+        - @survey_questions.each do |sq|
+          = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq, patch_url: @patch_url, token: @token})
 
-%ul
-  - @survey_invite.survey.survey_questions.each do |sq|
-    %li= sq.question
+    .row.links
+      .col
+        = link_to "< Prev", @prev_url, class: "btn btn-warning" if @prev_url
+        = link_to "Next >", @next_url, class: "btn btn-success" if @next_url
+        = link_to "Finish", @finish_url, class: "btn btn-primary" if @finish_url

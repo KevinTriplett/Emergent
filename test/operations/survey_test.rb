@@ -37,21 +37,6 @@ class SurveyOperationTest < MiniTest::Spec
       end
     end
 
-    it "Creates {Survey} model with blank description" do
-      DatabaseCleaner.cleaning do
-        existing_survey = create_survey
-
-        result = create_survey_with_result({
-          name: random_survey_name, 
-          description: ""
-        })
-
-        assert result.success?
-        survey = result[:model]
-        assert_equal "", survey.description
-      end
-    end
-
     # ----------------
     # failing path tests
     it "Fails with invalid parameters" do
@@ -69,6 +54,20 @@ class SurveyOperationTest < MiniTest::Spec
 
         assert !result.success?
         assert_equal(["name must be filled"], result["contract.default"].errors.full_messages_for(:name))
+      end
+    end
+
+    it "Fails with blank description" do
+      DatabaseCleaner.cleaning do
+        existing_survey = create_survey
+
+        result = create_survey_with_result({
+          name: random_survey_name, 
+          description: ""
+        })
+
+        assert !result.success?
+        assert_equal(["description must be filled"], result["contract.default"].errors.full_messages_for(:description))
       end
     end
   end

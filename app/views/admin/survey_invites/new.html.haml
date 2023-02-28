@@ -6,10 +6,10 @@
   .row
     .col= "Survey: #{@survey.name}"
   .row
-    .col-sm-10#search
+    .col#search
       %input.form-control{type: "search", placeholder: "Member Name", data: {url: user_search_path}}
       .autocom-box
-    .col-sm-2= f.input :user_id, as: :hidden
+      = f.input :user_id, as: :hidden
   .row
     .col= f.input :subject, placeholder: "Subject Line", label: false
   .row
@@ -20,6 +20,9 @@
   .col= link_to "Back", admin_surveys_path
 %hr
 %ul
-  - @survey.survey_questions.each do |q|
-    %li= q.question
+  - @survey.ordered_groups.each do |sg|
+    %li
+      = sg.name
+      - sg.ordered_questions.each do |sq|
+        %li= sq.question
 

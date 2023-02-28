@@ -1,8 +1,7 @@
 namespace :ec do
   desc "Send all queued survey invites"
   task send_survey_invites: :environment do
-    return if SurveyInvite.queued.blank?
-    SurveyInviteSpider.crawl!
+    SurveyInviteSpider.crawl! unless SurveyInvite.queued.blank?
   end
 end
 

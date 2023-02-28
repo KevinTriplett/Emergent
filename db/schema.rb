@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_27_200029) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -19,6 +19,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
     t.datetime "duration_days"
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.string "text"
+    t.string "coords"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "survey_group_id"
+    t.integer "position"
+    t.integer "survey_question_id"
+    t.index ["survey_question_id"], name: "index_notes_on_survey_question_id"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -39,8 +50,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "survey_invite_id"
+    t.string "token"
+    t.integer "vote_count"
     t.index ["survey_invite_id"], name: "index_survey_answers_on_survey_invite_id"
     t.index ["survey_question_id"], name: "index_survey_answers_on_survey_question_id"
+  end
+
+  create_table "survey_groups", force: :cascade do |t|
+    t.integer "survey_id"
+    t.string "name"
+    t.string "description"
+    t.integer "votes_max"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "note_color"
+    t.index ["survey_id"], name: "index_survey_groups_on_survey_id"
   end
 
   create_table "survey_invites", force: :cascade do |t|
@@ -53,6 +78,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
     t.datetime "updated_at", null: false
     t.integer "state"
     t.datetime "state_timestamp"
+    t.string "url"
+    t.boolean "enable_notes"
     t.index ["state"], name: "index_survey_invites_on_state"
     t.index ["survey_id"], name: "index_survey_invites_on_survey_id"
     t.index ["token"], name: "index_survey_invites_on_token"
@@ -60,20 +87,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_11_182522) do
   end
 
   create_table "survey_questions", force: :cascade do |t|
-    t.integer "survey_id"
     t.integer "position"
     t.string "question_type"
     t.text "question"
     t.string "answer_type"
     t.boolean "has_scale"
-    t.string "group_name"
-    t.index ["survey_id"], name: "index_survey_questions_on_survey_id"
+    t.string "answer_labels"
+    t.string "scale_labels"
+    t.string "scale_question"
+    t.integer "survey_group_id"
+    t.index ["survey_group_id"], name: "index_survey_questions_on_survey_group_id"
   end
 
   create_table "surveys", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "locked"
+    t.boolean "live_view"
   end
 
   create_table "users", force: :cascade do |t|

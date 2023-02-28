@@ -5,6 +5,7 @@ module Admin
 
     def new
       run SurveyQuestion::Operation::Create::Present do |ctx|
+        @survey = Survey.find(params[:survey_id])
         @form = ctx["contract.default"]
       end
     end
@@ -12,30 +13,30 @@ module Admin
     def create
       _ctx = run SurveyQuestion::Operation::Create do |ctx|
         flash[:notice] = "Survey Question was created"
-        return redirect_to new_admin_survey_survey_question_url(survey_id: ctx[:model].survey_id)
+        sq = ctx[:model]
+        return redirect_to new_admin_survey_survey_group_survey_question_url(survey_id: sq.survey_id, survey_group_id: sq.survey_group_id)
       end
     
-      flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
+      @survey = Survey.find(params[:survey_id])
       render :new, status: :unprocessable_entity
     end
 
     def edit
-      @survey = Survey.find(params[:survey_id])
       run SurveyQuestion::Operation::Update::Present do |ctx|
+        @survey = Survey.find(params[:survey_id])
         @form = ctx["contract.default"]
       end
     end
 
     def update
-      @survey = Survey.find(params[:survey_id])
       _ctx = run SurveyQuestion::Operation::Update do |ctx|
         flash[:notice] = "Question updated"
-        return redirect_to admin_survey_url(@survey.id)
+        return redirect_to admin_survey_url(params[:survey_id])
       end
     
-      flash[:error] = _ctx[:flash]
       @form = _ctx["contract.default"]
+      @survey = Survey.find(params[:survey_id])
       render :edit, status: :unprocessable_entity
     end
 
@@ -51,11 +52,9 @@ module Admin
     def destroy
       run SurveyQuestion::Operation::Delete do |ctx|
         flash[:notice] = "Question deleted"
-        return redirect_to admin_survey_url, status: 303
+        return render json: { url: admin_survey_url(params[:survey_id]) }
       end
-
-      flash[:notice] = "Unable to delete question"
-      render :index, status: :unprocessable_entity
+      return head(:bad_request)
     end
   end
 end

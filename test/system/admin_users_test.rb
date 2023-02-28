@@ -439,6 +439,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.send_keys("Tio")
       sleep 1
       assert_equal page.all(".user-name").collect(&:text), [user4.name]
+      find("td.user-name").click
+      assert_current_path admin_user_path(token: user4.token)
     end
   end
 end

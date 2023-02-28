@@ -8,14 +8,14 @@ module User::Operation
     
     step Subprocess(Present)
     step Contract::Validate(key: :model)
-    step :update_user
+    step :update_model
 
-    def update_user(ctx, admin_name:, model:, params:, **)
-      user_params = params[:model]
+    def update_model(ctx, admin_name:, model:, params:, **)
+      model_params = params[:model]
       user = User.find_by_token(params[:token])
       timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
       new_change_log = "#{timestamp} by #{admin_name}:\n"
-      user_params.each_pair do |attr, val|
+      model_params.each_pair do |attr, val|
         val = nil if val.blank?
         sattr, new_val, old_val = get_sattr_and_values(user, attr, val)
         old_val = check_for_notes_and_timestamp(user, sattr, old_val)
