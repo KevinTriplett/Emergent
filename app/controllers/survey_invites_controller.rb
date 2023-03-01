@@ -15,15 +15,16 @@ class SurveyInvitesController < ApplicationController
         @url = admin_survey_path(@survey_invite.survey_id)
         @survey_invite.delete
       end
-      @body_class = "finished"
+      @body_id = "finished"
       return render template: "survey_invites/finished"
     end
 
     get_survey
-    @survey_questions = @survey.get_survey_questions(@survey_question)
+    get_survey_questions
     initialize_answers
     get_urls
     @token = form_authenticity_token
+    @body_id = "survey"
   end
 
   def notes
@@ -38,6 +39,7 @@ class SurveyInvitesController < ApplicationController
     get_notes_and_survey_answers
     get_notes_urls
     @token = form_authenticity_token
+    @body_id = "notes"
   end
 
   def patch
@@ -85,6 +87,14 @@ class SurveyInvitesController < ApplicationController
     @survey = @survey_invite.survey
     @survey_group = @survey_invite.survey_groups.where(position: group_position).first
     @survey_question = @survey_group.survey_questions.where(position: question_position).first
+  end
+
+  def get_survey_questions
+    @survey_questions = {}
+    @survey.get_survey_questions(@survey_question).each do |sq|
+      @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
+      @survey_questions[sq.survey_group].push sq
+    end
   end
 
   def get_notes_and_survey_answers
