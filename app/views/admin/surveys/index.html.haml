@@ -17,4 +17,4 @@
         = link_to "del", admin_survey_path(s.id), data: { method: "delete", confirm: "Really delete #{s.name}?", token: @token }
         %span.survey-name= s.name
 
-= link_to "New Survey", new_admin_survey_path, class: "btn btn-secondary"
+= link_to "New Survey", new_admin_survey_path(create_initial_questions: true), class: "btn btn-secondary"

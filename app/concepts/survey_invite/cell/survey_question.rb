@@ -93,7 +93,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       (<span class='votes-left'>#{survey_answer.votes_left}</span> votes left)"
     #----------------------
     when "Email"
-      "<input type='email' id='#{name}' name='#{name}' value='#{answer}' />"
+      "<input type='email' id='#{name}' name='#{name}' value='#{answer}' placeholder='Email Address' />"
     #----------------------
     when "NA"
       # nothing

@@ -17,7 +17,7 @@ class AdminSurveysTest < ApplicationSystemTestCase
       assert_current_path admin_surveys_path
       click_link "New Survey"
 
-      assert_current_path new_admin_survey_path
+      assert_current_path new_admin_survey_path(create_initial_questions: true)
       survey_description = "This are the description"
       fill_in "Name", with: random_survey_name
       fill_in "Description", with: survey_description
