@@ -1,0 +1,11 @@
+.survey-question{ id: question_css_id }
+  %div{ class: question_type_class }
+    = question
+    - if answer_type?
+      %div{ class: answer_type_class }
+        = user_answer
+    - if has_scale?
+      .survey-question-scale-question
+        = scale_question
+      .survey-answer-scale
+        = answer_scale

@@ -2,9 +2,8 @@
 %p.survey-description= @survey.description
 
 #survey-container
-  - prev_group_id = nil
   - @survey_questions.each_pair do |sg, asq|
-    #survey-group-container.jumbotron.jumbotron-fluid
+    .survey-group-container.jumbotron.jumbotron-fluid{ id: "survey-group-#{sg.id}" }
       %h1.display-4.survey-group-name= @survey_group.name
       %p.survey-group-description= @survey_group.description
       %hr      

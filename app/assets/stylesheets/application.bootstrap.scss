@@ -85,6 +85,21 @@ body#survey {
     font-size: larger;
     font-family: sans-serif;
   }
+  .survey-question-question, .survey-question-instructions {
+    margin-top: 60px;
+  }
+  .survey-question-note {
+    font-family: 'architects_daughterregular', Arial, sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    font-size: medium;
+  }
+  .survey-answer-vote {
+    font-weight: normal;
+    font-size: small;
+    font-family: sans-serif;
+    margin: 0px 0px 20px 20px;
+  }
   .survey-question-question {
     font-weight: normal;
     font-size: large;
@@ -94,7 +109,7 @@ body#survey {
   .survey-answer-essay textarea {
     margin-bottom: 0px;
   }
-  .survey-answer-scale-question {
+  .survey-question-scale-question {
     font-weight: normal;
     font-size: large;
     font-family: sans-serif;

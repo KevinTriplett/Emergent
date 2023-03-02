@@ -17,9 +17,9 @@ module Survey::Operation
       group = create_survey_group(survey: model)[:model]
       create_survey_question({
         survey_group: group,
-        question: "Would you like to receive a link to your survey response, for future reference?",
+        question: "How would you like to receive a link to your survey response?",
         answer_type: "Multiple Choice",
-        answer_lables: "No|Yes by private message|yes by email"
+        answer_lables: "No Thanks|Private Message|Email"
       })
       create_survey_question({
         survey_group: group,

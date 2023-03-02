@@ -41,7 +41,7 @@ class AdminSurveyInvitesTest < ApplicationSystemTestCase
       survey_invite = SurveyInvite.first
       assert survey_invite
       assert survey_invite.created?
-      assert !survey_invite.sent?
+      assert !survey_invite.invite_sent?
       assert_equal existing_user.id, survey_invite.user_id
       assert_equal existing_survey.id, survey_invite.survey_id
       assert_equal subject, survey_invite.subject

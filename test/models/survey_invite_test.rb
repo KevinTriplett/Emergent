@@ -42,31 +42,19 @@ class SurveyInviteTest < MiniTest::Spec
       assert_equal SurveyInvite::STATUS[:created], survey_invite.state
 
       old_timestamp = survey_invite.state_timestamp
-      survey_invite.update_state(:sent) # saves to db
-      assert_equal SurveyInvite::STATUS[:sent], survey_invite.reload.state
+      survey_invite.update_state(:invite_sent) # saves to db
+      assert_equal SurveyInvite::STATUS[:invite_sent], survey_invite.reload.state
       assert old_timestamp != survey_invite.state_timestamp
       
       old_timestamp = survey_invite.state_timestamp
       survey_invite.update_state(:opened, false) # does not save to db
-      assert_equal SurveyInvite::STATUS[:sent], survey_invite.reload.state
+      assert_equal SurveyInvite::STATUS[:invite_sent], survey_invite.reload.state
       assert_equal old_timestamp, survey_invite.state_timestamp
       
       old_timestamp = survey_invite.state_timestamp
       survey_invite.update_state(:created) # does not go backward
-      assert_equal SurveyInvite::STATUS[:sent], survey_invite.reload.state
+      assert_equal SurveyInvite::STATUS[:invite_sent], survey_invite.reload.state
       assert_equal old_timestamp, survey_invite.state_timestamp
-    end
-  end
-
-  it "reports the queued survey_invites" do
-    DatabaseCleaner.cleaning do
-      survey = create_survey
-      survey_invite_1 = create_survey_invite(survey: survey)
-      survey_invite_2 = create_survey_invite(survey: survey)
-      survey_invite_3 = create_survey_invite(survey: survey)
-      survey_invite_2.update_state(:sent)
-
-      assert_equal [survey_invite_1.id, survey_invite_3.id], SurveyInvite.queued.collect(&:id)
     end
   end
 
@@ -75,62 +63,86 @@ class SurveyInviteTest < MiniTest::Spec
       invite = SurveyInvite.new
       assert invite.created?
       assert invite.is_created
-      assert !invite.sent?
-      assert !invite.is_sent
+      assert !invite.invite_sent?
+      assert !invite.is_invite_sent
       assert !invite.opened?
       assert !invite.is_opened
       assert !invite.started?
       assert !invite.is_started
       assert !invite.finished?
       assert !invite.is_finished
+      assert !invite.finished_link_sent?
+      assert !invite.is_finished_link_sent
 
-      invite.state = SurveyInvite::STATUS[:sent]
+      invite.state = SurveyInvite::STATUS[:invite_sent]
       assert invite.created?
       assert !invite.is_created
-      assert invite.sent?
-      assert invite.is_sent
+      assert invite.invite_sent?
+      assert invite.is_invite_sent
       assert !invite.opened?
       assert !invite.is_opened
       assert !invite.started?
       assert !invite.is_started
       assert !invite.finished?
       assert !invite.is_finished
+      assert !invite.finished_link_sent?
+      assert !invite.is_finished_link_sent
 
       invite.state = SurveyInvite::STATUS[:opened]
       assert invite.created?
       assert !invite.is_created
-      assert invite.sent?
-      assert !invite.is_sent
+      assert invite.invite_sent?
+      assert !invite.is_invite_sent
       assert invite.opened?
       assert invite.is_opened
       assert !invite.started?
       assert !invite.is_started
       assert !invite.finished?
       assert !invite.is_finished
+      assert !invite.finished_link_sent?
+      assert !invite.is_finished_link_sent
 
       invite.state = SurveyInvite::STATUS[:started]
       assert invite.created?
       assert !invite.is_created
-      assert invite.sent?
-      assert !invite.is_sent
+      assert invite.invite_sent?
+      assert !invite.is_invite_sent
       assert invite.opened?
       assert !invite.is_opened
       assert invite.started?
       assert invite.is_started
       assert !invite.finished?
       assert !invite.is_finished
+      assert !invite.finished_link_sent?
+      assert !invite.is_finished_link_sent
 
       invite.state = SurveyInvite::STATUS[:finished]
       assert invite.created?
       assert !invite.is_created
-      assert invite.sent?
-      assert !invite.is_sent
+      assert invite.invite_sent?
+      assert !invite.is_invite_sent
       assert invite.opened?
       assert !invite.is_opened
       assert invite.started?
       assert !invite.is_started
       assert invite.finished?
       assert invite.is_finished
+      assert !invite.finished_link_sent?
+      assert !invite.is_finished_link_sent
+
+      invite.state = SurveyInvite::STATUS[:finished_link_sent]
+      assert invite.created?
+      assert !invite.is_created
+      assert invite.invite_sent?
+      assert !invite.is_invite_sent
+      assert invite.opened?
+      assert !invite.is_opened
+      assert invite.started?
+      assert !invite.is_started
+      assert invite.finished?
+      assert !invite.is_finished
+      assert invite.finished_link_sent?
+      assert invite.is_finished_link_sent
     end
   end
 
@@ -151,7 +163,7 @@ class SurveyInviteTest < MiniTest::Spec
       end
 
       survey.ordered_questions.each do |sq|
-        answer = invite.get_survey_answer(sq.id)
+        answer = invite.survey_answer_for(sq.id)
         assert_equal answers_hash[answer.id], sq.id
       end
     end

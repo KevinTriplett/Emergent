@@ -1,6 +1,6 @@
-class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
+class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
   def show
-    render # renders app/cells/survey_invite/cell/survey_answer/show.haml
+    render # renders app/cells/survey_invite/cell/survey_results/show.haml
   end
 
   def survey_invite
@@ -11,13 +11,6 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
   def survey_answer
     survey_invite.survey_answer_for(survey_question.id)
-  end
-
-  def patch_url
-    "#{model[:patch_url]}/#{survey_question.id}"
-  end
-  def token
-    model[:token]
   end
 
   def group_position
@@ -40,7 +33,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def group_css_id
-    "survey-group-#{survey_group.id}"
+    "survey-question-#{survey_question.id}"
   end
   def question_css_id
     "survey-question-#{survey_question.id}"
@@ -63,46 +56,22 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def user_answer
     case survey_question.answer_type
     #----------------------
-    when "Yes/No", "Multiple Choice"
-      labels = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["Yes", "No"]
-      # output vertical radio buttons with labels
-      output = ""
-      labels.each_with_index do |label, index|
-        id = "#{name}-#{index}"
-        output += "<input type='radio' id='#{id}' name='#{name}' value='#{label}' #{answer == label ? "checked" : nil} /> <label for ='#{id}'>#{label}</label>"
-      end
-      output
-    #----------------------
-    when "Essay"
-      # output textarea
-      "<textarea cols='80'>#{answer}</textarea>"
+    when "Yes/No", "Multiple Choice", "Essay", "Number", "Email"
+      answer.blank? ? "(you left this answer blank)" : answer
     #----------------------
     when "Rating", "Range"
       left, right = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
       # output horizontal radio buttons "1-N" and labels describing rating system
       "<label>#{left}</label>\
-      <input type='range' name='#{name}' value='#{answer}' min='0' max='10'>\
+      <input disabled type='range' name='#{name}' value='#{answer}' min='0' max='10'>\
       <label>#{right}</label>"
     #----------------------
-    when "Number"
-      # output text input
-      "<input type='text' id='#{name}' name='#{name}' value='#{answer}' />"
-    #----------------------
     when "Vote"
-      count = survey_answer.vote_count || 0
-      "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
-      <i class='vote-down bi-hand-thumbs-down-fill'></i>\
-      <span class='vote-count'>#{count}</span>\
-      (<span class='votes-left'>#{survey_answer.votes_left}</span> votes left)"
-    #----------------------
-    when "Email"
-      "<input type='email' id='#{name}' name='#{name}' value='#{answer}' placeholder='Email Address' />"
+      "You gave this #{survey_answer.vote_count} votes"
     #----------------------
     when "NA"
-      # nothing
-    #----------------------
     else
-      "unknown answer type"
+      "error: unknown answer type"
     end
   end
 
@@ -113,7 +82,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def answer_scale
     return nil unless survey_question.has_scale?
     left, right = (survey_question.scale_labels || "Not Important|Very Important").split("|")
-    "<label>#{left}</label> <input type='range' name='#{name}' value='#{scale}' min='0' max='10'> <label>#{right}</label>"
+    "<label>#{left}</label> <input disabled type='range' name='#{name}' value='#{scale}' min='0' max='10'> <label>#{right}</label>"
   end
 
   def scale_question

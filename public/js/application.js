@@ -816,34 +816,22 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // SURVEY
-  var saveEssay = function(e) {
+  var saveAnswer = function(e) {
     var self = $(this);
     var data = self.val();
     surveyAnswerPatch(self, {answer: data});
   }
-  $("#survey-container .survey-answer-essay textarea").on("keyup", debounce(saveEssay, 500));
-
   var saveScale = function(e) {
     var self = $(this);
     var data = self.val();
     surveyAnswerPatch(self, {scale: data});
   }
+  $("#survey-container .survey-answer-essay textarea").on("keyup", debounce(saveAnswer, 500));
+  $("#survey-container .survey-answer-range input[type='range']").on("change", debounce(saveAnswer, 500));
+  $("#survey-container .survey-answer-yes-no input[type='radio']").on("change", saveAnswer);
+  $("#survey-container .survey-answer-multiple-choice input[type='radio']").on("change", saveAnswer);
+  $("#survey-container .survey-answer-email input").on("keyup", debounce(saveAnswer, 500));
   $("#survey-container .survey-answer-scale input[type='range']").on("change", debounce(saveScale, 500));
-
-  var saveRange = function(e) {
-    var self = $(this);
-    var data = self.val();
-    surveyAnswerPatch(self, {answer: data});
-  }
-  $("#survey-container .survey-answer-range input[type='range']").on("change", debounce(saveRange, 500));
-
-  var saveChoice = function(e) {
-    var self = $(this);
-    var data = self.val();
-    surveyAnswerPatch(self, {answer: data});
-  }
-  $("#survey-container .survey-answer-yes-no input[type='radio']").on("change", saveChoice);
-  $("#survey-container .survey-answer-multiple-choice input[type='radio']").on("change", saveChoice);
 
   var processVote = function(e) {
     var self = $(this);
