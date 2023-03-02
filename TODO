@@ -57,12 +57,12 @@ SURVEYS
 - [X] enable sortable notes
 - [X] use a handwriting font for notes
 - [X] allow groups for survey questions and notes
-- [ ] survey_invite has a notes link when enabled (flag on survey_invite enables this link)
-- [ ] voting on note (up / down)
-- [ ] survey has live view flag to update notes every 5 seconds
-- [ ] notes have a way to show total votes from others
-- [ ] add more tests
+- [X] voting on note (up / down)
+- [X] add more tests
+- [X] survey has live view flag to update notes every second (use latest updated_at as gate)
 - [ ] use markdown for survey questions and instructions and notes
+- [ ] email (or DM) results to participants
+- [ ] notes have a way to show total votes from others
 - [ ] create nice user interface for surveys
 - [ ] rules for question branching / skipping
 - [ ] disable buttons until ajax calls resolve
