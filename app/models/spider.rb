@@ -1,6 +1,8 @@
 class Spider < ActiveRecord::Base
   def self.set_message(name, message)
     spider = find_by_name(name) || create_spider(name)
+    puts "message = #{message}"
+    puts "message.inspect = #{message.inspect}"
     spider.update(message: message)
   end
 
