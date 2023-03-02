@@ -111,7 +111,7 @@ class SurveyInvite < ActiveRecord::Base
       user.id.to_s,
       subject,
       body,
-      "Here's your personal link to your completed survey:"
+      "Here's your personal link to your completed survey:",
       url
     ].join("|")
     # this fails with postgresql error: PG::CharacterNotInRepertoire: ERROR:  invalid byte sequence for encoding "UTF8": 0xcf 0x3a
@@ -131,7 +131,7 @@ class SurveyInvite < ActiveRecord::Base
       user.id.to_s,
       "Emergent Commons - your completed survey link",
       "Thank you again for completing the survey!",
-      "Here's your personal link to your completed survey:"
+      "Here's your personal link to your completed survey:",
       url
     ].join("|")
     # this fails with postgresql error: PG::CharacterNotInRepertoire: ERROR:  invalid byte sequence for encoding "UTF8": 0xcf 0x3a
