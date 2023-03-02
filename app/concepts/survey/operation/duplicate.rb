@@ -3,20 +3,20 @@ module Survey::Operation
     include SurveyHelper
 
     step :get_existing_survey
-    step :create_new_survey
-    step :clone_existing_survey
+    step :create_duplicate_survey
+    step :clone_existing_survey_questions
 
     def get_existing_survey(ctx, params:, **)
       ctx[:existing_survey] = Survey.find(params[:id])
     end
 
-    def create_new_survey(ctx, existing_survey:, **)
+    def create_duplicate_survey(ctx, existing_survey:, **)
       ctx[:model] = existing_survey.clone
       ctx[:model].name = "#{existing_survey.name} (duplicate)"
       ctx[:model].save
     end
 
-    def clone_existing_survey(ctx, existing_survey:, model:, **)
+    def clone_existing_survey_questions(ctx, existing_survey:, model:, **)
       success = true
       existing_survey.survey_groups.each do |group|
         new_group = group.clone

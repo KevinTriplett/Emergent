@@ -31,10 +31,12 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
       assert_select "h5", "Existing Surveys"
       assert_select ".survey-name", survey.name
       assert_select "a[href=?]", edit_admin_survey_path(survey.id), text: "edit"
-      assert_select "a[href=?]", admin_survey_notes_path(survey.id), text: "notes"
       assert_select "a[href=?]", admin_survey_path(survey.id), text: "questions"
-      assert_select "a[href=?]", admin_survey_path(survey.id), text: "del"
+      assert_select "a[href=?]", new_admin_survey_survey_invite_path(survey.id), text: "invite"
       assert_select "a[href=?]", admin_survey_test_path(survey.id), text: "test"
+      assert_select "a[href=?]", admin_survey_notes_path(survey.id), text: "notes"
+      assert_select "a[href=?]", admin_survey_path(survey.id), text: "del"
+      assert_select "a[href=?]", admin_survey_duplicate_path(survey.id), text: "duplicate"
       assert_select "a[href=?]", new_admin_survey_path(create_initial_questions: true), text: "New Survey"
     end
   end

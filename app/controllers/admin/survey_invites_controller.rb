@@ -12,8 +12,10 @@ module Admin
     
     def create
       _ctx = run SurveyInvite::Operation::Create, url: survey_url do |ctx|
-        user = ctx[:model].user.name
-        survey = ctx[:model].survey.name
+        invite = ctx[:model]
+        user = invite.user.name
+        survey = invite.survey.name
+        invite.update url: survey_url(invite.token)
         flash[:notice] = "Sent Survey Invite for #{user} to #{survey}"
       end
     

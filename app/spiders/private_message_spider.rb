@@ -39,9 +39,9 @@ class PrivateMessageSpider < EmergeSpider
   end
 
   def send_message(response, url:, data: {})
-    wait_until(".universal-input-form-body-container .fr-element.fr-view")
+    wait_until(".universal-input.chat-prompt .fr-element.fr-view")
     EmergeSpider.logger.debug "#{name} ATTEMPTING TO CLICK CHAT CHANNEL"
-    browser.find(:css, ".universal-input-form-body-container .fr-element.fr-view").click
+    browser.find(:css, ".universal-input.chat-prompt .fr-element.fr-view").click
     browser.send_keys(@@message[:subject])
     browser.send_keys [:enter]
     sleep 1

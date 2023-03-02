@@ -46,7 +46,7 @@ class SurveyInvite < ActiveRecord::Base
 
   # ----------------------------------------------------------------------
 
-  def send_invite
+  def send_survey_invite_link
     # (do not use without member consent)
     # UserMailer.with({
     #   email: user.email,
@@ -56,13 +56,16 @@ class SurveyInvite < ActiveRecord::Base
     #   url: url
     # }).send_survey_invite_link.deliver_now
     return true if Rails.configuration.mn_username == user.email # cannot send messages to signin account!
+    puts "sending invite to #{user.name}"
     Spider.set_message("private_message_spider", get_invite_message)
     PrivateMessageSpider.crawl!
     until result = Spider.get_result("private_message_spider")
       sleep 1
     end
+    puts "got result = #{result}"
     "success" == result
-  rescue
+  rescue => error
+    puts "#{error.class}: #{error.message}"
     false
   end
 

@@ -25,10 +25,5 @@ module SurveyInvite::Operation
     step Subprocess(Present)
     step Contract::Validate(key: :survey_invite)
     step Contract::Persist()
-    step :initialize_url
-
-    def initialize_url(ctx, model:, params:, **)
-      model.update url: "#{params[:url]}/#{model.token}"
-    end
   end
 end

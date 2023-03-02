@@ -13,7 +13,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Survey Groups and Questions"
-      assert_select "p.survey-name", "edit\n|\nnotes\n|\ndel\n|\nduplicate\n|\ntest\n------\nSurvey: #{survey.name}"
+      assert_select "p.survey-name", "edit\n|\nnotes\n|\ninvite\n|\nduplicate\n|\ntest\n|\ndel\n------\nSurvey: #{survey.name}"
       assert_select ".survey-name a", "edit"
       assert_select ".survey-name a", "del"
       assert_select "table.survey-questions a", {count: 0, text: "edit"}
@@ -33,7 +33,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Survey Groups and Questions"
-      assert_select "p.survey-name", "edit\n|\nnotes\n|\ndel\n|\nduplicate\n|\ntest\n------\nSurvey: #{question.survey.name}"
+      assert_select "p.survey-name", "edit\n|\nnotes\n|\ninvite\n|\nduplicate\n|\ntest\n|\ndel\n------\nSurvey: #{question.survey.name}"
       assert_select "tr[data-url=?]", admin_survey_question_patch_path(question.id)
       assert_select "tr[data-id=?]", question.id.to_s
       assert_select "tr[data-position=?]", question.position.to_s

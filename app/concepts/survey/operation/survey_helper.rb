@@ -1,5 +1,19 @@
 module Survey::Operation::SurveyHelper
-  def create_survey_group(params = {})
+  def self.create_new_survey(params = {})
+    params[:name] ||= "New Survey (rename)"
+    params[:description] ||= "Replace this with the correct description"
+    Survey::Operation::Create.call(
+      params: {
+        survey: {
+          name: params[:name],
+          description: params[:description]
+        },
+        create_initial_questions: params[:create_initial_questions]
+      }
+    )[:model]
+  end
+
+  def self.create_new_survey_group(params = {})
     params[:name] ||= "Contact Info"
     survey_id = params[:survey_id] || (params[:survey] && params[:survey].id)
     SurveyGroup::Operation::Create.call(
@@ -12,10 +26,10 @@ module Survey::Operation::SurveyHelper
         },
         survey_id: survey_id
       }
-    )
+    )[:model]
   end
 
-  def create_survey_question_with_result(params = {})
+  def self.create_new_survey_question(params = {})
     params[:question_type] ||= "Question"
     survey_group_id = params[:survey_group_id] || (params[:survey_group] && params[:survey_group].id)
     SurveyQuestion::Operation::Create.call(
@@ -31,6 +45,20 @@ module Survey::Operation::SurveyHelper
         },
         survey_group_id: survey_group_id
       }
-    )
+    )[:model]
+  end
+
+  def self.create_new_note(params = {})
+    survey_group_id = params[:survey_group_id] || 
+      (params[:survey_group] && params[:survey_group].id)
+    Note::Operation::Create.call(
+      params: {
+        note: {
+          text: params[:text],
+          coords: params[:coords]
+        }
+      },
+      survey_group_id: survey_group_id
+    )[:model]
   end
 end

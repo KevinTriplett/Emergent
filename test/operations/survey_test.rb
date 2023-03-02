@@ -48,10 +48,9 @@ class SurveyOperationTest < MiniTest::Spec
         assert result.success?
         survey = result[:model]
         assert_equal 1, survey.survey_groups.count
-        assert_equal 3, survey.survey_questions.count
+        assert_equal 2, survey.survey_questions.count
         assert_equal "Multiple Choice", survey.ordered_questions[0].answer_type
         assert_equal "Email", survey.ordered_questions[1].answer_type
-        assert_equal "New Page", survey.ordered_questions[2].question_type
       end
     end
 

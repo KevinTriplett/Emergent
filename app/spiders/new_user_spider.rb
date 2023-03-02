@@ -22,7 +22,6 @@ class NewUserSpider < EmergeSpider
     }
   }
   @@limit_user_count = nil
-  ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   ##################################################
   ## PARSE
