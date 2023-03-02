@@ -291,18 +291,16 @@ class Survey < ActiveRecord::Base
         })
         raise "something went wrong with group creation / find" unless new_survey_group
         new_survey_group.update position: new_survey.reload.survey_groups.count-1
-        column += 1
         row = 0
       end
 
-      left = (200 * (column - 1 + new_survey_group.position - 1)) + 30
-      top = (185 * row) + 130
-
-      row += 1
       if row > 4
         column += 1
         row = 0
       end
+      left = (200 * (column - 1 + new_survey_group.position - 1)) + 30
+      top = (185 * row) + 130
+      row += 1
 
       new_note = Operation::SurveyHelper::create_new_note({
         survey_group: new_survey_group,
