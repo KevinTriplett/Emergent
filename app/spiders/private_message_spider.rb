@@ -29,7 +29,7 @@ class PrivateMessageSpider < EmergeSpider
     # @@message = Marshal.load(get_message)
     @@message = get_message.split("|")
     @@user = User.find @@message[0].to_i
-    EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@message[:subject]}"
+    EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@message[1]}"
     request_to(:send_message, url: @@user.chat_url)
 
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
