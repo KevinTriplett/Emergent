@@ -4,6 +4,7 @@ class SurveysTest < ApplicationSystemTestCase
   include ActionMailer::TestHelper
   include Rails.application.routes.url_helpers
   DatabaseCleaner.clean
+  include StyleHelper
 
   test "User can access and take a survey" do
     DatabaseCleaner.cleaning do
@@ -112,9 +113,9 @@ class SurveysTest < ApplicationSystemTestCase
       assert_equal [0,1,2,3,4,5], [survey_question_6,survey_question_6b,survey_question_7,survey_question_8,survey_question_9,survey_question_10].map(&:position)
       assert_equal [0,1,2], [survey_question_11,survey_question_12,survey_question_13].map(&:position)
 
-      visit survey_path(token: survey_invite.token)
+      visit survey_path(survey_invite.token)
 
-      assert_current_path survey_path(token: survey_invite.token)
+      assert_current_path survey_path(survey_invite.token)
       assert_selector "a", count: 1
       assert_selector ".survey-name", text: survey.name
       assert_selector ".survey-description", text: survey.description
@@ -456,40 +457,34 @@ class SurveysTest < ApplicationSystemTestCase
       })
       note_1 = create_note({
         survey_group: group_1,
-        question_type: "Note",
         coords: "30:130"
       })
       note_2 = create_note({
         survey_group: group_1,
-        question_type: "Note",
         coords: "420:130"
       })
       note_3 = create_note({
         survey_group: group_1,
-        question_type: "Note",
         coords: "820:130"
       })
       note_4 = create_note({
         survey_group: group_2,
-        question_type: "Note",
         coords: "30:500"
       })
       note_5 = create_note({
         survey_group: group_2,
-        question_type: "Note",
         coords: "420:500"
       })
       note_6 = create_note({
         survey_group: group_2,
-        question_type: "Note",
         coords: "820:500"
       })
 
       # ------------------------------------------------------------------------------
 
-      visit survey_path(token: survey_invite.token)
+      visit survey_path(survey_invite.token)
 
-      assert_current_path survey_path(token: survey_invite.token)
+      assert_current_path survey_path(survey_invite.token)
       assert_selector "a", text: "Next >", count: 1
 
       within "#survey-question-#{survey_question_0.group_position}-#{survey_question_0.position}" do
@@ -519,7 +514,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       # ------------------------------------------------------------------------------
 
-      assert_current_path survey_notes_path(token: survey_invite.token)
+      assert_current_path survey_notes_path(survey_invite.token)
 
       assert_selector "a", text: "< Prev", count: 1
       assert_selector "a", text: "Next >", count: 0
@@ -606,7 +601,7 @@ class SurveysTest < ApplicationSystemTestCase
       
       # ------------------------------------------------------------------------------
 
-      assert_current_path survey_notes_path(token: survey_invite.token)
+      assert_current_path survey_notes_path(survey_invite.token)
       assert_selector "a", text: "< Prev", count: 1
       assert_selector "a", text: "Next >", count: 1
       assert_selector "a", text: "Finish", count: 0
@@ -656,11 +651,59 @@ class SurveysTest < ApplicationSystemTestCase
       }
       assert_current_path survey_path(params_hash)
       assert_selector "h1", text: "Thank You for taking our survey!"
+    end
+  end
 
-      # ------------------------------------------------------------------------------
+  test "User view update notes in live view" do
+    DatabaseCleaner.cleaning do
+      invite = create_survey_invite
+      survey = invite.survey
+      group_0 = create_survey_group(survey: survey)
+      group_1 = create_survey_group(survey: survey)
+      note_1 = create_note({
+        survey_group: group_0,
+        coords: "30:130"
+      })
+      note_2 = create_note({
+        survey_group: group_0,
+        coords: "420:130"
+      })
+      note_3 = create_note({
+        survey_group: group_1,
+        coords: "820:130"
+      })
+      note_4 = create_note({
+        survey_group: group_1,
+        coords: "30:500"
+      })
+      Note.all.each do |note|
+        create_survey_answer(survey_question: note.survey_question, survey_invite: invite)
+      end
 
+      visit survey_notes_path(invite.token)
+      assert_current_path survey_notes_path(invite.token)
 
+      Note.all.each do |note|
+        assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.color
+        assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}px"
+        assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}px"
+        assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name
+        assert_selector ".note#note-#{note.id} .note-text", text: note.text
+      end
 
+      note_1.update text: "Change is good for ya!"
+      note_2.update group_name: group_1.name
+      note_3.update color: "#ffffff" # NB: this will change the color of notes 2, 3 and 4
+      note_4.update coords: "50:50"
+      sleep 5
+
+      Note.all.each do |note|
+        assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.color
+        assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}px"
+        assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}px"
+        assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name
+        assert_selector ".note#note-#{note.id} .note-text", text: note.text
+      end
     end
   end
 end

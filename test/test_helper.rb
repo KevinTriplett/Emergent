@@ -4,6 +4,7 @@ require "rails/test_help"
 require 'spec/spec_helper'
 require 'user_test_helper'
 require 'survey_test_helper'
+require 'style_helper'
 
 ############################
 #

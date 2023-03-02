@@ -1,6 +1,7 @@
 class SurveyInvitesController < ApplicationController
   layout "survey"
 
+  # ------------------------------------------------------------------------
   def show
     unless get_inivite
       flash[:notice] = "We're sorry, your survey was not found"
@@ -27,6 +28,8 @@ class SurveyInvitesController < ApplicationController
     @body_id = "survey"
   end
 
+  # ------------------------------------------------------------------------
+
   def notes
     unless get_inivite
       flash[:notice] = "We're sorry, your survey was not found"
@@ -38,9 +41,32 @@ class SurveyInvitesController < ApplicationController
     get_survey
     get_notes_and_survey_answers
     get_notes_urls
+    enable_live_view?
     @token = form_authenticity_token
     @body_id = "notes"
   end
+
+  # ------------------------------------------------------------------------
+
+  def live_view
+    get_inivite
+    get_survey
+    get_liveview_timestamp
+    return head(:ok) if @live_view_timestamp == params[:timestamp]
+    get_notes_and_survey_answers
+    return render json: {
+        results: @notes.collect {|note|
+        {
+          model: note,
+          group_name: note.group_name,
+          color: note.color
+        }
+      },
+      timestamp: @live_view_timestamp
+    }
+  end
+  
+  # ------------------------------------------------------------------------
 
   def patch
     get_inivite
@@ -53,9 +79,12 @@ class SurveyInvitesController < ApplicationController
       scale: survey_answer.scale,
       vote_count: survey_answer.vote_count,
       votes_left: survey_answer.votes_left,
-      group_position: survey_answer.group_position
+      group_position: survey_answer.group_position,
+      color: survey_answer.survey_group.note_color
     }) : (render head(:bad_request))
   end
+
+  # ------------------------------------------------------------------------
 
   private
 
@@ -87,6 +116,7 @@ class SurveyInvitesController < ApplicationController
     @survey = @survey_invite.survey
     @survey_group = @survey_invite.survey_groups.where(position: group_position).first
     @survey_question = @survey_group.survey_questions.where(position: question_position).first
+    @survey
   end
 
   def get_survey_questions
@@ -95,6 +125,7 @@ class SurveyInvitesController < ApplicationController
       @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
       @survey_questions[sq.survey_group].push sq
     end
+    @survey_questions
   end
 
   def get_notes_and_survey_answers
@@ -103,6 +134,20 @@ class SurveyInvitesController < ApplicationController
     @notes.each do |note|
       @survey_answers.push @survey_invite.get_survey_answer(note.survey_question_id)
     end
+    @survey_answers
+  end
+
+  def enable_live_view?
+    time = Time.now - 4.hours
+    return unless @notes.any? do |note|
+      note.updated_at > time
+    end
+    get_liveview_timestamp
+    @live_view_url = survey_live_view_path(@survey_invite.token)
+  end
+  
+  def get_liveview_timestamp
+    @live_view_timestamp = @survey.last_updated_note_timestamp.picker_datetime
   end
 
   def get_urls

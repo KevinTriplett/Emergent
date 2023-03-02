@@ -27,6 +27,9 @@ class Note::Cell::Survey < Cell::ViewModel
   def question_id
     note.survey_question_id
   end
+  def group_id
+    note.survey_group_id
+  end
   
   def text
     note.text

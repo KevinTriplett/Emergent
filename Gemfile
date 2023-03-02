@@ -102,4 +102,5 @@ group :test do
   gem "minitest-line"
   gem "database_cleaner-active_record"
   gem "rails-controller-testing"
+  gem "chroma"
 end

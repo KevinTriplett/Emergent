@@ -1,6 +1,7 @@
 class Survey < ActiveRecord::Base
   has_many :survey_groups, dependent: :destroy
   has_many :survey_questions, through: :survey_groups
+  has_many :notes, through: :survey_groups
   has_many :survey_invites, dependent: :destroy
   has_many :users, through: :survey_invites
 
@@ -13,6 +14,13 @@ class Survey < ActiveRecord::Base
   end
   def ordered_questions
     ordered_groups.collect(&:ordered_questions).flatten
+  end
+
+  def last_updated_note_timestamp
+    # group color may have been updated
+    note = notes.order(updated_at: :asc).last
+    group = survey_groups.order(updated_at: :asc).last
+    note.updated_at > group.updated_at ? note.updated_at : group.updated_at
   end
 
   # for use in getting questions and prev and next positions

@@ -884,6 +884,29 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // NOTES
+  $("#notes-container .live-view").each(function() {
+    setInterval(function() {
+      var liveView = $(".live-view");
+      var timestamp = liveView.attr("data-timestamp");
+      var url = liveView.attr("data-url");
+      $.ajax({
+        url: `${url}?timestamp=${timestamp}`,
+        type: "GET",
+        processData: false,
+        dataType: "JSON",
+        contentType: "application/json",
+        success: function(data, textStatus, jqXHR) {
+          liveView.text(jqXHR.status);
+          for (result of data.results) {
+            var note = $(`#note-${result.model.id}`);
+            updateNote(note, result);
+          }
+          liveView.attr("data-timestamp", data.timestamp);
+        }
+      });
+    }, 2000);
+  });
+
   var flashGood = function(note) {
     note.find(".bi-check").show();
   }
@@ -943,9 +966,10 @@ $(document).ready(function() {
     var data = {coords: `${x}:${y}`};
     notePatch(note, data, function(result) {
       flashGood(note);
-      note.attr("data-coords", result.model.coords);
+      updateNoteCoords(note, coords);
     }, function() {
       flashBad(note);
+      updateNoteCoords(note); // reset back to original coords
     });
   }
 
@@ -1022,7 +1046,7 @@ $(document).ready(function() {
       .find(".note-group-name select ~ span")
       .remove()
     note
-      .find(".note-group-name select")
+      .find(".tools .note-group-name select")
       .selectmenu({
         change: function(e) {
           saveNote.call(this);
@@ -1038,7 +1062,7 @@ $(document).ready(function() {
         e.stopPropagation();
       });
       
-    if ($("body#survey").length > 0) return; // stop if user view
+    if ($("#notes-container.admin").length == 0) return; // stop if user view
     note = note.get()[0];
     initializeColorPicker(note);
     dragmove(note, note.querySelector("button.move"), onDragStart, onDragEnd);
@@ -1047,9 +1071,7 @@ $(document).ready(function() {
   var cloneNewNote = function(result) {
     var note = $("#note-template .note").first().clone(false); // do not clone event handlers, they are installed afterwards
     flashHide(note);
-    var coords = result.model.coords || "0:0"
-    var left = parseInt(coords.split(":")[0]);
-    var top  = parseInt(coords.split(":")[1]);
+    updateNoteCoords(note, result.model.coords);
     var patchUrl = note
       .attr("data-url")
       .replace(/xxxx/, result.model.id);
@@ -1061,28 +1083,48 @@ $(document).ready(function() {
       .attr("id")
       .replace(/xxxx/, result.model.id);
     note
-      .css("top", top)
-      .css("left", left)
       .attr("data-url", patchUrl)
       .attr("id", id)
       .find("button.delete")
       .attr("data-url", deleteUrl)
-    note
-      .find(".note-text")
-      .text(result.model.text);
-    note
-      .attr("data-group", result.model.survey_group_id)
-      .find(".note-group-name")
-      .find("select")
-      .val(result.group_name);
-    reorderZ.call(note);
     installNoteListeners(note);
+    updateNote(note, result);
+    reorderZ.call(note);
     $("#notes-container").append(note);
     setAllGroupNotesColor({
       group: result.model.survey_group_id,
       color: result.color
     });
     note.show();
+  }
+
+  var updateNote = function(note, result) {
+    note
+      .find(".note-text")
+      .text(result.model.text);
+    note
+      .attr("data-group", result.model.survey_group_id)
+      .find(".main .note-group-name")
+      .text(result.group_name)
+    note
+      .find(".tools .note-group-name select")
+      .val(result.group_name)
+      .selectmenu("refresh");
+    setAllGroupNotesColor({
+      group: result.model.survey_group_id,
+      color: result.color
+    });
+    updateNoteCoords(note, result.model.coords);
+  }
+
+  var updateNoteCoords = function(note, coords) {
+    coords ||= note.attr("data-coords");
+    var left = parseInt(coords.split(":")[0]);
+    var top  = parseInt(coords.split(":")[1]);
+    note
+      .css("top", top)
+      .css("left", left)
+      .attr("data-coords", coords);
   }
 
   $("#notes-container .note").each(function() {

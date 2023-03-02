@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   # yes, these parameters need to be optional because they will be modified by js
   get  "survey/notes/:token", to: "survey_invites#notes", as: :survey_notes
   post "survey/patch/:token(/:id)", to: "survey_invites#patch", as: :survey_patch
+  get  "survey/live/:token", to: "survey_invites#live_view", as: :survey_live_view
   get  "survey(/:token)(/:group_position/:question_position)", to: "survey_invites#show", as: :survey
 
   namespace :admin do

@@ -6,3 +6,5 @@
   .notes
     - @notes.each do |note|
       = cell(Note::Cell::Survey, {note: note, invite: @survey_invite, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
+  - if @live_view_url
+    .live-view{ data: {timestamp: @live_view_timestamp, url: @live_view_url} }

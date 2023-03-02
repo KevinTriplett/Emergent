@@ -4,11 +4,11 @@
 #survey-container
   - prev_group_id = nil
   - @survey_questions.each_pair do |sg, asq|
-    .survey-group-container.jumbotron.jumbotron-fluid
+    #survey-group-container.jumbotron.jumbotron-fluid
       %h1.display-4.survey-group-name= @survey_group.name
       %p.survey-group-description= @survey_group.description
       %hr      
-      .survey-questions-container
+      #survey-questions-container
         - asq.each do |sq|
           = cell(SurveyInvite::Cell::SurveyQuestion, {survey_invite: @survey_invite, survey_question: sq, patch_url: @patch_url, token: @token})
 
