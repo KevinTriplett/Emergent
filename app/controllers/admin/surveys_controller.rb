@@ -25,6 +25,16 @@ module Admin
       render :new, status: :unprocessable_entity
     end
 
+    def duplicate
+      _ctx = run Survey::Operation::Create do |ctx|
+        flash[:notice] = "Survey #{ctx[:existing_survey].name} was duplicated, showing the new survey"
+        return redirect_to edit_admin_survey_url(ctx[:model].id)
+      end
+      
+      flash[:error] = "Survey could not be duplicated, sorry about that"
+      redirect_to admin_surveys_url
+    end
+
     def show
       # show all questions in survey
       @survey = Survey.find(params[:id])

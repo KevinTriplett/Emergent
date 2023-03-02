@@ -55,6 +55,28 @@ class SurveyOperationTest < MiniTest::Spec
       end
     end
 
+    it "Can duplicate an existing survey" do
+      DatabaseCleaner.cleaning do
+        existing_survey = create_survey(create_initial_questions: true)
+        note_group = create_survey_group(survey: existing_survey)
+        note = create_note(survey_group: note_group)
+
+        result = Survey::Operation::Duplicate.call( params: { id: existing_survey.id } )
+        assert result.success?
+
+        new_survey = result[:model]
+        new_survey.survey_groups.each do |group|
+          assert existing_survey.survey_groups.where(name: group.name).first
+        end
+        new_survey.survey_questions.each do |question|
+          assert existing_survey.survey_questions.where(question: question.question).first
+        end
+        new_survey.notes.each do |note|
+          assert existing_survey.notes.where(text: note.text).first
+        end
+      end
+    end
+
     # ----------------
     # failing path tests
     it "Fails with invalid parameters" do
