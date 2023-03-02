@@ -8,15 +8,15 @@
         |
         = link_to "questions", admin_survey_path(survey)
         |
+        = link_to "notes", admin_survey_notes_path(survey)
+        |
         = link_to "invite", new_admin_survey_survey_invite_path(survey)
+        |
+        = link_to "duplicate", admin_survey_duplicate_path(survey)
         |
         = link_to "test", admin_survey_test_path(survey)
         |
-        = link_to "notes", admin_survey_notes_path(survey)
-        |
         = link_to "del", admin_survey_path(survey), data: { method: "delete", confirm: "Really delete #{survey.name}?", token: @token }
-        |
-        = link_to "duplicate", admin_survey_duplicate_path(survey)
         %span.survey-name= survey.name
 
 = link_to "New Survey", new_admin_survey_path(create_initial_questions: true), class: "btn btn-secondary"

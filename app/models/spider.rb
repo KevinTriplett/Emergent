@@ -1,6 +1,6 @@
 class Spider < ActiveRecord::Base
   def self.set_message(name, message)
-    spider = find_by_name(name)
+    spider = find_by_name(name) || create_spider(name)
     spider.update(message: message)
   end
 
@@ -21,5 +21,9 @@ class Spider < ActiveRecord::Base
     result = spider.result
     spider.update(result: nil)
     result
+  end
+
+  def self.create_spider(name)
+    create(name: name)
   end
 end

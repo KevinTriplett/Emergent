@@ -1,7 +1,7 @@
 namespace :ec do
   desc "Send all queued survey invites"
-  task send_survey_invites: :environment do
-    SurveyInviteSpider.crawl! unless SurveyInvite.queued.blank?
+  task send_survey_invite_messages: :environment do
+    SurveyInvite.send_messages
   end
 end
 
@@ -25,6 +25,13 @@ namespace :ec do
   desc "Imports users from tmp/import.tsv (a \"tab separated value\" file)"
   task import_users: :environment do
     User.import_users
+  end
+end
+
+namespace :ec do
+  desc "Imports sticky notes from tmp/sticky-import.tsv (a \"tab separated value\" file)"
+  task import_stickies: :environment do
+    Survey.import_sticky_notes
   end
 end
 

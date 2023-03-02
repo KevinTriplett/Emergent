@@ -66,8 +66,9 @@ body#survey {
     background-color: #fff;
     box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.1);
     margin: 30px 20px;
-    height: 350px;
-    width: 350px;
+    height: 175px;
+    width: 175px;
+    line-height: 1.2em;
     overflow-y: hidden;
     position: absolute;
 
@@ -150,14 +151,15 @@ body#survey {
     }
 
     .main {
-      padding: 20px;
+      padding: 10px;
 
       .survey-answer-vote {
         position: absolute;
-        top: 315px;
+        top: 150px;
+        font-size: x-small;
 
         .vote-up, .vote-down {
-          margin-right: 10px;
+          margin-right: 5px;
           cursor: pointer;
         }
       }

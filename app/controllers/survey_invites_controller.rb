@@ -93,7 +93,6 @@ class SurveyInvitesController < ApplicationController
     puts "params = #{params}"
     get_inivite
     get_survey
-    @survey_questions = 
     @survey_questions = {}
     @survey.ordered_questions.each do |sq|
       @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
