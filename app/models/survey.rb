@@ -295,7 +295,7 @@ class Survey < ActiveRecord::Base
         row = 0
       end
 
-      left = (200 * (column + new_survey_group.position - 1)) + 30
+      left = (200 * (column - 1 + new_survey_group.position - 1)) + 30
       top = (185 * row) + 130
 
       row += 1
