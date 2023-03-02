@@ -50,21 +50,30 @@ body#admin {
   background-image: none;
 }
 
+body#finished {
+  background-image: url(images/elephant-survey-bgnd.jpg);
+  background-size: 100%;
+  h1 {
+    color: white;
+    text-shadow: -2px 2px 0 #000,
+    2px 2px 0 #000,
+    2px -2px 0 #000;
+  }
+}
+
 body#survey {
   background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
   color: rgb(52, 52, 52);
-  &.finished {
-    background-image: url(images/elephant-survey-bgnd.jpg);
-    background-size: 100%;
-    h1 {
-      color: white;
-      text-shadow: -2px 2px 0 #000,
-      2px 2px 0 #000,
-      2px -2px 0 #000;
-    }
+  .jumbotron {
+    margin: 13px;
+    background-color: rgb(227, 227, 227);
+    padding: 24px;
+    border-radius: 10px;
   }
   .survey-name {
     margin-bottom: 0px;
+    font-size: x-large;
+    font-weight: bolder;
   }
   .survey-question-instructions {
     font-weight: bold;
@@ -76,6 +85,21 @@ body#survey {
     font-size: larger;
     font-family: sans-serif;
   }
+  .survey-question-question, .survey-question-instructions {
+    margin-top: 60px;
+  }
+  .survey-question-note {
+    font-family: 'architects_daughterregular', Arial, sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    font-size: medium;
+  }
+  .survey-answer-vote {
+    font-weight: normal;
+    font-size: small;
+    font-family: sans-serif;
+    margin: 0px 0px 20px 20px;
+  }
   .survey-question-question {
     font-weight: normal;
     font-size: large;
@@ -85,7 +109,7 @@ body#survey {
   .survey-answer-essay textarea {
     margin-bottom: 0px;
   }
-  .survey-answer-scale-question {
+  .survey-question-scale-question {
     font-weight: normal;
     font-size: large;
     font-family: sans-serif;
@@ -107,8 +131,9 @@ body#survey {
   }
   .links {
     margin-top: 20px;
+    margin-left: 10px;
     .btn {
-      width: 100px;
+      width: 150px;
     }
   }  
   .survey-answer-vote i {
@@ -272,6 +297,7 @@ table.survey-questions {
     td.actions {
       a {
         text-decoration: underline;
+        width: 85px;
       }
     }
   }

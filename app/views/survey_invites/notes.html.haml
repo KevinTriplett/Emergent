@@ -1,11 +1,10 @@
-.row#notes-container
-  .col
-    .row.links
-      .col
-        = link_to "< Prev", @prev_url, class: "btn btn-warning" if @prev_url
-        = link_to "Next >", @next_url, class: "btn btn-success" if @next_url
-        = link_to "Finish", @finish_url, class: "finish btn btn-primary" if @finish_url
-    .row.notes
-      .col
-        - @notes.each do |note|
-          = cell(Note::Cell::Survey, {note: note, invite: @survey_invite, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
+#notes-container
+  .links
+    = link_to "< Prev", @prev_url, class: "btn btn-warning" if @prev_url
+    = link_to "Next >", @next_url, class: "btn btn-success" if @next_url
+    = link_to "Finish", @finish_url, class: "finish btn btn-primary" if @finish_url
+  .notes
+    - @notes.each do |note|
+      = cell(Note::Cell::Survey, {note: note, invite: @survey_invite, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
+  - if @live_view_url
+    .live-view{ data: {timestamp: @live_view_timestamp, url: @live_view_url} }

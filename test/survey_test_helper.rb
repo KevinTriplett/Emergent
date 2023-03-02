@@ -65,7 +65,8 @@ def create_survey_with_result(params = {})
       survey: {
         name: params[:name],
         description: params[:description]
-      }
+      },
+      create_initial_questions: params[:create_initial_questions]
     }
   )
 end
@@ -80,7 +81,7 @@ def create_survey_group_with_result(params = {})
   survey_id = params[:survey_id] || 
     (params[:survey] && params[:survey].id) || 
     create_survey.id
-  result = SurveyGroup::Operation::Create.call(
+  SurveyGroup::Operation::Create.call(
     params: {
       survey_group: {
         name: params[:name],
@@ -91,7 +92,6 @@ def create_survey_group_with_result(params = {})
       survey_id: survey_id
     }
   )
-  result
 end
 
 def create_survey_group(params = {})

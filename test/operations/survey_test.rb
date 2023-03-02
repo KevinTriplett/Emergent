@@ -37,6 +37,24 @@ class SurveyOperationTest < MiniTest::Spec
       end
     end
 
+    it "Creates initial group and questions" do
+      DatabaseCleaner.cleaning do
+        result = create_survey_with_result({
+          name: random_survey_name,
+          description: "This is the survey description",
+          create_initial_questions: true
+        })
+
+        assert result.success?
+        survey = result[:model]
+        assert_equal 1, survey.survey_groups.count
+        assert_equal 3, survey.survey_questions.count
+        assert_equal "Multiple Choice", survey.ordered_questions[0].answer_type
+        assert_equal "Email", survey.ordered_questions[1].answer_type
+        assert_equal "New Page", survey.ordered_questions[2].question_type
+      end
+    end
+
     # ----------------
     # failing path tests
     it "Fails with invalid parameters" do

@@ -5,19 +5,33 @@
   outline: none;
 }
 
-body#survey {
+body#notes {
+  background-color: #9fc0c8;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding-top: 1rem;
+
   #notes-container {
     .links {
       margin-top: 3px;
-
       .btn {
         position: initial;      
       }
     }
+    .live-view {
+      position: fixed;
+      top: 0px;
+      right: 10px;
+    }
   }
-}
 
-body#notes {
+  .container {
+    margin: 0px;
+    max-width: 100%;
+  }
+  
   .btn {
     position: fixed;
     z-index: 200;
@@ -41,21 +55,8 @@ body#notes {
 
 body#notes,
 body#survey {
-  background-color: #9fc0c8;
-  font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding-top: 3rem;
-  
-  .container {
-    margin: 0px;
-    max-width: 100%;
-  }
-  
   .btn {
     width: 150px;
-
     &:active {
       transform: scale(0.96);
     }

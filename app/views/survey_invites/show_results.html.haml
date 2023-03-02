@@ -1,0 +1,12 @@
+%p.survey-name= @survey.name
+%p.survey-description= @survey.description
+
+#survey-container
+  - @survey_questions.each_pair do |sg, asq|
+    .survey-group-container.jumbotron.jumbotron-fluid{ id: "survey-group-#{sg.id}" }
+      %h1.display-4.survey-group-name= sg.name
+      %p.survey-group-description= sg.description
+      %hr      
+      #survey-questions-container
+        - asq.each do |sq|
+          = cell(SurveyInvite::Cell::SurveyResults, {survey_invite: @survey_invite, survey_question: sq, patch_url: @patch_url, token: @token})

@@ -1,8 +1,8 @@
 require 'emerge_spider'
 
-class SurveyInviteSpider < EmergeSpider
+class PrivateMessageSpider < EmergeSpider
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-  @name = "survey_invite_spider"
+  @name = "private_message_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://emergent-commons.mn.co/sign_in"]
   @config = {
@@ -26,36 +26,34 @@ class SurveyInviteSpider < EmergeSpider
     EmergeSpider.logger.info "SPIDER #{name} STARTING"
     request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
 
-    survey_invites = SurveyInvite.queued
-    survey_invites.each do |si|
-      @@user = si.user
-      next if @@user.email == Rails.configuration.mn_username
-      @@survey = si.survey
-      @@survey_invite = si
-      EmergeSpider.logger.info "SENDING INVITE TO #{@@user.name} FOR #{@@survey.name}"
-      request_to(:send_invite, url: @@user.chat_url)
-      si.update_state(:sent)
-    end
+    @@message = Marshal.load(get_message)
+    @@user = User.find @@message[:user_id]
+    EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@message[:subject]}"
+    request_to(:send_message, url: @@user.chat_url)
+
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
+    set_result("success")
   rescue => error
     set_result("failure")
     EmergeSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
   end
 
-  def send_invite(response, url:, data: {})
+  def send_message(response, url:, data: {})
     wait_until(".universal-input-form-body-container .fr-element.fr-view")
     EmergeSpider.logger.debug "#{name} ATTEMPTING TO CLICK CHAT CHANNEL"
     browser.find(:css, ".universal-input-form-body-container .fr-element.fr-view").click
-    browser.send_keys(@@survey_invite.subject)
+    browser.send_keys(@@message[:subject])
     browser.send_keys [:enter]
     sleep 1
-    browser.send_keys(@@survey_invite.body)
+    browser.send_keys(@@message[:body])
     browser.send_keys [:enter]
     sleep 1
-    browser.send_keys("Here's your personal link to the survey:")
-    browser.send_keys [:enter]
-    sleep 1
-    browser.send_keys(@@survey_invite.url)
+    @@message[:lines].each do |line|
+      browser.send_keys(line)
+      browser.send_keys [:enter]
+      sleep 1
+    end
+    browser.send_keys(@@message[:url])
     browser.send_keys [:enter]
   end
 end

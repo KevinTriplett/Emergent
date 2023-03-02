@@ -1,6 +1,7 @@
 class SurveyInvitesController < ApplicationController
   layout "survey"
 
+  # ------------------------------------------------------------------------
   def show
     unless get_inivite
       flash[:notice] = "We're sorry, your survey was not found"
@@ -11,20 +12,26 @@ class SurveyInvitesController < ApplicationController
     update_invite_state
 
     if finished?
-      if @survey_invite.subject = "Test Survey" && @survey_invite.body = "Test Survey"
+      if "Test Survey" == @survey_invite.subject && "Test Survey" == @survey_invite.body
         @url = admin_survey_path(@survey_invite.survey_id)
         @survey_invite.delete
+      else
+        @survey_invite.update url: survey_show_results_path(@survey_invite.token)
+        @survey_invite.send_finished_survey_link
       end
-      @body_class = "finished"
+      @body_id = "finished"
       return render template: "survey_invites/finished"
     end
 
     get_survey
-    @survey_questions = @survey.get_survey_questions(@survey_question)
+    get_survey_questions
     initialize_answers
     get_urls
     @token = form_authenticity_token
+    @body_id = "survey"
   end
+
+  # ------------------------------------------------------------------------
 
   def notes
     unless get_inivite
@@ -37,8 +44,32 @@ class SurveyInvitesController < ApplicationController
     get_survey
     get_notes_and_survey_answers
     get_notes_urls
+    enable_live_view?
     @token = form_authenticity_token
+    @body_id = "notes"
   end
+
+  # ------------------------------------------------------------------------
+
+  def live_view
+    get_inivite
+    get_survey
+    get_liveview_timestamp
+    return head(:ok) if @live_view_timestamp == params[:timestamp]
+    get_notes_and_survey_answers
+    return render json: {
+        results: @notes.collect {|note|
+        {
+          model: note,
+          group_name: note.group_name,
+          color: note.color
+        }
+      },
+      timestamp: @live_view_timestamp
+    }
+  end
+  
+  # ------------------------------------------------------------------------
 
   def patch
     get_inivite
@@ -51,32 +82,33 @@ class SurveyInvitesController < ApplicationController
       scale: survey_answer.scale,
       vote_count: survey_answer.vote_count,
       votes_left: survey_answer.votes_left,
-      group_position: survey_answer.group_position
+      group_position: survey_answer.group_position,
+      color: survey_answer.survey_group.note_color
     }) : (render head(:bad_request))
   end
 
+  # ------------------------------------------------------------------------
+
+  def show_results
+    puts "params = #{params}"
+    get_inivite
+    get_survey
+    @survey_questions = 
+    @survey_questions = {}
+    @survey.ordered_questions.each do |sq|
+      @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
+      @survey_questions[sq.survey_group].push sq
+    end
+    @body_id = "survey"
+  end
+  
+  # ------------------------------------------------------------------------
+  
   private
 
   def get_inivite
     @survey_invite = SurveyInvite.find_by_token(params[:token])
     @survey_invite && @survey_invite.user
-  end
-
-  def finished?
-    params[:group_position].to_i == -1 && params[:question_position].to_i == -1
-  end
-
-  def update_invite_state
-    state = if params[:group_position].nil? && params[:question_position].nil?
-      :opened
-    elsif params[:group_position].to_i > 0 || params[:question_position].to_i > 0
-      :started
-    elsif params[:group_position].to_i == -1 && params[:question_position].to_i == -1
-      :finished
-    elsif params[:group_position] == "0" && params[:question_position] == "0"
-      return
-    end
-    @survey_invite.update_state(state)
   end
 
   def get_survey
@@ -85,14 +117,29 @@ class SurveyInvitesController < ApplicationController
     @survey = @survey_invite.survey
     @survey_group = @survey_invite.survey_groups.where(position: group_position).first
     @survey_question = @survey_group.survey_questions.where(position: question_position).first
+    @survey
+  end
+
+  def get_survey_questions
+    @survey_questions = {}
+    @survey.get_survey_questions(@survey_question).each do |sq|
+      @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
+      @survey_questions[sq.survey_group].push sq
+    end
+    @survey_questions
   end
 
   def get_notes_and_survey_answers
     @notes = @survey.ordered_notes
     @survey_answers = []
     @notes.each do |note|
-      @survey_answers.push @survey_invite.get_survey_answer(note.survey_question_id)
+      @survey_answers.push @survey_invite.survey_answer_for(note.survey_question_id)
     end
+    @survey_answers
+  end
+  
+  def get_liveview_timestamp
+    @live_view_timestamp = @survey.last_updated_note_timestamp.picker_datetime
   end
 
   def get_urls
@@ -126,7 +173,33 @@ class SurveyInvitesController < ApplicationController
   end
 
   def get_survey_answer
-    @survey_invite.get_survey_answer(params[:id])
+    @survey_invite.survey_answer_for(params[:id])
+  end
+
+  def enable_live_view?
+    time = Time.now - 4.hours
+    return unless @notes.any? do |note|
+      note.updated_at > time
+    end
+    get_liveview_timestamp
+    @live_view_url = survey_live_view_path(@survey_invite.token)
+  end
+
+  def finished?
+    params[:group_position].to_i == -1 && params[:question_position].to_i == -1
+  end
+
+  def update_invite_state
+    state = if params[:group_position].nil? && params[:question_position].nil?
+      :opened
+    elsif params[:group_position].to_i > 0 || params[:question_position].to_i > 0
+      :started
+    elsif params[:group_position].to_i == -1 && params[:question_position].to_i == -1
+      :finished
+    elsif params[:group_position] == "0" && params[:question_position] == "0"
+      return
+    end
+    @survey_invite.update_state(state)
   end
 
   def initialize_answers
@@ -143,7 +216,7 @@ class SurveyInvitesController < ApplicationController
     end
     sa_sq_ids.each do |sa_sq_id|
       next if sq_ids.index(sa_sq_id) # skip if question exists
-      @survey_invite.survey_answers.where(survey_question_id: sa_sq_id).destroy_all
+      @survey_invite.survey_answer_for(sa_sq_id).destroy
     end
   end
 end

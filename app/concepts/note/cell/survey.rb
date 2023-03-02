@@ -19,13 +19,16 @@ class Note::Cell::Survey < Cell::ViewModel
     model[:invite]
   end
   def survey_answer
-    survey_invite.get_survey_answer(note.survey_question_id)
+    survey_invite.survey_answer_for(note.survey_question_id)
   end
   def group_position
     survey_answer.group_position
   end
   def question_id
     note.survey_question_id
+  end
+  def group_id
+    note.survey_group_id
   end
   
   def text

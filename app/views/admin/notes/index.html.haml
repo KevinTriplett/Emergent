@@ -1,6 +1,6 @@
 %h5= "Notes for #{@survey.name}"
 
-#notes-container
+#notes-container.admin
   - @notes.each do |note|
     = cell(Note::Cell::Admin, {note: note, patch_url: @patch_url, new_url: @new_url, delete_url: @delete_url, token: @token})
 
