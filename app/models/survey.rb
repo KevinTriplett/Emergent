@@ -1,8 +1,9 @@
 class Survey < ActiveRecord::Base
   has_many :survey_groups, dependent: :destroy
+  has_many :survey_invites, dependent: :destroy
+  
   has_many :survey_questions, through: :survey_groups
   has_many :notes, through: :survey_groups
-  has_many :survey_invites, dependent: :destroy
   has_many :users, through: :survey_invites
 
   def ordered_groups

@@ -729,8 +729,8 @@ class SurveysTest < ApplicationSystemTestCase
       note_1.update text: "Change is good for ya!"
       note_2.update group_name: group_1.name
       note_3.update color: "#ffffff" # NB: this will change the color of notes 2, 3 and 4
-      note_4.update coords: "50:50"
-      sleep 5
+      note_4.update coords: "420:550"
+      sleep 7
 
       Note.all.each do |note|
         assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.color
