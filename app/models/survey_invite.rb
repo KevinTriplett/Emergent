@@ -64,9 +64,9 @@ class SurveyInvite < ActiveRecord::Base
     end
     puts "got result = #{result}"
     "success" == result
-  # rescue => error
-  #   puts "#{error.class}: #{error.message}"
-  #   false
+  rescue => error
+    puts "#{error.class}: #{error.message}"
+    false
   end
 
   def send_finished_survey_link
@@ -115,7 +115,7 @@ class SurveyInvite < ActiveRecord::Base
         "Here's your personal link to the survey:"
       ],
       url: url
-    })
+    }).force_encoding('UTF-8')
   end
 
   def get_finished_message
@@ -127,7 +127,7 @@ class SurveyInvite < ActiveRecord::Base
         "Here's your personal link to your completed survey:"
       ],
       url: url
-    })
+    }).force_encoding('UTF-8')
   end
 
   # ----------------------------------------------------------------------
