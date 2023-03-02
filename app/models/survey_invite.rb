@@ -107,27 +107,43 @@ class SurveyInvite < ActiveRecord::Base
   end
 
   def get_invite_message
-    Marshal.dump({
-      user_id: user.id,
-      subject: subject,
-      body: body,
-      lines: [
-        "Here's your personal link to the survey:"
-      ],
-      url: url
-    }).encode('UTF-8')
+    [
+      user.id.to_s,
+      subject,
+      body,
+      "Here's your personal link to your completed survey:"
+      url
+    ].join("|")
+    # this fails with postgresql error: PG::CharacterNotInRepertoire: ERROR:  invalid byte sequence for encoding "UTF8": 0xcf 0x3a
+    # Marshal.dump({
+    #   user_id: user.id,
+    #   subject: subject,
+    #   body: body,
+    #   lines: [
+    #     "Here's your personal link to the survey:"
+    #   ],
+    #   url: url
+    # }).encode('UTF-8')
   end
 
   def get_finished_message
-    Marshal.dump({
-      user_id: user.id,
-      subject: "Emergent Commons - your completed survey link",
-      body: "Thank you again for completing the survey!",
-      lines: [
-        "Here's your personal link to your completed survey:"
-      ],
-      url: url
-    }).encode('UTF-8')
+    [
+      user.id.to_s,
+      "Emergent Commons - your completed survey link",
+      "Thank you again for completing the survey!",
+      "Here's your personal link to your completed survey:"
+      url
+    ].join("|")
+    # this fails with postgresql error: PG::CharacterNotInRepertoire: ERROR:  invalid byte sequence for encoding "UTF8": 0xcf 0x3a
+    # Marshal.dump({
+    #   user_id: user.id,
+    #   subject: "Emergent Commons - your completed survey link",
+    #   body: "Thank you again for completing the survey!",
+    #   lines: [
+    #     "Here's your personal link to your completed survey:"
+    #   ],
+    #   url: url
+    # })
   end
 
   # ----------------------------------------------------------------------

@@ -26,8 +26,9 @@ class PrivateMessageSpider < EmergeSpider
     EmergeSpider.logger.info "SPIDER #{name} STARTING"
     request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
 
-    @@message = Marshal.load(get_message)
-    @@user = User.find @@message[:user_id]
+    # @@message = Marshal.load(get_message)
+    @@message = get_message.split("|")
+    @@user = User.find @@message[0].to_i
     EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@message[:subject]}"
     request_to(:send_message, url: @@user.chat_url)
 
@@ -42,18 +43,16 @@ class PrivateMessageSpider < EmergeSpider
     wait_until(".universal-input.chat-prompt .fr-element.fr-view")
     EmergeSpider.logger.debug "#{name} ATTEMPTING TO CLICK CHAT CHANNEL"
     browser.find(:css, ".universal-input.chat-prompt .fr-element.fr-view").click
-    browser.send_keys(@@message[:subject])
+    browser.send_keys(@@message[1])
     browser.send_keys [:enter]
     sleep 1
-    browser.send_keys(@@message[:body])
+    browser.send_keys(@@message[2])
     browser.send_keys [:enter]
     sleep 1
-    @@message[:lines].each do |line|
-      browser.send_keys(line)
-      browser.send_keys [:enter]
-      sleep 1
-    end
-    browser.send_keys(@@message[:url])
+    browser.send_keys(@@message[3])
+    browser.send_keys [:enter]
+    sleep 1
+    browser.send_keys(@@message[4])
     browser.send_keys [:enter]
   end
 end
