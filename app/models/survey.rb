@@ -291,7 +291,8 @@ class Survey < ActiveRecord::Base
         })
         raise "something went wrong with group creation / find" unless new_survey_group
         new_survey_group.update position: new_survey.reload.survey_groups.count-1
-        column = row = 0
+        column += 1
+        row = 0
       end
 
       left = (200 * (column + new_survey_group.position - 1)) + 30
