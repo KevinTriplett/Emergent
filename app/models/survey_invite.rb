@@ -64,9 +64,9 @@ class SurveyInvite < ActiveRecord::Base
     end
     puts "got result = #{result}"
     "success" == result
-  rescue => error
-    puts "#{error.class}: #{error.message}"
-    false
+  # rescue => error
+  #   puts "#{error.class}: #{error.message}"
+  #   false
   end
 
   def send_finished_survey_link
