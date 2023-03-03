@@ -13,6 +13,11 @@ body#notes {
   margin: 0;
   padding-top: 1rem;
 
+  .container {
+    margin: 0px;
+    max-width: 100%;
+  }
+
   #notes-container {
     .links {
       margin-top: 3px;
@@ -26,57 +31,38 @@ body#notes {
       right: 10px;
     }
   }
-
-  .container {
-    margin: 0px;
-    max-width: 100%;
-  }
   
-  .btn {
-    position: fixed;
-    z-index: 200;
+  &.admin {
+    .btn {
+      position: fixed;
+      z-index: 200;
 
-    &.add-note {
-      top: 1rem;
-      right: 2rem;
+      &.add-note {
+        top: 1rem;
+        right: 19rem;
+      }
+
+      &.new-group {
+        top: 1rem;
+        right: 9rem;
+      }
+
+      &.return {
+        top: 1rem;
+        right: 0rem;
+      }
     }
 
-    &.new-group {
-      top: 4rem;
-      right: 1rem;
+    .ui-selectmenu-button.ui-button {
+      width: auto;
     }
-
-    &.return {
-      top: 7rem;
-      right: 1rem;
-    }
-  }
-}
-
-body#notes,
-body#survey {
-  .btn {
-    width: 150px;
-    &:active {
-      transform: scale(0.96);
-    }
-  }
-
-  .note {
-    background-color: #fff;
-    box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.1);
-    margin: 30px 20px;
-    height: 350px;
-    width: 350px;
-    line-height: 1.2em;
-    overflow-y: hidden;
-    position: absolute;
 
     .tools {
       background-color: #9ec862;
       display: flex;
       justify-content: flex-end;
       padding: 0.5rem;
+      height: 44px;
 
       button {
         background-color: transparent;
@@ -84,25 +70,31 @@ body#survey {
         color: #fff;
         cursor: pointer;
         font-size: 1rem;
-        margin-left: 0.5rem;
+        margin-left: 0.1rem;
+      }
+
+      .delete {
+        position: relative;
+        top: 0px;
+        left: 5px;
       }
 
       .move {
         position: relative;
         top: 2px;
-        left: -13px;
+        left: 0px;
         transform: scale(2, 2);
       }
 
       .colorpicker {
         position: relative;
-        top: 20px;
-        left: -10px;
+        top: 6px;
+        left: 2px;
         border-radius: 15px;
         height: 18px;
 
         .bi-circle {
-          top: -4px;
+          top: -2px;
           position: relative;
           margin: -10px;
           height: 5px;
@@ -127,9 +119,30 @@ body#survey {
 
       .note-group-name {
         position: relative;
-        top: 12px;
+        top: -2px;
       }
     }
+  }
+}
+
+body#notes,
+body#survey {
+  .btn {
+    width: 125px;
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+
+  .note {
+    background-color: #fff;
+    box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.1);
+    margin: 30px 20px;
+    height: 200px;
+    width: 200px;
+    line-height: 1.2em;
+    overflow-y: hidden;
+    position: absolute;
 
     .note-group-name {
       font-family: 'architects_daughterregular', Arial, sans-serif;
@@ -146,7 +159,7 @@ body#survey {
       font-family: 'architects_daughterregular', Arial, sans-serif;
       font-weight: bolder;
       font-style: normal;
-      font-size: large;
+      font-size: normal;
       padding-top: 7px;
     }
 
