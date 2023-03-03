@@ -13,6 +13,7 @@ module Admin
       last_group = @survey.last_note_survey_group
       @template = Note.new(survey_group_id: last_group.id) if last_group
       @notes.last.update(updated_at: Time.now) unless @notes.empty? # cheat to enable live view
+      @body_class = "admin"
     end
 
     def create
