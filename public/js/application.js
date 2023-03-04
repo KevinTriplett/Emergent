@@ -1162,7 +1162,8 @@ $(document).ready(function() {
       var thisZIndex = parseInt($(this).css("z-index"));
       if (thisZIndex > zIndex) zIndex = thisZIndex;
     })
-    updateNoteZIndex(note, zIndex+1)
+    updateNoteZIndex(note, zIndex+1);
+    updateNote.call(note);
   }
 
 
