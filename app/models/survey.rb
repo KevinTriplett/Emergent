@@ -69,7 +69,7 @@ class Survey < ActiveRecord::Base
   end
 
   def max_z_index
-    ordered_notes.map(&:z_index).max
+    ordered_notes.map(&:z_index).compact.max
   end
 
   ######
