@@ -6,9 +6,6 @@ class Note::Cell::Admin < Cell::ViewModel
   def note
     model[:note]
   end
-  def note_id
-    note.id || "xxxx"
-  end
   def group_id
     note.survey_group_id
   end
@@ -19,10 +16,10 @@ class Note::Cell::Admin < Cell::ViewModel
     model[:new_url]
   end
   def patch_url
-    "#{model[:patch_url]}/#{note_id}/patch"
+    "#{model[:patch_url]}/#{note.id}/patch"
   end
   def delete_url
-    "#{model[:delete_url]}/#{note_id}"
+    "#{model[:delete_url]}/#{note.id}"
   end
   def token
     model[:token]
@@ -47,7 +44,7 @@ class Note::Cell::Admin < Cell::ViewModel
   end
 
   def note_css_id
-    "note-#{note_id}"
+    "note-#{note.id}"
   end
 
   def color

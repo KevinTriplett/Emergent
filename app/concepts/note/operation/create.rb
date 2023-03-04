@@ -20,11 +20,16 @@ module Note::Operation
     step Subprocess(Present)
     step Contract::Validate(key: :note)
     step :determine_position
+    step :determine_z_index
     step :create_survey_question
     step Contract::Persist()
     
     def determine_position(ctx, model:, **)
       model.position = model.notes.count
+    end
+
+    def determine_z_index(ctx, model:, **)
+      model.z_index = survey.max_z_index + 1
     end
 
     def create_survey_question(ctx, model:, params:, **)

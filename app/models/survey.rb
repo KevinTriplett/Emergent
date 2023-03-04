@@ -68,6 +68,10 @@ class Survey < ActiveRecord::Base
     end
   end
 
+  def max_z_index
+    ordered_notes.map(&:z_index).max
+  end
+
   ######
   # ------------------------------------------------------------------------
   # PREV

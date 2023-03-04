@@ -989,19 +989,11 @@ $(document).ready(function() {
     return note.attr("data-group-id");
   }
   var updateNoteGroupId = function(note, groupId) {
-    if (noteHasTemplateAttrFor(note, "data-group-id")) {
-      replaceTemplateNoteAttr(note, "data-group-id", groupId);
-      if (userView()) return;
-      note.find("[data-group-id]").each(function() {
-        replaceTemplateNoteAttr($(this), "data-group-id", groupId);
-      });
-    } else {
-      note.attr("data-group-id", groupId);
-      if (userView()) return;
-      note.find("[data-group-id]").each(function() {
+    note
+      .attr("data-group-id", groupId)
+      .find("[data-group-id]").each(function() {
         $(this).attr("data-group-id", groupId);
       });
-    }
   }
 
   var updateAdminNoteGroupSelect = function(note, groupName) {
@@ -1019,13 +1011,7 @@ $(document).ready(function() {
   }
   
   var updateNoteAttr = function(dom, attr, data) {
-    if (noteHasTemplateAttrFor(dom, attr))
-      dom.attr(attr, dom.attr(attr).replace(/xxxx/, data));
-    else
-      dom.attr(attr, data);
-  }
-  var noteHasTemplateAttrFor = function(dom, attr) {
-    return dom.attr(attr) && dom.attr(attr).match(/xxxx/);
+    dom.attr(attr, data);
   }
 
   // ----------------------------------------------------------------------
