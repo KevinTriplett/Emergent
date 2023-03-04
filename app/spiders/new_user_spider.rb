@@ -257,8 +257,8 @@ class NewUserSpider < EmergeSpider
     end
   end
 
-  def update_rejected_users(users)
-    user_emails = users.map(&:email)
+  def update_rejected_users(user_hashes)
+    user_emails = user_hashes.collect {|u_hash| u_hash[:email]}
     User.where(joined: false).each do |user|
       next user_emails.index(user.email)
       # user no longer on MN request to join list
