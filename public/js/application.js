@@ -1137,7 +1137,8 @@ $(document).ready(function() {
     // if command key held down
     //   replace the target with a new note
     //   and drag the new note
-    flashHide($(target));
+    target = $(target);
+    flashHide(target);
     if (metaKeyDown) {
       createNote(function(result, note) {
         var noteData = getNoteData(note);
