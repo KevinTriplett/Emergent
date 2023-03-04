@@ -47,14 +47,14 @@ class NewUserSpider < EmergeSpider
     wait_until(row_css)
 
     EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
-    if browser.find(".email-visibility-toggle").count > 0
-      browser.find(".email-visibility-toggle").click
+    if browser.find(:css, ".email-visibility-toggle").count > 0
+      browser.find(:css, ".email-visibility-toggle").click
       sleep 5
-      if browser.find(".confirmation-modal-container .modal-confirm-button").count == 0
-        browser.find(".email-visibility-toggle").click
+      if browser.find(:css, ".confirmation-modal-container .modal-confirm-button").count == 0
+        browser.find(:css, ".email-visibility-toggle").click
         sleep 5
       end
-      browser.find(".confirmation-modal-container .modal-confirm-button").click
+      browser.find(:css, ".confirmation-modal-container .modal-confirm-button").click
       sleep 1
     end
 
