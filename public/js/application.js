@@ -1032,7 +1032,7 @@ $(document).ready(function() {
   // NOTE CRUD
 
   var createNote = function(success) {
-    var url = $(".add-note").attr["data-url"];
+    var url = $(".add-note").attr("data-url");
     $.ajax({
       url: url,
       type: "GET",
@@ -1156,7 +1156,12 @@ $(document).ready(function() {
 
   var bringToFront = function() {
     var note = $(this);
-    updateNoteZIndex(note, $("#notes-container .note").length)
+    var zIndex = 0;
+    $(".note").each(function() {
+      var thisZIndex = parseInt($(this).css("z-index"));
+      if (thisZIndex > zIndex) zIndex = thisZIndex;
+    })
+    updateNoteZIndex(note, zIndex+1)
   }
 
 
