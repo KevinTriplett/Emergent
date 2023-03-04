@@ -9,7 +9,7 @@ class EmergeSpider < Kimurai::Base
   def get_message
     msg = ::Spider.get_message(name)
     return msg if msg
-    EmergeSpider.logger.failure "#{name} MESSAGE WAS NIL, EXITING"
+    EmergeSpider.logger.fatal "#{name} MESSAGE WAS NIL, EXITING"
     raise
   end
 
