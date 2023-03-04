@@ -29,7 +29,7 @@ module Note::Operation
     end
 
     def determine_z_index(ctx, model:, **)
-      model.z_index = survey.max_z_index + 1
+      model.z_index = model.survey.max_z_index + 1
     end
 
     def create_survey_question(ctx, model:, params:, **)
