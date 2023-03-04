@@ -572,7 +572,7 @@ class SurveysTest < ApplicationSystemTestCase
       #     assert_selector ".votes-left", text: votes_left_hash[note.group_name] += 1
       #   end
       #   [group_1,group_2].each do |group|
-      #     css = ".survey-answer-vote[data-group-position='#{group.position}'] .votes-left"
+      #     css = ".survey-answer-vote[data-group-id='#{group.id}'] .votes-left"
       #     assert_selector css, text: votes_left_hash[group.name], count: 3
       #   end
       #   survey_answer = survey_invite.survey_answer_for(note.survey_question_id)
@@ -719,7 +719,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_current_path survey_notes_path(invite.token)
 
       Note.all.each do |note|
-        assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.color
+        assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.group_color
         assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}px"
         assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}px"
         assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name
@@ -733,7 +733,7 @@ class SurveysTest < ApplicationSystemTestCase
       sleep 7
 
       Note.all.each do |note|
-        assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.color
+        assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.group_color
         assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}px"
         assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}px"
         assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name

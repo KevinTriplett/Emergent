@@ -104,8 +104,8 @@ body#notes {
 
       .feedback {
         position: relative;
-        top: 13px;
-        left: 17px;
+        top: 170px;
+        left: 175px;
         transform: scale(2, 2);
       }
 
@@ -141,7 +141,7 @@ body#survey {
     height: 200px;
     width: 200px;
     line-height: 1.2em;
-    overflow-y: hidden;
+    overflow-y: visible;
     position: absolute;
 
     .note-group-name {

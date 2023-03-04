@@ -50,9 +50,9 @@ class NoteTest < MiniTest::Spec
     DatabaseCleaner.cleaning do
       group = create_survey_group
       note = create_note(survey_group: group)
-      assert_equal group.note_color, note.color
-      note.color = "#12437a"
-      assert_equal group.reload.note_color, note.color
+      assert_equal group.note_color, note.group_color
+      note.group_color = "#12437a"
+      assert_equal group.reload.note_color, note.group_color
     end
   end
 

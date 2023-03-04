@@ -27,7 +27,10 @@ class Note::Cell::Admin < Cell::ViewModel
   def token
     model[:token]
   end
-  
+  def z_index
+    note.z_index
+  end
+
   def text
     note.text
   end
@@ -36,21 +39,28 @@ class Note::Cell::Admin < Cell::ViewModel
     note.ordered_groups.collect(&:name)
   end
   
-  def top
-    note.coords ? note.coords.split(":")[1] : "0px"
-  end
   def left
-    note.coords ? note.coords.split(":")[0] : "0px"
+    (note.coords || "10px:10px").split(":")[0]
+  end
+  def top
+    (note.coords || "10px:10px").split(":")[1]
   end
 
-  def id
+  def note_css_id
     "note-#{note_id}"
   end
 
   def color
-    note.color || "#FFFF99"
+    note.group_color || "#FFFF99"
   end
 
+  def note_dataset
+    {url: patch_url, token: token, group_id: group_id, color: color}
+  end
+  def note_css_style
+    "background-color: #{color}; left: #{left}; top: #{top}; z-index: #{z_index};"
+  end
+  
   def voting_controls
     votes = note.survey_answer.votes
     votes_left = note.survey_answer.votes_left

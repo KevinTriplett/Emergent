@@ -62,7 +62,7 @@ class SurveyInvitesController < ApplicationController
         {
           model: note,
           group_name: note.group_name,
-          color: note.color
+          color: note.group_color
         }
       },
       timestamp: @live_view_timestamp
@@ -82,7 +82,7 @@ class SurveyInvitesController < ApplicationController
       scale: survey_answer.scale,
       vote_count: survey_answer.vote_count,
       votes_left: survey_answer.votes_left,
-      group_position: survey_answer.group_position,
+      group_id: survey_answer.group_id,
       color: survey_answer.survey_group.note_color
     }) : (render head(:bad_request))
   end

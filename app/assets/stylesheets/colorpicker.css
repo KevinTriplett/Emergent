@@ -36,7 +36,7 @@
 .color-picker__control--h {
   border-left: 1px solid;
   cursor: ns-resize;
-  overflow: hidden;
+  overflow: visible;
 }
 .color-picker__control--a {
   width: var(--width-color-picker__control--a);
@@ -58,7 +58,7 @@
 }
 .color-picker__control--s\/v {
   cursor: crosshair;
-  overflow: hidden;
+  overflow: visible;
   width: var(--width-color-picker__control--s\/v);
 }
 .color-picker__control--s\/v div + div {
@@ -76,7 +76,7 @@
   color: var(--color-color-picker__controls);
   display: flex;
   height: var(--height-color-picker__controls);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .color-picker__dialog {

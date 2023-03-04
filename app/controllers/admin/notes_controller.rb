@@ -35,9 +35,10 @@ module Admin
         note.update_survey_question
         render json: { 
           model: note.reload,
-          color: note.color,
+          color: note.group_color,
           group_name: note.group_name,
-          group_position: note.group_position
+          patch_url: admin_note_patch_path(note),
+          delete_url: admin_survey_note_path(note, survey_id: note.survey)
         }
       else
         render head(:bad_request)

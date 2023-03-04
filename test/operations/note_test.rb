@@ -34,7 +34,7 @@ class NoteOperationTest < MiniTest::Spec
         assert_equal "#123456", group.note_color
 
         note = create_note(survey_group: group)
-        assert_equal group.note_color, note.color
+        assert_equal group.note_color, note.group_color
       end
     end
 

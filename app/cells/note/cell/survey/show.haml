@@ -1,6 +1,6 @@
-.note.color-style{ id: id, data: {url: patch_url, token: token, id: question_id, group: group_id}, style: "background-color: #{color}; top: #{top}px; left: #{left}px;" }
+.note.color-style{ id: note_css_id, data: note_dataset, style: note_css_style }
   .main
     %p.note-group-name= group_name
     %p.note-text= text
-    %p.survey-answer-vote{ data: {group_position: group_position} }
+    %p.survey-answer-vote{ data: {group_id: group_id} }
       = voting_controls

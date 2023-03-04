@@ -75,10 +75,13 @@ module Admin
       params.delete(:id)
       params[:note] = params
       run Note::Operation::Create, survey_group_id: group.id do |ctx|
+        note = ctx[:model]
         return render json: { 
-          model: ctx[:model],
-          group_name: group.name,
-          first_note_url: admin_survey_notes_path(survey.id)
+          model: note,
+          color: note.group_color,
+          group_name: note.group_name,
+          patch_url: admin_note_patch_path(note),
+          delete_url: admin_survey_note_path(note, survey_id: note.survey)
         }
       end
       return head(:bad_request)

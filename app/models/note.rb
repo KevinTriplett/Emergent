@@ -7,10 +7,10 @@ class Note < ActiveRecord::Base
     survey_group.name
   end
 
-  def color
+  def group_color
     survey_group.note_color
   end
-  def color=(new_color)
+  def group_color=(new_color)
     survey_group.update note_color: new_color
   end
 

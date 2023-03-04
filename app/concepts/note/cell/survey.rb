@@ -15,6 +15,9 @@ class Note::Cell::Survey < Cell::ViewModel
   def token
     model[:token]
   end
+  def z_index
+    note.z_index
+  end
   def survey_invite
     model[:invite]
   end
@@ -35,19 +38,26 @@ class Note::Cell::Survey < Cell::ViewModel
     note.text
   end
 
-  def top
-    note.coords ? note.coords.split(":")[1] : "0px"
-  end
   def left
-    note.coords ? note.coords.split(":")[0] : "0px"
+    (note.coords || "10px:10px").split(":")[0]
+  end
+  def top
+    (note.coords || "10px:10px").split(":")[1]
   end
 
-  def id
+  def note_css_id
     "note-#{note.id}"
   end
 
   def color
-    note.color || "#FFFF99"
+    note.group_color || "#FFFF99"
+  end
+
+  def note_dataset
+    {url: patch_url, token: token, id: question_id, group_id: group_id, color: color}
+  end
+  def note_css_style
+    "background-color: #{color}; top: #{top}; left: #{left}; z-index: #{z_index};"
   end
 
   def voting_controls

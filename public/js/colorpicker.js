@@ -2,7 +2,8 @@
  *
  * The MIT License (MIT)
  *
- * Copyright © 2022 Taufik Nurrohman <https://github.com/taufik-nurrohman>
+ * Copyright © 2022 Taufik Nurrohman <https://github.com/taufik-nurrohman/color-picker>
+ * ref: https://taufik-nurrohman.js.org/color-picker/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the “Software”), to deal
@@ -698,7 +699,7 @@ $(document).ready(function() {
                 if (isFirst) {
                     onEvents(EVENTS_DOWN, source, doClick);
                     delay(function () {
-                        // fire('change', theColor); // KMT
+                        fire('change', theColor);
                     }, 1);
                 } else {
                     onEvents(EVENTS_DOWN, SV, doDownSV);

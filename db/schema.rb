@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_27_200029) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_04_012248) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -29,6 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_27_200029) do
     t.integer "survey_group_id"
     t.integer "position"
     t.integer "survey_question_id"
+    t.integer "z_index"
     t.index ["survey_question_id"], name: "index_notes_on_survey_question_id"
   end
 

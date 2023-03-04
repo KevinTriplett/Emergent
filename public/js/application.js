@@ -1,4 +1,37 @@
 ////////////////////////////////////////////////////
+// GLOBAL VARIABLES
+var loaded = false;
+var greeterName = getCookie("user_name");
+if (greeterName) greeterName = greeterName.replace("+", " ");
+var greeterId = getCookie("user_id");
+var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
+var pastOkay = false;
+var optVisible = false;
+var errorMsgCount = prevErrorMsgCount = 0;
+var metaKeyDown = false;
+var format = {
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  hour12: false,
+  year:"numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit"
+};
+var progressMessages = [
+  "Establishing secure channel ...",
+  "Contacting HQ ...",
+  "Exchanging credentials ...",
+  "Looking up member request ...",
+  "Sending request to approve ...",
+  "Getting response ...",
+  "Disconnecting from HQ ...",
+  "Cleaning up channel ...",
+  "Updating database ...",
+  "Waiting, not much longer now ..."
+]
+
+////////////////////////////////////////////////////
 // COOKIES
 function getCookie(name) {
   var value = `; ${document.cookie}`;
@@ -336,38 +369,6 @@ var showOpt = function(show) {
 }
 
 ////////////////////////////////////////////////////
-// GLOBAL VARIABLES
-var loaded = false;
-var greeterName = getCookie("user_name");
-if (greeterName) greeterName = greeterName.replace("+", " ");
-var greeterId = getCookie("user_id");
-var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
-var pastOkay = false;
-var optVisible = false;
-var errorMsgCount = prevErrorMsgCount = 0;
-var format = {
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  hour12: false,
-  year:"numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit"
-};
-var progressMessages = [
-  "Establishing secure channel ...",
-  "Contacting HQ ...",
-  "Exchanging credentials ...",
-  "Looking up member request ...",
-  "Sending request to approve ...",
-  "Getting response ...",
-  "Disconnecting from HQ ...",
-  "Cleaning up channel ...",
-  "Updating database ...",
-  "Waiting, not much longer now ..."
-]
-
-////////////////////////////////////////////////////
 // PAGE INITIALIZATION
 $(document).ready(function() {
   if (loaded) return; // set listeners only once
@@ -377,8 +378,10 @@ $(document).ready(function() {
     .uitooltip()
     .on("keydown", function(e) {
       showOpt(e.altKey);
+      metaKeyDown = e.metaKey;
     }).on("keyup", function(e) {
       showOpt(e.altKey);
+      metaKeyDown = e.metaKey
     });
 
   ////////////////////////////////////////////////////
@@ -836,13 +839,13 @@ $(document).ready(function() {
   var processVote = function(e) {
     var self = $(this);
     var count = self.parent().find(".vote-count");
-    var data = parseInt(count.text());
-    data = (self.hasClass("vote-up") ? data+1 : data-1);
-    surveyAnswerPatch(self, {votes: data}, function(result) {
+    var votes = parseInt(count.text());
+    votes = votes + (self.hasClass("vote-up") ? 1 : -1);
+    surveyAnswerPatch(self, {votes: votes}, function(result) {
       count.text(result.vote_count);
       self
         .closest("#survey-container, #notes-container")
-        .find(`.survey-answer-vote[data-group-position='${result.group_position}']`)
+        .find(`.survey-answer-vote[data-group-id='${result.group_id}']`)
         .find(".votes-left")
         .text(result.votes_left);
     });
@@ -872,33 +875,17 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // NOTES
-  $("#notes-container .live-view").each(function() {
-    setInterval(function() {
-      var liveView = $(".live-view");
-      var timestamp = liveView.attr("data-timestamp");
-      var url = liveView.attr("data-url");
-      $.ajax({
-        url: `${url}?timestamp=${timestamp}`,
-        type: "GET",
-        processData: false,
-        dataType: "JSON",
-        contentType: "application/json",
-        success: function(data, textStatus, jqXHR) {
-          liveView.text(jqXHR.status);
-          for (result of data.results) {
-            var note = $(`#note-${result.model.id}`);
-            updateNote(note, result);
-          }
-          liveView.attr("data-timestamp", data.timestamp);
-        }
-      });
-    }, 2000);
-  });
+  var userView = function() {
+    return $("#notes-container.admin").length == 0
+  }
 
-  var flashGood = function(note) {
+  // ----------------------------------------------------------------------
+  // NOTE FLASH (indicate success/failure for note CRUD actions)
+
+  var flashSuccess = function(note) {
     note.find(".bi-check").show();
   }
-  var flashBad = function(note) {
+  var flashError = function(note) {
     note.find(".bi-exclamation").show();
   }
   var flashHide = function(note) {
@@ -906,30 +893,191 @@ $(document).ready(function() {
     note.find(".bi-exclamation").hide();
   }
 
-  var saveNote = function(e) {
-    var note = $(this).closest(".note");
-    var groupName = note.find(".note-group-name select").val();
-    var text = note.find(".note-text").text();
-    if (text == note.attr("data-text") && groupName == note.attr("data-group-name")) return;
-    var data = {
-      group_name: groupName,
-      text: text
+  // ----------------------------------------------------------------------
+  // NOTE SETTERS-GETTERS
+
+  var getNoteData = function(note) {
+    return {
+      noteCssId: getNoteId(note),
+      text: getNoteText(note),
+      groupName: getNoteGroupName(note),
+      groupId: getNoteGroupId(note),
+      color: getNoteColor(note),
+      coords: getNoteCoords(note),
+      patchUrl: getNotePatchUrl(note),
+      deleteUrl: getNoteDeleteUrl(note),
+      zIndex: getNoteZIndex(note)
     }
+  }
+  var updateNoteFromData = function(note, data) {
+    updateNoteId(note, data.noteCssId);
+    updateNoteText(note, data.text);
+    updateNoteGroupName(note, data.groupName);
+    updateNoteGroupId(note, data.groupId);
+    updateNoteColor(note, data.color);
+    updateNoteCoords(note, data.coords);
+    updateNotePatchUrl(note, data.patchUrl);
+    updateNoteDeleteUrl(note, data.deleteUrl);
+    updateNoteZIndex(note, data.zIndex);
+  }
+
+  var getNoteText = function(note) {
+    return note.find(".note-text").text();
+  }
+  var updateNoteText = function(note, text) {
+    note.find(".note-text").text(text);
+  }
+  var getNoteGroupName = function(note) {
+    return userView() ?
+      note.find(".note-group-name").text() :
+      note.find(".note-group-name select").val();
+  }
+  var updateNoteGroupName = function(note, groupName) {
+    userView() ?
+      note.find(".note-group-name").text(groupName) :
+      updateAdminNoteGroupSelect(note, groupName);
+  }
+  var getNoteColor = function(note) {
+    return note.find("input.colorpicker").val();
+  }
+  var updateNoteColor = function(note, color) {
+    note
+      .css("background-color", color)
+      .find(".color-style")
+      .css("background-color", color);
+    note.find("input.colorpicker").val(color);
+  }
+  var getNoteCoords = function(note) {
+    var x = note.css("left");
+    var y = note.css("top");
+    return `${x}:${y}`;
+  }
+  var updateNoteCoords = function(note, coords) {
+    var x = parseInt(coords.split(":")[0]);
+    var y  = parseInt(coords.split(":")[1]);
+    note.css("left", x).css("top", y).data("coords", coords);
+  }
+  var getNoteZIndex = function(note) {
+    return note.css("z-index");
+  }
+  var updateNoteZIndex = function(note, zIndex) {
+    note.css("z-index", zIndex);
+  }
+
+  var getNotePatchUrl = function(note) {
+    return note.attr("data-url");
+  }
+  var updateNotePatchUrl = function(note, url, id) {
+    if (!url) return;
+    updateNoteAttr(note, "data-url", url, id);
+  }
+  var getNoteDeleteUrl = function(note) {
+    return note.find(".delete").attr("data-url");
+  }
+  var updateNoteDeleteUrl = function(note, url) {
+    if (!url) return;
+    updateNoteAttr(note.find(".delete"), "data-url", url);
+  }
+
+  var getNoteId = function(note) {
+    return note.attr("id");
+  }
+  var updateNoteId = function(note, cssId) {
+    updateNoteAttr(note, "id", cssId);
+  }
+  var getNoteGroupId = function(note) {
+    return note.attr("data-group-id");
+  }
+  var updateNoteGroupId = function(note, groupId) {
+    if (noteHasTemplateAttrFor(note, "data-group-id")) {
+      replaceTemplateNoteAttr(note, "data-group-id", groupId);
+      if (userView()) return;
+      note.find("[data-group-id]").each(function() {
+        replaceTemplateNoteAttr($(this), "data-group-id", groupId);
+      });
+    } else {
+      note.attr("data-group-id", groupId);
+      if (userView()) return;
+      note.find("[data-group-id]").each(function() {
+        $(this).attr("data-group-id", groupId);
+      });
+    }
+  }
+
+  var updateAdminNoteGroupSelect = function(note, groupName) {
+    note.find(".note-group-name select").val(groupName);
+    if (note.data("selectmenu-installed")) {
+      note.find(".note-group-name select").selectmenu("refresh");
+    } else {
+      note.find(".tools .note-group-name select").selectmenu({
+        change: function(e) {
+          updateNote.call(this);
+        }
+      });
+      note.data("selectmenu-installed", true);
+    }
+  }
+  
+  var updateNoteAttr = function(dom, attr, data) {
+    if (noteHasTemplateAttrFor(dom, attr))
+      dom.attr(attr, dom.attr(attr).replace(/xxxx/, data));
+    else
+      dom.attr(attr, data);
+  }
+  var noteHasTemplateAttrFor = function(dom, attr) {
+    return dom.attr(attr) && dom.attr(attr).match(/xxxx/);
+  }
+
+  // ----------------------------------------------------------------------
+  // NOTE CRUD
+
+  var createNote = function(success) {
+    var url = $(".add-note").attr["data-url"];
+    $.ajax({
+      url: url,
+      type: "GET",
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      success: function(result) {
+        var note = $("#note-template .note").first().clone(false); // do not clone event handlers, they are installed afterwards
+        updateNoteFromData(note, convertResultToNoteData(result));
+        $("#notes-container").append(note);
+        note.show();
+        installNoteListeners(note);
+        bringToFront.call(note);
+        if (success) success(result, note);
+      },
+      error: function() {
+        alert("something went wrong -- ask Kevin");
+      }
+    });
+  };
+
+  var updateNote = function(e) {
+    var note = $(this).closest(".note");
+    var data = getDataForUpdateNote(note);
+    if (!data) return;
+    var url = note.attr("data-url");
+    var token = note.attr("data-token");
     flashHide(note);
-    notePatch(note, data, function(result) {
-      flashGood(note);
-      note
-        .attr("data-text", result.model.text)
-        .attr("data-group", result.model.survey_group_id)
-        .attr("data-group-name", groupName)
-        .css("background-color", result.color)
-        .find("button.colorpicker")
-        .css("background-color", result.color);
-      note
-        .find("input.colorpicker")
-        .val(result.color);
-    }, function() {
-      flashBad(note);
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify({"model": data}),
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      headers: {
+        "X-CSRF-Token": token
+      },
+      success: function(result) {
+        flashSuccess(note);
+        updateNoteFromData(note, convertResultToNoteData(result));
+        setDataForUpdateNote(note);
+      }, function() {
+        flashError(note);
+      }
     });
   }
 
@@ -941,51 +1089,83 @@ $(document).ready(function() {
         note.remove();
       },
       function() {
-        flashBad(note)
+        flashError(note)
       }
     );
   }
 
+  var convertResultToNoteData = function(result) {
+    return {
+      noteCssId: `note-${result.model.id}`,
+      id: result.model.id,
+      text: result.model.text,
+      groupName: result.group_name,
+      groupId: result.model.survey_group_id,
+      color: result.color,
+      coords: result.model.coords,
+      zIndex: result.model.z_index,
+      patchUrl: result.patch_url,
+      deleteUrl: result.delete_url
+    };
+  }
+  
+  var getDataForUpdateNote = function(note) {
+    var data = {};
+    if (getNoteText(note) != note.data("prev-text")) data.text = getNoteText(note);
+    if (getNoteGroupName(note) != note.data("prev-group-name")) data.group_name = getNoteGroupName(note);
+    if (getNoteColor(note) != note.data("prev-color")) data.group_color = getNoteColor(note);
+    if (getNoteCoords(note) != note.data("prev-coords")) data.coords = getNoteCoords(note);
+    if (getNoteZIndex(note) != note.data("prev-z-index")) data.z_index = getNoteZIndex(note);
+    return Object.keys(data).length == 0 ? null : data;
+  }
+
+  var setDataForUpdateNote = function(note) {
+    note.data("prev-text", getNoteText(note));
+    note.data("prev-group-name", getNoteGroupName(note));
+    note.data("prev-color", getNoteColor(note));
+    note.data("prev-coords", getNoteCoords(note));
+    note.data("prev-z-index", getNoteZIndex(note));
+  }
+  $(".note").each(function() {
+    setDataForUpdateNote($(this));
+  });
+
+  // ----------------------------------------------------------------------
+  // NOTE DRAGGING
+
   var onDragStart = function(target, x, y) {
+    // if command key held down
+    //   replace the target with a new note
+    //   and drag the new note
     flashHide($(target));
+    if (metaKeyDown) {
+      createNote(function(result, note) {
+        var noteData = getNoteData(note);
+        var targetData = getNoteData(target);
+        updateNoteFromData(note, targetData);
+        updateNoteFromData(target, noteData);
+      });
+    }
   }
+
   var onDragEnd = function(target, x, y) {
-    var note = $(target);
-    var data = {coords: `${x}:${y}`};
-    notePatch(note, data, function(result) {
-      flashGood(note);
-      updateNoteCoords(note, coords);
-    }, function() {
-      flashBad(note);
-      updateNoteCoords(note); // reset back to original coords
-    });
+    var note = $(target).closest(".note");
+    updateNoteCoords(note, `${x}:${y}`);
+    updateNote.call(target);
   }
 
-  var setAllGroupNotesColor = function(data) {
-    $(`#notes-container .color-style[data-group='${data.group}']`)
-      .each(function() {
-        $(this).css("background-color", data.color);
-      });
+  var bringToFront = function() {
+    var note = $(this);
+    updateNoteZIndex(note, $("#notes-container .note").length)
   }
 
-  var setNoteColor = function(r, g, b, a) {
-    var color = this.color(r, g, b, a);
-    var data = {color: color}
-    var note = $(this.source).closest(".note");
-    notePatch(note, data, function(result) {
-      note.find("input.colorpicker").val(color);
-      setAllGroupNotesColor({
-        group: result.model.survey_group_id,
-        color: result.color
-      });
-      flashGood(note);
-    }, function() {
-      flashBad(note);
-    })
-  }
+
+  // ----------------------------------------------------------------------
+  // NOTE COLORPICKER
 
   var initializeColorPicker = function(note) {
-    var picker = new CP(note.querySelector("input.colorpicker"), note.dataset.color);
+    var cpInput = note.querySelector("input.colorpicker");
+    var picker = new CP(cpInput);
     var button = note.querySelector("button.colorpicker");
     // picker.on("blur", () => {});
     picker.on("focus", () => {});
@@ -998,48 +1178,42 @@ $(document).ready(function() {
       ]);
     });
     picker
-      .on("change", debounce(setNoteColor, 250))
+      .on("change", debounce(updateCPSource, 250))
       .on("change", function(r, g, b, a) {
         var color = this.color(r, g, b, a);
         var note = $(this.source).closest(".note");
-        setAllGroupNotesColor({
-          group: note.attr("data-group"),
-          color: color
+        var prevColor = note.data("prev-color");
+        var groupId = note.attr("data-group-id");
+        $(`.note[data-group-id='${groupId}']`).each(function() {
+          var groupNote = $(this);
+          updateNoteColor(groupNote, color);
+          groupNote.data("prev-color", color);
         });
+        note.data("prev-color", prevColor);
       });
   }
 
-  var reorderZ = function(e) {
-    var self = $(this);
-    var notes = $("#notes-container .note");
-    notes.each(function(i, note) {
-      $(note).css("z-index", i);
-    });
-    self.css("z-index", notes.length)
+  var updateCPSource = function() {
+    updateNote.call(this.source);
   }
+
+  // ----------------------------------------------------------------------
+  // NOTE LISTENERS
 
   var installNoteListeners = function(note) {
     note
       .find(".note-text")
-      .on("keydown", debounce(saveNote, 500))
+      .on("keydown", debounce(updateNote, 500))
       .on("keydown", function(e) {
+        // do not hide flash on control, alt and meta keys
         if (e.key == "Meta" || e.key == "Alt" || e.key == "Control") return;
         flashHide($(this).closest(".note"));
       });
     note
-      .on("mousedown", reorderZ)
       .find(".delete")
       .on("click", deleteNote);
     note
-      .find(".note-group-name select ~ span")
-      .remove()
-    note
-      .find(".tools .note-group-name select")
-      .selectmenu({
-        change: function(e) {
-          saveNote.call(this);
-        }
-      });
+      .on("mousedown", bringToFront);
     note
       .find(".vote-up, .vote-down")
       .on("click", processVote);
@@ -1049,110 +1223,57 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
       });
-      
-    if ($("#notes-container.admin").length == 0) return; // stop if user view
-    note = note.get()[0];
+    updateNoteCoords(note, getNoteCoords(note)); // stores coords into data
+    if (userView()) return; // stop if user view
+
+    note = note.get()[0]; // get underlying dom element
     initializeColorPicker(note);
-    dragmove(note, note.querySelector("button.move"), onDragStart, onDragEnd);
+    dragmove(note, note.querySelector(".move"), onDragStart, onDragEnd);
   }
   
-  var cloneNewNote = function(result) {
-    var note = $("#note-template .note").first().clone(false); // do not clone event handlers, they are installed afterwards
-    flashHide(note);
-    updateNoteCoords(note, result.model.coords);
-    var patchUrl = note
-      .attr("data-url")
-      .replace(/xxxx/, result.model.id);
-    var deleteUrl = note
-      .find("button.delete")
-      .attr("data-url")
-      .replace(/xxxx/, result.model.id);
-    var id = note
-      .attr("id")
-      .replace(/xxxx/, result.model.id);
-    note
-      .attr("data-url", patchUrl)
-      .attr("id", id)
-      .find("button.delete")
-      .attr("data-url", deleteUrl)
-    installNoteListeners(note);
-    updateNote(note, result);
-    reorderZ.call(note);
-    $("#notes-container").append(note);
-    setAllGroupNotesColor({
-      group: result.model.survey_group_id,
-      color: result.color
-    });
-    note.show();
-  }
-
-  var updateNote = function(note, result) {
-    note
-      .find(".note-text")
-      .text(result.model.text);
-    note
-      .attr("data-group", result.model.survey_group_id)
-      .find(".main .note-group-name")
-      .text(result.group_name)
-    note
-      .find(".tools .note-group-name select")
-      .val(result.group_name)
-      .selectmenu("refresh");
-    setAllGroupNotesColor({
-      group: result.model.survey_group_id,
-      color: result.color
-    });
-    updateNoteCoords(note, result.model.coords);
-  }
-
-  var updateNoteCoords = function(note, coords) {
-    coords ||= note.attr("data-coords");
-    var left = parseInt(coords.split(":")[0]);
-    var top  = parseInt(coords.split(":")[1]);
-    note
-      .css("top", top)
-      .css("left", left)
-      .attr("data-coords", coords);
-  }
-
   $("#notes-container .note").each(function() {
-    installNoteListeners($(this));
+    var note = $(this);
+    installNoteListeners(note);
+    if (userView()) return;
+    updateAdminNoteGroupSelect(note, getNoteGroupName(note));
   });
 
-  $("body#notes button.add-note").on("click", function(e) {
-    var url = this.dataset["url"];
+  // ----------------------------------------------------------------------
+  // NOTE LIVE VIEW
+
+  if ($("#notes-container .live-view")) {
+    setInterval(liveView, 2000);
+  };
+
+  var liveView = function() {
+    var liveView = $(".live-view");
+    var timestamp = liveView.attr("data-timestamp");
+    var url = liveView.attr("data-url");
     $.ajax({
-      url: url,
+      url: `${url}?timestamp=${timestamp}`,
       type: "GET",
       processData: false,
       dataType: "JSON",
       contentType: "application/json",
-      success: cloneNewNote,
-      error: function() {
-        alert("something went wrong -- ask Kevin");
+      success: function(data, textStatus, jqXHR) {
+        liveView.text(jqXHR.status);
+        for (result of data.results) {
+          var note = $(`#note-${result.model.id}`);
+          if (note)
+            updateNoteFromData(note, convertResultToNoteData(result));
+          else
+            newNoteFromData(data);
+        }
+        liveView.attr("data-timestamp", data.timestamp);
       }
-    });
-  });
-
-  var notePatch = function(dom, data, success, error) {
-    var url = dom.closest("[data-url]").attr("data-url");
-    var token = dom.closest("[data-token]").attr("data-token");
-    $.ajax({
-      url: url,
-      type: "POST",
-      data: JSON.stringify({"model": data}),
-      processData: false,
-      dataType: "JSON",
-      contentType: "application/json",
-      headers: {
-        "X-CSRF-Token": token
-      },
-      success: function(result) {
-        if (success) success(result);
-      },
-      error: error
     });
   }
 
+  // ----------------------------------------------------------------------
+  // GLOBAL NOTE LISTENERS
+
+  $("body#notes button.add-note").on("click", function() {
+    createNote();
+  });
 
 });
