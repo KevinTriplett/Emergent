@@ -85,7 +85,7 @@ class NewUserSpider < EmergeSpider
 
     # skip if this user exists in the database with member_id or was rejected
     email = row.css(".invite-list-item-email-text").text.strip
-
+    member_id = get_member_id(row)
 
     # MN is cloaking member emails so ...
     # check for existing members by member_id and do not overwrite DB email
