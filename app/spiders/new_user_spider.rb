@@ -58,7 +58,7 @@ class NewUserSpider < EmergeSpider
 
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
     rows = browser.current_response.css(row_css)
-    users = []
+    new_users = []
     rows.each do |row|
       u_hash = extract_user_hash(row)
       next if u_hash.blank?
@@ -69,22 +69,22 @@ class NewUserSpider < EmergeSpider
       #   joined with member_id in database (do nothing)
       #   in the database but not in the list of join requests (was rejected)
       # see if this user is already in the database (user cannot change name if not joined)
-      users = User.where(name: u_hash[:name])
-      case users.count
+      existing_users = User.where(name: u_hash[:name])
+      case existing_users.count
       when 0
-        users.push u_hash
+        new_users.push u_hash
       when 1
-        user = users.first
-        next if user.member_id && user.joined?
+        existing_user = existing_users.first
+        next if existing_user.member_id && existing_user.joined?
         next unless u_hash[:member_id]
-        user.update member_id: u_hash[:member_id]
-        user.update profile_url: u_hash[:profile_url]
-        user.update chat_url: u_hash[:chat_url]
+        existing_user.update member_id: u_hash[:member_id]
+        existing_user.update profile_url: u_hash[:profile_url]
+        existing_user.update chat_url: u_hash[:chat_url]
       end
       sleep 1
     end
-    create_or_update_users(users)
-    update_rejected_users(users)
+    create_or_update_users(new_users)
+    update_rejected_users(new_users)
   end
 
   ##################################################
