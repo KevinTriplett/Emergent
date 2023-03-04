@@ -47,15 +47,13 @@ class NewUserSpider < EmergeSpider
     wait_until(row_css)
 
     EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
-    if browser.find(:css, ".invite-list-container thead .email-visibility-toggle").count > 0
+    begin
       browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
       sleep 5
-      if browser.find(:css, ".confirmation-modal-container .modal-confirm-button").count == 0
-        browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
-        sleep 5
-      end
       browser.find(:css, ".confirmation-modal-container .modal-confirm-button").click
       sleep 1
+    rescue => error
+      EmergeSpider.logger.info "COULD NOT REVEAL EMAIL BECAUSE: #{error}"
     end
 
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
