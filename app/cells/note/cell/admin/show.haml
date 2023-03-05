@@ -7,7 +7,7 @@
       %i.bi-list.my-sortable-handle
     %button.colorpicker.color-style{ data: {group_id: group_id}, style: "background-color: #{color}" }
       %i.bi-circle
-    %p.note-group-name{ data: {group_name: group_name} }
+    %p.note-group-name
       %select
         - survey_group_names.each do |o|
           - selected = (o == note.group_name ? "selected" : nil)

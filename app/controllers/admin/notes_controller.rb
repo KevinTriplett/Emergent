@@ -8,11 +8,11 @@ module Admin
       @patch_url = admin_note_patch_path
       @new_url = new_admin_survey_note_path(@survey.id)
       @delete_url = admin_survey_notes_path(@survey.id)
+      @survey.clean_up_notes_z_index
       @notes = @survey.ordered_notes
       @token = form_authenticity_token
       last_group = @survey.last_note_survey_group
       @template = Note.new(survey_group_id: last_group.id) if last_group
-      @notes.last.update(updated_at: Time.now) unless @notes.empty? # cheat to enable live view
       @body_class = "admin"
     end
 

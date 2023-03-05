@@ -72,6 +72,12 @@ class Survey < ActiveRecord::Base
     ordered_notes.map(&:z_index).compact.max
   end
 
+  def clean_up_notes_z_index
+    ordered_notes.each_with_index do |note, i|
+      note.update z_index: i+1
+    end
+  end
+
   ######
   # ------------------------------------------------------------------------
   # PREV
