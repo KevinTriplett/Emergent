@@ -249,8 +249,7 @@ class Survey < ActiveRecord::Base
     end
 
     prev_group_number = new_survey = nil
-    column = 1
-    row = 0
+    column = row = 0
 
     data.each do |line|
       url, group_number, text, is_vision, is_mission, is_value, is_action, is_practice, is_being  = line.split("\t")
@@ -342,8 +341,7 @@ class Survey < ActiveRecord::Base
     })
     raise "something went wrong with survey creation / find" unless survey
 
-    column = 1
-    row = 0
+    column = row = 0
     group = nil
 
     data.each do |line|
@@ -351,15 +349,19 @@ class Survey < ActiveRecord::Base
       puts "line = #{group ? group.name : "no group"}: #{line}"
       if line.match /Vision/
         group = create_group(survey, "Vision")
+        row = 0
         next
       elsif line.match /Mission/
         group = create_group(survey, "Mission")
+        row = 0
         next
       elsif line.match /Values/
         group = create_group(survey, "Values")
+        row = 0
         next
       elsif line.match /Uncategorized/
         group = create_group(survey, "Uncategorized")
+        row = 0
         next
       end
       raise "something went wrong with group creation" unless group
