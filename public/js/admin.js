@@ -1,4 +1,37 @@
 ////////////////////////////////////////////////////
+// GLOBAL VARIABLES
+var loaded = false;
+var greeterName = getCookie("user_name");
+if (greeterName) greeterName = greeterName.replace("+", " ");
+var greeterId = getCookie("user_id");
+var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
+var pastOkay = false;
+var optVisible = false;
+var errorMsgCount = prevErrorMsgCount = 0;
+var metaKeyDown = false;
+var format = {
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  hour12: false,
+  year:"numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit"
+};
+var progressMessages = [
+  "Establishing secure channel ...",
+  "Contacting HQ ...",
+  "Exchanging credentials ...",
+  "Looking up member request ...",
+  "Sending request to approve ...",
+  "Getting response ...",
+  "Disconnecting from HQ ...",
+  "Cleaning up channel ...",
+  "Updating database ...",
+  "Waiting, not much longer now ..."
+]
+
+////////////////////////////////////////////////////
 // COOKIES
 function getCookie(name) {
   var value = `; ${document.cookie}`;
@@ -131,18 +164,18 @@ ${data.greeter}`;
 // be triggered. The function will be called after it stops being called for
 // `wait` milliseconds. If `immediate = true` is passed, trigger the function
 // on the leading edge, instead of the trailing.
-function debounce(func, wait, immediate) {
+var debounce = function(func, wait, immediate) {
   var timeout;
   return function() {
-      var context = this, args = arguments;
-      var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
   };
 };
 
@@ -163,12 +196,11 @@ var convertTimeFromUTC = function(utc, dtPicker) {
   if (!utc) return null;
   var dt = (new Date(utc)).toLocaleString("en-US");
   // convert to iso 8601 format
-  var t = dt.split(", ");
-  var d = t.shift();
-  d = d.split("/");
-  t = t[0].split(" ");
-  t[0] = t[0].split(":");
-  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0][0]}:${t[0][1]} ${t[1]}`;
+  var t = dt.split(/,\s/)[1];
+  var d = dt.split(",")[0].split("/");
+  var ampm = t.split(/\s/)[1];
+  t = t.split(":");
+  return `${d[2]}-${months[d[0]]}-${d[1]} @ ${t[0]}:${t[1]} ${ampm}`;
 }
 
 var convertTimeToUTC = function(datetime) {
@@ -186,23 +218,23 @@ var getUserNotes = function(userDom) {
   return userDom.find("td.user-notes textarea").val();
 }
 
-var noGreeter = function(userDom, userId) {
-  var userGreeterId = userDom.find("td.user-greeter").data("greeter-id");
+var noGreeter = function(userDom) {
+  var userGreeterId = userDom.find("td.user-greeter").attr("data-greeter-id");
   if (!userGreeterId) {
     if (!confirm("You will greet this new member?")) return true;
-    setUserGreeter(userDom, userId, greeterId);
+    setUserGreeter(userDom, greeterId);
   } else if (userGreeterId != greeterId) {
     if (!confirm("You will greet this new member instead?")) return true;
-    setUserGreeter(userDom, userId, greeterId);
+    setUserGreeter(userDom, greeterId);
   }
   return false;
 }
 
-var setUserGreeter = function(userDom, userId, newGreeterId) {
+var setUserGreeter = function(userDom, newGreeterId) {
   var data = { greeter_id: newGreeterId };
-  patch(userId, data, function() {
+  patch(userDom, data, function() {
     var text = newGreeterId ? greeterName : "I will greet";
-    userDom.find("td.user-greeter").data("greeter-id", newGreeterId);
+    userDom.find("td.user-greeter").attr("data-greeter-id", newGreeterId);
     userDom.find("td.user-greeter a").text(text);
   }, function() {
     alert("Could not change greeter - ask Kevin");
@@ -210,16 +242,15 @@ var setUserGreeter = function(userDom, userId, newGreeterId) {
 }
 
 var resetUserStatus = function(userDom) {
-  var status = userDom.find("td.user-status").data("status");
-  userDom.find("td.user-status select").val(status);
-  userDom.find("td.user-status .ui-selectmenu-text").text(status);
+  var status = userDom.find("td.user-status").attr("data-status");
+  userDom.find("td.user-status select").val(status).selectmenu("refresh");
 }
 
-var setStatus = function(userDom, userId) {
-  var status = userDom.find("td.user-status .ui-selectmenu-text").text();
+var setStatus = function(userDom) {
+  var status = userDom.find("td.user-status select").val();
   if ("Scheduling Zoom" == status) {
     if (!confirm("Set status to Zoom Scheduled?")) return true;
-    setUserStatus(userDom, userId, "Zoom Scheduled");
+    setUserStatus(userDom, "Zoom Scheduled");
   } else if ("Zoom Scheduled" != status) {
     alert("Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time");
     return true;
@@ -227,9 +258,9 @@ var setStatus = function(userDom, userId) {
   return false;
 }
 
-var setUserStatus = function(userDom, userId, userStatus) {
+var setUserStatus = function(userDom, userStatus) {
   var data = { status: userStatus || userDom.find("td.user-status select").val() };
-  patch(userId, data, function(result) {
+  patch(userDom, data, function(result) {
     var newSel = document.createElement("select");
     for (const option of result.status_options) {
       var newOpt = document.createElement("option");
@@ -241,34 +272,33 @@ var setUserStatus = function(userDom, userId, userStatus) {
       .find("td.user-status")
       .empty()
       .append(newSel);
-    initStatusSelectMenu("td.user-status select");
-    userDom.find("td.user-status").data("status", result.user.status);
-    userDom.find("td.user-status select").val(result.user.status);
-    userDom.find("td.user-status .ui-selectmenu-text").text(result.user.status);
-    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.user.whenTimestamp)
+    initStatusSelectMenu();
+    userDom.find("td.user-status").attr("data-status", result.model.status);
+    userDom.find("td.user-status select").val(result.model.status).selectmenu("refresh");
+    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
   }, function() {
     alert("Could not change status - ask Kevin");
   });
 }
 
 var dateInPast = function(userDom, ts) {
-  if (!ts) return false;
+  if (pastOkay || !ts) return false;
   if (Date.parse(ts) > (new Date).getTime()) return false;
   if (!confirm("Are you sure you want to set the Zoom meeting in the past?")) {
-    var timestamp = userDom.find("td.user-meeting-datetime").data("timestamp");
+    var timestamp = userDom.find("td.user-meeting-datetime").attr("data-timestamp");
     timestamp ||= "";
     userDom.find("td.user-meeting-datetime input").val(timestamp);
     return true;
   }
+  pastOkay = true;
   return false;
 }
 
 var setUserMeeting = function(e) {
-  var userDom = $(this).closest("[data-id");
-  var userId = userDom.data("id");
+  var userDom = $(this).closest("[data-id]");
   var data = { when_timestamp: getUserMeeting(userDom) };
   if (dateInPast(userDom, data.when_timestamp)) return;
-  patch(userId, data, null, function() {
+  patch(userDom, data, null, function() {
     alert("Could not set meeting date and time - ask Kevin");
   });
 }
@@ -277,67 +307,66 @@ var initStatusSelectMenu = function() {
   $(".user-status select").selectmenu({
     change: function(e) {
       var userDom = $(this).closest("[data-id]");
-      var userId = userDom.data("id");
-      if (noGreeter(userDom, userId)) {
+      if (noGreeter(userDom)) {
         resetUserStatus(userDom);
         return;
       }
-      setUserStatus(userDom, userId, null);
+      setUserStatus(userDom, null);
+    }
+  });
+}
+
+var initSurveySelectMenu = function() {
+  $("#question-type select, #answer-type select").selectmenu({
+    change: function(e) {
+      var self = $(this);
+      self
+        .closest(".row")
+        .find("input[type='hidden']")
+        .val(self.val());
     }
   });
 }
 
 ////////////////////////////////////////////////////
 // PATCH
-var patch = function(userId, data, success, error) {
-  var url = $("table.users,table.user").data("url");
-  var token = $("table.users,table.user").data("token");
+var patch = function(userDom, data, success, error) {
+  var url = userDom.dataset ? userDom.dataset.url : userDom.attr("data-url");
+  var token = userDom.dataset ? userDom.dataset.token : userDom.attr("data-token");
   $.ajax({
-    url: url + "/" + userId + "/update_user",
+    url: url,
     type: "POST",
-    data: JSON.stringify({"user": data}),
+    data: JSON.stringify({"model": data}),
     processData: false,
-    dataType: 'JSON',
-    contentType: 'application/json',
+    dataType: "JSON",
+    contentType: "application/json",
     headers: {
-      'X-CSRF-Token': token
+      "X-CSRF-Token": token
     },
-    success: function(data) {
-      $("td.change-log").html(data.user.change_log.replace(/\n/g, "<br>"));
-      if (success) success(data);
+    success: function(result) {
+      if (success) success(result);
+      updateChangeLog(result.model);
     },
     error: error
   });
 }
 
-////////////////////////////////////////////////////
-// GLOBAL VARIABLES
-var loaded = false;
-var greeterName = getCookie("user_name");
-if (greeterName) greeterName = greeterName.replace("+", " ");
-var greeterId = getCookie("user_id");
-var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
-var format = {
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  hour12: false,
-  year:"numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit"
-};
-var progressMessages = [
-  "Establishing secure channel ...",
-  "Contacting HQ ...",
-  "Exchanging credentials ...",
-  "Looking up member request ...",
-  "Sending request to approve ...",
-  "Getting response ...",
-  "Disconnecting from HQ ...",
-  "Cleaning up channel ...",
-  "Updating database ...",
-  "Waiting, not much longer now ..."
-]
+var updateChangeLog = function(model) {
+  if (!model || !model.change_log) return;
+  $("td.change-log").html(model.change_log.replace(/\n/g, "<br>"));
+}
+
+var showOpt = function(show) {
+  if (!(show ^ optVisible)) return;
+  optVisible = show;
+  if (show)
+    $(".opt").show();
+  else {
+    debounce(function() {
+      $(".opt").hide();
+    }, 1000)();
+  }
+}
 
 ////////////////////////////////////////////////////
 // PAGE INITIALIZATION
@@ -345,19 +374,46 @@ $(document).ready(function() {
   if (loaded) return; // set listeners only once
   loaded = true;
   $("#spinner").hide();
-  $(document).uitooltip();
+  $(document)
+    .uitooltip()
+    .on("keydown", function(e) {
+      showOpt(e.altKey);
+      metaKeyDown = e.metaKey;
+    }).on("keyup", function(e) {
+      showOpt(e.altKey);
+      metaKeyDown = e.metaKey
+    });
 
   ////////////////////////////////////////////////////
-  // RESIZE NOTES TEXTAREA
-  // ref https://stackoverflow.com/a/48460773/1204064
-  var scrollHeight = $(".user-notes textarea").prop("scrollHeight");
-  $(".user-notes textarea")
-    .css("height", "")
-    .css("height", scrollHeight * 1.04 + "px")
-    .on("input", function(e) {
-      this.style.height = "";
-      this.style.height = this.scrollHeight * 1.04 + "px";
-    });
+  // DELETE LINKS
+  var deleteThis = function(e, success, error) {
+    e.preventDefault();
+    if (!confirm(this.dataset["confirm"])) return;
+    var token = $(this).closest("[data-token]").attr("data-token");
+    var url = this.href || $(this).attr("data-url");
+    $.ajax({
+      url: url,
+      type: "DELETE",
+      headers: {
+        'X-CSRF-Token': token
+      },
+      success: function(result) {
+        if (success) success(result);
+      },
+      error: error
+    })
+  }
+
+  $("a[data-method='delete']").on("click", function(e) {
+    deleteThis.call(this, e,
+      function(result) {
+        window.location.assign(result.url);
+      },
+      function() {
+        alert("Unable to delete -- ask Kevin");
+      }
+    );
+  });
 
   ////////////////////////////////////////////////////
   // CONNECT DATATABLE
@@ -368,12 +424,168 @@ $(document).ready(function() {
     fixedHeader: true,
     fixedColumn: true
   });
+  $(".dataTables_wrapper input[type='search']").on("keyup", function() {
+    var self = $(this);
+    var value = self.val();
+    if (value.length < 3) return;
+    var url = self.closest("[data-url]").attr("data-url");
+    var data = {q: value, source: "greeter"};
+    $.ajax({
+      url: url,
+      type: "GET",
+      data: data,
+      dataType: 'JSON',
+      contentType: 'application/json',
+      success: function(result) {
+        var tbody = $(document.querySelector("table.users tbody"));
+        var tr, td;
+        tbody.find("tr.search").remove();
+        var ids = tbody.find("tr").map(function(i, row) {
+          return parseInt(row.dataset.id);
+        });
+        for (user of result.users) {
+          if (ids.index(user.id) != -1) continue;
+          tr = document.createElement("tr");
+          tr.dataset.url = user.url;
+          tr.dataset.id = user.id;
+          tr.className = `${user.classnames} search`;
+          td = document.createElement("td");
+          td.className = "user-name";
+          td.innerText = user.name;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-greeter";
+          td.innerText = user.greeter;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-status";
+          td.innerText = user.status;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-meeting";
+          td.innerText = user.when;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-shadow";
+          td.innerText = user.shadow;
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-notes";
+          td.innerText = user.notes;
+          td.setAttribute("title", user.truncated);
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-request";
+          td.innerText = user.request;
+          tr.appendChild(td);
+          tbody.append(tr);
+        }
+      }
+    });
+  });
+
+  ////////////////////////////////////////////////////
+  // USER SEARCH
+  $("#search input[type='search']").on("blur", function() {
+    // hideUserList(); // cannot do this or cannot select user from autocomplete box
+  }).on("keyup", function() {
+    var self = $(this);
+    var value = self.val();
+    if (value.length < 2) return;
+    var url = self.attr("data-url");
+    var data = {q: value};
+    $.ajax({
+      url: url,
+      type: "GET",
+      data: data,
+      dataType: 'JSON',
+      contentType: 'application/json',
+      success: function(result) {
+        createUserList(result.users);
+        showUserList();
+      }
+    });
+  });
+
+  var initUserList = function() {
+    $(".autocom-box").on("click", function(e) {
+      var li = $(e.target).closest("li");
+      var userName = li.find("span.user-name").text();
+      var userId = li.find("span.user-id").text();
+      $("#search input[type='search']").val(userName);
+      $("#survey_invite_user_id").val(userId);
+      hideUserList();
+    });
+  }
+  initUserList();
+
+  var createUserList = function(users) {
+    var list = document.createElement("ul");
+    for (user of users) {
+      var li = document.createElement("li");
+      var spanName = document.createElement("span");
+      var spanId = document.createElement("span");
+      spanName.className = "user-name";
+      spanId.className = "user-id";
+      spanName.innerText = user[1];
+      spanId.innerText = user[0];
+      li.appendChild(spanName);
+      li.appendChild(spanId);
+      list.appendChild(li);
+    }
+    $(".autocom-box")
+      .empty()
+      .append(list)
+  };
+
+  var showUserList = function() {
+    $(".autocom-box").show();
+  }
+  var hideUserList = function() {
+    $(".autocom-box").hide()
+  }
+  hideUserList();
+
+  ////////////////////////////////////////////////////
+  // SORTABLE ELEMENTS
+  $(".sortable")
+    .sortable({
+      stop: function(e, ui) {
+        prevErrorMsgCount = errorMsgCount;
+        ui
+          .item
+          .closest(".sortable")
+          .find("> .ui-state-default")
+          .each(function(i, dom) {
+            patch(dom, {position: i}, function(result) {
+              dom.dataset.position = result.model.position;
+            }, function() {
+              $(".sortable").sortable("cancel");
+              if (errorMsgCount == prevErrorMsgCount) alert("something went wrong -- ask Kevin");
+              errorMsgCount++
+            });
+          }
+        )},
+      cancel: ".contenteditable"
+    });
+
+  ////////////////////////////////////////////////////
+  // RESIZE NOTES TEXTAREA
+  // ref https://stackoverflow.com/a/48460773/1204064
+  var scrollHeight = $("textarea").prop("scrollHeight");
+  $("textarea")
+    .css("height", "")
+    .css("height", scrollHeight * 1.04 + "px")
+    .on("input", function(e) {
+      this.style.height = "";
+      this.style.height = this.scrollHeight * 1.04 + "px";
+    });
 
   ////////////////////////////////////////////////////
   // MAKE TABLE ROWS CLICKABLE
-  $("table.users tbody tr").on("click", function(e) {
+  $("table.users tbody").on("click", function(e) {
     if (e.target.nodeName == "A") return;
-    document.location = this.closest("tr").dataset["url"];
+    document.location = $(e.target).closest("tr").attr("data-url");
   });
 
   ////////////////////////////////////////////////////
@@ -418,10 +630,9 @@ $(document).ready(function() {
     e.preventDefault();
     self = $(this);
     var userDom = self.closest("[data-id]");
-    var userId = userDom.data("id");
-    if (noGreeter(userDom, userId)) return;
+    if (noGreeter(userDom)) return;
     var url = self.attr("href");
-    var token = $("table.users,table.user").data("token");
+    var token = $("table.users,table.user").attr("data-token");
     $("#spinner").show();
     $(".progress-message").show();
     $(".user-approve,.user-reject").hide();
@@ -443,10 +654,10 @@ $(document).ready(function() {
       headers: {
         'X-CSRF-Token': token
       },
-      success: function(data) {
-        window.location.assign(data.url);
+      success: function(result) {
+        window.location.assign(result.url);
       },
-      error: function(data) {
+      error: function(result) {
         clearInterval(msgTimer);
         $("#spinner").hide();
         $(".progress-message")
@@ -463,22 +674,21 @@ $(document).ready(function() {
     .on("click", function(e) {
       var el = $(this);
       var userDom = el.closest("[data-id]");
-      var userId = userDom.data("id");
-      if (noGreeter(userDom, userId) || setStatus(userDom, userId)) {
+      if (noGreeter(userDom) || setStatus(userDom)) {
         el.blur();
         return;
       }
-      if (el.data("picker")) return; // return if datetime picker already instantiated
+      if (el.attr("data-picker")) return; // return if datetime picker already instantiated
       var options = {
         showTime: true,
         timeFormat: "HH:MM"
       };
-      var css = `[data-id="${userId}"] input.datetime-picker`;
-      el.data("picker", new dtsel.DTS(css, options))
+      var css = "input.datetime-picker";
+      el.attr("data-picker", new dtsel.DTS(css, options))
         .blur() // now simulate opening the picker
         .focus();
     })
-    .on("change", debounce(setUserMeeting, 1000))
+    .on("change", debounce(setUserMeeting, 500))
     .on("keydown", function(e) {
       switch(e.key) {
       case "Esc":
@@ -494,9 +704,8 @@ $(document).ready(function() {
   var setUserNotes = function(e) {
     var userNotesTextarea = $(this)
     var userDom = userNotesTextarea.closest("[data-id]");
-    var userId = userDom.data("id");
     var data = { notes: getUserNotes(userDom) };
-    patch(userId, data, function() {
+    patch(userDom, data, function() {
       userNotesTextarea
         .parent()
         .find("span.save-status")
@@ -533,7 +742,7 @@ $(document).ready(function() {
     e.preventDefault();
     var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").data("greeter-id");
+    var currentGreeterId = self.closest("td").attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as greeter?");
@@ -542,8 +751,7 @@ $(document).ready(function() {
       if (!confirm("You will greet instead?")) return;
     }
     var userDom = $(this).closest("[data-id]");
-    var userId = userDom.data("id");
-    setUserGreeter(userDom, userId, newGreeterId);
+    setUserGreeter(userDom, newGreeterId);
   });
 
   ////////////////////////////////////////////////////
@@ -552,7 +760,7 @@ $(document).ready(function() {
     e.preventDefault();
     var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").data("greeter-id");
+    var currentGreeterId = self.closest("td").attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as shadow greeter?");
@@ -562,11 +770,10 @@ $(document).ready(function() {
     }
     if (!result) return;
     var userDom = $(this).closest("[data-id]");
-    var userId = userDom.data("id");
     var data = { shadow_greeter_id: newGreeterId };
-    patch(userId, data, function() {
+    patch(userDom, data, function() {
       var text = newGreeterId ? greeterName : "I will shadow";
-      self.closest("td").data("greeter-id", newGreeterId);
+      self.closest("td").attr("data-greeter-id", newGreeterId);
       userDom.find("td.user-shadow a").text(text);
     }, function() {
       alert("Could not change shadow - ask Kevin");
@@ -575,15 +782,15 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // STATUS EVENT LISTENER
-  initStatusSelectMenu("td.user-status select");
+  initStatusSelectMenu();
+  initSurveySelectMenu();
 
   ////////////////////////////////////////////////////
   // EMAIL EVENT LISTENER
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this).closest("[data-id]");
-    var userId = userDom.data("id");
-    if (noGreeter(userDom, userId)) return;
+    if (noGreeter(userDom)) return;
     var maxIndex = emailTemplates.length;
     var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
     if (!templateIndex) return;
@@ -609,4 +816,540 @@ $(document).ready(function() {
     // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
     window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
   });
+
+  ////////////////////////////////////////////////////
+  // SURVEY
+  var saveAnswer = function(e) {
+    var self = $(this);
+    var data = self.val();
+    surveyAnswerPatch(self, {answer: data});
+  }
+  var saveScale = function(e) {
+    var self = $(this);
+    var data = self.val();
+    surveyAnswerPatch(self, {scale: data});
+  }
+  $("#survey-container .survey-answer-essay textarea").on("keyup", debounce(saveAnswer, 500));
+  $("#survey-container .survey-answer-range input[type='range']").on("change", debounce(saveAnswer, 500));
+  $("#survey-container .survey-answer-yes-no input[type='radio']").on("change", saveAnswer);
+  $("#survey-container .survey-answer-multiple-choice input[type='radio']").on("change", saveAnswer);
+  $("#survey-container .survey-answer-email input").on("keyup", debounce(saveAnswer, 500));
+  $("#survey-container .survey-answer-scale input[type='range']").on("change", debounce(saveScale, 500));
+
+  var processVote = function(e) {
+    var self = $(this);
+    var count = self.parent().find(".vote-count");
+    var votes = parseInt(count.text());
+    votes = votes + (self.hasClass("vote-up") ? 1 : -1);
+    surveyAnswerPatch(self, {votes: votes}, function(result) {
+      count.text(result.vote_count);
+      self
+        .closest("#survey-container, #notes-container")
+        .find(`[data-group-id='${result.group_id}']`)
+        .find(".votes-left")
+        .text(result.votes_left);
+    });
+  }
+  $("#survey-container .vote-up, #survey-container .vote-down").on("click", processVote);
+
+  var surveyAnswerPatch = function(dom, data, success, error) {
+    var urlDom = dom.closest("[data-url]");
+    var token = urlDom.attr("data-token");
+    var url = urlDom.attr("data-url");
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify({"survey_answer": data}),
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      headers: {
+        "X-CSRF-Token": token
+      },
+      success: function(result) {
+        if (success) success(result);
+      },
+      error: error
+    });
+  }
+
+  ////////////////////////////////////////////////////
+  // NOTES
+  var userView = function() {
+    return $("#notes-container.admin").length == 0
+  }
+
+  // ----------------------------------------------------------------------
+  // NOTE FLASH (indicate success/failure for note CRUD actions)
+
+  var flashSuccess = function(note) {
+    note.find(".bi-check").show();
+  }
+  var flashError = function(note) {
+    note.find(".bi-exclamation").show();
+  }
+  var flashHide = function(note) {
+    note.find(".bi-check").hide();
+    note.find(".bi-exclamation").hide();
+  }
+
+  // ----------------------------------------------------------------------
+  // NOTE SETTERS-GETTERS
+
+  var getNoteData = function(note) {
+    return {
+      noteCssId: getNoteId(note),
+      text: getNoteText(note),
+      groupName: getNoteGroupName(note),
+      groupId: getNoteGroupId(note),
+      color: getNoteColor(note),
+      coords: getNoteCoords(note),
+      patchUrl: getNotePatchUrl(note),
+      deleteUrl: getNoteDeleteUrl(note),
+      zIndex: getNoteZIndex(note),
+      dataset: getNoteDataset(note),
+      style: getNoteStyle(note),
+      prevData: getNotePrevData(note)
+    }
+  }
+  var updateNoteFromData = function(note, data) {
+    updateNoteId(note, data.noteCssId);
+    updateNoteText(note, data.text);
+    updateNoteGroupName(note, data.groupName);
+    if (data.dataset && Object.keys(data.dataset).length > 1) {
+      setNoteDataset(note, data.dataset);
+    } else {
+      updateNoteGroupId(note, data.groupId);
+      updateNotePatchUrl(note, data.patchUrl);
+    }
+    updateNoteDeleteUrl(note, data.deleteUrl);
+    if (data.style) {
+      setNoteStyle(note, data.style);
+    } else {
+      updateNoteCoords(note, data.coords);
+      updateNoteColor(note, data.color);
+      updateNoteZIndex(note, data.zIndex);
+    }
+    if (data.prevData) setNotePrevData(note, data.prevData);
+  }
+
+  var getNoteText = function(note) {
+    return note.find(".note-text").text();
+  }
+  var updateNoteText = function(note, text) {
+    if (!text) return;
+    note.find(".note-text").text(text);
+  }
+  var getNoteGroupName = function(note) {
+    return note.find(".note-group-name select").val() ||
+    note.find(".note-group-name").text();
+  }
+  var updateNoteGroupName = function(note, groupName) {
+    if (!groupName) return;
+    userView() ? note.find(".note-group-name").text(groupName) :
+    updateAdminNoteGroupSelect(note, groupName);
+  }
+  var getNoteColor = function(note) {
+    return note.find("input.colorpicker").val();
+  }
+  var updateNoteColor = function(note, color) {
+    if (!color) return;
+    note
+      .css("background-color", color)
+      .find(".color-style")
+      .css("background-color", color);
+    note.find("input.colorpicker").val(color);
+  }
+  var getNoteCoords = function(note) {
+    var x = note.css("left");
+    var y = note.css("top");
+    return `${x}:${y}`;
+  }
+  var updateNoteCoords = function(note, coords) {
+    if (!coords) return;
+    var x = parseInt(coords.split(":")[0]);
+    var y  = parseInt(coords.split(":")[1]);
+    note.css("left", x).css("top", y);
+  }
+  var getNoteZIndex = function(note) {
+    return note.css("z-index");
+  }
+  var updateNoteZIndex = function(note, zIndex) {
+    if (!zIndex) return;
+    note.css("z-index", zIndex);
+  }
+  var getNoteDataset = function(note) {
+    var dataset = {};
+    var noteDataset = note.get()[0].dataset;
+    for (key in noteDataset) {
+      dataset[key] = noteDataset[key];
+    }
+    return dataset;
+  }
+  var setNoteDataset = function(note, dataset) {
+    if (!dataset) return;
+    for (key in dataset) {
+      var attr = `data-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+      note.attr(attr, dataset[key]);
+    }
+  }
+  var getNotePrevData = function(note) {
+    var data = {};
+    var noteData = note.data();
+    for (key in noteData) {
+      data[key] = noteData[key];
+    }
+    return data;
+  }
+  var setNotePrevData = function(note, data) {
+    if (!data) return;
+    for (key in data) {
+      note.data(key, data[key]);
+    }
+  }
+  var getNoteStyle = function(note) {
+    return note.attr("style");
+  }
+  var setNoteStyle = function(note, style) {
+    if (!style) return;
+    note.attr("style", style);
+  }
+
+  var getNotePatchUrl = function(note) {
+    return note.attr("data-url");
+  }
+  var updateNotePatchUrl = function(note, url) {
+    if (!url) return;
+    note.attr("data-url", url);
+  }
+  var getNoteDeleteUrl = function(note) {
+    return note.find(".delete").attr("data-url");
+  }
+  var updateNoteDeleteUrl = function(note, url) {
+    if (!url) return;
+    note.find(".delete").attr("data-url", url);
+  }
+
+  var getNoteId = function(note) {
+    return note.attr("id");
+  }
+  var updateNoteId = function(note, cssId) {
+    if (!cssId) return;
+    note.attr("id", cssId);
+  }
+  var getNoteGroupId = function(note) {
+    return note.attr("data-group-id");
+  }
+  var updateNoteGroupId = function(note, groupId) {
+    if (!groupId) return;
+    note
+      .attr("data-group-id", groupId)
+      .find("[data-group-id]").each(function() {
+        $(this).attr("data-group-id", groupId);
+      });
+  }
+
+  var updateAdminNoteGroupSelect = function(note, groupName) {
+    if (!groupName) return;
+    note.find(".note-group-name select").val(groupName);
+    if (note.data("selectmenuInstalled")) {
+      note.find(".note-group-name select").selectmenu("refresh");
+    } else {
+      note.find(".tools .note-group-name select").selectmenu({
+        change: function(e) {
+          updateNote.call(this);
+        }
+      });
+      note.data("selectmenuInstalled", true);
+    }
+  }
+  
+  // ----------------------------------------------------------------------
+  // NOTE CRUD
+
+  var createNote = function(success) {
+    var url = $(".add-note").attr("data-url");
+    $.ajax({
+      url: url,
+      type: "GET",
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      success: function(result) {
+        note = newNoteFromData(convertResultToNoteData(result));
+        bringToFront.call(note);
+        if (success) success(result, note);
+      },
+      error: function() {
+        alert("something went wrong -- ask Kevin");
+      }
+    });
+  };
+
+  var newNoteFromData = function(noteData) {
+    // clone(false): do not clone event handlers, they are installed afterwards
+    var note = $("#note-template .note").first().clone(false);
+    updateNoteFromData(note, noteData);
+    $("#notes-container").append(note);
+    initializeNote(note);
+    return note;
+  }
+
+  var updateNote = function(e) {
+    var note = $(this).closest(".note");
+    var data = getDataForUpdateNote(note);
+    if (!data) return;
+    var url = note.attr("data-url");
+    var token = note.attr("data-token");
+    flashHide(note);
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify({"model": data}),
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      headers: {
+        "X-CSRF-Token": token
+      },
+      success: function(result) {
+        flashSuccess(note);
+        result.model.text = null; // NB: do not overwrite text while user is typing
+        updateNoteFromData(note, convertResultToNoteData(result));
+        setPrevDataForUpdateNote(note);
+      }, function() {
+        flashError(note);
+      }
+    });
+  }
+
+  var deleteNote = function(e) {
+    var note = $(this).closest(".note");
+    flashHide(note);
+    deleteThis.call(this, e,
+      function() {
+        note.remove();
+      },
+      function() {
+        flashError(note)
+      }
+    );
+  }
+
+  var convertResultToNoteData = function(result) {
+    return {
+      noteCssId: `note-${result.model.id}`,
+      id: result.model.id,
+      text: result.model.text,
+      groupName: result.group_name,
+      groupId: result.model.survey_group_id,
+      color: result.color,
+      coords: result.model.coords,
+      zIndex: result.model.z_index,
+      patchUrl: result.patch_url,
+      deleteUrl: result.delete_url
+    };
+  }
+  
+  var getDataForUpdateNote = function(note) {
+    var data = {};
+    if (getNoteText(note) != note.data("prevText")) data.text = getNoteText(note);
+    if (getNoteGroupName(note) != note.data("prevGroupName")) data.group_name = getNoteGroupName(note);
+    if (getNoteColor(note) != note.data("prevColor")) data.group_color = getNoteColor(note);
+    if (getNoteCoords(note) != note.data("prevCoords")) data.coords = getNoteCoords(note);
+    if (getNoteZIndex(note) != note.data("prevZIndex")) data.z_index = getNoteZIndex(note);
+    return Object.keys(data).length == 0 ? null : data;
+  }
+
+  var setPrevDataForUpdateNote = function(note) {
+    note.data("prevText", getNoteText(note));
+    note.data("prevGroupName", getNoteGroupName(note));
+    note.data("prevColor", getNoteColor(note));
+    note.data("prevCoords", getNoteCoords(note));
+    note.data("prevZIndex", getNoteZIndex(note));
+  }
+
+  // ----------------------------------------------------------------------
+  // NOTE DRAGGING
+
+  var onDragStart = function(target, x, y) {
+    if (userView()) return;
+    // if command key held down
+    //   replace the target with a new note
+    //   and drag the new note
+    var draggedNote = $(target);
+    flashHide(draggedNote);
+    if (metaKeyDown) {
+      createNote(function(result, newNote) {
+        // drag the new note instead of the target
+        // leave the target where it was
+        // do this by swapping the vital data between the two
+        // make the group the same between the two since the user expects this behavior
+        var newNoteData = getNoteData(newNote);
+        var draggedNoteData = getNoteData(draggedNote);
+        newNoteData.groupName = draggedNoteData.groupName;
+        newNoteData.groupId = draggedNoteData.groupId;
+        newNoteData.style = draggedNoteData.style; // includes color and coords (and z-index)
+        draggedNoteData.zIndex = getNoteZIndex(newNote);
+        newNoteData.zIndex = getNoteZIndex(draggedNote);
+        updateNoteFromData(newNote, draggedNoteData);
+        updateNoteFromData(draggedNote, newNoteData);
+      });
+    }
+  }
+
+  var onDragEnd = function(target, x, y) {
+    var note = $(target).closest(".note");
+    updateNoteCoords(note, `${x}:${y}`);
+    if (userView()) return;
+    updateNote.call(target);
+  }
+
+  var bringToFront = function() {
+    var note = $(this);
+    var zIndex = 0;
+    $(".note").each(function() {
+      var thisZIndex = parseInt($(this).css("z-index"));
+      if (thisZIndex > zIndex) zIndex = thisZIndex;
+    })
+    if (parseInt(getNoteZIndex(note)) >= zIndex) return;
+    updateNoteZIndex(note, zIndex+1);
+    if (userView()) return;
+    updateNote.call(note);
+  }
+
+
+  // ----------------------------------------------------------------------
+  // NOTE COLORPICKER
+
+  var initializeColorPicker = function(note) {
+    var cpInput = note.querySelector("input.colorpicker");
+    var picker = new CP(cpInput);
+    var button = note.querySelector("button.colorpicker");
+    // picker.on("blur", () => {});
+    picker.on("focus", () => {});
+    button.addEventListener("click", function(e) {
+      if (e.target.nodeName != "I") return;
+      picker[picker.visible ? "exit" : "enter"](button);
+      picker.fit([
+        button.offsetLeft - 25,
+        button.offsetTop + button.offsetHeight + 50
+      ]);
+    });
+    picker
+      .on("change", debounce(updateCPSource, 250))
+      .on("change", function(r, g, b, a) {
+        var color = this.color(r, g, b, a);
+        var note = $(this.source).closest(".note");
+        var prevColor = note.data("prevColor");
+        var groupId = getNoteGroupId(note);
+        $(`.note[data-group-id='${groupId}']`).each(function() {
+          var groupNote = $(this);
+          updateNoteColor(groupNote, color);
+          groupNote.data("prevColor", color);
+        });
+        note.data("prevColor", prevColor);
+      });
+  }
+
+  var updateCPSource = function() {
+    updateNote.call(this.source);
+  }
+
+  // ----------------------------------------------------------------------
+  // NOTE INITIALIZATION
+
+  var initializeNote = function(note) {
+    var domNote = note.get()[0]; // get underlying dom element
+    note
+      .find(".vote-up, .vote-down")
+      .on("click", processVote);
+    note
+      .find(".survey-answer-vote")
+      .on("dblclick", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    note.on("mousedown", bringToFront);
+    var domHandler = note.hasClass("move") ? domNote : domNote.querySelector(".move");
+    dragmove(domNote, domHandler, onDragStart, onDragEnd);
+    if (userView()) return; // stop if user view
+
+    // admin features
+    note
+      .find(".note-text")
+      .on("keydown", debounce(updateNote, 500))
+      .on("keydown", function(e) {
+        // do not hide flash on control, alt and meta keys
+        if (e.key == "Meta" || e.key == "Alt" || e.key == "Control") return;
+        flashHide($(this).closest(".note"));
+      });
+    note
+      .find(".delete")
+      .on("click", deleteNote);
+    updateAdminNoteGroupSelect(note, getNoteGroupName(note));
+    setPrevDataForUpdateNote(note);
+    initializeColorPicker(domNote);
+  }
+  
+  $("#notes-container .note").each(function() {
+    initializeNote($(this));
+  });
+
+  // ----------------------------------------------------------------------
+  // NOTE LIVE VIEW
+
+  var liveView = function() {
+    var liveView = $(".live-view");
+    var timestamp = liveView.attr("data-timestamp");
+    var url = liveView.attr("data-url");
+    if (!url || !timestamp) return;
+    $.ajax({
+      url: `${url}?timestamp=${timestamp}`,
+      type: "GET",
+      processData: false,
+      dataType: "JSON",
+      contentType: "application/json",
+      success: function(data, textStatus, jqXHR) {
+        liveView.text(jqXHR.status);
+        if (jqXHR.status == 304) return;
+        // prep for deletion of notes
+        $("#notes-container .note").each(function() {
+          $(this).data("updated", false);
+        });
+        // update all notes
+        for (result of data.results) {
+          var note = $(`#notes-container #note-${result.model.id}`);
+          noteData = convertResultToNoteData(result);
+          switch (note.length) {
+          case 0:
+            var newNote = newNoteFromData(noteData);
+            newNote.data("updated", true);
+            break;
+          case 1:
+            updateNoteFromData(note, noteData);
+            note.data("updated", true);
+            break;
+          }
+        }
+        // now remove any deleted notes
+        $("#notes-container .note").each(function() {
+          if (!$(this).data("updated")) $(this).remove();
+        });
+        liveView.attr("data-timestamp", data.timestamp);
+      }
+    });
+  }
+
+  // ----------------------------------------------------------------------
+  // GLOBAL NOTE LISTENERS
+
+  $("body#notes button.add-note").on("click", function() {
+    createNote();
+  });
+
+  if ($("#notes-container .live-view")) {
+    setInterval(liveView, 2000);
+  };
+
 });

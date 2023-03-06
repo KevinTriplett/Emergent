@@ -1,4 +1,11 @@
 namespace :ec do
+  desc "Send all queued survey invites"
+  task send_survey_invite_messages: :environment do
+    SurveyInvite.send_messages
+  end
+end
+
+namespace :ec do
   desc "Crawls the Emergent Commons MN site for all member requests"
   task nm_crawl_all: :environment do
     Spider.set_message("new_user_spider", "0")
@@ -18,6 +25,20 @@ namespace :ec do
   desc "Imports users from tmp/import.tsv (a \"tab separated value\" file)"
   task import_users: :environment do
     User.import_users
+  end
+end
+
+namespace :ec do
+  desc "Imports sticky notes from tmp/sticky-import.tsv (a \"tab separated value\" file)"
+  task import_stickies_tsv: :environment do
+    Survey.import_sticky_notes_tsv
+  end
+end
+
+namespace :ec do
+  desc "Imports sticky notes from tmp/arg.csv (a \"comma separated value\" file)"
+  task import_stickies_csv: :environment do
+    Survey.import_sticky_notes_csv(ENV["fn"])
   end
 end
 

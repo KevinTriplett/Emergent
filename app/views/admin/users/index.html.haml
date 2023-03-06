@@ -10,3 +10,4 @@
       %tr{ data: {url: admin_user_url(u.id), id: u.id} }
         %td.user-name= u.name
         %td.user-greeter= u.get_roles.keys.collect(&:to_s).join(";")
+%h5 Greeter View

@@ -1,0 +1,14 @@
+%h5 New Survey
+
+= simple_form_for @form, as: :survey, url: admin_surveys_path do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :name, placeholder: "Name", label: false
+  .row
+    .col= f.input :description, placeholder: "Description", label: false
+  .row
+    .col= f.button :submit, "Create Survey", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_surveys_path
+

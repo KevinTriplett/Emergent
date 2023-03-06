@@ -23,16 +23,25 @@ class HomeController < ApplicationController
 
   def send_magic_link
     params.permit(:email)
-    user = User.find_by_email params[:email].downcase
-    if user && Rails.env.staging?
-      sign_in(user)
-    elsif user
-      user.ensure_token
-      UserMailer.with(user).send_magic_link.deliver_now
-      flash[:notice] = "Magic link sent, check your SPAM folder"
-    else
-      flash[:error] = "Email not found - use your Mighty Networks email address"
+    _ctx = run User::Operation::MagicLink, email_or_name: params[:email] do |ctx|
+      user = ctx[:user]
+      if user && (Rails.env.staging? || Rails.env.development?)
+        sign_in(user)
+        return redirect_back
+      else
+        user.generate_tokens
+        UserMailer.with(user).send_magic_link.deliver_now
+        if Rails.env.production?
+          url = login_url(token: user.token, protocol: "https")
+          Spider.set_message("magic_link_spider", "#{url}|#{user.id}")
+          MagicLinkSpider.crawl!
+        end
+        flash[:notice] = "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
+      end
+      return redirect_to root_url
     end
+  
+    flash[:error] = _ctx[:flash] || "Unable to find '#{params[:email]}' -- please try again"
     redirect_to root_url
   end
 

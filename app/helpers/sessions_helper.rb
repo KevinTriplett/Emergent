@@ -5,12 +5,13 @@ module SessionsHelper
   class InvalidMessage < StandardError; end
 
   def sign_in(user=nil)
-    params.permit(:token)
     user ||= User.find_by_token(params[:token])
-    return unless user
-    cookies.permanent.encrypted[:session_token] = user.generate_session_token
-    cookies.permanent[:user_name] = user.name
-    cookies.permanent[:user_id] = user.id
+    create_auth_session_cookie(user)
+  end
+
+  def sign_in_via_survey
+    survey_invite = SurveyInvite.find_by_token(params[:token])
+    sign_in(survey_invite.user)
   end
 
   def sign_out

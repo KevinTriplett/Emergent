@@ -13,12 +13,16 @@
 
     = stylesheet_link_tag "greeters"
     = stylesheet_link_tag "jquery-ui"
+    = stylesheet_link_tag "dtsel"
+    = stylesheet_link_tag "datatables"
 
     %script{ src: "/js/jquery-3.6.0.js" }
     %script{ src: "/js/jquery-ui.js" }
     %script $.widget.bridge('uitooltip', $.ui.tooltip);
     = javascript_include_tag "application", defer: true
     %script{ src: "/js/admin.js" }
+    %script{ src: "/js/dtsel.js" }
+    %script{ src: "/js/datatables.js" }
 
   %body#admin
     .container

@@ -36,6 +36,48 @@
 - [X] *** automate database backup (see https://github.com/backup/backup)
 - [X] clear when_timestamp on status change and indicate change in changelog
 - [X] show only my greetings checkbox
+- [X] show all greeter assignments past and future
+- [X] search not only filters but adds users from server
+- [X] use MN chat to send survey invites to members
+- [X] give better error message for send magic link
+- [X] ability to regenerate/revoke user tokens in case account is compromised or user leaves
+- [X] use MN chat to send magic keys to members
+- [X] allow name or email to retrieve magic link
+BUGS
+- [ ] greeter search is tangled with survey_invite search
+- [ ] need the ability for a greeter to log in themselves so that approval chats come from them
+- [ ] renew ssl certs
+- [ ] do not send to greeter app after survey
+SURVEYS
+- [X] add admin interface for sending survey invites (show survey view?)
+- [X] create survey invites with tokens to prevent hacking a survey
+- [X] slider for answers (where are you on the practices v. social)
+- [X] associate notes to a survey_group
+- [X] notes have dropdown for assigning to group (make sure notes update positions when moving)
+- [X] enable sortable notes
+- [X] use a handwriting font for notes
+- [X] allow groups for survey questions and notes
+- [X] voting on note (up / down)
+- [X] add more tests
+- [X] survey has live view flag to update notes every second (use latest updated_at as gate)
+- [X] email (or DM) link that shows survey answers/votes to participants
+- [X] allow surveys to be duplicated
+- [X] allow stickies to be moved in survey invite
+- [X] create nice user interface for surveys
+- [ ] use markdown for survey questions and instructions and notes
+- [ ] notes have a way to show total votes from others
+- [ ] rules for question branching / skipping
+- [ ] disable buttons until ajax calls resolve
+- [ ] rename notes to survey_notes
+GREETER APP
+- [ ] request declined status is not visible in member request to join
+- [ ] default to only pending and greeter-picked entries
+- [ ] hover over tooltip for greeter main view for Pending "Click to begin"
+- [ ] do not log notes change if it's the same
+- [ ] wizard for greeters for step-by-step
+- [ ] view-only state
+- [ ] hover over show view to give hints
+- [ ] convert status_hash to keys with human text?
 - [ ] convert user show url to use user tokens
 - [ ] send reminders on potential status change like meeting dates / follow up
 - [ ] create way for new members to specify dates and times they're available

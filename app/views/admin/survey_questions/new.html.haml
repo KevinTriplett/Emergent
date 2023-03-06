@@ -1,0 +1,36 @@
+%h5 New Survey Question
+
+= simple_form_for @form, as: :survey_question, url: admin_survey_survey_group_survey_questions_path(survey_group_id: @model.survey_group_id, survey_id: @model.survey_id) do |f|
+  .row
+    .col= f.error_notification
+  .row#question-type
+    .col
+      %select
+        - SurveyQuestion::QUESTION_TYPES.each do |o|
+          - selected = (o == @model.question_type ? "selected" : nil)
+          %option{ selected: selected }= o
+      %label.form-check-label.select <== Question Type
+      = f.input :question_type, as: :hidden
+  .row
+    .col= f.input :question, placeholder: "Question", label: false
+  .row#answer-type
+    .col
+      %select
+        - SurveyQuestion::ANSWER_TYPES.each do |o|
+          - selected = (o == @model.answer_type ? "selected" : nil)
+          %option{ selected: selected }= o
+      %label.form-check-label.select <== Answer Type
+      = f.input :answer_type, as: :hidden
+  .row
+    .col= f.input :answer_labels, placeholder: "Answer Labels (separated by | delimiter)", label: false
+  .row
+    .col= f.input :has_scale, as: :boolean, label: "Has Scale"
+  .row
+    .col= f.input :scale_question, placeholder: "Scale Question", label: false
+  .row
+    .col= f.input :scale_labels, placeholder: "Scale Labels (separated by | delimiter)", label: false
+  .row
+    .col= f.button :submit, "Create Question", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_survey_path(@model.survey_id)
+

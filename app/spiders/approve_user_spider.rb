@@ -23,19 +23,18 @@ class ApproveUserSpider < EmergeSpider
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
-    ApproveUserSpider.logger.info "SPIDER #{name} STARTING"
+    EmergeSpider.logger.info "SPIDER #{name} STARTING"
     request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
     request_to(:approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests")
-    ApproveUserSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
+    EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
-    ::Spider.set_result(name, "failure")
-    ApproveUserSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
+    set_result("failure")
+    EmergeSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
   end
 
   def approve_user(response, url:, data: {})
-    data = ::Spider.get_message(name).split('|')
-    first_name, last_name = data[0], data[1]
-    ApproveUserSpider.logger.info "APPROVING #{first_name} #{last_name}"
+    first_name, last_name = get_message.split('|')
+    EmergeSpider.logger.info "APPROVING #{first_name} #{last_name}"
 
     ############################################
     # wait until the modal dialog box is visible
@@ -50,17 +49,17 @@ class ApproveUserSpider < EmergeSpider
     css_status = "#{css_row} .invite-list-item-status-text"
     return get_member_id(css_row) if response_has(css_status, "Joined!")
     # NB: do not approve except in production!
-    return ::Spider.set_result(name, "testing") unless Rails.env.production?
+    return set_result("testing") unless Rails.env.production?
 
     ############################################
     # find approve button for this user
     css_approve = "#{css_row} a.invite-list-item-approve-button"
-    ApproveUserSpider.logger.debug "LOOKING FOR #{css_approve}"
+    EmergeSpider.logger.debug "LOOKING FOR #{css_approve}"
     begin
       browser.find(:css, css_approve).click
       wait_until(css_status, "Joined!")
     rescue Selenium::WebDriver::Error::ElementNotInteractableError
-      ApproveUserSpider.logger.fatal "Approve button not interactable on MN platform"
+      EmergeSpider.logger.fatal "Approve button not interactable on MN platform"
     end
 
     ############################################
@@ -69,12 +68,12 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def get_member_id(css)
-    ApproveUserSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
+    EmergeSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
     css_link = "#{css} .invite-list-item-first-name-text a"
     link = browser.find(:css, css_link)["href"]
 
     member_id = link.split("/").last
-    ApproveUserSpider.logger.info "GOT MEMBER ID '#{member_id}'"
-    ::Spider.set_result(name, member_id)
+    EmergeSpider.logger.info "GOT MEMBER ID '#{member_id}'"
+    set_result(member_id)
   end
 end

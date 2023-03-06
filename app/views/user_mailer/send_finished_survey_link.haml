@@ -1,0 +1,7 @@
+%h3 Emergent Commons
+%p= "Survey: #{@invite.survey_name}"
+%hr
+%p= message[:body]
+- message[:lines].each do |line|
+  %p= line
+%p= link_to message[:url], message[:url]

@@ -1,10 +1,10 @@
-%h3= @user.name
+%h3= "#{@user.name}#{@user.locked? ? " (locked)" : nil}"
 %p
   =link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
   = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
   = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
-%table.user.table.table-bordered.table-striped{ data: {url: admin_users_url, token: @token, id: @user.id } }
+%table.user.table.table-bordered.table-striped{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id } }
   %tbody
     %tr
       %td.header Greeter
@@ -35,7 +35,7 @@
         = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
     %tr
       %td.header Request Date
-      %td.user-request= @user.request_timestamp.human_date
+      %td.user-request= @user.request_timestamp ? @user.request_timestamp.human_date : nil
     %tr
       %td.header Notes
       %td.user-notes
@@ -45,14 +45,14 @@
       %td.header Questions
       %td.user-questions
         %ol
-          - @user.questions_responses.split(" -:- ").each do |qna|
+          - (@user.questions_responses || []).split(" -:- ").each do |qna|
             - q, a = *qna.split("\\")
             %li
               %span.question= q
               %br
               %span.answer= a
         - unless @user.joined? || @user.status == "Request Declined"
-          - url = @user.email.blank? ? "#" : admin_approve_user_path(@user.id)
+          - url = @user.email.blank? ? "#" : admin_approve_user_path(token: @user.token)
           = link_to "Approve", url, class: "btn btn-primary user-approve"
           = link_to "Reject", "#", class: "btn btn-warning user-reject"
           .lds-hourglass#spinner
@@ -60,3 +60,14 @@
     %tr
       %td.header ChangeLog
       %td.change-log!= @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
+    %tr.opt
+      %td Admin
+      %td
+        = link_to "Generate Tokens", admin_user_token_url(token: @user.token, command: "generate")
+        |
+        = link_to "Regenerate Tokens", admin_user_token_url(token: @user.token, command: "regenerate")
+        |
+        = link_to "Revoke Tokens", admin_user_token_url(token: @user.token, command: "revoke")
+        |
+        - command_text = "#{@user.locked? ? "Unlock" : "Lock"} User"
+        = link_to command_text, admin_user_token_url(token: @user.token, command: "toggle_lock")

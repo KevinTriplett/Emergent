@@ -2,17 +2,28 @@ class User < ActiveRecord::Base
   belongs_to :greeter, class_name: "User", optional: true
   belongs_to :shadow_greeter, class_name: "User", optional: true
   has_many :users, through: :greeter
+  has_many :survey_invites, dependent: :destroy
+  has_many :surveys, through: :survey_invites
   has_secure_token
 
-  def ensure_token
+  def revoke_tokens
+    # update(token: nil) # nil token can break many views
+    update(session_token: nil)
+  end
+  def generate_tokens
     update(token: User.generate_unique_secure_token) if token.nil?
-    token
+    update(session_token: SecureRandom.urlsafe_base64) if session_token.nil?
+  end
+  def regenerate_tokens
+    revoke_tokens
+    generate_tokens
   end
 
-  def generate_session_token
-    # do not generate a new session_token bc that would break all other session_tokens
-    update(session_token: SecureRandom.urlsafe_base64) unless session_token
-    session_token
+  def lock
+    update locked: true
+  end
+  def unlock
+    update locked: false
   end
 
   # NB: role order is zero-based
@@ -61,10 +72,51 @@ class User < ActiveRecord::Base
     notes.length > len ? "..." : nil
   end
 
+  # NB: role order is zero-based
+  def add_role(role, role_hash)
+    return true if has_role?(role)
+    if role_hash[:order].present?
+      # NB: this will take time with large number of users
+      users_with_role = User.all.select {|u| id && u.has_role?(role)}
+      role_hash[:order] = users_with_role.length
+    end
+    update_role(role, role_hash)
+  end
+
+  def remove_role(role)
+    return true unless has_role?(role)
+    user_role_order = delete_role(role)[:order]
+    return unless user_role_order.present?
+
+    # NB: this will take time with large number of users
+    User.all.each do |u|
+      role_hash = u.get_role(role)
+      next unless role_hash && role_hash[:order] > user_role_order
+      role_hash[:order] -= 1
+      u.update_role(role, role_hash)
+    end
+  end
+
+  def get_role(role)
+    get_roles[role]
+  end
+
+  def list_roles
+    get_roles.keys
+  end
+
+  def has_role?(role)
+    !get_role(role).nil?
+  end
+
   def get_status_options
     {
-      "Pending": [],
-      "Request Declined": [],
+      "Pending": [
+        "Request Declined"
+      ],
+      "Request Declined": [
+        "Pending"
+      ],
       "Scheduling Zoom": [
         "Zoom Scheduled",
         "Zoom Declined (completed)",

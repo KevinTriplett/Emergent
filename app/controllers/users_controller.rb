@@ -25,9 +25,8 @@ class UsersController < ApplicationController
   def update
     _ctx = run Volunteer::Operation::Update do |ctx|
       flash[:notice] = "User profile updated"
-      return redirect_to user_url(ctx[:model].token)
+      return redirect_to user_url(token: ctx[:model].token)
     end
-
     @form = _ctx["contract.default"]
     render :edit, status: :unprocessable_entity
   end

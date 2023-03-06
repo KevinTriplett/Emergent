@@ -4,6 +4,6 @@ class AddJoinedToUsers < ActiveRecord::Migration[7.0]
     User.all.each {|u| u.update joined: true}
   end
   def down
-    remove_column :users, :joined
+    remove_column :users, :joined, :boolean
   end
 end
