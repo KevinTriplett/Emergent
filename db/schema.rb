@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_04_012248) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_06_231222) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -133,7 +133,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_04_012248) do
     t.integer "greeter_id"
     t.integer "shadow_greeter_id"
     t.boolean "notifications"
-    t.string "roles"
+    t.string "access_roles"
     t.boolean "joined"
     t.boolean "locked"
     t.index ["email"], name: "index_users_on_email"
