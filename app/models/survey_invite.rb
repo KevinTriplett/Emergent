@@ -2,7 +2,7 @@
 class SurveyInvite < ActiveRecord::Base
   belongs_to :user
   belongs_to :survey
-  has_many :survey_answers
+  has_many :survey_answers, dependent: :destroy
   has_secure_token
 
   delegate :survey_groups, to: :survey
