@@ -1099,7 +1099,6 @@ $(document).ready(function() {
     var note = $(this).closest(".note");
     var data = getDataForUpdateNote(note);
     if (!data) return;
-    console.log("break here");
     var url = note.attr("data-url");
     var token = note.attr("data-token");
     flashHide(note);
@@ -1174,6 +1173,7 @@ $(document).ready(function() {
   // NOTE DRAGGING
 
   var onDragStart = function(target, x, y) {
+    if (userView()) return;
     // if command key held down
     //   replace the target with a new note
     //   and drag the new note
@@ -1194,7 +1194,6 @@ $(document).ready(function() {
         newNoteData.zIndex = getNoteZIndex(draggedNote);
         updateNoteFromData(newNote, draggedNoteData);
         updateNoteFromData(draggedNote, newNoteData);
-        console.log("break here");
       });
     }
   }
@@ -1202,6 +1201,7 @@ $(document).ready(function() {
   var onDragEnd = function(target, x, y) {
     var note = $(target).closest(".note");
     updateNoteCoords(note, `${x}:${y}`);
+    if (userView()) return;
     updateNote.call(target);
   }
 
@@ -1214,6 +1214,7 @@ $(document).ready(function() {
     })
     if (parseInt(getNoteZIndex(note)) >= zIndex) return;
     updateNoteZIndex(note, zIndex+1);
+    if (userView()) return;
     updateNote.call(note);
   }
 
@@ -1259,6 +1260,7 @@ $(document).ready(function() {
   // NOTE INITIALIZATION
 
   var initializeNote = function(note) {
+    var domNote = note.get()[0]; // get underlying dom element
     note
       .find(".vote-up, .vote-down")
       .on("click", processVote);
@@ -1268,8 +1270,12 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
       });
+    note.on("mousedown", bringToFront);
+    var domHandler = note.hasClass("move") ? domNote : domNote.querySelector(".move");
+    dragmove(domNote, domHandler, onDragStart, onDragEnd);
     if (userView()) return; // stop if user view
-    
+
+    // admin features
     note
       .find(".note-text")
       .on("keydown", debounce(updateNote, 500))
@@ -1281,14 +1287,9 @@ $(document).ready(function() {
     note
       .find(".delete")
       .on("click", deleteNote);
-    note
-      .on("mousedown", bringToFront);
-
     updateAdminNoteGroupSelect(note, getNoteGroupName(note));
     setPrevDataForUpdateNote(note);
-    var domNote = note.get()[0]; // get underlying dom element
     initializeColorPicker(domNote);
-    dragmove(domNote, domNote.querySelector(".move"), onDragStart, onDragEnd);
   }
   
   $("#notes-container .note").each(function() {
