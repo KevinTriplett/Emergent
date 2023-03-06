@@ -1348,7 +1348,7 @@ $(document).ready(function() {
   });
 
   if ($("#notes-container .live-view")) {
-    setInterval(liveView, 5000);
+    setInterval(liveView, 2000);
   };
 
 });

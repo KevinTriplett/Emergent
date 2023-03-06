@@ -721,6 +721,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       visit survey_notes_path(invite.token)
       assert_current_path survey_notes_path(invite.token)
+      assert_selector "#note-template", visible: :hidden, count: 1
 
       Note.all.each do |note|
         assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.group_color
@@ -730,6 +731,7 @@ class SurveysTest < ApplicationSystemTestCase
         assert_selector ".note#note-#{note.id} .note-text", text: note.text
       end
 
+      sleep 2
       note_1.update text: "Change is good for ya!"
       note_2.update group_name: group_1.name
       note_3.group_color = "#ffffff" # NB: this will change the color of notes 2, 3 and 4
@@ -737,6 +739,7 @@ class SurveysTest < ApplicationSystemTestCase
       note_4.update coords: "420px:550px"
       sleep 7
 
+      assert_selector "#note-template", visible: :hidden, count: 1
       Note.all.each do |note|
         assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.group_color
         assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}"
@@ -744,6 +747,11 @@ class SurveysTest < ApplicationSystemTestCase
         assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name
         assert_selector ".note#note-#{note.id} .note-text", text: note.text
       end
+
+      Note::Operation::Delete.call(params: {id: note_4.id})
+      sleep 7
+      assert_selector "#notes-container .note", count: 3
+      assert_selector "#note-template", visible: :hidden, count: 1
     end
   end
 end
