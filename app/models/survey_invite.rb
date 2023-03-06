@@ -16,7 +16,7 @@ class SurveyInvite < ActiveRecord::Base
     finished_link_sent: 50
   }
   STATUS.each do |key, val|
-    define_method("is_#{key}") { (state || 0) == val }
+    define_method("is_#{key}?") { (state || 0) == val }
     define_method("#{key}?") { (state || 0) >= val }
   end
 

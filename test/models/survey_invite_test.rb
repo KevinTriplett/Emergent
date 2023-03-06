@@ -62,87 +62,87 @@ class SurveyInviteTest < MiniTest::Spec
     DatabaseCleaner.cleaning do
       invite = SurveyInvite.new
       assert invite.created?
-      assert invite.is_created
+      assert invite.is_created?
       assert !invite.invite_sent?
-      assert !invite.is_invite_sent
+      assert !invite.is_invite_sent?
       assert !invite.opened?
-      assert !invite.is_opened
+      assert !invite.is_opened?
       assert !invite.started?
-      assert !invite.is_started
+      assert !invite.is_started?
       assert !invite.finished?
-      assert !invite.is_finished
+      assert !invite.is_finished?
       assert !invite.finished_link_sent?
-      assert !invite.is_finished_link_sent
+      assert !invite.is_finished_link_sent?
 
       invite.state = SurveyInvite::STATUS[:invite_sent]
       assert invite.created?
-      assert !invite.is_created
+      assert !invite.is_created?
       assert invite.invite_sent?
-      assert invite.is_invite_sent
+      assert invite.is_invite_sent?
       assert !invite.opened?
-      assert !invite.is_opened
+      assert !invite.is_opened?
       assert !invite.started?
-      assert !invite.is_started
+      assert !invite.is_started?
       assert !invite.finished?
-      assert !invite.is_finished
+      assert !invite.is_finished?
       assert !invite.finished_link_sent?
-      assert !invite.is_finished_link_sent
+      assert !invite.is_finished_link_sent?
 
       invite.state = SurveyInvite::STATUS[:opened]
       assert invite.created?
-      assert !invite.is_created
+      assert !invite.is_created?
       assert invite.invite_sent?
-      assert !invite.is_invite_sent
+      assert !invite.is_invite_sent?
       assert invite.opened?
-      assert invite.is_opened
+      assert invite.is_opened?
       assert !invite.started?
-      assert !invite.is_started
+      assert !invite.is_started?
       assert !invite.finished?
-      assert !invite.is_finished
+      assert !invite.is_finished?
       assert !invite.finished_link_sent?
-      assert !invite.is_finished_link_sent
+      assert !invite.is_finished_link_sent?
 
       invite.state = SurveyInvite::STATUS[:started]
       assert invite.created?
-      assert !invite.is_created
+      assert !invite.is_created?
       assert invite.invite_sent?
-      assert !invite.is_invite_sent
+      assert !invite.is_invite_sent?
       assert invite.opened?
-      assert !invite.is_opened
+      assert !invite.is_opened?
       assert invite.started?
-      assert invite.is_started
+      assert invite.is_started?
       assert !invite.finished?
-      assert !invite.is_finished
+      assert !invite.is_finished?
       assert !invite.finished_link_sent?
-      assert !invite.is_finished_link_sent
+      assert !invite.is_finished_link_sent?
 
       invite.state = SurveyInvite::STATUS[:finished]
       assert invite.created?
-      assert !invite.is_created
+      assert !invite.is_created?
       assert invite.invite_sent?
-      assert !invite.is_invite_sent
+      assert !invite.is_invite_sent?
       assert invite.opened?
-      assert !invite.is_opened
+      assert !invite.is_opened?
       assert invite.started?
-      assert !invite.is_started
+      assert !invite.is_started?
       assert invite.finished?
-      assert invite.is_finished
+      assert invite.is_finished?
       assert !invite.finished_link_sent?
-      assert !invite.is_finished_link_sent
+      assert !invite.is_finished_link_sent?
 
       invite.state = SurveyInvite::STATUS[:finished_link_sent]
       assert invite.created?
-      assert !invite.is_created
+      assert !invite.is_created?
       assert invite.invite_sent?
-      assert !invite.is_invite_sent
+      assert !invite.is_invite_sent?
       assert invite.opened?
-      assert !invite.is_opened
+      assert !invite.is_opened?
       assert invite.started?
-      assert !invite.is_started
+      assert !invite.is_started?
       assert invite.finished?
-      assert !invite.is_finished
+      assert !invite.is_finished?
       assert invite.finished_link_sent?
-      assert invite.is_finished_link_sent
+      assert invite.is_finished_link_sent?
     end
   end
 
