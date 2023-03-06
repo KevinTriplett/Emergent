@@ -192,20 +192,20 @@ class User < ActiveRecord::Base
   protected
 
   def get_roles
-    roles ? Marshal.load(roles) : {}
+    access_roles ? Marshal.load(access_roles) : {}
   end
 
   def update_role(role, role_hash)
     new_roles = get_roles
     new_roles[role] = role_hash
-    update(roles: Marshal.dump(new_roles))
+    update(access_roles: Marshal.dump(new_roles))
     new_roles[role]
   end
 
   def delete_role(role)
     new_roles = get_roles
     old_role = new_roles.delete(role)
-    update(roles: Marshal.dump(new_roles))
+    update(access_roles: Marshal.dump(new_roles))
     old_role
   end
 end
