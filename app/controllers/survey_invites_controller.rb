@@ -92,7 +92,6 @@ class SurveyInvitesController < ApplicationController
   # ------------------------------------------------------------------------
 
   def show_results
-    puts "params = #{params}"
     get_invite
     get_survey
     @survey_questions = {}
