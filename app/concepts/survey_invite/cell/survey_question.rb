@@ -9,15 +9,27 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def survey_question
     model[:survey_question]
   end
+  def survey_group
+    survey_question.survey_group
+  end
+  def survey_question_id
+    survey_question.id
+  end
+  def survey_group_id
+    survey_group.id
+  end
   def survey_answer
-    survey_invite.survey_answer_for(survey_question.id)
+    survey_invite.survey_answer_for(survey_question_id)
   end
 
   def patch_url
-    "#{model[:patch_url]}/#{survey_question.id}"
+    "#{model[:patch_url]}/#{survey_question_id}"
   end
   def token
     model[:token]
+  end
+  def question_dataset
+    {url: patch_url, token: token, question_id: survey_question_id, group_id: survey_group_id}
   end
 
   def group_position
@@ -36,17 +48,14 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def name
-    "sq-#{group_position}-#{question_position}"
+    "sq-#{survey_question_id}"
   end
 
-  def group_css_id
-    "survey-group-#{survey_group.id}"
-  end
   def question_css_id
-    "survey-question-#{survey_question.id}"
+    "survey-question-#{survey_question_id}"
   end
 
-  def answer_type?
+  def answer?
     !survey_question.na?
   end
 

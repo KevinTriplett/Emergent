@@ -22,6 +22,7 @@ module Note::Operation
     step :determine_position
     step :determine_z_index
     step :create_survey_question
+    step :create_survey_answers
     step Contract::Persist()
     
     def determine_position(ctx, model:, **)
@@ -44,6 +45,16 @@ module Note::Operation
         }
       )
       model.survey_question_id = result[:model].id if result.success?
+    end
+
+    def create_survey_answers(ctx, model:, **)
+      SurveyInvite.where(survey_id: model.survey_id).each do |invite|
+        invite.survey_answers.create({
+          survey_invite_id: invite.id,
+          survey_question_id: model.survey_question_id,
+          vote_count: 0
+        })
+      end
     end
   end
 end

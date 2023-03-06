@@ -1,11 +1,11 @@
-.survey-question{ id: question_css_id, data: {url: patch_url, token: token} }
+.survey-question{ id: question_css_id, data: question_dataset }
   %div{ class: question_type_class }
     = question
-    - if answer_type?
-      %div{ class: answer_type_class, data: {group_position: group_position, question_position: question_position} }
+    - if answer?
+      %div{ class: answer_type_class }
         = user_answer
     - if has_scale?
       .survey-question-scale-question
         = scale_question
-      .survey-answer-scale{ data: {group_position: group_position, question_position: question_position} }
+      .survey-answer-scale
         = answer_scale

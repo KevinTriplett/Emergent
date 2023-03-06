@@ -3,7 +3,7 @@ class SurveyInvitesController < ApplicationController
 
   # ------------------------------------------------------------------------
   def show
-    unless get_inivite
+    unless get_invite
       flash[:notice] = "We're sorry, your survey was not found"
       return redirect_to root_url
     end
@@ -34,7 +34,7 @@ class SurveyInvitesController < ApplicationController
   # ------------------------------------------------------------------------
 
   def notes
-    unless get_inivite
+    unless get_invite
       flash[:notice] = "We're sorry, your survey was not found"
       return redirect_to root_url
     end
@@ -47,15 +47,17 @@ class SurveyInvitesController < ApplicationController
     enable_live_view?
     @token = form_authenticity_token
     @body_id = "notes"
+    last_group = @survey.last_note_survey_group
+    @template = Note.new(survey_group_id: last_group.id)
   end
 
   # ------------------------------------------------------------------------
 
   def live_view
-    get_inivite
+    get_invite
     get_survey
     get_liveview_timestamp
-    return head(:ok) if @live_view_timestamp == params[:timestamp]
+    return head(:not_modified) if @live_view_timestamp == params[:timestamp]
     get_notes_and_survey_answers
     return render json: {
         results: @notes.collect {|note|
@@ -72,7 +74,7 @@ class SurveyInvitesController < ApplicationController
   # ------------------------------------------------------------------------
 
   def patch
-    get_inivite
+    get_invite
     survey_answer = get_survey_answer
     params[:survey_answer].each_pair do |attr, val|
       survey_answer.send("#{attr}=", val)
@@ -82,7 +84,7 @@ class SurveyInvitesController < ApplicationController
       scale: survey_answer.scale,
       vote_count: survey_answer.vote_count,
       votes_left: survey_answer.votes_left,
-      group_id: survey_answer.group_id,
+      group_id: survey_answer.survey_group_id,
       color: survey_answer.survey_group.note_color
     }) : (render head(:bad_request))
   end
@@ -91,7 +93,7 @@ class SurveyInvitesController < ApplicationController
 
   def show_results
     puts "params = #{params}"
-    get_inivite
+    get_invite
     get_survey
     @survey_questions = {}
     @survey.ordered_questions.each do |sq|
@@ -105,7 +107,7 @@ class SurveyInvitesController < ApplicationController
   
   private
 
-  def get_inivite
+  def get_invite
     @survey_invite = SurveyInvite.find_by_token(params[:token])
     @survey_invite && @survey_invite.user
   end

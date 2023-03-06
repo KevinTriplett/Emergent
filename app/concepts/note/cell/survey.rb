@@ -10,7 +10,7 @@ class Note::Cell::Survey < Cell::ViewModel
     note.group_name
   end
   def patch_url
-    "#{model[:patch_url]}/#{note.survey_question.id}"
+    "#{model[:patch_url]}/#{note.survey_question_id}"
   end
   def token
     model[:token]
@@ -61,8 +61,8 @@ class Note::Cell::Survey < Cell::ViewModel
   end
 
   def voting_controls
-    votes = survey_answer.votes
-    votes_left = survey_answer.votes_left
+    votes = survey_answer ? survey_answer.votes : 0
+    votes_left = survey_answer ? survey_answer.votes_left : 0
     "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
     <i class='vote-down bi-hand-thumbs-down-fill'></i>\
     <span class='vote-count'>#{votes}</span>\

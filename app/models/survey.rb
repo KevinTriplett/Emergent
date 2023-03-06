@@ -69,7 +69,7 @@ class Survey < ActiveRecord::Base
   end
 
   def max_z_index
-    ordered_notes.map(&:z_index).compact.max
+    ordered_notes.map(&:z_index).compact.max || 0
   end
 
   def clean_up_notes_z_index
@@ -224,7 +224,7 @@ class Survey < ActiveRecord::Base
 
   # ------------------------------------------------------------------------
 
-  def self.import_sticky_notes
+  def self.import_sticky_notes_tsv
     file = File.open "tmp/sticky-import.tsv"
     data = file.readlines.map(&:chomp)
     file.close
@@ -249,7 +249,8 @@ class Survey < ActiveRecord::Base
     end
 
     prev_group_number = new_survey = nil
-    column = row = 0
+    column = 1
+    row = 0
 
     data.each do |line|
       url, group_number, text, is_vision, is_mission, is_value, is_action, is_practice, is_being  = line.split("\t")
@@ -308,20 +309,99 @@ class Survey < ActiveRecord::Base
         column += 1
         row = 0
       end
-      left = (200 * (column - 1 + new_survey_group.position - 1)) + 30
-      top = (185 * row) + 130
+      left = (230 * (column - 1 + new_survey_group.position - 1)) + 30
+      top = (225 * row) + 100
       row += 1
 
       new_note = Operation::SurveyHelper::create_new_note({
         survey_group: new_survey_group,
         text: text,
-        coords: "#{left}:#{top}"
+        coords: "#{left}px:#{top}px"
       })
       raise "something went wrong with note creation" unless new_note
-      new_note.update position: new_survey_group.reload.survey_questions.count-1
-      new_note.survey_question.update position: new_survey_group.reload.survey_questions.count-1
+      new_position = new_survey_group.reload.survey_questions.count-1
+      new_note.update position: new_position
+      new_note.survey_question.update position: new_position
 
     end
   end
 
+  # ------------------------------------------------------------------------
+
+  def self.import_sticky_notes_csv(filename)
+    file = File.open "tmp/#{filename}.csv"
+    data = file.readlines.map(&:chomp)
+    file.close
+
+    survey_name = "Survey for group #{filename}"
+    survey = Survey.find_by_name(survey_name) ||
+    Operation::SurveyHelper::create_new_survey({
+      name: survey_name,
+      description: "Voting survey",
+      create_initial_questions: true
+    })
+    raise "something went wrong with survey creation / find" unless survey
+
+    column = 1
+    row = 0
+    group = nil
+
+    data.each do |line|
+      # line.gsub!(/^"(.+)"$/, '\1')
+      puts "line = #{group ? group.name : "no group"}: #{line}"
+      if line.match /Vision/
+        group = create_group(survey, "Vision")
+        next
+      elsif line.match /Mission/
+        group = create_group(survey, "Mission")
+        next
+      elsif line.match /Values/
+        group = create_group(survey, "Values")
+        next
+      elsif line.match /Uncategorized/
+        group = create_group(survey, "Uncategorized")
+        next
+      end
+      raise "something went wrong with group creation" unless group
+      group.update position: survey.reload.survey_groups.count-1 if group.position.nil?
+
+      if row > 4
+        column += 1
+        row = 0
+      end
+      left = (230 * (column - 1 + group.position - 1)) + 30
+      top = (225 * row) + 100
+      row += 1
+
+      new_note = Operation::SurveyHelper::create_new_note({
+        survey_group: group,
+        text: line,
+        coords: "#{left}px:#{top}px"
+      })
+      raise "something went wrong with note creation" unless new_note
+      new_position = group.reload.survey_questions.count-1
+      new_note.update position: new_position
+      new_note.survey_question.update position: new_position
+    end
+  end
+
+  def self.create_group(survey, group_name)
+    puts "creating #{group_name} group..."
+    Operation::SurveyHelper::create_new_survey_group({
+      survey: survey,
+      name: group_name,
+      description: "change this description",
+      votes_max: 30,
+      note_color: case group_name
+      when "Vision"
+        "#f7f7ad"
+      when "Mission"
+        "#c3edc0"
+      when "Value"
+        "#b3d4e8"
+      else
+        "#aaffaa"
+      end
+    })
+  end
 end

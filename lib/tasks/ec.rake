@@ -30,8 +30,15 @@ end
 
 namespace :ec do
   desc "Imports sticky notes from tmp/sticky-import.tsv (a \"tab separated value\" file)"
-  task import_stickies: :environment do
-    Survey.import_sticky_notes
+  task import_stickies_tsv: :environment do
+    Survey.import_sticky_notes_tsv
+  end
+end
+
+namespace :ec do
+  desc "Imports sticky notes from tmp/arg.csv (a \"comma separated value\" file)"
+  task import_stickies_csv: :environment do
+    Survey.import_sticky_notes_csv(ENV["fn"])
   end
 end
 

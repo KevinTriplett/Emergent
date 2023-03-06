@@ -14,6 +14,7 @@ module Survey::Operation
 
     def create_initial_survey_group_questions(ctx, model:, params:, **)
       return true unless params[:create_initial_questions]
+      # CONTACT INFO --------------------------------
       return false unless group = SurveyHelper::create_new_survey_group({
         survey: model,
         name: "Contact Info",
@@ -21,14 +22,31 @@ module Survey::Operation
       })
       return false unless SurveyHelper::create_new_survey_question({
         survey_group: group,
+        question_type: "Question",
         question: "How would you like to receive a link to your survey response?",
         answer_type: "Multiple Choice",
         answer_lables: "No Thanks|Private Message|Email"
       })
-      SurveyHelper::create_new_survey_question({
+      return false unless SurveyHelper::create_new_survey_question({
         survey_group: group,
+        question_type: "Question",
         question: "If by email, what is your email address?",
         answer_type: "Email"
+      })
+      # FEEDBACK INFO --------------------------------
+      return false unless group = SurveyHelper::create_new_survey_group({
+        survey: model,
+        name: "Feedback",
+        description: "That's it! Thank you for taking our survey!"
+      })
+      SurveyHelper::create_new_survey_question({
+        survey_group: group,
+        question_type: "Question",
+        question: "If you want, we would love to receive your constructive feedback. Thanks!",
+        answer_type: "Essay",
+        has_scale: true,
+        scale_question: "How useful do you feel this survey was?",
+        scale_labels: "Not Useful|Very Useful"
       })
     end
   end

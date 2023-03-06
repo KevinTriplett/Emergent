@@ -32,14 +32,11 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
     "sq-#{group_position}-#{question_position}"
   end
 
-  def group_css_id
-    "survey-question-#{survey_question.id}"
-  end
   def question_css_id
     "survey-question-#{survey_question.id}"
   end
 
-  def answer_type?
+  def answer?
     !survey_question.na?
   end
 

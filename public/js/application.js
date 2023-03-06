@@ -845,7 +845,7 @@ $(document).ready(function() {
       count.text(result.vote_count);
       self
         .closest("#survey-container, #notes-container")
-        .find(`.survey-answer-vote[data-group-id='${result.group_id}']`)
+        .find(`[data-group-id='${result.group_id}']`)
         .find(".votes-left")
         .text(result.votes_left);
     });
@@ -1076,10 +1076,7 @@ $(document).ready(function() {
       dataType: "JSON",
       contentType: "application/json",
       success: function(result) {
-        var note = $("#note-template .note").first().clone(false); // do not clone event handlers, they are installed afterwards
-        updateNoteFromData(note, convertResultToNoteData(result));
-        $("#notes-container").append(note);
-        installNoteListeners(note);
+        note = newNoteFromData(convertResultToNoteData(result));
         bringToFront.call(note);
         if (success) success(result, note);
       },
@@ -1088,6 +1085,15 @@ $(document).ready(function() {
       }
     });
   };
+
+  var newNoteFromData = function(noteData) {
+    // clone(false): do not clone event handlers, they are installed afterwards
+    var note = $("#note-template .note").first().clone(false);
+    updateNoteFromData(note, noteData);
+    $("#notes-container").append(note);
+    initializeNote(note);
+    return note;
+  }
 
   var updateNote = function(e) {
     var note = $(this).closest(".note");
@@ -1163,9 +1169,6 @@ $(document).ready(function() {
     note.data("prevCoords", getNoteCoords(note));
     note.data("prevZIndex", getNoteZIndex(note));
   }
-  $(".note").each(function() {
-    setPrevDataForUpdateNote($(this));
-  });
 
   // ----------------------------------------------------------------------
   // NOTE DRAGGING
@@ -1253,9 +1256,20 @@ $(document).ready(function() {
   }
 
   // ----------------------------------------------------------------------
-  // NOTE LISTENERS
+  // NOTE INITIALIZATION
 
-  var installNoteListeners = function(note) {
+  var initializeNote = function(note) {
+    note
+      .find(".vote-up, .vote-down")
+      .on("click", processVote);
+    note
+      .find(".survey-answer-vote")
+      .on("dblclick", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    if (userView()) return; // stop if user view
+    
     note
       .find(".note-text")
       .on("keydown", debounce(updateNote, 500))
@@ -1269,40 +1283,26 @@ $(document).ready(function() {
       .on("click", deleteNote);
     note
       .on("mousedown", bringToFront);
-    note
-      .find(".vote-up, .vote-down")
-      .on("click", processVote);
-    note
-      .find(".survey-answer-vote")
-      .on("dblclick", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      });
-    updateNoteCoords(note, getNoteCoords(note)); // stores coords into data
-    if (userView()) return; // stop if user view
 
+    updateAdminNoteGroupSelect(note, getNoteGroupName(note));
+    setPrevDataForUpdateNote(note);
     var domNote = note.get()[0]; // get underlying dom element
     initializeColorPicker(domNote);
     dragmove(domNote, domNote.querySelector(".move"), onDragStart, onDragEnd);
   }
   
   $("#notes-container .note").each(function() {
-    var note = $(this);
-    installNoteListeners(note);
-    updateAdminNoteGroupSelect(note, getNoteGroupName(note));
+    initializeNote($(this));
   });
 
   // ----------------------------------------------------------------------
   // NOTE LIVE VIEW
 
-  if ($("#notes-container .live-view")) {
-    setInterval(liveView, 2000);
-  };
-
   var liveView = function() {
     var liveView = $(".live-view");
     var timestamp = liveView.attr("data-timestamp");
     var url = liveView.attr("data-url");
+    if (!url || !timestamp) return;
     $.ajax({
       url: `${url}?timestamp=${timestamp}`,
       type: "GET",
@@ -1311,13 +1311,30 @@ $(document).ready(function() {
       contentType: "application/json",
       success: function(data, textStatus, jqXHR) {
         liveView.text(jqXHR.status);
+        if (jqXHR.status == 304) return;
+        // prep for deletion of notes
+        $("#notes-container .note").each(function() {
+          $(this).data("updated", false);
+        });
+        // update all notes
         for (result of data.results) {
-          var note = $(`#note-${result.model.id}`);
-          if (note)
-            updateNoteFromData(note, convertResultToNoteData(result));
-          else
-            newNoteFromData(data);
+          var note = $(`#notes-container #note-${result.model.id}`);
+          noteData = convertResultToNoteData(result);
+          switch (note.length) {
+          case 0:
+            var newNote = newNoteFromData(noteData);
+            newNote.data("updated", true);
+            break;
+          case 1:
+            updateNoteFromData(note, noteData);
+            note.data("updated", true);
+            break;
+          }
         }
+        // now remove any deleted notes
+        $("#notes-container .note").each(function() {
+          if (!$(this).data("updated")) $(this).remove();
+        });
         liveView.attr("data-timestamp", data.timestamp);
       }
     });
@@ -1329,5 +1346,9 @@ $(document).ready(function() {
   $("body#notes button.add-note").on("click", function() {
     createNote();
   });
+
+  if ($("#notes-container .live-view")) {
+    setInterval(liveView, 5000);
+  };
 
 });

@@ -295,9 +295,9 @@ table.survey-questions {
   tbody tr {
     cursor: pointer;
     td.actions {
+      width: 90px;
       a {
         text-decoration: underline;
-        width: 85px;
       }
     }
   }

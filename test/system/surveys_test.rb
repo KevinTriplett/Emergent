@@ -325,7 +325,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       within "#survey-question-#{survey_question_12.id}" do
         find(".vote-up").click
-        sleep 1
+        sleep 2
         assert_selector ".vote-count", text: "1"
         assert_selector ".votes-left", text: "9"
       end
@@ -340,10 +340,13 @@ class SurveysTest < ApplicationSystemTestCase
 
       within "#survey-question-#{survey_question_13.id}" do
         find(".vote-up").click
-        find(".vote-up").click
-        find(".vote-up").click
+        sleep 1
         find(".vote-up").click
         sleep 1
+        find(".vote-up").click
+        sleep 1
+        find(".vote-up").click
+        sleep 2
         assert_selector ".vote-count", text: "4"
         assert_selector ".votes-left", text: "5"
       end
@@ -358,8 +361,9 @@ class SurveysTest < ApplicationSystemTestCase
       
       within "#survey-question-#{survey_question_11.id}" do
         find(".vote-up").click
-        find(".vote-up").click
         sleep 1
+        find(".vote-up").click
+        sleep 2
         assert_selector ".vote-count", text: "2"
         assert_selector ".votes-left", text: "3"
       end
@@ -376,7 +380,7 @@ class SurveysTest < ApplicationSystemTestCase
         find(".vote-down").click
         sleep 1
         find(".vote-down").click
-        sleep 1
+        sleep 2
         assert_selector ".vote-count", text: "2"
         assert_selector ".votes-left", text: "5"
       end
@@ -457,27 +461,27 @@ class SurveysTest < ApplicationSystemTestCase
       })
       note_1 = create_note({
         survey_group: group_1,
-        coords: "30:130"
+        coords: "30px:130px"
       })
       note_2 = create_note({
         survey_group: group_1,
-        coords: "420:130"
+        coords: "420px:130px"
       })
       note_3 = create_note({
         survey_group: group_1,
-        coords: "820:130"
+        coords: "820px:130px"
       })
       note_4 = create_note({
         survey_group: group_2,
-        coords: "30:500"
+        coords: "30px:500px"
       })
       note_5 = create_note({
         survey_group: group_2,
-        coords: "420:500"
+        coords: "420px:500px"
       })
       note_6 = create_note({
         survey_group: group_2,
-        coords: "820:500"
+        coords: "820px:500px"
       })
 
       # ------------------------------------------------------------------------------
@@ -697,19 +701,19 @@ class SurveysTest < ApplicationSystemTestCase
       group_1 = create_survey_group(survey: survey)
       note_1 = create_note({
         survey_group: group_0,
-        coords: "30:130"
+        coords: "30px:130px"
       })
       note_2 = create_note({
         survey_group: group_0,
-        coords: "420:130"
+        coords: "420px:130px"
       })
       note_3 = create_note({
         survey_group: group_1,
-        coords: "820:130"
+        coords: "820px:130px"
       })
       note_4 = create_note({
         survey_group: group_1,
-        coords: "30:500"
+        coords: "30px:500px"
       })
       Note.all.each do |note|
         create_survey_answer(survey_question: note.survey_question, survey_invite: invite)
@@ -720,22 +724,23 @@ class SurveysTest < ApplicationSystemTestCase
 
       Note.all.each do |note|
         assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.group_color
-        assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}px"
-        assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}px"
+        assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}"
+        assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}"
         assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name
         assert_selector ".note#note-#{note.id} .note-text", text: note.text
       end
 
       note_1.update text: "Change is good for ya!"
       note_2.update group_name: group_1.name
-      note_3.update color: "#ffffff" # NB: this will change the color of notes 2, 3 and 4
-      note_4.update coords: "420:550"
+      note_3.group_color = "#ffffff" # NB: this will change the color of notes 2, 3 and 4
+      note_3.save
+      note_4.update coords: "420px:550px"
       sleep 7
 
       Note.all.each do |note|
         assert_equal computed_style(".note#note-#{note.id}", "background-color").paint.to_hex, note.group_color
-        assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}px"
-        assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}px"
+        assert_equal computed_style(".note#note-#{note.id}", "left"), "#{note.coords.split(":")[0]}"
+        assert_equal computed_style(".note#note-#{note.id}", "top"), "#{note.coords.split(":")[1]}"
         assert_selector ".note#note-#{note.id} .note-group-name", text: note.group_name
         assert_selector ".note#note-#{note.id} .note-text", text: note.text
       end
