@@ -16,6 +16,11 @@ module Admin
       @status_options = @user.get_status_options
       @token = form_authenticity_token
     end
+    
+    def wizard
+      @user = User.find_by_token(params[:token])
+      @token = form_authenticity_token
+    end
 
     def patch
       _ctx = run User::Operation::Patch, admin_name: current_user.name do |ctx|

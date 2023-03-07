@@ -1,0 +1,36 @@
+%h5 Greeter Wizard
+
+- if "Scheduling Zoom" == @user.status
+  %h3= "Scheduling a Zoom Greeting for #{@user.name}"
+  -# greeter can compose chat message to send or copy / paste
+  -# button for "Meeting Scheduled" to go to next page
+  .user-email="Email: #{link_to @user.email, "mailto:#{ @user.email }"}"
+
+
+- if "Zoom Scheduled" == @user.status
+  -# greeter can enter date and time for meeting
+  -# button for "Meeting Done" to go to congratulatory completed page
+  .user-meeting-datetime{ data: {timestamp: @user.when_timestamp} }
+  - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
+  %input.datetime-picker.utc-time{ type: "text", value: datetime }
+
+
+-# make answers to questions available throughout the process
+= link_to "Reveal answers to questions", "#", class: @user.joined? ? "" : "hidden"
+.user-questions
+  %h3= "#{@user.name}'s Answers to Questions"
+  %ol.questions-and-answers{ class: @user.joined? ? "hidden" : "" }
+    - (@user.questions_responses || []).split(" -:- ").each do |qna|
+      - q, a = *qna.split("\\")
+      %li
+        %span.question= q
+        %br
+        %span.answer= a
+  - unless @user.joined? || "Request Declined" == @user.status
+    - url = admin_approve_user_path(token: @user.token)
+    = link_to "Answers Are Acceptable", url, class: "btn btn-primary user-approve"
+    = link_to "Answers Need Clarification", "#", class: "btn btn-warning user-reject"
+    .lds-hourglass#spinner
+    %span.progress-message Working ...
+
+= link_to "Show Details", admin_user_path(token: @user.token), class: "small-text"
