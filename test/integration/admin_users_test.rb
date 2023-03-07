@@ -53,7 +53,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td.user-greeter", ""
       assert_select "td.user-status", user.status
       assert_select "td.user-meeting-datetime", user.when_timestamp.picker_datetime
-      assert_select "td.user-shadow", ""
+      assert_select "td.user-shadow", "I want to shadow"
       assert_select "td.user-notes", user.notes_abbreviated
     end
   end
@@ -98,11 +98,11 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
       user.update(greeter_id: nil)
       get admin_user_path(token: user.token)
-      assert_select "td.user-greeter", "I will greet"
+      assert_select "td.user-greeter", "I want to greet"
 
       user.update(shadow_greeter_id: nil)
       get admin_user_path(token: user.token)
-      assert_select "td.user-shadow", "I will shadow"
+      assert_select "td.user-shadow", "I want to shadow"
 
       user.update(profile_url: nil)
       user.update(chat_url: nil)

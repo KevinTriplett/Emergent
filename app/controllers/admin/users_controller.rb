@@ -4,7 +4,7 @@ module Admin
     before_action :signed_in_user
 
     def index
-      date = Time.now - 1.month
+      date = Time.now - 1.year
       users = User.order(request_timestamp: :desc).where('request_timestamp >= ? OR greeter_id = ?', date, current_user.id)
       @users = map_users_for_index_view(users)
       @update_url = admin_users_url
@@ -19,7 +19,18 @@ module Admin
     
     def wizard
       @user = User.find_by_token(params[:token])
+      return redirect_to admin_user_url(token: @user.token) if @user.status.match /completed/
+      case params[:done]
+      when "email-sent"
+        @user.update notes: "#{@user.notes}\nemail sent #{Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")}"
+      when "zoom-scheduled"
+        @user.update status: "Zoom Scheduled"
+      when "greeting-done"
+        @user.update status: "Zoom Done (completed)"
+        redirect_to admin_user_url(token: @user.token) if @user.status.match /completed/
+      end
       @token = form_authenticity_token
+      @body_class = "user-wizard"
     end
 
     def patch

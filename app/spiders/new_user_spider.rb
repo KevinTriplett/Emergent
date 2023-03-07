@@ -46,6 +46,7 @@ class NewUserSpider < EmergeSpider
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
 
+    # MN is cloaking member emails so reveal emails
     EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
     begin
       browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
@@ -92,22 +93,13 @@ class NewUserSpider < EmergeSpider
   def extract_user_hash(row)
     status = row.css(".invite-list-item-status-text").text.strip
     joined = ("Joined!" == status)
+
     email = row.css(".invite-list-item-email-text").text.strip
     if email.match /\*{3}/ # emails are cloaked with asterisks
       EmergeSpider.logger.info "EMAILS ARE CLOAKED"
       return
     end
     member_id = get_member_id(row)
-
-    # MN is cloaking member emails so ...
-    # check for existing members by member_id and do not overwrite DB email
-    # pseudocode:
-    #   determine new requests by MN state
-    #   extract member_id
-    #   
-
-
-
     user = User.find_by_email(email)
     return if user && (user.member_id || user.status == "Request Declined")
 

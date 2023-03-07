@@ -71,12 +71,12 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "a.user-profile-button[href='#{user.profile_url}']", text: "🙂 Profile"
       assert_selector "a.user-chat-button[href='#{user.chat_url}']", text: "💬 Chat"
 
-      assert_selector "td.user-greeter a", text: "I will greet"
-      assert_selector "td.user-shadow a", text: "I will shadow"
+      assert_selector "td.user-greeter a", text: "I want to greet"
+      assert_selector "td.user-shadow a", text: "I want to shadow"
 
       ######################
       # GREETER
-      click_link('I will greet')
+      click_link('I want to greet')
       sleep 1
       user.reload
       assert_equal admin.name, user.greeter.name
@@ -98,7 +98,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.greeter_id
-      assert_selector "td.user-greeter a", text: "I will greet"
+      assert_selector "td.user-greeter a", text: "I want to greet"
 
       # check when changing greeter
       user.update(greeter_id: admin2.id)
@@ -127,7 +127,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       ######################
       # SHADOW
-      click_link('I will shadow')
+      click_link('I want to shadow')
       sleep 1
       user.reload
       assert_equal admin.id, user.shadow_greeter.id
@@ -149,7 +149,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       sleep 1
       user.reload
       assert_nil user.shadow_greeter_id
-      assert_selector "td.user-shadow a", text: "I will shadow"
+      assert_selector "td.user-shadow a", text: "I want to shadow"
 
       # check when changing greeter
       user.update(shadow_greeter_id: admin3.id)

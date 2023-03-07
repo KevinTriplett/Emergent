@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get  "/admin/users/:token/token/:command", to: "admin/users#token_command", as: :admin_user_token
   post "/admin/users/:token/patch", to: "admin/users#patch", as: :admin_user_patch
   post "/admin/users/:token/approve", to: "admin/users#approve_user", as: :admin_approve_user
-  post "/admin/users/:token/wizard", to: "admin/users#wizard", as: :admin_user_wizard
+  get  "/admin/users/:token/wizard", to: "admin/users#wizard", as: :admin_user_wizard
   
   get  "/admin/surveys/:id/test", to: "admin/surveys#test", as: :admin_survey_test
   get  "/admin/surveys/:id/notes/new", to: "admin/surveys#new_note", as: :new_admin_survey_note

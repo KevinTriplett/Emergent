@@ -9,7 +9,7 @@
     %tr
       %td.header Greeter
       %td.user-greeter{ data: {greeter_id: @user.greeter_id.to_s} }
-        = link_to((@user.greeter_id ? @user.greeter.name : "I will greet"), "#")
+        = link_to((@user.greeter_id ? @user.greeter.name : "I want to greet"), "#")
     %tr
       %td.header Email
       %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
@@ -32,7 +32,7 @@
     %tr
       %td.header Shadow
       %td.user-shadow{ data: {greeter_id: @user.shadow_greeter_id.to_s} }
-        = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
+        = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I want to shadow"), "#")
     %tr
       %td.header Request Date
       %td.user-request= @user.request_timestamp ? @user.request_timestamp.human_date : nil

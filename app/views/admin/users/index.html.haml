@@ -27,6 +27,6 @@
             %td.user-greeter= u[:greeter]
             %td.user-status= u[:status]
             %td.user-meeting-datetime.utc-time= u[:when]
-            %td.user-shadow= link_to((u.shadow_greeter_id? ? u.shadow_greeter.name : "I will shadow"), "#")
+            %td.user-shadow= link_to((u[:shadow] ? u[:shadow] : "I want to shadow"), "#")
             %td.user-notes{ title: u[:truncated] }= u[:notes]
             %td.user-request= u[:request]

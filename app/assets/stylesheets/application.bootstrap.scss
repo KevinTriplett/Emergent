@@ -182,7 +182,7 @@ body.home {
   }
 }
 
-.opt {
+.hidden, .opt {
   display: none;
 }
 
@@ -283,12 +283,12 @@ p.timestamp {
 input#my-greetings {
   margin-top: 12px;
   position: absolute;
-}
 
-input#my-greetings + label {
-  margin-top: 5px;
-  margin-left: 20px;
-  position: absolute;
+  & + label {
+    margin-top: 5px;
+    margin-left: 20px;
+    position: absolute;
+  }
 }
 
 table.survey-questions {
@@ -303,23 +303,41 @@ table.survey-questions {
   }
 }
 
+body.user-wizard {
+  background-color: lightcyan;
+
+  h3 {
+    margin-top: 30px;
+  }
+}
+
 table.users tr {
   cursor: pointer;
   &:hover {
     background-color: #beebf4;
   }
-  .hidden {
-    display: none;
+}
+
+table.user, #admin.user-wizard {
+  .user-notes, .user-email {
+    input.email.subject {
+      width: 100%;
+    }
+    textarea {
+      width: 100%
+    }
+    .btn.email-template-send {
+      display: block;
+      width: 45%;
+      margin-bottom: 20px;
+    }
+  }
+  .user-meeting-datetime input {
+    width: 350px;
   }
 }
 
-table.user {
-  td.user-notes textarea {
-    width: 100%
-  }
-}
-
-table.users, table.user {
+table.users, table.user, #admin.user-wizard {
   width: 100%;
   thead {
     th {
@@ -354,39 +372,39 @@ table.users, table.user {
         font-size: x-small;
       }
     }
-    td.user-questions {
-      li {
-        margin-bottom: 7px;
-      }
-      span.question {
-        font-size: small;
-        color: lightslategray;
-      }
-      span.answer {
-        font-size: large;
-      }
-      p {
-        color: red;
-        font-size: larger;
-        font-weight: bold;
-      }
-      p.approved {
-        color: green;
-        font-size: larger;
-        font-weight: bold;
-      }
+  }
+  .user-questions {
+    li {
+      margin-bottom: 7px;
     }
-    td.user-notes {
-      span.save-status {
-        font-weight: bolder;
-        vertical-align: top;
-      }
-      span.save-status.success {
-        color: green;
-      }
-      span.save-status.failure {
-        color: red;
-      }
+    span.question {
+      font-size: small;
+      color: lightslategray;
+    }
+    span.answer {
+      font-size: large;
+    }
+    p {
+      color: red;
+      font-size: larger;
+      font-weight: bold;
+    }
+    p.approved {
+      color: green;
+      font-size: larger;
+      font-weight: bold;
+    }
+  }
+  .user-notes {
+    span.save-status {
+      font-weight: bolder;
+      vertical-align: top;
+    }
+    span.save-status.success {
+      color: green;
+    }
+    span.save-status.failure {
+      color: red;
     }
   }
 }

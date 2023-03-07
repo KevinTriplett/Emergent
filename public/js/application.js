@@ -210,7 +210,7 @@ var convertTimeToUTC = function(datetime) {
 }
 
 var getUserMeeting = function(userDom) {
-  var userMeetingDom = userDom.find("td.user-meeting-datetime input.datetime-picker");
+  var userMeetingDom = userDom.find("input.datetime-picker");
   return convertTimeToUTC(userMeetingDom.val())
 }
 
@@ -219,13 +219,13 @@ var getUserNotes = function(userDom) {
 }
 
 var noGreeter = function(userDom) {
-  var userGreeterId = userDom.find("td.user-greeter").attr("data-greeter-id");
+  var userGreeterId = userDom.attr("data-greeter-id") || userDom.find("data[greeter-id]").attr("data-greeter-id");
   if (!userGreeterId) {
     if (!confirm("You will greet this new member?")) return true;
     setUserGreeter(userDom, greeterId);
-  } else if (userGreeterId != greeterId) {
-    if (!confirm("You will greet this new member instead?")) return true;
-    setUserGreeter(userDom, greeterId);
+  // } else if (userGreeterId != greeterId) {
+  //   if (!confirm("You will greet this new member instead?")) return true;
+  //   setUserGreeter(userDom, greeterId);
   }
   return false;
 }
@@ -233,7 +233,7 @@ var noGreeter = function(userDom) {
 var setUserGreeter = function(userDom, newGreeterId) {
   var data = { greeter_id: newGreeterId };
   patch(userDom, data, function() {
-    var text = newGreeterId ? greeterName : "I will greet";
+    var text = newGreeterId ? greeterName : "I want to greet";
     userDom.find("td.user-greeter").attr("data-greeter-id", newGreeterId);
     userDom.find("td.user-greeter a").text(text);
   }, function() {
@@ -298,7 +298,9 @@ var setUserMeeting = function(e) {
   var userDom = $(this).closest("[data-id]");
   var data = { when_timestamp: getUserMeeting(userDom) };
   if (dateInPast(userDom, data.when_timestamp)) return;
-  patch(userDom, data, null, function() {
+  patch(userDom, data, function() {
+    $(".schedule-zoom").show();
+  }, function() {
     alert("Could not set meeting date and time - ask Kevin");
   });
 }
@@ -607,7 +609,7 @@ $(document).ready(function() {
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
   ////////////////////////////////////////////////////
-  // APPROVE AND REJECT BUTTONS
+  // FILTER VIEW BY MY GREETINGS
   $("input#my-greetings").on("change", function() {
     if (!this.checked) {
       $("table.users tbody tr:hidden").show();
@@ -617,6 +619,48 @@ $(document).ready(function() {
         if (el.find("td.user-greeter").text() != greeterName) el.hide();
       });
     }
+  });
+
+  ////////////////////////////////////////////////////
+  // GREETER WIZARD
+  $("a.reveal-answers").on("click", function(e) {
+    e.preventDefault();
+    $(".user-questions").show();
+  })
+
+  $(".email-template-buttons").empty();
+  for (templateFunc of emailTemplates) {
+    var button = $(document.createElement("a"));
+    button.addClass("btn btn-secondary");
+    button.attr("href", "#");
+    button.data("func", templateFunc);
+    button.on("click", function(e) {
+      e.preventDefault();
+      var data = {
+        name: $(".user-name").text(),
+        greeter: greeterName
+      };
+      var func = $(this).data("func");
+      $(".user-email .email-body")
+        .text(func(data))
+        .trigger("input");
+      $(".user-email .email-subject").val("Scheduling your welcome Zoom to Emergent Commons 👋🏼");
+      $(".email-template-send").show();
+    });
+    var buttonText = `Template ${$(".email-template-buttons a").length + 1}`;
+    button.text(buttonText);
+    $(".email-template-buttons").append(button);
+  }
+  $(".email-template-send").hide();
+
+  $(".email-template-send").on("click", function(e) {
+    e.preventDefault();
+    var newMemberEmail = $(".user-email a.email-address").text().trim();
+    var subject = $(".user-email .email-subject").text().trim();
+    var body = $(".user-email .email-body").val().trim();
+    body = encodeURIComponent(body);
+    window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
+    if ($(".next-url").text()) window.location.href = $(".next-url").text();
   });
 
   ////////////////////////////////////////////////////
@@ -674,7 +718,7 @@ $(document).ready(function() {
     .on("click", function(e) {
       var el = $(this);
       var userDom = el.closest("[data-id]");
-      if (noGreeter(userDom) || setStatus(userDom)) {
+      if (noGreeter(userDom)) {
         el.blur();
         return;
       }
@@ -698,6 +742,7 @@ $(document).ready(function() {
         $(this).blur();
       }
     });
+    $(".schedule-zoom").hide();
 
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
@@ -772,7 +817,7 @@ $(document).ready(function() {
     var userDom = $(this).closest("[data-id]");
     var data = { shadow_greeter_id: newGreeterId };
     patch(userDom, data, function() {
-      var text = newGreeterId ? greeterName : "I will shadow";
+      var text = newGreeterId ? greeterName : "I want to shadow";
       self.closest("td").attr("data-greeter-id", newGreeterId);
       userDom.find("td.user-shadow a").text(text);
     }, function() {
