@@ -4,7 +4,7 @@ module Admin
     before_action :signed_in_user
 
     def index
-      date = Time.now - 1.year
+      date = Time.now - 6.months
       users = User.order(request_timestamp: :desc).where('request_timestamp >= ? OR greeter_id = ?', date, current_user.id)
       @users = map_users_for_index_view(users)
       @update_url = admin_users_url
