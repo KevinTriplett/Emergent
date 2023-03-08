@@ -55,7 +55,7 @@ class SurveyInvitesController < ApplicationController
 
   def live_view
     get_invite
-    get_survey
+    return head(:bad_request) unless get_survey
     get_liveview_timestamp
     return head(:not_modified) if @live_view_timestamp == params[:timestamp]
     get_notes_and_survey_answers
