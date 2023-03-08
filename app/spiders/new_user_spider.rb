@@ -126,7 +126,7 @@ class NewUserSpider < EmergeSpider
     
     #   joined with member_id in database
     #     skip since we already have all the information we can get
-    if user && (user.member_id || "Request Declined" == user.status)
+    if user && (user.member_id || "Request Declined" == user.status) && !user.questions_responses.blank?
       EmergeSpider.logger.debug "  SKIP BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
       EmergeSpider.logger.debug "  SKIP BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
       return
@@ -150,8 +150,7 @@ class NewUserSpider < EmergeSpider
     end
 
     begin
-      row_id = row.attr("data-id") # returns the id string
-      questions_and_answers = get_questions_and_answers(joined, row_id) if !user || user.questions_responses.blank?
+      questions_and_answers = get_questions_and_answers(joined, row) if !user || user.questions_responses.blank?
     rescue => error
       # skip this member but output an error message in the log
       EmergeSpider.logger.fatal "skipping user ------------------------------------"
@@ -201,9 +200,10 @@ class NewUserSpider < EmergeSpider
 
   ##################################################
   ## EXTRACT QUESTIONS AND ANSWERS
-  def get_questions_and_answers(joined, row_id)
+  def get_questions_and_answers(joined, row)
     questions_and_answers = nil
 
+    row_id = row.attr("data-id") # returns the id string
     i = [@@row_ids.index(row_id) + 1, @@row_ids.count].min
     scroll_to_id = @@row_ids[i]
     css = "tr.invite-request-list-item[data-id='#{scroll_to_id}']"
