@@ -1,6 +1,6 @@
 %h5 Greeter Wizard
 
-- if "Scheduling Zoom" == @user.status && !@user.notes.match(/email sent/)
+- if "Scheduling Zoom" == @user.status && (@user.notes && !@user.notes.match(/email sent/))
   %h3
     = "Scheduling a Zoom Greeting for"
     %span.user-name= @user.name
@@ -15,7 +15,7 @@
   .next-url.hidden= admin_user_wizard_path(token: @user.token, done: "email-sent")
 
 
-- if "Zoom Scheduled" == @user.status || @user.notes.match(/email sent/)
+- if "Zoom Scheduled" == @user.status || (@user.notes && @user.notes.match(/email sent/))
   -# greeter can enter date and time for meeting
   -# button for "Meeting Done" to go to congratulatory completed page
   .user-meeting-datetime{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id } }
@@ -49,7 +49,7 @@
     .lds-hourglass#spinner
     %span.progress-message Working ...
 
-.user-notes
+.user-notes{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id } }
   %h3 Notes
   %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
   %textarea= @user.notes

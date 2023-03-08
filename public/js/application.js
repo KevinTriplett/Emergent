@@ -215,7 +215,7 @@ var getUserMeeting = function(userDom) {
 }
 
 var getUserNotes = function(userDom) {
-  return userDom.find("td.user-notes textarea").val();
+  return userDom.find(".user-notes textarea").val() || userDom.find("textarea").val();
 }
 
 var noGreeter = function(userDom) {
@@ -769,7 +769,7 @@ $(document).ready(function() {
     });
   };
 
-  $("table.user td.user-notes textarea")
+  $(".user-notes textarea")
     .on("keyup", debounce(setUserNotes, 1000))
     .on("keydown", function(e) {
       $(this)
