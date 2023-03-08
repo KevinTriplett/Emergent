@@ -207,7 +207,7 @@ class NewUserSpider < EmergeSpider
     i = [@@row_ids.index(row_id) + 1, @@row_ids.count].min
     scroll_to_id = @@row_ids[i]
     css = "tr.invite-request-list-item[data-id='#{scroll_to_id}']"
-    script = "$(\"#{css}\").first().scrollIntoView(false)"
+    script = "$(\"#{css}\")[0].scrollIntoView(false)"
     EmergeSpider.logger.debug "EXECUTING SCRIPT #{script}"
     browser.execute_script(script)
 
