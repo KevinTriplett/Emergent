@@ -235,6 +235,7 @@ var setUserGreeter = function(userDom, newGreeterId) {
   patch(userDom, data, function() {
     var text = newGreeterId ? greeterName : "I want to greet";
     userDom.find("td.user-greeter").attr("data-greeter-id", newGreeterId);
+    userDom.attr("data-greeter-id", newGreeterId);
     userDom.find("td.user-greeter a").text(text);
   }, function() {
     alert("Could not change greeter - ask Kevin");

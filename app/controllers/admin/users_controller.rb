@@ -23,7 +23,7 @@ module Admin
       case params[:done]
       when "email-sent"
         @user.update notes: "#{@user.notes}\nemail sent #{Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")}"
-      when "zoom-scheduled"
+      when "schedule-zoom", "zoom-scheduled"
         @user.update status: "Zoom Scheduled"
       when "greeting-done"
         @user.update status: "Zoom Done (completed)"

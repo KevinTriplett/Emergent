@@ -1,30 +1,35 @@
 %h5 Greeter Wizard
 
-- if "Scheduling Zoom" == @user.status && (@user.notes && !@user.notes.match(/email sent/))
+%h3.user-name= @user.name
+=link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
+= link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+= link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+- patch_url = admin_user_patch_url(token: @user.token)
+
+- if "Scheduling Zoom" == @user.status
   %h3
-    = "Scheduling a Zoom Greeting for"
-    %span.user-name= @user.name
+    = "Scheduling a Zoom Greeting"
   -# greeter can compose chat message to send or copy / paste
   -# button for "Meeting Scheduled" to go to next page
-  .user-email
+  .user-email{ data: {url: patch_url, token: @token, id: @user.id} }
     %input.email-subject.form-control{ placeholder: "Subject" }
     %textarea.email-body.form-control{ placeholder: "Body of greeting" }
     =link_to "Send Email", "#", class: "btn btn-primary email-template-send"
     .email-template-buttons Template buttons will be visible here
     %p="Email: #{link_to @user.email, "mailto:#{ @user.email }", class: "email-address"}"
+  =link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, done: "schedule-zoom"), class: "btn btn-primary"
   .next-url.hidden= admin_user_wizard_path(token: @user.token, done: "email-sent")
 
 
-- if "Zoom Scheduled" == @user.status || (@user.notes && @user.notes.match(/email sent/))
+- if "Zoom Scheduled" == @user.status
+  %h2.wizard Record the date and time for your greeting
   -# greeter can enter date and time for meeting
   -# button for "Meeting Done" to go to congratulatory completed page
-  .user-meeting-datetime{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id } }
-    - puts "user = #{@user.inspect}"
+  .user-meeting-datetime{ data: {url: patch_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id } }
     - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
     %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
     %br
     - url = admin_user_wizard_path(token: @user.token, done: "zoom-scheduled")
-    =link_to "Schedule Greeting", url, class: "btn btn-primary schedule-zoom"
     - if "Zoom Scheduled" == @user.status
       - url = admin_user_wizard_path(token: @user.token, done: "greeting-done")
       =link_to "Greeting Done", url, class: "btn btn-primary greeting-done"
@@ -32,8 +37,8 @@
 
 
 -# make answers to questions available throughout the process
-= link_to "Reveal answers to questions", "#", class: "reveal-answers #{@user.joined? ? nil : "hidden"}"
-.user-questions{ class: @user.joined? ? "hidden" : "" }
+%br= link_to "Reveal answers to questions", "#", class: "reveal-answers #{@user.joined? ? nil : "hidden"}"
+.user-questions{ class: @user.joined? ? "hidden" : "", data: {url: patch_url, token: @token, id: @user.id} }
   %h3= "#{@user.name}'s Answers to Questions"
   %ol.questions-and-answers
     - (@user.questions_responses || []).split(" -:- ").each do |qna|
@@ -49,7 +54,7 @@
     .lds-hourglass#spinner
     %span.progress-message Working ...
 
-.user-notes{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id } }
+.user-notes
   %h3 Notes
   %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
   %textarea= @user.notes
