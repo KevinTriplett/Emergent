@@ -36,4 +36,6 @@
           = link_to "Logout", logout_url
       .row
         .col-sm-12
+          - unless "user-wizard" == @body_class
+            %h1 Emergent Commons Volunteer App
           = yield
