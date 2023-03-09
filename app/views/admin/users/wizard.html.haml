@@ -1,10 +1,19 @@
-%h2.user-name= @user.name
-
 - patch_url = admin_user_patch_path(token: @user.token)
 - email_url = admin_user_send_email_path(token: @user.token)
 - dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
 
 .wizard{ data: dataset }
+  .wizard-pane.jumbotron.wizard-links
+    %h2.user-name= @user.name
+    %p.user-greeter
+      Greeter:
+      - link_text = @user.greeter_id == @current_user.id ? "Remove me as greeter" : "I want to greet"
+      = link_to link_text, "#"
+    = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
+    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+
+
   = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
 
   - if "Scheduling Zoom" == @user.status
@@ -52,7 +61,7 @@
 
   -# make answers to questions available throughout the process
   .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
-    %h2= "#{@user.name}'s Answers to Questions"
+    %h2 Questions and Answers
     %ol.questions-and-answers
       - @user.questions_responses_array.each do |q, a|
         %li
@@ -72,13 +81,6 @@
     %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
     %textarea= @user.notes
     %span.save-status
-
-
-  .wizard-pane.jumbotron.wizard-links
-    %h2.user-name= @user.name
-    = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
-    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
 
   = link_to "Show Details", admin_user_path(token: @user.token), class: "padded"

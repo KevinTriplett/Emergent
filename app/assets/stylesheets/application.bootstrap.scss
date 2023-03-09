@@ -332,6 +332,11 @@ table.user, #greeter.user-wizard {
 body#greeter.user-wizard {
   background-color: lightcyan;
 
+  .wizard-links .user-greeter {
+    margin-top: -15px;
+    margin-bottom: 2rem;
+  }
+
   .jumbotron {
     margin: 13px;
     background-color: rgb(227, 227, 227);
