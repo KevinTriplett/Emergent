@@ -80,5 +80,11 @@
     %span.save-status
 
 
+  = link_to "Reveal change log", "#", class: "reveal-change-log padded #{@user.joined? ? nil : "hidden"}"
+  .wizard-pane.jumbotron.change-log.hidden
+    != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
+
+
+  %br
   = link_to "Show Details", admin_user_path(token: @user.token), class: "padded"
   %br

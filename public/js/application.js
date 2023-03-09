@@ -628,6 +628,10 @@ $(document).ready(function() {
     e.preventDefault();
     $(".user-questions").show();
   })
+  $("a.reveal-change-log").on("click", function(e) {
+    e.preventDefault();
+    $(".change-log").show();
+  });
 
   $(".email-template-buttons").empty();
   for (templateFunc of emailTemplates) {
@@ -709,7 +713,7 @@ $(document).ready(function() {
     var msgTimer = setInterval(function() {
       var msg = progressMessages[count++];
       $(".progress-message").text(msg);
-    }, 3000);
+    }, 2500);
 
     $.ajax({
       url: url,
