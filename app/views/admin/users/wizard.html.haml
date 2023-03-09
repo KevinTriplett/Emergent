@@ -7,7 +7,7 @@
     %h2.user-name= @user.name
     %p.user-greeter
       Greeter:
-      - link_text = @user.greeter_id == @current_user.id ? "Remove me as greeter" : "I want to greet"
+      - link_text = @user.greeter_id == @current_user.id ? @current_user.name : "I want to greet"
       = link_to link_text, "#"
     = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
     = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
