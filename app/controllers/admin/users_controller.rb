@@ -39,6 +39,15 @@ module Admin
       when "zoom-done"
         @user.update status: "Zoom Done (completed)"
         return redirect_to admin_user_wizard_url(token: @user.token)
+      when "chat-done"
+        @user.update status: "Chat Done (completed)"
+        return redirect_to admin_user_wizard_url(token: @user.token)
+      when "zoom-declined"
+        @user.update status: "Zoom Declined (completed)"
+        return redirect_to admin_user_wizard_url(token: @user.token)
+      when "no-resposne"
+        @user.update status: "No Response (completed)"
+        return redirect_to admin_user_wizard_url(token: @user.token)
       end
       @token = form_authenticity_token
       @body_class = "user-wizard"

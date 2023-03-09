@@ -32,7 +32,13 @@
       - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
       = link_to "< Prev", url, class: "btn btn-primary prev"
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
-      = link_to "Greeting Done", url, class: "btn btn-primary zoom-done"
+      = link_to "Greeting Done", url, class: "btn btn-primary done"
+      - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
+      = link_to "Chat Done", url, class: "btn btn-primary done"
+      - url = admin_user_wizard_path(token: @user.token, status: "zoom-declined")
+      = link_to "Greeting Declined", url, class: "btn btn-primary done"
+      - url = admin_user_wizard_path(token: @user.token, status: "no-resposne")
+      = link_to "No Response", url, class: "btn btn-primary done"
 
   - if @user.status.match /completed/
     -# give greeter a fun celebratory animation
