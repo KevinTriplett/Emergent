@@ -1,4 +1,4 @@
-%h2.user-name= "Greeting #{@user.name}"
+%h2.user-name= @user.name
 
 - patch_url = admin_user_patch_url(token: @user.token)
 - dataset = {url: patch_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
