@@ -421,6 +421,7 @@ $(document).ready(function() {
     fixedHeader: true,
     fixedColumn: true
   });
+  $(".controls").detach().appendTo(".dataTables_wrapper > div:first-child > div:first-child");
   $(".dataTables_wrapper input[type='search']").on("keyup", function() {
     var self = $(this);
     var value = self.val();

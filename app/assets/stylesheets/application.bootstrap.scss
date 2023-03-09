@@ -281,14 +281,7 @@ p.timestamp {
 }
 
 input#show-all-greetings {
-  margin-top: 12px;
-  position: absolute;
-
-  & + label {
-    margin-top: 5px;
-    margin-left: 20px;
-    position: absolute;
-  }
+  margin-top: 15px;
 }
 
 table.survey-questions {
