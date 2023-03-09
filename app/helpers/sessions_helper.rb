@@ -26,6 +26,7 @@ module SessionsHelper
   end
 
   def current_user
+    return @current_user if @current_user
     return unless cookies[:session_token]
     session_token = verify_and_decrypt_cookie(:session_token)
     @current_user = User.find_by_session_token(session_token)

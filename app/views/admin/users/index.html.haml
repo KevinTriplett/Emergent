@@ -22,7 +22,7 @@
           %th.request Requested
       %tbody
         - @users.each do |u|
-          - dataset = {url: u[:url], id: u[:id], status: u[:status], greeter_id: u[:greeter_id] }
+          - dataset = {url: u[:url], id: u[:id], status: u[:status], greeter_id: u[:greeter_id], shadow_id: u[:shadow_id] }
           %tr{ class: u[:css_class], data: dataset }
             %td.user-name= u[:name]
             %td.user-greeter= u[:greeter]

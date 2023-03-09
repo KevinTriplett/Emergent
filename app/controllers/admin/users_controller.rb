@@ -132,6 +132,7 @@ module Admin
           "status": u.status,
           "when": u.when_timestamp ? u.when_timestamp.picker_datetime : nil,
           "shadow": u.shadow_greeter ? u.shadow_greeter.name : nil,
+          "shadow_id": u.shadow_greeter_id,
           "notes": u.notes_abbreviated,
           "truncated": u.notes ? u.notes.truncate(500, separator: ' ') : nil,
           "request": u.request_timestamp ? u.request_timestamp.picker_date : nil,

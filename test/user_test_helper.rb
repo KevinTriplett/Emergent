@@ -69,6 +69,7 @@ end
 
 def login(params = {})
   user = create_authorized_user(params)
+  user.update first_name: user.name
   visit login_url(token: user.token)
   user
 end

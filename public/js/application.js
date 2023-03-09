@@ -231,9 +231,8 @@ var setUserGreeter = function(userDom, newGreeterId) {
   var data = { greeter_id: newGreeterId };
   patch(userDom, data, function() {
     var text = newGreeterId ? greeterName : "I want to greet";
-    userDom.find("td.user-greeter").attr("data-greeter-id", newGreeterId);
     userDom.attr("data-greeter-id", newGreeterId);
-    userDom.find("td.user-greeter a").text(text);
+    userDom.find(".user-greeter a").text(text);
   }, function() {
     alert("Could not change greeter - ask Kevin");
   });
@@ -602,8 +601,9 @@ $(document).ready(function() {
   var showHideUsers = function(showAll) {
     if (showAll) $("table.users tbody tr:hidden").show();
     else $("table.users tbody tr").each(function() {
-      var hide = this.dataset["greeter-id"] != greeterId && this.dataset["status"] != "Pending"
-      if (hide) $(this).hide();
+      var self = $(this);
+      var hide = self.attr("data-greeter-id") != greeterId && self.attr("data-status") != "Pending"
+      if (hide) self.hide();
     });
   }
   $("input#show-all-greetings").on("change", function() {
@@ -707,10 +707,6 @@ $(document).ready(function() {
     .on("click", function(e) {
       var el = $(this);
       var userDom = el.closest("[data-id]");
-      if (noGreeter(userDom)) {
-        el.blur();
-        return;
-      }
       if (el.attr("data-picker")) return; // return if datetime picker already instantiated
       var options = {
         showTime: true,
@@ -772,30 +768,26 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
-  $("td.user-greeter a").on("click", function(e) {
+  $(".user-greeter a").on("click", function(e) {
     e.preventDefault();
-    var self = $(this);
     var result = true;
-    var userDom = self.closest("[data-greeter-id]");
-    var currentGreeterId = self.attr("data-greeter-id");
+    var userDom = $(this).closest("[data-url]");
+    var currentGreeterId = userDom.attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as greeter?");
       newGreeterId = result ? null : id;
-    } else if (currentGreeterId) {
-      if (!confirm("You will greet instead?")) return;
     }
     setUserGreeter(userDom, newGreeterId);
   });
 
   ////////////////////////////////////////////////////
   // SHADOW EVENT LISTENER
-  $("td.user-shadow a").on("click", function(e) {
+  $(".user-shadow a").on("click", function(e) {
     e.preventDefault();
-    var self = $(this);
     var result = true;
-    var userDom = self.closest("td");
-    var currentGreeterId = userDom.attr("data-greeter-id");
+    var userDom = $(this).closest("[data-url]");
+    var currentGreeterId = userDom.attr("data-shadow-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as shadow greeter?");
@@ -807,7 +799,7 @@ $(document).ready(function() {
     var data = { shadow_greeter_id: newGreeterId };
     patch(userDom, data, function() {
       var text = newGreeterId ? greeterName : "I want to shadow";
-      self.attr("data-greeter-id", newGreeterId);
+      userDom.attr("data-shadow-id", newGreeterId);
       userDom.find(".user-shadow a").text(text);
     }, function() {
       alert("Could not change shadow - ask Kevin");

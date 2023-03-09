@@ -31,7 +31,7 @@
       - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
       = link_to "< Prev", url, class: "btn btn-primary prev"
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
-      = link_to "Greeting Done", url, class: "btn btn-primary greeting-done"
+      = link_to "Greeting Done", url, class: "btn btn-primary zoom-done"
 
   - if @user.status.match /completed/
     -# give greeter a fun celebratory animation

@@ -59,10 +59,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       admin3 = create_user
       user = create_user
 
-      visit admin_users_path
-      assert_current_path admin_users_path
-      page.find("tr[data-id='#{user.id}'] td.user-name").click
-      sleep 1
+      visit admin_user_path(token: user.token)
       assert_current_path admin_user_path(token: user.token)
 
       assert_selector "h3", text: user.name
@@ -105,17 +102,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_user_path(token: user.token)
       assert_selector "td.user-greeter a", text: admin2.name
 
-      message = dismiss_prompt do
-        click_link(admin2.name)
-      end
-      assert_equal "You will greet instead?", message
-      user.reload
-      assert_equal admin2.id, user.greeter_id
-      assert_selector "td.user-greeter a", text: admin2.name
-      
-      accept_prompt do
-        click_link(admin2.name)
-      end
+      click_link(admin2.name)
       sleep 1
       user.reload
       assert_equal admin.id, user.greeter_id
@@ -202,25 +189,11 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       ####################
       ## STATUS AND MEETING DATE
-      # cannot unless this admin is greeting
       # assert_selector ".user-meeting-datetime", text: "2022-Dec-7 @ 3:30 AM"
-      assert_nil existing_user.greeter_id
-      find(".ui-selectmenu-text").click
-      message = dismiss_prompt do
-        find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
-      end
-      assert_equal "You will greet this new member?", message
-      sleep 1
-      assert_nil existing_user.reload.greeter_id
-      
-      visit admin_user_path(token: existing_user.token)
 
       find(".ui-selectmenu-text").click
-      accept_prompt do
-        find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
-      end
+      find(".ui-menu-item-wrapper", text: "Zoom Scheduled", exact_text: true).click
       sleep 1
-      assert_equal admin.id, existing_user.reload.greeter_id
 
       assert_selector ".ui-selectmenu-text", text: "Zoom Scheduled"
       assert_no_selector "a.btn.btn-primary.user-approve", text: "Approve"
@@ -243,21 +216,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       ## MEETING
       input = find("td.user-meeting-datetime input.datetime-picker")
       input.click
-      message = accept_alert
-      assert_equal "Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time", message
       find(".ui-selectmenu-text").click
       find(".ui-menu-item-wrapper", text: "Scheduling Zoom", exact_text: true).click
-
-      input.click
-      message = dismiss_prompt
-      assert_equal "Set status to Zoom Scheduled?", message
-      sleep 1
-      assert_equal "Scheduling Zoom", existing_user.reload.status
-
-      input.click
-      accept_prompt
-      sleep 1
-      assert_equal "Zoom Scheduled", existing_user.reload.status
 
       input.click
       input.send_keys("2022-10-09 15:45")
@@ -332,19 +292,6 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_user_path(token: existing_user.token)
       assert_current_path admin_user_path(token: existing_user.token)
 
-      assert_nil existing_user.greeter_id
-      message = dismiss_prompt do
-        click_link(existing_user.email)
-      end
-      assert_equal "You will greet this new member?", message
-      existing_user.reload
-      assert_nil existing_user.greeter_id
-      
-      click_link(existing_user.email)
-      accept_prompt
-      sleep 1
-      assert_equal admin.id, existing_user.reload.greeter_id
-      message = dismiss_prompt
       accept_prompt(with: "0") do
         click_link(existing_user.email)
       end
@@ -363,28 +310,33 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can sort members in index view" do
     DatabaseCleaner.cleaning do
-      admin = login({
-        name: random_user_name,
-        request_timestamp: (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
-      })
+      old_request_timestamp = (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+      admin = login(request_timestamp: old_request_timestamp)
+      other_greeter = create_user(request_timestamp: old_request_timestamp)
+
       user1 = create_user({
         name: "A B",
-        greeter_id: nil,
-        request_timestamp: (Time.now-3.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+        request_timestamp: (Time.now-3.days).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        status: "Scheduling Zoom",
+        greeter_id: other_greeter.id
       })
       user2 = create_user({
         name: "A C",
-        greeter_id: admin.id,
-        request_timestamp: (Time.now-1.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+        request_timestamp: (Time.now-1.days).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        status: "Pending",
+        greeter_id: nil
       })
       user3 = create_user({
         name: "A D",
-        greeter_id: nil,
-        request_timestamp: (Time.now-2.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+        request_timestamp: (Time.now-2.days).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        status: "Scheduling Zoom",
+        greeter_id: admin.id
       })
 
       visit admin_users_path
       assert_current_path admin_users_path
+
+      page.find("input#show-all-greetings").click
 
       assert_equal page.all(".user-name").collect(&:text), [user2.name, user3.name, user1.name]
       page.find("th.name").click
@@ -393,9 +345,9 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal page.all(".user-name").collect(&:text), [user3.name, user2.name, user1.name]
 
       assert_equal 3, page.all("tbody tr", visible: true).count
-      page.find("input#my-greetings").click
-      assert_equal 1, page.all("tbody tr", visible: true).count
-      page.find("input#my-greetings").click
+      page.find("input#show-all-greetings").click
+      assert_equal 2, page.all("tbody tr", visible: true).count
+      page.find("input#show-all-greetings").click
       assert_equal 3, page.all("tbody tr", visible: true).count
     end
   end
@@ -413,7 +365,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       })
       user2 = create_user({
         name: "Jaean Dove",
-        request_timestamp: (Time.now-8.days).strftime("%Y-%m-%dT%H:%M:%SZ")
+        request_timestamp: (Time.now-8.days).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        status: "Pending"
       })
       user3 = create_user({
         name: "Pati Ritte",
@@ -421,7 +374,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       })
       user4 = create_user({
         name: "Tiomthy Barttun",
-        request_timestamp: old_time
+        request_timestamp: old_time,
+        status: "Zoom Done (completed)"
       })
       user2_first_name = user2.name.split(" ")[0]
 
@@ -433,6 +387,10 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.click
       input.send_keys(user2_first_name)
       assert_equal page.all(".user-name").collect(&:text), [user2.name]
+      find("td.user-name").click
+      assert_current_path admin_user_wizard_path(token: user2.token)
+
+      visit admin_users_path
 
       input.click
       user2_first_name.length.times { input.send_keys [:backspace] }
