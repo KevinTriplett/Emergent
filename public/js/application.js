@@ -222,7 +222,7 @@ var getUserMeeting = function(userDom) {
 }
 
 var getUserNotes = function(userDom) {
-  return userDom.find("textarea").val();
+  return userDom.find(".user-notes textarea").val();
 }
 
 var noGreeter = function(userDom) {
@@ -569,14 +569,17 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // RESIZE NOTES TEXTAREA
   // ref https://stackoverflow.com/a/48460773/1204064
-  var scrollHeight = $("textarea").prop("scrollHeight");
-  $("textarea")
-    .css("height", "")
-    .css("height", scrollHeight * 1.04 + "px")
-    .on("input", function(e) {
-      this.style.height = "";
-      this.style.height = this.scrollHeight * 1.04 + "px";
-    });
+  $("textarea").each(function() {
+    var self = $(this);
+    var scrollHeight = self.prop("scrollHeight");
+    self
+      .css("height", "")
+      .css("height", scrollHeight * 1.04 + "px")
+      .on("input", function(e) {
+        this.style.height = "";
+        this.style.height = this.scrollHeight * 1.04 + "px";
+      });
+  });
 
   ////////////////////////////////////////////////////
   // MAKE TABLE ROWS CLICKABLE
