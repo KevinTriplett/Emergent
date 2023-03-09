@@ -14,8 +14,6 @@
     = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
 
-  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
-
   - if "Scheduling Zoom" == @user.status
     -# greeter can compose message to send
     -# button for "Meeting Scheduled" to go to next page
@@ -60,6 +58,7 @@
 
 
   -# make answers to questions available throughout the process
+  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
   .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
     %h2 Questions and Answers
     %ol.questions-and-answers
