@@ -7,7 +7,7 @@ module User::Operation
 
     def activate_spider(ctx, model:, admin:, **)
       return true if model.member_id # user already approved
-      unless Rails.env.development? || Rails.env.test?
+      if Rails.env.production? || Rails.env.staging?
         data = [model.first_name,model.last_name].join('|')
         Spider.set_message("approve_user_spider", data)
         ApproveUserSpider.crawl!
