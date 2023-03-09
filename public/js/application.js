@@ -416,7 +416,7 @@ $(document).ready(function() {
   // CONNECT DATATABLE
   // ref https://datatables.net/reference/index
   $("table.users").DataTable({
-    order: [[6,"desc"]],
+    order: [[5,"desc"]],
     paging: false,
     fixedHeader: true,
     fixedColumn: true
