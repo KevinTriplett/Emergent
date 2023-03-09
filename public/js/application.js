@@ -634,7 +634,7 @@ $(document).ready(function() {
     button.on("click", function(e) {
       e.preventDefault();
       var data = {
-        name: $(".user-name").text(),
+        name: $(".user-name").first().text(),
         greeter: greeterName
       };
       var func = $(this).data("func");
