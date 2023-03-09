@@ -77,6 +77,18 @@ module Admin
 
     # ------------------------------------------------------------------------
 
+    def send_email
+      user = Rails.env.production? ? User.find_by_token(params[:token]) : current_user
+      UserMailer.with({
+        user: user,
+        subject: params[:subject],
+        body: params[:body]
+      }).send_greeter_invite_email.deliver_now
+      return render json: {}
+    end
+
+    # ------------------------------------------------------------------------
+
     def search
       params.permit(:q, :source, user: {}) # TODO: why is an empty user hash being received?
       name = params[:q].chomp.gsub('  ', ' ').gsub(/[^a-zA-Z ]/, '')

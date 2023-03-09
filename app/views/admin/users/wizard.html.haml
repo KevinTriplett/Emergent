@@ -1,7 +1,8 @@
 %h2.user-name= @user.name
 
-- patch_url = admin_user_patch_url(token: @user.token)
-- dataset = {url: patch_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
+- patch_url = admin_user_patch_path(token: @user.token)
+- email_url = admin_user_send_email_path(token: @user.token)
+- dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
 
 .wizard{ data: dataset }
   = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
