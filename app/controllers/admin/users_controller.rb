@@ -1,15 +1,21 @@
 module Admin
   class UsersController < ApplicationController
-    layout "admin"
+    layout "greeter"
     before_action :signed_in_user
+
+    # ------------------------------------------------------------------------
 
     def index
       date = Time.now - 3.months
-      users = User.order(request_timestamp: :desc).where('request_timestamp >= ? OR greeter_id = ?', date, current_user.id)
+      users = User
+        .order(request_timestamp: :desc)
+        .where('request_timestamp >= ? OR greeter_id = ?', date, current_user.id)
       @users = map_users_for_index_view(users)
       @update_url = admin_users_url
       @token = form_authenticity_token
     end
+
+    # ------------------------------------------------------------------------
 
     def show
       @user = User.find_by_token(params[:token])
@@ -17,21 +23,28 @@ module Admin
       @token = form_authenticity_token
     end
     
+    # ------------------------------------------------------------------------
+
     def wizard
       @user = User.find_by_token(params[:token])
-      return redirect_to admin_user_url(token: @user.token) if @user.status.match /completed/
-      case params[:done]
-      when "email-sent"
-        @user.update notes: "#{@user.notes}\nemail sent #{Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")}"
-      when "schedule-zoom", "zoom-scheduled"
+      case params[:status]
+      when "scheduling-zoom"
+        @user.update status: "Scheduling Zoom"
+        flash[:notice] = "User successfully transitioned to scheduling zoom"
+        return redirect_to admin_user_wizard_url(token: @user.token)
+      when "zoom-scheduled"
         @user.update status: "Zoom Scheduled"
-      when "greeting-done"
+        flash[:notice] = "User successfully transitioned to zoom scheduled"
+        return redirect_to admin_user_wizard_url(token: @user.token)
+      when "zoom-done"
         @user.update status: "Zoom Done (completed)"
-        redirect_to admin_user_url(token: @user.token) if @user.status.match /completed/
+        return redirect_to admin_user_wizard_url(token: @user.token)
       end
       @token = form_authenticity_token
       @body_class = "user-wizard"
     end
+
+    # ------------------------------------------------------------------------
 
     def patch
       _ctx = run User::Operation::Patch, admin_name: current_user.name do |ctx|
@@ -43,13 +56,17 @@ module Admin
       return head(:bad_request)
     end
 
+    # ------------------------------------------------------------------------
+
     def approve_user
       _ctx = run User::Operation::Approve, admin: current_user do |ctx|
         flash[:notice] = "User approved -- thank you!"
-        return render json: { url: admin_user_url(token: ctx[:model].token) }
+        return render json: { url: admin_user_wizard_url(token: ctx[:model].token) }
       end
       return head(:bad_request)
     end
+
+    # ------------------------------------------------------------------------
 
     def search
       params.permit(:q, :source, user: {}) # TODO: why is an empty user hash being received?
@@ -70,6 +87,8 @@ module Admin
       end
       render json: { users: users }
     end
+
+    # ------------------------------------------------------------------------
 
     def token_command
       # params.permit(:command)
@@ -93,29 +112,33 @@ module Admin
       redirect_to admin_user_url(token: user.token)
     end
 
+    # ------------------------------------------------------------------------
+
     private
 
     def map_users_for_index_view(users)
       users.map do |u|
-        classnames = []
-        classnames.push("pending") unless u.joined?
-        classnames.push("declined") if "Request Declined" == u.status
-        classnames.push("scheduling") if "Scheduling Zoom" == u.status
-        classnames.push("scheduled") if "Zoom Scheduled" == u.status
-        classnames.push("complete") if u.status.index("(completed)")
+        css_class = []
+        css_class.push("pending") unless u.joined?
+        css_class.push("declined") if "Request Declined" == u.status
+        css_class.push("scheduling") if "Scheduling Zoom" == u.status
+        css_class.push("scheduled") if "Zoom Scheduled" == u.status
+        css_class.push("complete") if u.status.index("(completed)")
+        done = u.status.match /completed/
         {
           "name": u.name,
           "greeter": u.greeter ? u.greeter.name : nil,
+          "greeter_id": u.greeter_id,
           "status": u.status,
           "when": u.when_timestamp ? u.when_timestamp.picker_datetime : nil,
           "shadow": u.shadow_greeter ? u.shadow_greeter.name : nil,
           "notes": u.notes_abbreviated,
           "truncated": u.notes ? u.notes.truncate(500, separator: ' ') : nil,
           "request": u.request_timestamp ? u.request_timestamp.picker_date : nil,
-          "url": admin_user_url(token: u.token),
+          "url": done ? admin_user_url(token: u.token) : admin_user_wizard_url(token: u.token),
           "token": u.token,
           "id": u.id,
-          "classnames": classnames.join(" ")
+          "css_class": css_class.join(" ")
         }
       end
     end

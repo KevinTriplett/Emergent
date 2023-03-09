@@ -1,64 +1,77 @@
-%h5 Greeter Wizard
+%h2.user-name= "Greeting #{@user.name}"
 
-%h3.user-name= @user.name
-=link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-= link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
-= link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 - patch_url = admin_user_patch_url(token: @user.token)
+- dataset = {url: patch_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
 
-- if "Scheduling Zoom" == @user.status
-  %h3
-    = "Scheduling a Zoom Greeting"
-  -# greeter can compose chat message to send or copy / paste
-  -# button for "Meeting Scheduled" to go to next page
-  .user-email{ data: {url: patch_url, token: @token, id: @user.id} }
-    %input.email-subject.form-control{ placeholder: "Subject" }
-    %textarea.email-body.form-control{ placeholder: "Body of greeting" }
-    =link_to "Send Email", "#", class: "btn btn-primary email-template-send"
-    .email-template-buttons Template buttons will be visible here
-    %p="Email: #{link_to @user.email, "mailto:#{ @user.email }", class: "email-address"}"
-  =link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, done: "schedule-zoom"), class: "btn btn-primary"
-  .next-url.hidden= admin_user_wizard_path(token: @user.token, done: "email-sent")
+.wizard{ data: dataset }
+  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
 
-
-- if "Zoom Scheduled" == @user.status
-  %h2.wizard Record the date and time for your greeting
-  -# greeter can enter date and time for meeting
-  -# button for "Meeting Done" to go to congratulatory completed page
-  .user-meeting-datetime{ data: {url: patch_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id } }
-    - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
-    %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
-    %br
-    - url = admin_user_wizard_path(token: @user.token, done: "zoom-scheduled")
-    - if "Zoom Scheduled" == @user.status
-      - url = admin_user_wizard_path(token: @user.token, done: "greeting-done")
-      =link_to "Greeting Done", url, class: "btn btn-primary greeting-done"
+  - if "Scheduling Zoom" == @user.status
+    -# greeter can compose message to send
+    -# button for "Meeting Scheduled" to go to next page
+    .wizard-pane.jumbotron.user-email
+      %h2 Scheduling a Zoom Greeting via Email
+      %input.email-subject.form-control{ placeholder: "Subject" }
+      %textarea.email-body.form-control{ placeholder: "Body of greeting" }
+      %br
+      .email-template-buttons Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-template-send"
+      %p= "Email address: #{@user.email}"
+      = link_to "Next >", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-primary next"
 
 
+  - if "Zoom Scheduled" == @user.status
+    -# greeter can enter date and time for meeting
+    -# button for "Meeting Done" to go to congratulatory completed page
+    .wizard-pane.jumbotron.user-meeting-datetime
+      %h2 Record the date and time for your greeting
+      - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
+      %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
+      %br
+      - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
+      = link_to "< Prev", url, class: "btn btn-primary prev"
+      - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
+      = link_to "Greeting Done", url, class: "btn btn-primary greeting-done"
 
--# make answers to questions available throughout the process
-%br= link_to "Reveal answers to questions", "#", class: "reveal-answers #{@user.joined? ? nil : "hidden"}"
-.user-questions{ class: @user.joined? ? "hidden" : "", data: {url: patch_url, token: @token, id: @user.id} }
-  %h3= "#{@user.name}'s Answers to Questions"
-  %ol.questions-and-answers
-    - (@user.questions_responses || []).split(" -:- ").each do |qna|
-      - q, a = *qna.split("\\")
-      %li
-        %span.question= q
-        %br
-        %span.answer= a
-  - unless @user.joined? || "Request Declined" == @user.status
-    - url = admin_approve_user_path(token: @user.token)
-    = link_to "Answers Are Acceptable", url, class: "btn btn-primary user-approve"
-    = link_to "Answers Need Clarification", "#", class: "btn btn-warning user-reject"
-    .lds-hourglass#spinner
-    %span.progress-message Working ...
-
-.user-notes
-  %h3 Notes
-  %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
-  %textarea= @user.notes
-  %span.save-status
+  - if @user.status.match /completed/
+    -# give greeter a fun celebratory animation
+    .wizard-pane.jumbotron.greeting-done
+      - result = @user.status.match(/Done/) ? "greeting" : "attempting to greet"
+      %h2= "Yay! Thanks for #{result} this new member"
+      
 
 
-= link_to "Show Details", admin_user_path(token: @user.token), class: "small-text"
+
+  -# make answers to questions available throughout the process
+  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
+    %h2= "#{@user.name}'s Answers to Questions"
+    %ol.questions-and-answers
+      - @user.questions_responses_array.each do |q, a|
+        %li
+          %span.question= q
+          %br
+          %span.answer= a
+    - if "Pending" == @user.status
+      - url = admin_approve_user_path(token: @user.token)
+      = link_to "Answers Are Acceptable", url, class: "btn btn-primary user-approve"
+      = link_to "Answers Need Clarification", "#", class: "btn btn-warning user-reject"
+      .lds-hourglass#spinner
+      %span.progress-message Working ...
+
+
+  .wizard-pane.jumbotron.user-notes
+    %h2 Notes
+    %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
+    %textarea= @user.notes
+    %span.save-status
+
+
+  .wizard-pane.jumbotron.wizard-links
+    %h2.user-name= @user.name
+    = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
+    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+
+
+  = link_to "Show Details", admin_user_path(token: @user.token), class: "padded"
+  %br

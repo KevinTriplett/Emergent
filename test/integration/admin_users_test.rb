@@ -91,8 +91,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "td.user-shadow", user.shadow_greeter.name
       assert_select "td.user-notes", user.notes
       
-      user.questions_responses.split(" -:- ").each do |qna|
-        q,a = *qna.split("\\")
+      user.questions_responses_array.each do |q, a|
         assert_select "td.user-questions li", "#{q}\n\n#{a}"
       end
 

@@ -37,4 +37,18 @@ class UserTest < MiniTest::Spec
       assert !user.reload.locked?
     end
   end
+
+  it "abbreviates notes" do
+    DatabaseCleaner.cleaning do
+      user = create_user(notes: "12345678901234567890123456789012345678901234567890123456789012345678901234567890")
+      assert_equal "12345678901234567...", user.notes_abbreviated
+    end
+  end
+
+  it "returns questions responses in an array" do
+    DatabaseCleaner.cleaning do
+      user = create_user
+      assert_equal [["1q","1a"],["2q","2a"],["3q","3a"],["4q","4a"],["5q","5a"]], user.questions_responses_array
+    end
+  end
 end

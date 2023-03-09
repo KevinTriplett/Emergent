@@ -245,10 +245,11 @@ class NewUserSpider < EmergeSpider
     user = find_user_by_user_hash(u_hash)
     if user
       EmergeSpider.logger.info "updating user: #{user.name}"
-      user.profile_url = u_hash[:profile_url] unless user.profile_url
-      user.chat_url = u_hash[:chat_url] unless user.chat_url
+      user.profile_url ||= u_hash[:profile_url]
+      user.chat_url ||= u_hash[:chat_url]
       user.status = u_hash[:status] if u_hash[:status] && user.status == "Pending"
       user.joined = u_hash[:joined] unless user.joined
+      user.questions_responses = u_hash[:questions_responses] if user.questions_responses.blank?
       user.save
     else
       EmergeSpider.logger.info "creating user: #{u_hash[:name]}"

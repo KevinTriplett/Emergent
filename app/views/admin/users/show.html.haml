@@ -4,18 +4,20 @@
   = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
   = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
-%table.user.table.table-bordered.table-striped{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id } }
+- dataset = {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id, greeter_id: @user.greeter_id, status: @user.status, timestamp: @user.when_timestamp, shadow_id: @user.shadow_greeter_id}
+
+%table.user.table.table-bordered.table-striped{ data: dataset }
   %tbody
     %tr
       %td.header Greeter
-      %td.user-greeter{ data: {greeter_id: @user.greeter_id.to_s} }
+      %td.user-greeter
         = link_to((@user.greeter_id ? @user.greeter.name : "I want to greet"), "#")
     %tr
       %td.header Email
       %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
     %tr
       %td.header Status
-      %td.user-status{ data: {status: @user.status} }
+      %td.user-status
         %select
           - @status_options.each do |o|
             - selected = (o == @user.status ? "selected" : nil)
@@ -26,12 +28,12 @@
           Zoom Date/Time
           %br
           %span.tzinfo (GMT)
-      %td.user-meeting-datetime{ data: {timestamp: @user.when_timestamp} }
+      %td.user-meeting-datetime
         - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
     %tr
       %td.header Shadow
-      %td.user-shadow{ data: {greeter_id: @user.shadow_greeter_id.to_s} }
+      %td.user-shadow
         = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I want to shadow"), "#")
     %tr
       %td.header Request Date
@@ -45,8 +47,7 @@
       %td.header Questions
       %td.user-questions
         %ol
-          - (@user.questions_responses || []).split(" -:- ").each do |qna|
-            - q, a = *qna.split("\\")
+          - @user.questions_responses_array.each do |q, a|
             %li
               %span.question= q
               %br

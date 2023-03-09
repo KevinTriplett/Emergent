@@ -303,14 +303,6 @@ table.survey-questions {
   }
 }
 
-body.user-wizard {
-  background-color: lightcyan;
-
-  h3, h2 {
-    margin-top: 30px;
-  }
-}
-
 table.users tr {
   cursor: pointer;
   &:hover {
@@ -318,7 +310,7 @@ table.users tr {
   }
 }
 
-table.user, #admin.user-wizard {
+table.user, #greeter.user-wizard {
   .user-notes, .user-email {
     input.email.subject {
       width: 100%;
@@ -337,7 +329,36 @@ table.user, #admin.user-wizard {
   }
 }
 
-table.users, table.user, #admin.user-wizard {
+body#greeter.user-wizard {
+  background-color: lightcyan;
+
+  .jumbotron {
+    margin: 13px;
+    background-color: rgb(227, 227, 227);
+    padding: 24px;
+    border-radius: 10px;
+    border: 8px solid rgb(74, 73, 73);
+
+    h3, h2 {
+      margin: -10px 0px 20px 0px;
+    }
+  }
+
+  a.padded {
+    padding-bottom: 50px;
+  }
+
+  .greeting-done {
+    background-image: url(images/horn.gif);
+    background-repeat: no-repeat;
+    // background-image: url(images/confetti.gif);
+    // background-repeat: repeat-x;
+    background-color: white;
+    min-height: 510px;
+  }
+}
+
+table.users, table.user, #greeter.user-wizard {
   width: 100%;
   thead {
     th {

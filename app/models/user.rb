@@ -19,6 +19,10 @@ class User < ActiveRecord::Base
     generate_tokens
   end
 
+  def questions_responses_array
+    (questions_responses || []).split(" -:- ").collect { |qna| qna.split("\\") }
+  end
+
   def lock
     update locked: true
   end

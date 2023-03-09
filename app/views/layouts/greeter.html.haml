@@ -24,7 +24,7 @@
     %script{ src: "/js/dtsel.js" }
     %script{ src: "/js/datatables.js" }
 
-  %body#admin{ class: @body_class }
+  %body#greeter{ class: @body_class }
     .container
       .row
         .col-sm-8
@@ -36,5 +36,4 @@
           = link_to "Logout", logout_url
       .row
         .col-sm-12
-          -# %h1 Emergent Commons Volunteer App
           = yield

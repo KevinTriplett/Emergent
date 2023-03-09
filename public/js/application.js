@@ -215,17 +215,14 @@ var getUserMeeting = function(userDom) {
 }
 
 var getUserNotes = function(userDom) {
-  return userDom.find(".user-notes textarea").val() || userDom.find("textarea").val();
+  return userDom.find("textarea").val();
 }
 
 var noGreeter = function(userDom) {
-  var userGreeterId = userDom.attr("data-greeter-id") || userDom.find("data[greeter-id]").attr("data-greeter-id");
+  var userGreeterId = userDom.closest("[data-greeter-id]").attr("data-greeter-id");
   if (!userGreeterId) {
     if (!confirm("You will greet this new member?")) return true;
     setUserGreeter(userDom, greeterId);
-  // } else if (userGreeterId != greeterId) {
-  //   if (!confirm("You will greet this new member instead?")) return true;
-  //   setUserGreeter(userDom, greeterId);
   }
   return false;
 }
@@ -240,11 +237,6 @@ var setUserGreeter = function(userDom, newGreeterId) {
   }, function() {
     alert("Could not change greeter - ask Kevin");
   });
-}
-
-var resetUserStatus = function(userDom) {
-  var status = userDom.find("td.user-status").attr("data-status");
-  userDom.find("td.user-status select").val(status).selectmenu("refresh");
 }
 
 var setStatus = function(userDom) {
@@ -310,10 +302,6 @@ var initStatusSelectMenu = function() {
   $(".user-status select").selectmenu({
     change: function(e) {
       var userDom = $(this).closest("[data-id]");
-      if (noGreeter(userDom)) {
-        resetUserStatus(userDom);
-        return;
-      }
       setUserStatus(userDom, null);
     }
   });
@@ -610,17 +598,18 @@ $(document).ready(function() {
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
   ////////////////////////////////////////////////////
-  // FILTER VIEW BY MY GREETINGS
-  $("input#my-greetings").on("change", function() {
-    if (!this.checked) {
-      $("table.users tbody tr:hidden").show();
-    } else {
-      $("table.users tbody tr").each(function() {
-        var el = $(this);
-        if (el.find("td.user-greeter").text() != greeterName) el.hide();
-      });
-    }
+  // FILTER VIEW BY PENDING AND MY GREETINGS
+  var showHideUsers = function(showAll) {
+    if (showAll) $("table.users tbody tr:hidden").show();
+    else $("table.users tbody tr").each(function() {
+      var hide = this.dataset["greeter-id"] != greeterId && this.dataset["status"] != "Pending"
+      if (hide) $(this).hide();
+    });
+  }
+  $("input#show-all-greetings").on("change", function() {
+    showHideUsers(this.checked);
   });
+  showHideUsers(false);
 
   ////////////////////////////////////////////////////
   // GREETER WIZARD
@@ -661,7 +650,8 @@ $(document).ready(function() {
     var body = $(".user-email .email-body").val().trim();
     body = encodeURIComponent(body);
     window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
-    if ($(".next-url").text()) window.location.href = $(".next-url").text();
+    var next = $("a.next");
+    if (next.attr("href")) window.location.href = next.attr("href");
   });
 
   ////////////////////////////////////////////////////
@@ -673,11 +663,9 @@ $(document).ready(function() {
 
   $("a.user-approve").on("click", function(e) {
     e.preventDefault();
-    self = $(this);
-    var userDom = self.closest("[data-id]");
-    if (noGreeter(userDom)) return;
+    var self = $(this);
     var url = self.attr("href");
-    var token = $("table.users,table.user").attr("data-token");
+    var token = self.closest("[data-token]").attr("data-token");
     $("#spinner").show();
     $(".progress-message").show();
     $(".user-approve,.user-reject").hide();
@@ -788,7 +776,8 @@ $(document).ready(function() {
     e.preventDefault();
     var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").attr("data-greeter-id");
+    var userDom = self.closest("[data-greeter-id]");
+    var currentGreeterId = self.attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as greeter?");
@@ -796,7 +785,6 @@ $(document).ready(function() {
     } else if (currentGreeterId) {
       if (!confirm("You will greet instead?")) return;
     }
-    var userDom = $(this).closest("[data-id]");
     setUserGreeter(userDom, newGreeterId);
   });
 
@@ -806,7 +794,8 @@ $(document).ready(function() {
     e.preventDefault();
     var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").attr("data-greeter-id");
+    var userDom = self.closest("td");
+    var currentGreeterId = userDom.attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as shadow greeter?");
@@ -815,12 +804,11 @@ $(document).ready(function() {
       result = confirm("You will be the shadow greeter instead?\n(we prefer only one shadow greeter)");
     }
     if (!result) return;
-    var userDom = $(this).closest("[data-id]");
     var data = { shadow_greeter_id: newGreeterId };
     patch(userDom, data, function() {
       var text = newGreeterId ? greeterName : "I want to shadow";
-      self.closest("td").attr("data-greeter-id", newGreeterId);
-      userDom.find("td.user-shadow a").text(text);
+      self.attr("data-greeter-id", newGreeterId);
+      userDom.find(".user-shadow a").text(text);
     }, function() {
       alert("Could not change shadow - ask Kevin");
     });
@@ -836,7 +824,6 @@ $(document).ready(function() {
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this).closest("[data-id]");
-    if (noGreeter(userDom)) return;
     var maxIndex = emailTemplates.length;
     var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
     if (!templateIndex) return;
@@ -850,8 +837,8 @@ $(document).ready(function() {
     prevEmailTemplateIndex = templateIndex + 1;
     setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
 
-    var newMemberName = userDom.find("td.user-name").text().trim();
-    var newMemberEmail = userDom.find("td.user-email a").text().trim();
+    var newMemberName = userDom.find(".user-name").text().trim();
+    var newMemberEmail = userDom.find(".user-email a").text().trim();
     var data = {
       name: newMemberName,
       greeter: greeterName
