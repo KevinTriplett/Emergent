@@ -24,7 +24,8 @@
     -# greeter can enter date and time for meeting
     -# button for "Meeting Done" to go to congratulatory completed page
     .wizard-pane.jumbotron.user-meeting-datetime
-      %h2 Record the date and time for your greeting
+      %h2 Date and time for your greeting
+      %p When you get a response to your email, you can record the date and time here.
       - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
       %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
       %br

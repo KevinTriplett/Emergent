@@ -20,15 +20,22 @@ var format = {
 };
 var progressMessages = [
   "Establishing secure channel ...",
-  "Contacting HQ ...",
+  "Contacting Mighty Networks ...",
   "Exchanging credentials ...",
-  "Looking up member request ...",
-  "Sending request to approve ...",
+  "Asking about the family, getting a check-in ...",
+  "Looking up this member request ...",
+  "Politing asking to approve the request ...",
   "Getting response ...",
-  "Disconnecting from HQ ...",
-  "Cleaning up channel ...",
-  "Updating database ...",
-  "Waiting, not much longer now ..."
+  "Yep, no problem, got the approval ...",
+  "Getting a check-out, saying goodbye ...",
+  "Disconnecting from Mighty Networks ...",
+  "Cleaning up the channel ...",
+  "Updating our database ...",
+  "Waiting, not much longer now ...",
+  "I promise, not much longer ...",
+  "Thanks for being patient :) ...",
+  "Whoops, looks like something went wrong ...",
+  "Please refresh the page"
 ]
 
 ////////////////////////////////////////////////////
@@ -675,7 +682,7 @@ $(document).ready(function() {
     var msgTimer = setInterval(function() {
       var msg = progressMessages[count++];
       $(".progress-message").text(msg);
-    }, 5000);
+    }, 3000);
 
     $.ajax({
       url: url,
