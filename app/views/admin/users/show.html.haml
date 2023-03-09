@@ -31,11 +31,11 @@
       %td.user-meeting-datetime
         - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time{ type: "text", value: datetime }
-    -# %tr
-    -#   %td.header Shadow
-    -#   %td.user-shadow
-    -#     = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I want to shadow"), "#")
-    %tr
+    %tr.hidden
+      %td.header Shadow
+      %td.user-shadow
+        = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I want to shadow"), "#")
+    %tr.hidden
       %td.header Request Date
       %td.user-request= @user.request_timestamp ? @user.request_timestamp.human_date : nil
     %tr
