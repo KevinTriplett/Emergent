@@ -10,23 +10,23 @@
       %span.user-name= @user.name
       %span= "#{@user.locked? ? " (locked)" : nil}"
     %p.user-greeter= "Greeter: #{@user.greeter_id ? @user.greeter.name : "(nobody)"}"
+    %p.user-email
+      Email address:
+      = link_to @user.email, "mailto:#{@user.email}"
+    %p.utc-time= "Greeting on #{@user.when_timestamp ? @user.when_timestamp.picker_datetime : nil}"
 
     = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
     = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
     = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
-    %p.user-email
-      Email address:
-      = link_to @user.email, "mailto:#{@user.email}"
-    %p.utc-time= "Greeting/ed on #{@user.when_timestamp ? @user.when_timestamp.picker_datetime : nil}"
     .user-status
-      Status:
-      %br
+      %h5 Status:
       %select
         - @status_options.each do |o|
           - selected = (o == @user.status ? "selected" : nil)
           %option{ selected: selected }= o
     .user-notes
+      %h5 Notes
       %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
       %textarea= @user.notes
       %span.save-status
