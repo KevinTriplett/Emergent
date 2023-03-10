@@ -47,6 +47,7 @@ class NewUserSpider < EmergeSpider
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
 
+    # MN is cloaking member emails so reveal emails
     EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
     begin
       browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
@@ -66,28 +67,11 @@ class NewUserSpider < EmergeSpider
     rows.each do |row|
       u_hash = extract_user_hash(row)
       next if u_hash.blank?
-      # users can be in one of three states:
-      #   brand new request to join (not in database at all)
-      #   new request to join already in database (but not approved yet)
-      #   joined but member_id not yet captured in database (capture member_id)
-      #   joined with member_id in database (do nothing)
-      #   in the database but not in the list of join requests (was rejected)
-      # see if this user is already in the database (user cannot change name if not joined)
-      existing_users = User.where(name: u_hash[:name])
-      case existing_users.count
-      when 0
-        new_users.push u_hash
-      when 1
-        existing_user = existing_users.first
-        next if existing_user.member_id && existing_user.joined?
-        next unless u_hash[:member_id]
-        existing_user.update member_id: u_hash[:member_id]
-        existing_user.update profile_url: u_hash[:profile_url]
-        existing_user.update chat_url: u_hash[:chat_url]
-      end
+
+      create_or_update_user(u_hash)
+      new_users.push u_hash
       sleep 1
     end
-    create_or_update_users(new_users)
     update_rejected_users(new_users)
   end
 
@@ -96,6 +80,7 @@ class NewUserSpider < EmergeSpider
   def extract_user_hash(row)
     status = row.css(".invite-list-item-status-text").text.strip
     joined = ("Joined!" == status)
+
     email = row.css(".invite-list-item-email-text").text.strip
     if email.match /\*{3}/ # emails are cloaked with asterisks
       EmergeSpider.logger.info "EMAILS ARE CLOAKED"
@@ -124,14 +109,14 @@ class NewUserSpider < EmergeSpider
     
     #   joined with member_id in database
     #     skip since we already have all the information we can get
-    if user && (user.member_id || "Request Declined" == user.status)
-      EmergeSpider.logger.debug "  SKIP BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
-      EmergeSpider.logger.debug "  SKIP BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
+    if user && (user.member_id || "Request Declined" == user.status) && !user.questions_responses.blank?
+      EmergeSpider.logger.info "  SKIP #{full_name} BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
+      EmergeSpider.logger.info "  SKIP #{full_name} BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
       return
     end
 
     if user && !joined && !member_id
-      EmergeSpider.logger.debug "  SKIP BECAUSE IN DATABASE BUT NOT JOINED YET"
+      EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE IN DATABASE BUT NOT JOINED YET"
       return
     end
 
@@ -148,8 +133,7 @@ class NewUserSpider < EmergeSpider
     end
 
     begin
-      row_id = row.attr("data-id") # returns the id string
-      questions_and_answers = get_questions_and_answers(joined, row_id) if !user || user.questions_responses.blank?
+      questions_and_answers = get_questions_and_answers(joined, row) if !user || user.questions_responses.blank?
     rescue => error
       # skip this member but output an error message in the log
       EmergeSpider.logger.fatal "skipping user ------------------------------------"
@@ -160,7 +144,7 @@ class NewUserSpider < EmergeSpider
     end  
 
     EmergeSpider.logger.debug "\n\n-------------------------------------------------------"
-    EmergeSpider.logger.debug "name = #{full_name}"
+    EmergeSpider.logger.info "Adding name = #{full_name}"
     EmergeSpider.logger.debug "email = #{email}"
     EmergeSpider.logger.debug "request_date = #{request_date}"
     EmergeSpider.logger.debug "status = #{status}"
@@ -199,13 +183,14 @@ class NewUserSpider < EmergeSpider
 
   ##################################################
   ## EXTRACT QUESTIONS AND ANSWERS
-  def get_questions_and_answers(joined, row_id)
+  def get_questions_and_answers(joined, row)
     questions_and_answers = nil
 
-    i = [@@row_ids.index(row_id) + 1, @@row_ids.count].min
+    row_id = row.attr("data-id") # returns the id string
+    i = [@@row_ids.index(row_id) + 2, @@row_ids.count - 1].min
     scroll_to_id = @@row_ids[i]
     css = "tr.invite-request-list-item[data-id='#{scroll_to_id}']"
-    script = "$(\"#{css}\").first().scrollIntoView(false)"
+    script = "$(\"#{css}\")[0].scrollIntoView(false)"
     EmergeSpider.logger.debug "EXECUTING SCRIPT #{script}"
     browser.execute_script(script)
 
@@ -256,23 +241,22 @@ class NewUserSpider < EmergeSpider
 
   ##################################################
   ## CREATE OR DELETE OR UPDATE USERS
-  def create_or_update_users(users)
-    users.each do |u|
-      user = User.find_by_email(u[:email])
-      if user
-        EmergeSpider.logger.info "updating user: #{u[:name]}"
-        user.profile_url = u[:profile_url] unless user.profile_url
-        user.chat_url = u[:chat_url] unless user.chat_url
-        user.status = u[:status] if u[:status] && user.status == "Pending"
-        user.joined = u[:joined] unless user.joined
-        user.save
-      else
-        EmergeSpider.logger.info "creating user: #{u[:name]}"
-        User.create!(u) unless user
-      end
-    rescue => error
-      logger.fatal "ERROR in new_user_spider#create_or_update_users: #{error.message}"
+  def create_or_update_user(u_hash)
+    user = find_user_by_user_hash(u_hash)
+    if user
+      EmergeSpider.logger.info "updating user: #{user.name}"
+      user.profile_url ||= u_hash[:profile_url]
+      user.chat_url ||= u_hash[:chat_url]
+      user.status = u_hash[:status] if u_hash[:status] && user.status == "Pending"
+      user.joined = u_hash[:joined] unless user.joined
+      user.questions_responses = u_hash[:questions_responses] if user.questions_responses.blank?
+      user.save
+    else
+      EmergeSpider.logger.info "creating user: #{u_hash[:name]}"
+      User.create!(u_hash)
     end
+  rescue => error
+    logger.fatal "ERROR in new_user_spider#create_or_update_user: #{error.message}"
   end
 
   def update_rejected_users(user_hashes)
@@ -282,6 +266,12 @@ class NewUserSpider < EmergeSpider
       # user no longer on MN request to join list
       user.update status: "Request Declined"
     end
+  end
+
+  def find_user_by_user_hash(u_hash)
+    (u_hash[:email] && User.find_by_email(u_hash[:email])) ||
+    (u_hash[:member_id] && User.find_by_member_id(u_hash[:member_id])) ||
+    User.find_by_name(u_hash[:name])
   end
 
   ##################################################
