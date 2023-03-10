@@ -21,6 +21,7 @@ module Admin
       @user = User.find_by_token(params[:token])
       @status_options = @user.get_status_options
       @token = form_authenticity_token
+      @body_class = "user-wizard"
     end
     
     # ------------------------------------------------------------------------

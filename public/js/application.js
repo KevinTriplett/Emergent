@@ -357,7 +357,9 @@ var showOpt = function(show) {
   if (!(show ^ optVisible)) return;
   optVisible = show;
   if (show)
-    $(".opt").show();
+    debounce(function() {
+      $(".opt").show();
+    }, 5000)();
   else {
     debounce(function() {
       $(".opt").hide();
@@ -626,11 +628,11 @@ $(document).ready(function() {
   // GREETER WIZARD
   $("a.reveal-answers").on("click", function(e) {
     e.preventDefault();
-    $(".user-questions").show();
+    $(".user-questions").toggle();
   })
   $("a.reveal-change-log").on("click", function(e) {
     e.preventDefault();
-    $(".change-log").show();
+    $(".change-log").toggle();
   });
 
   $(".email-template-buttons").empty();
