@@ -18,7 +18,14 @@
     %p.user-email
       Email address:
       = link_to @user.email, "mailto:#{@user.email}"
-    %p.utc-time= "Greeted on #{@user.when_timestamp ? @user.when_timestamp.picker_datetime : nil}"
+    %p.utc-time= "Greeting/ed on #{@user.when_timestamp ? @user.when_timestamp.picker_datetime : nil}"
+    .user-status
+      Status:
+      %br
+      %select
+        - @status_options.each do |o|
+          - selected = (o == @user.status ? "selected" : nil)
+          %option{ selected: selected }= o
     .user-notes
       %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
       %textarea= @user.notes
