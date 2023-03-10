@@ -359,10 +359,10 @@ body#greeter.user-wizard {
   }
 
   .greeting-done {
-    background-image: url(images/horn.gif);
-    background-repeat: no-repeat;
-    // background-image: url(images/confetti.gif);
-    // background-repeat: repeat-x;
+    // background-image: url(images/horn.gif);
+    // background-repeat: no-repeat;
+    background-image: url(images/confetti.gif);
+    background-repeat: repeat-x;
     background-color: white;
     min-height: 510px;
   }
