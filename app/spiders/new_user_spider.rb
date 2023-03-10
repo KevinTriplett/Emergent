@@ -8,7 +8,7 @@ class NewUserSpider < EmergeSpider
   @config = {
     user_agent: USER_AGENT,
     disable_images: true,
-    window_size: [1366, 768],
+    window_size: [1600, 800],
     user_data_dir: Rails.root.join('shared', 'tmp', 'browser_profile').to_s,
     before_request: {
       # Change user agent before each request:
@@ -46,6 +46,9 @@ class NewUserSpider < EmergeSpider
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
+
+    # acknowledge cookies
+    browser.find(:css, "#gdpr-cookie-accept").click if response_has("#gdpr-cookie-accept")
 
     # MN is cloaking member emails so reveal emails
     EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
@@ -105,7 +108,9 @@ class NewUserSpider < EmergeSpider
     #   joined with member_id in database
     #     skip since we already have all the information we can get
 
-    user = User.find_by_member_id(member_id) || email && User.find_by_email(email)
+    user = (member_id && User.find_by_member_id(member_id)) ||
+      (email && User.find_by_email(email)) ||
+      (request_date && User.where(request_timestamp: request_date).and(where(name: full_name)))
     
     #   joined with member_id in database
     #     skip since we already have all the information we can get
@@ -115,7 +120,7 @@ class NewUserSpider < EmergeSpider
       return
     end
 
-    if user && !joined && !member_id
+    if user && !joined && !member_id && !user.questions_responses.blank?
       EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE IN DATABASE BUT NOT JOINED YET"
       return
     end
@@ -187,12 +192,13 @@ class NewUserSpider < EmergeSpider
     questions_and_answers = nil
 
     row_id = row.attr("data-id") # returns the id string
-    i = [@@row_ids.index(row_id) + 2, @@row_ids.count - 1].min
-    scroll_to_id = @@row_ids[i]
-    css = "tr.invite-request-list-item[data-id='#{scroll_to_id}']"
+    css = "tr.invite-request-list-item[data-id='#{row_id}']"
     script = "$(\"#{css}\")[0].scrollIntoView(false)"
     EmergeSpider.logger.debug "EXECUTING SCRIPT #{script}"
     browser.execute_script(script)
+    sleep 1
+    browser.save_screenshot
+
 
     if joined
       #   user not in database but has a member_id (may have been approved using MN platform)
