@@ -110,7 +110,7 @@ class NewUserSpider < EmergeSpider
 
     user = (member_id && User.find_by_member_id(member_id)) ||
       (email && User.find_by_email(email)) ||
-      (request_date && User.where(request_timestamp: request_date).and(where(name: full_name)))
+      (request_date && User.where(request_timestamp: request_date).and(User.where(name: full_name)))
     
     #   joined with member_id in database
     #     skip since we already have all the information we can get
