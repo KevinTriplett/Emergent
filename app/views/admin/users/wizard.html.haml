@@ -5,6 +5,7 @@
 .wizard{ data: dataset }
   .wizard-pane.jumbotron.wizard-links
     %h2.user-name= @user.name
+    %p= @user.status
     %p.user-greeter
       Greeter:
       - link_text = @user.greeter_id == @current_user.id ? @current_user.name : "I want to greet"
@@ -83,8 +84,3 @@
   = link_to "Reveal change log", "#", class: "reveal-change-log padded #{@user.joined? ? nil : "hidden"}"
   .wizard-pane.jumbotron.change-log.hidden
     != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
-
-
-  %br
-  = link_to "Show Details", admin_user_path(token: @user.token), class: "padded"
-  %br
