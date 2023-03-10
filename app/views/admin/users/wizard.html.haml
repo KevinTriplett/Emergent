@@ -6,6 +6,7 @@
   .wizard-pane.jumbotron.wizard-links
     %h2.user-name= @user.name
     %p= @user.status
+    %p= "Email address: #{@user.email}"
     %p.user-greeter
       Greeter:
       - link_text = @user.greeter_id == @current_user.id ? @current_user.name : "I want to greet"
@@ -23,10 +24,9 @@
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of greeting" }
       %br
-      .email-template-buttons Template buttons will be visible here
-      = link_to "Send Email", "#", class: "btn btn-primary email-template-send"
-      %p= "Email address: #{@user.email}"
-      = link_to "Next >", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-primary next"
+      .email-greeting-template-buttons Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-send"
+      = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
 
 
   - if "Zoom Scheduled" == @user.status
@@ -39,21 +39,34 @@
       %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
       %br
       - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
-      = link_to "< Prev", url, class: "btn btn-primary prev"
+      = link_to "< Prev", url, class: "btn btn-warning prev"
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
-      = link_to "Greeting Done", url, class: "btn btn-primary done"
+      = link_to "Greeting Done", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
-      = link_to "Chat Done", url, class: "btn btn-primary done"
+      = link_to "Chat Done", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-declined")
-      = link_to "Greeting Declined", url, class: "btn btn-primary done"
+      = link_to "Greeting Declined", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "no-resposne")
-      = link_to "No Response", url, class: "btn btn-primary done"
+      = link_to "No Response", url, class: "btn btn-success done"
 
   - if @user.status.match /completed/
     -# give greeter a fun celebratory animation
     .wizard-pane.jumbotron.greeting-done
       - result = @user.status.match(/Done/) ? "greeting" : "attempting to greet"
       %h2= "Yay! Thanks for #{result} this new member"
+
+
+  - if "Request Declined" == @user.status
+    .wizard-pane.jumbotron.user-email
+      %h2 Asking for Clarification
+      %input.email-subject.form-control{ placeholder: "Subject" }
+      %textarea.email-body.form-control{ placeholder: "Body of email" }
+      %br
+      .email-clarification-template-buttons Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-send"
+      %p= "Email address: #{@user.email}"
+      - url = admin_approve_user_path(token: @user.token)
+      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
 
 
   -# make answers to questions available throughout the process
@@ -68,10 +81,12 @@
           %span.answer= a
     - if "Pending" == @user.status
       - url = admin_approve_user_path(token: @user.token)
-      = link_to "Answers Are Acceptable", url, class: "btn btn-primary user-approve"
-      = link_to "Answers Need Clarification", "#", class: "btn btn-warning user-reject"
+      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
+      - url = admin_user_wizard_path(token: @user.token, status: "request-declined")
+      = link_to "Answers Need Clarification", url, class: "btn btn-warning user-reject"
       .lds-hourglass#spinner
       %span.progress-message Working ...
+
 
 
   .wizard-pane.jumbotron.user-notes

@@ -29,6 +29,9 @@ module Admin
     def wizard
       @user = User.find_by_token(params[:token])
       case params[:status]
+      when "request-declined"
+        @user.update status: "Request Declined"
+        return redirect_to admin_user_wizard_url(token: @user.token)
       when "scheduling-zoom"
         @user.update status: "Scheduling Zoom"
         flash[:notice] = "User successfully transitioned to scheduling zoom"
@@ -79,13 +82,17 @@ module Admin
     # ------------------------------------------------------------------------
 
     def send_email
-      user = Rails.env.production? ? User.find_by_token(params[:token]) : current_user
+      user = User.find_by_token(params[:token])
+      email_user = Rails.env.production? ? user : current_user
       UserMailer.with({
-        user: user,
+        user: email_user,
         subject: params[:subject],
         body: params[:body]
       }).send_greeter_invite_email.deliver_now
-      return render json: {}
+      flash[:notice] = "Email sent to #{user.name}"
+      return render json: {
+        url: admin_user_wizard_url(token: user.token)
+      }
     end
 
     # ------------------------------------------------------------------------

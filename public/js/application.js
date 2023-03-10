@@ -58,8 +58,8 @@ function setCookie(name, value) {
 }
 
 ////////////////////////////////////////////////////
-// EMAIL TEMPLATES
-var emailTemplates = [
+// EMAIL GREETING TEMPLATES
+var emailGreetingTemplates = [
 function(data) {
   return `Hi ${data.name},
 
@@ -162,6 +162,48 @@ Let me know if any of these times work for you. Or suggest some times that work 
 I look forward to hearing from you.
   
 Cheers,
+${data.greeter}`;
+}]
+
+////////////////////////////////////////////////////
+// EMAIL CLARIFICATION TEMPLATES
+var emailClarificationTemplates = [
+  function(data) {
+    return `Hi ${data.name},
+  
+I am a Greeter at Emergent Commons and saw your recent request to join our community. I am writing because your responses to our Landing Page questions seem too brief and/or insufficient. If you are still interested in joining, would you please elaborate on your responses to these questions and re-submit your request?
+
+1.   What drew you to this community? What do you hope to experience here?
+2.   We do not have an individual or a team creating, curating or broadcasting content. It's our members that bring the content, create events, start groups and spark discussion. What lights you up and how do you think you might share that here?
+
+Here is the link to request joining:
+https://emergent-commons.mn.co/
+  
+If you have any questions about this, please reply to this email.
+  
+Thank you,
+${data.greeter}`;
+},
+  ////////////////////////////////////////////////////
+  function(data) {
+    return `Hi ${data.name},
+
+I am one of the greeters volunteers for the Emergent Commons community that you recently requested to join. Because a main focus in this community is relational in nature we put a lot of thought into our initial questionnaire to the prospective members and we appreciate thoughtful answers. Our onboarding process includes an offering to meet on zoom to every new member after the questionnaire gets reviewed and answers get accepted. Before I could proceed with our onboarding process I would like to get some clarifications from you sent to me as a response to this email.
+
+You answered: "Jupitor R." to our two questions:
+
+1. What drew you to this community?
+2. What do you hope to experience here?
+
+I am not familiar with that phrase in the context of our questions. Could you please try elaborating on each of these two questions for
+me?
+
+The next two questions are also pretty important for us especially because we do not have an individual or a team creating, curating or broadcasting content. It's our members that bring the content, create events, start groups and spark discussion. Based on your answer, I see that you are very interested in the meta-crisis and you are in the right place, indeed. Could you please try elaborating on the next two questions for me?
+
+3. What lights you up?
+4. How do you think you might share that here?
+
+I am looking forward to hearing from you soon,
 ${data.greeter}`;
 }]
 
@@ -615,7 +657,9 @@ $(document).ready(function() {
     if (showAll) $("table.users tbody tr:hidden").show();
     else $("table.users tbody tr").each(function() {
       var self = $(this);
-      var hide = self.attr("data-greeter-id") != greeterId && self.attr("data-status") != "Pending"
+      var hide = self.attr("data-greeter-id") != greeterId &&
+        self.attr("data-status") != "Pending" &&
+        self.attr("data-status") != "Request Declined"
       if (hide) self.hide();
     });
   }
@@ -635,8 +679,10 @@ $(document).ready(function() {
     $(".change-log").toggle();
   });
 
-  $(".email-template-buttons").empty();
-  for (templateFunc of emailTemplates) {
+  ////////////////////////////////////////////////////
+  // GREETER EMAIL
+  $(".email-greeting-template-buttons").empty();
+  for (templateFunc of emailGreetingTemplates) {
     var button = $(document.createElement("a"));
     button.addClass("btn btn-secondary");
     button.attr("href", "#");
@@ -652,20 +698,48 @@ $(document).ready(function() {
         .text(func(data))
         .trigger("input");
       $(".user-email .email-subject").val("Scheduling your welcome Zoom to Emergent Commons 👋🏼");
-      $(".email-template-send").show();
+      $(".email-send").show();
     });
-    var buttonText = `Template ${$(".email-template-buttons a").length + 1}`;
+    var buttonText = `Template ${$(".email-greeting-template-buttons a").length + 1}`;
     button.text(buttonText);
-    $(".email-template-buttons").append(button);
+    $(".email-greeting-template-buttons").append(button);
   }
-  $(".email-template-send").hide();
 
-  $(".email-template-send").on("click", function(e) {
+  ////////////////////////////////////////////////////
+  // CLARIFICATION EMAIL
+  $(".email-clarification-template-buttons").empty();
+  for (templateFunc of emailClarificationTemplates) {
+    var button = $(document.createElement("a"));
+    button.addClass("btn btn-secondary");
+    button.attr("href", "#");
+    button.data("func", templateFunc);
+    button.on("click", function(e) {
+      e.preventDefault();
+      var data = {
+        name: $(".user-name").first().text(),
+        greeter: greeterName
+      };
+      var func = $(this).data("func");
+      $(".user-email .email-body")
+        .text(func(data))
+        .trigger("input");
+      $(".user-email .email-subject").val("Following up on your request to join Emergent Commons 👋🏼");
+      $(".email-send").show();
+    });
+    var buttonText = `Template ${$(".email-clarification-template-buttons a").length + 1}`;
+    button.text(buttonText);
+    $(".email-clarification-template-buttons").append(button);
+  }
+
+  ////////////////////////////////////////////////////
+  // EMAIL SEND
+
+  $(".email-send").hide().on("click", function(e) {
     e.preventDefault();
-    var newMemberEmail = $(".user-email a.email-address").text().trim();
     var subject = $(".user-email .email-subject").val().trim();
     var body = $(".user-email .email-body").val().trim();
     // body = encodeURIComponent(body);
+    // var newMemberEmail = $(".user-email a.email-address").text().trim();
     // window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
     var self = $(this);
     var url = self.closest("[data-email-url]").attr("data-email-url");
@@ -684,9 +758,8 @@ $(document).ready(function() {
       headers: {
         'X-CSRF-Token': token
       },
-      success: function(data, textStatus, jqXHR) {
-        var next = $("a.next");
-        if (next.attr("href")) window.location.href = next.attr("href");
+      success: function(result) {
+        window.location.href = result.url;
       },
       error: function(data, textStatus, jqXHR) {
         alert("Something went wrong -- ask Kevin");
@@ -696,11 +769,6 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // APPROVE AND REJECT BUTTONS
-  $("a.user-reject").on("click", function(e) {
-    e.preventDefault();
-    alert("Contact a Host to reject this request");
-  });
-
   $("a.user-approve").on("click", function(e) {
     e.preventDefault();
     var self = $(this);
@@ -856,7 +924,7 @@ $(document).ready(function() {
   $("td.user-email a").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this).closest("[data-id]");
-    var maxIndex = emailTemplates.length;
+    var maxIndex = emailGreetingTemplates.length;
     var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
     if (!templateIndex) return;
 
@@ -875,7 +943,7 @@ $(document).ready(function() {
       name: newMemberName,
       greeter: greeterName
     };
-    var body = emailTemplates[templateIndex](data);
+    var body = emailGreetingTemplates[templateIndex](data);
     body = encodeURIComponent(body);
     var subject = "Scheduling your welcome Zoom to Emergent Commons 👋🏼"
     // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";

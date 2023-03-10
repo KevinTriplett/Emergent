@@ -318,16 +318,21 @@ table.user, #greeter.user-wizard {
     }
   }
   .user-meeting-datetime input {
-    width: 350px;
+    width: 165px;
   }
 }
 
 body#greeter.user-wizard {
   background-color: lightcyan;
 
-  .wizard-links .user-greeter {
-    margin-top: -15px;
-    margin-bottom: 2rem;
+  .wizard-links {
+    p {
+      margin: 0px;
+    }
+
+    a {
+      margin-top: 30px;
+    }
   }
 
   .jumbotron {
