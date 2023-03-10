@@ -69,7 +69,8 @@ end
 
 def login(params = {})
   user = create_authorized_user(params)
-  user.update first_name: user.name
+  user.first_name, user.last_name = user.name.split(" ")
+  user.save
   visit login_url(token: user.token)
   user
 end
