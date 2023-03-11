@@ -51,7 +51,7 @@ class ApproveUserSpider < EmergeSpider
     
     ############################################
     # NB: do not approve except in production!
-    return set_result("testing") unless Rails.env.production?
+    return set_result("1") unless Rails.env.production?
 
     ############################################
     # find approve button for this user
