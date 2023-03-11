@@ -5,22 +5,26 @@
 - dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
 
 .wizard{ data: dataset }
-  .wizard-pane.jumbotron.wizard-links
+  .wizard-pane.jumbotron.user-summary
     %h2
       %span.user-name= @user.name
-      %span= "#{@user.locked? ? " (locked)" : nil}"
-    %p.user-greeter= "Greeter: #{@user.greeter_id ? @user.greeter.name : "(nobody)"}"
+      %span= @user.locked? ? " (locked)" : nil
+    %p.user-greeter
+      %strong Greeter:
+      = @user.greeter_id ? @user.greeter.name : "(nobody)"
     %p.user-email
-      Email address:
+      %strong Email address:
       = link_to @user.email, "mailto:#{@user.email}"
-    %p.utc-time= "Greeting on #{@user.when_timestamp ? @user.when_timestamp.picker_datetime : nil}"
+    %p.utc-time
+      %strong Greeting on:
+      = @user.when_timestamp ? @user.when_timestamp.picker_datetime : "(no date set)"
 
     = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
     = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
     = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
 
+    %h5 Status:
     .user-status
-      %h5 Status:
       %select
         - @status_options.each do |o|
           - selected = (o == @user.status ? "selected" : nil)
@@ -51,6 +55,7 @@
 
 
   .wizard-pane.jumbotron.admin.opt.hidden
+    %h5 Admin Use Only!
     = link_to "Generate Tokens", admin_user_token_url(token: @user.token, command: "generate")
     |
     = link_to "Regenerate Tokens", admin_user_token_url(token: @user.token, command: "regenerate")

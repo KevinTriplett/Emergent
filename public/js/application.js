@@ -287,18 +287,6 @@ var setUserGreeter = function(userDom, newGreeterId) {
   });
 }
 
-var setStatus = function(userDom) {
-  var status = userDom.find(".user-status select").val();
-  if ("Scheduling Zoom" == status) {
-    if (!confirm("Set status to Zoom Scheduled?")) return true;
-    setUserStatus(userDom, "Zoom Scheduled");
-  } else if ("Zoom Scheduled" != status) {
-    alert("Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time");
-    return true;
-  }
-  return false;
-}
-
 var setUserStatus = function(userDom, userStatus) {
   var data = { status: userStatus || userDom.find(".user-status select").val() };
   patch(userDom, data, function(result) {
