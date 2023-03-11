@@ -113,8 +113,8 @@ class NewUserSpider < EmergeSpider
     #   member_id in database
     #     skip since we already have all the information we can get
     if user && (user.member_id || "Request Declined" == user.status) && !user.questions_responses.blank?
-      EmergeSpider.logger.info "  SKIP #{full_name} BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
-      EmergeSpider.logger.info "  SKIP #{full_name} BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
+      EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
+      EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
       return
     end
 
@@ -143,7 +143,7 @@ class NewUserSpider < EmergeSpider
     end
 
     EmergeSpider.logger.debug "\n\n-------------------------------------------------------"
-    EmergeSpider.logger.info "Adding name = #{full_name}"
+    EmergeSpider.logger.debug "Adding name = #{full_name}"
     EmergeSpider.logger.debug "email = #{email}"
     EmergeSpider.logger.debug "request_date = #{request_date}"
     EmergeSpider.logger.debug "status = #{status}"
