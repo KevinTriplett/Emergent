@@ -288,7 +288,7 @@ var setUserGreeter = function(userDom, newGreeterId) {
 }
 
 var setStatus = function(userDom) {
-  var status = userDom.find("td.user-status select").val();
+  var status = userDom.find(".user-status select").val();
   if ("Scheduling Zoom" == status) {
     if (!confirm("Set status to Zoom Scheduled?")) return true;
     setUserStatus(userDom, "Zoom Scheduled");
@@ -300,7 +300,7 @@ var setStatus = function(userDom) {
 }
 
 var setUserStatus = function(userDom, userStatus) {
-  var data = { status: userStatus || userDom.find("td.user-status select").val() };
+  var data = { status: userStatus || userDom.find(".user-status select").val() };
   patch(userDom, data, function(result) {
     var newSel = document.createElement("select");
     for (const option of result.status_options) {
@@ -310,13 +310,13 @@ var setUserStatus = function(userDom, userStatus) {
       newSel.add(newOpt, null);
     };
     userDom
-      .find("td.user-status")
+      .find(".user-status")
       .empty()
       .append(newSel);
     initStatusSelectMenu();
-    userDom.find("td.user-status").attr("data-status", result.model.status);
-    userDom.find("td.user-status select").val(result.model.status).selectmenu("refresh");
-    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
+    userDom.find(".user-status").attr("data-status", result.model.status);
+    userDom.find(".user-status select").val(result.model.status).selectmenu("refresh");
+    userDom.find(".user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
   }, function() {
     alert("Could not change status - ask Kevin");
   });
@@ -326,9 +326,9 @@ var dateInPast = function(userDom, ts) {
   if (pastOkay || !ts) return false;
   if (Date.parse(ts) > (new Date).getTime()) return false;
   if (!confirm("Are you sure you want to set the Zoom meeting in the past?")) {
-    var timestamp = userDom.find("td.user-meeting-datetime").attr("data-timestamp");
+    var timestamp = userDom.find(".user-meeting-datetime").attr("data-timestamp");
     timestamp ||= "";
-    userDom.find("td.user-meeting-datetime input").val(timestamp);
+    userDom.find(".user-meeting-datetime input").val(timestamp);
     return true;
   }
   pastOkay = true;
