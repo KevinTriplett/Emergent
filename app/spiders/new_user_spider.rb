@@ -54,42 +54,37 @@ class NewUserSpider < EmergeSpider
     EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
     begin
       browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
-      sleep 5
+      wait_until(".confirmation-modal-container .modal-confirm-button")
+      sleep 1
       browser.find(:css, ".confirmation-modal-container .modal-confirm-button").click
-      sleep 5
+      sleep 1
     rescue => error
       EmergeSpider.logger.info "COULD NOT REVEAL EMAIL BECAUSE: #{error}"
     end
-
-    rows = browser.current_response.css(row_css)
-
-    # get all the ids for scrolling into view for each
-    @@row_ids = rows.collect {|row| row.attr("data-id")}
-
+    
+    # now check row-by-row for new users and missing information
     new_users = []
+    rows = browser.current_response.css(row_css)
     rows.each do |row|
       u_hash = extract_user_hash(row)
       next if u_hash.blank?
-
       create_or_update_user(u_hash)
       new_users.push u_hash
       sleep 1
     end
-    update_rejected_users(new_users)
   end
 
   ##################################################
   ## EXTRACT USER DATA
   def extract_user_hash(row)
     status = row.css(".invite-list-item-status-text").text.strip
-    joined = ("Joined!" == status)
-
+    joined = "Joined!" == status
+    member_id = get_member_id(row)
     email = row.css(".invite-list-item-email-text").text.strip
     if email.match /\*{3}/ # emails are cloaked with asterisks
       EmergeSpider.logger.info "EMAILS ARE CLOAKED"
       email = nil
     end
-    member_id = get_member_id(row)
     first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
     last_name = row.css(".invite-list-item-last-name-text").text.strip
     full_name = "#{first_name} #{last_name}"
@@ -102,17 +97,20 @@ class NewUserSpider < EmergeSpider
     #     may have been approved using MN platform
     #   user in database but not approved yet (not joined)
     #     skip since we already have all the information we can get
-    #   joined but member_id not yet captured in database (capture member_id)
+    #   member_id or answers to questions not yet recorded in database
     #     update member_id, profile_url and chat_url
     #     update status and joined flag
-    #   joined with member_id in database
+    #     update answers to questions in db
+    #   member_id and answers to questions already recorded in database
     #     skip since we already have all the information we can get
 
-    user = (member_id && User.find_by_member_id(member_id)) ||
-      (email && User.find_by_email(email)) ||
-      (request_date && User.where(request_timestamp: request_date).and(User.where(name: full_name)).first)
-    
-    #   joined with member_id in database
+    user = find_user_by_user_hash({
+      member_id: member_id,
+      email: email,
+      name: full_name
+    })
+
+    #   member_id in database
     #     skip since we already have all the information we can get
     if user && (user.member_id || "Request Declined" == user.status) && !user.questions_responses.blank?
       EmergeSpider.logger.info "  SKIP #{full_name} BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
@@ -120,22 +118,18 @@ class NewUserSpider < EmergeSpider
       return
     end
 
-    if user && !joined && !member_id && !user.questions_responses.blank?
+    if user && !member_id && !user.questions_responses.blank?
       EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE IN DATABASE BUT NOT JOINED YET"
       return
     end
 
-    if joined && member_id
-      #   joined but member_id not yet captured in database (capture member_id)
-      #     update member_id, profile_url and chat_url
-      #     update status and joined flag
-      # profile_url has pattern https://emergent-commons.mn.co/members/7567995
-      # chat_url has pattern https://emergent-commons.mn.co/chats/new?user_id=7567995
-      profile_url = "https://emergent-commons.mn.co/members/#{member_id}"
-      chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}"
-    else
-      chat_url = profile_url = member_id = nil
-    end
+    #   member_id not yet captured in database (capture member_id)
+    #     update member_id, profile_url and chat_url
+    #     update status and joined flag
+    # profile_url has pattern https://emergent-commons.mn.co/members/7567995
+    # chat_url has pattern https://emergent-commons.mn.co/chats/new?user_id=7567995
+    profile_url = member_id ? "https://emergent-commons.mn.co/members/#{member_id}" : nil
+    chat_url = member_id ? "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}" : nil
 
     begin
       questions_and_answers = get_questions_and_answers(joined, row) if !user || user.questions_responses.blank?
@@ -146,7 +140,7 @@ class NewUserSpider < EmergeSpider
       EmergeSpider.logger.fatal "#{name} failed to open Answers modal:"
       EmergeSpider.logger.fatal error
       EmergeSpider.logger.fatal "skipping user ------------------------------------"
-    end  
+    end
 
     EmergeSpider.logger.debug "\n\n-------------------------------------------------------"
     EmergeSpider.logger.info "Adding name = #{full_name}"
@@ -168,7 +162,7 @@ class NewUserSpider < EmergeSpider
       chat_url: chat_url,
       member_id: member_id,
       request_timestamp: request_date,
-      status: "Joined!" == status ? "Scheduling Zoom" : status,
+      status: joined ? "Scheduling Zoom" : status,
       questions_responses: (questions_and_answers || []).join(" -:- "),
       joined: joined
     }
@@ -192,12 +186,12 @@ class NewUserSpider < EmergeSpider
     questions_and_answers = nil
 
     row_id = row.attr("data-id") # returns the id string
-    css = "tr.invite-request-list-item[data-id='#{row_id}']"
-    script = "$(\"#{css}\")[0].scrollIntoView(false)"
-    EmergeSpider.logger.debug "EXECUTING SCRIPT #{script}"
-    browser.execute_script(script)
-    sleep 1
-    browser.save_screenshot
+    css = "[data-id='#{row_id}']"
+    # script = "$(\"#{css}\")[0].scrollIntoView(false)"
+    # EmergeSpider.logger.debug "EXECUTING SCRIPT #{script}"
+    # browser.execute_script(script)
+    # sleep 1
+    # browser.save_screenshot
 
 
     if joined
@@ -251,12 +245,13 @@ class NewUserSpider < EmergeSpider
     user = find_user_by_user_hash(u_hash)
     if user
       EmergeSpider.logger.info "updating user: #{user.name}"
+      user.member_id ||= u_hash[:member_id]
       user.profile_url ||= u_hash[:profile_url]
       user.chat_url ||= u_hash[:chat_url]
       user.status = u_hash[:status] if u_hash[:status] && user.status == "Pending"
       user.joined = u_hash[:joined] unless user.joined
       user.questions_responses = u_hash[:questions_responses] if user.questions_responses.blank?
-      user.save
+      user.save!
     else
       EmergeSpider.logger.info "creating user: #{u_hash[:name]}"
       User.create!(u_hash)
@@ -265,19 +260,10 @@ class NewUserSpider < EmergeSpider
     logger.fatal "ERROR in new_user_spider#create_or_update_user: #{error.message}"
   end
 
-  def update_rejected_users(user_hashes)
-    user_emails = user_hashes.collect {|u_hash| u_hash[:email]}
-    User.where(joined: false).each do |user|
-      next user_emails.index(user.email)
-      # user no longer on MN request to join list
-      user.update status: "Request Declined"
-    end
-  end
-
   def find_user_by_user_hash(u_hash)
-    (u_hash[:email] && User.find_by_email(u_hash[:email])) ||
     (u_hash[:member_id] && User.find_by_member_id(u_hash[:member_id])) ||
-    User.find_by_name(u_hash[:name])
+    (u_hash[:email] && User.find_by_email(u_hash[:email])) ||
+    (User.where(u_hash[:name]).or(User.where("request_timestamp > ?", Time.now - 1.month)).first)
   end
 
   ##################################################
