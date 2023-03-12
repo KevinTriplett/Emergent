@@ -9,6 +9,7 @@ class ApproveUserSpider < EmergeSpider
     user_agent: USER_AGENT,
     disable_images: true,
     window_size: [1366, 768],
+    user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
@@ -24,7 +25,8 @@ class ApproveUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     EmergeSpider.logger.info "SPIDER #{name} STARTING"
-    request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
+    sign_in
+
     request_to(:approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests")
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
