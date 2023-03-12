@@ -263,7 +263,7 @@ class NewUserSpider < EmergeSpider
   def find_user_by_user_hash(u_hash)
     (u_hash[:member_id] && User.find_by_member_id(u_hash[:member_id])) ||
     (u_hash[:email] && User.find_by_email(u_hash[:email])) ||
-    (User.where(u_hash[:name]).or(User.where("request_timestamp > ?", Time.now - 1.month)).first)
+    (User.where(name: u_hash[:name]).or(User.where("request_timestamp > ?", Time.now - 1.month)).first)
   end
 
   ##################################################
