@@ -75,10 +75,10 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "a.user-profile-button", "🙂 Profile"
       assert_select "a.user-chat-button", "💬 Chat"
 
-      assert_select ".user-greeter", "Greeter: #{user.greeter.name}"
+      assert_select ".user-greeter", "Greeter:\n#{user.greeter.name}"
       assert_select ".user-email", "Email address:\n#{user.email}"
       # assert_select ".user-status span.ui-selectmenu-text", user.status
-      assert_select "p", "Greeting on #{user.when_timestamp.picker_datetime}"
+      assert_select "p.user-greeting-date", "Greeting on #{user.when_timestamp.picker_datetime}"
       assert_select ".user-notes", "Notes\n(Record anything here that a greeter might need to know, in case you need to turn over this greeting)\n#{user.notes}"
       assert_select ".user-greeter", "Greeter: #{user.greeter.name}"
       assert_select ".user-status select option[selected='selected']", user.status

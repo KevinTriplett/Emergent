@@ -15,7 +15,7 @@
     %p.user-email
       %strong Email address:
       = link_to @user.email, "mailto:#{@user.email}"
-    %p.utc-time
+    %p.user-greeting-date.utc-time
       %strong Greeting on:
       = @user.when_timestamp ? @user.when_timestamp.picker_datetime : "(no date set)"
 
