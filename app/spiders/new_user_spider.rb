@@ -63,20 +63,17 @@ class NewUserSpider < EmergeSpider
     end
     
     # now check row-by-row for new users and missing information
-    new_users = []
     rows = browser.current_response.css(row_css)
     rows.each do |row|
-      u_hash = extract_user_hash(row)
+      u_hash = exfiltrate_user_hash(row)
       next if u_hash.blank?
       create_or_update_user(u_hash)
-      new_users.push u_hash
-      sleep 1
     end
   end
 
   ##################################################
   ## EXTRACT USER DATA
-  def extract_user_hash(row)
+  def exfiltrate_user_hash(row)
     status = row.css(".invite-list-item-status-text").text.strip
     joined = "Joined!" == status
     member_id = get_member_id(row)
@@ -169,7 +166,7 @@ class NewUserSpider < EmergeSpider
   end
 
   ##################################################
-  ## EXTRACT EMAIL AND MEMBER_ID
+  ## EXTRACT EMAIL AND MEMBER_ID AND ANSWERS TO QUESTIONS
   def get_email(row)
     text = row.css(".invite-list-item-email-text").text.strip
     text.blank? ? nil : text.downcase
@@ -180,19 +177,11 @@ class NewUserSpider < EmergeSpider
     href.blank? ? nil : href.value.split('/').last.to_i
   end
 
-  ##################################################
-  ## EXTRACT QUESTIONS AND ANSWERS
   def get_questions_and_answers(joined, row)
     questions_and_answers = nil
 
     row_id = row.attr("data-id") # returns the id string
     css = "[data-id='#{row_id}']"
-    # script = "$(\"#{css}\")[0].scrollIntoView(false)"
-    # EmergeSpider.logger.debug "EXECUTING SCRIPT #{script}"
-    # browser.execute_script(script)
-    # sleep 1
-    # browser.save_screenshot
-
 
     if joined
       #   user not in database but has a member_id (may have been approved using MN platform)
@@ -240,7 +229,7 @@ class NewUserSpider < EmergeSpider
   end
 
   ##################################################
-  ## CREATE OR DELETE OR UPDATE USERS
+  ## CREATE OR DELETE OR UPDATE USER
   def create_or_update_user(u_hash)
     user = find_user_by_user_hash(u_hash)
     if user
