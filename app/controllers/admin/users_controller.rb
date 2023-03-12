@@ -29,6 +29,9 @@ module Admin
     def wizard
       @user = User.find_by_token(params[:token])
       case params[:status]
+      when "clarification-needed"
+        @user.update status: "Clarification Needed"
+        return redirect_to admin_user_wizard_url(token: @user.token)
       when "request-declined"
         @user.update status: "Request Declined"
         return redirect_to admin_user_wizard_url(token: @user.token)
@@ -149,6 +152,7 @@ module Admin
       users.map do |u|
         css_class = []
         css_class.push("pending") unless u.joined?
+        css_class.push("clarification") if "Clarification Needed" == u.status
         css_class.push("declined") if "Request Declined" == u.status
         css_class.push("scheduling") if "Scheduling Zoom" == u.status
         css_class.push("scheduled") if "Zoom Scheduled" == u.status

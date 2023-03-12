@@ -647,7 +647,7 @@ $(document).ready(function() {
       var self = $(this);
       var hide = self.attr("data-greeter-id") != greeterId &&
         self.attr("data-status") != "Pending" &&
-        self.attr("data-status") != "Request Declined"
+        self.attr("data-status") != "Clarification Needed"
       if (hide) self.hide();
     });
   }

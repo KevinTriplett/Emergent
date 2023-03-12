@@ -45,7 +45,11 @@ class User < ActiveRecord::Base
   def get_status_options
     {
       "Pending": [
-        "Request Declined"
+        "Clarification Needed"
+      ],
+      "Clarification Needed": [
+        "Request Declined",
+        "Scheduling Zoom"
       ],
       "Request Declined": [
         "Pending"

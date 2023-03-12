@@ -398,6 +398,9 @@ table.users, table.user, #greeter.user-wizard {
     tr.pending {
       background-color: rgb(253, 248, 169);
     }
+    tr.clarification {
+      background-color: rgb(253, 200, 169);
+    }
     tr.declined {
       background-color: rgb(142, 141, 141);
     }
