@@ -17,7 +17,7 @@ class EmergeSpider < Kimurai::Base
     ::Spider.set_result(name, result)
   end
 
-  def sign_in(response, url:, data: {})
+  def sign_in
     return if response_has("body.communities-app")
 
     EmergeSpider.logger.info "#{name} SIGNING IN"

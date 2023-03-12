@@ -9,7 +9,7 @@ class NewUserSpider < EmergeSpider
     user_agent: USER_AGENT,
     disable_images: true,
     window_size: [1600, 800],
-    user_data_dir: Rails.root.join('shared', 'tmp', 'browser_profile').to_s,
+    user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
@@ -27,7 +27,7 @@ class NewUserSpider < EmergeSpider
   ## PARSE
   def parse(response, url:, data: {})
     EmergeSpider.logger.info "SPIDER #{name} STARTING"
-    request_to(:sign_in, url: "https://emergent-commons.mn.co/sign_in") unless response_has("body.communities-app")
+    sign_in
 
     @@limit_user_count = get_message.to_i || 100
     request_to :parse_members, url: "https://emergent-commons.mn.co/settings/invite/requests"
