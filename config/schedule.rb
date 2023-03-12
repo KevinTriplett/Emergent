@@ -19,11 +19,11 @@ if 'production' == @environment
     rake "ec:nm_crawl_all"
   end
 
-  every 1.hour do
+  every 15.minutes do
     rake "ec:nm_crawl_new"
   end
 
-  every 15.minutes do
+  every 8.minutes do
     rake "ec:send_survey_invite_messages"
   end
 end
