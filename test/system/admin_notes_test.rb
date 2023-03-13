@@ -13,9 +13,9 @@ class NotesTest < ApplicationSystemTestCase
 
   test "Admin can access, add, change and delete survey notes" do
     DatabaseCleaner.cleaning do
-      group_1 = create_survey_group
+      group_1 = create_survey_group(name: "Group 1")
       survey = group_1.survey
-      group_2 = create_survey_group(survey: survey)
+      group_2 = create_survey_group(survey: survey, name: "Group 2")
       admin = login
       assert survey.reload.ordered_notes.empty?
       assert survey.survey_questions.empty?

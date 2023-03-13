@@ -12,7 +12,7 @@ class SurveysTest < ApplicationSystemTestCase
       survey = survey_invite.survey
       group_0 = create_survey_group(survey: survey)
       group_1 = create_survey_group(survey: survey)
-      group_2 = create_survey_group(survey: survey, votes_max: 10)
+      group_2 = create_survey_group(survey: survey, votes_max: 10, name: "Group 2")
       user = survey_invite.user
 
       survey_question_0 = create_survey_question({
@@ -132,8 +132,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_2.group_position,
-        question_position: survey_question_2.position
+        survey_question_id: survey_question_2.id
       }
       assert_current_path survey_path(params_hash)
       assert_selector "a", count: 2
@@ -200,8 +199,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_7.group_position,
-        question_position: survey_question_7.position
+        survey_question_id: survey_question_7.id
       }
       assert_current_path survey_path(params_hash)
       assert_selector "a", count: 2
@@ -212,8 +210,7 @@ class SurveysTest < ApplicationSystemTestCase
       
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_2.group_position,
-        question_position: survey_question_2.position
+        survey_question_id: survey_question_2.id
       }
       assert_current_path survey_path(params_hash)
 
@@ -243,8 +240,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_7.group_position,
-        question_position: survey_question_7.position
+        survey_question_id: survey_question_7.id
       }
       assert_current_path survey_path(params_hash)
       assert_selector "a", count: 2
@@ -287,8 +283,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_11.group_position,
-        question_position: survey_question_11.position
+        survey_question_id: survey_question_11.id
       }
       assert_current_path survey_path(params_hash)
       assert_selector "a", count: 2
@@ -399,8 +394,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_7.group_position,
-        question_position: survey_question_7.position
+        survey_question_id: survey_question_7.id
       }
       assert_current_path survey_path(params_hash)
       assert_selector "a", count: 2
@@ -411,8 +405,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: survey_question_11.group_position,
-        question_position: survey_question_11.position
+        survey_question_id: survey_question_11.id
       }
       assert_current_path survey_path(params_hash)
       assert_selector "a", count: 2
@@ -423,8 +416,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: -1,
-        question_position: -1
+        survey_question_id: -1
       }
       assert_current_path survey_path(params_hash)
       assert_selector "h1", text: "Thank You for taking our survey!"
@@ -436,8 +428,10 @@ class SurveysTest < ApplicationSystemTestCase
       survey_invite = create_survey_invite
       survey = survey_invite.survey
       group_0 = create_survey_group(survey: survey)
-      group_1 = create_survey_group(survey: survey, votes_max: 30)
-      group_2 = create_survey_group(survey: survey, votes_max: 30)
+      group_1 = create_survey_group(survey: survey, votes_max: 30, name: "Group 1")
+      group_2 = create_survey_group(survey: survey, votes_max: 30, name: "Group 2")
+      group_3 = create_survey_group(survey: survey, votes_max: 30, name: "Group 3")
+      group_4 = create_survey_group(survey: survey, votes_max: 30, name: "Group 4")
 
       survey_question_0 = create_survey_question({
         survey_group: group_0,
@@ -471,22 +465,40 @@ class SurveysTest < ApplicationSystemTestCase
         survey_group: group_1,
         coords: "820px:130px"
       })
-      note_4 = create_note({
+      survey_question_4 = create_survey_question({
         survey_group: group_2,
+        question_type: "Instructions",
+        question: "Now consider these notes",
+        answer_type: "Email"
+      })      
+      note_4 = create_note({
+        survey_group: group_3,
         coords: "30px:500px"
       })
       note_5 = create_note({
-        survey_group: group_2,
+        survey_group: group_3,
         coords: "420px:500px"
       })
       note_6 = create_note({
-        survey_group: group_2,
+        survey_group: group_3,
+        coords: "820px:500px"
+      })
+      note_7 = create_note({
+        survey_group: group_4,
+        coords: "30px:500px"
+      })
+      note_8 = create_note({
+        survey_group: group_4,
+        coords: "420px:500px"
+      })
+      note_9 = create_note({
+        survey_group: group_4,
         coords: "820px:500px"
       })
 
       # ------------------------------------------------------------------------------
 
-      visit survey_path(survey_invite.token)
+      visit survey_path(token: survey_invite.token)
 
       assert_current_path survey_path(survey_invite.token)
       assert_selector "a", text: "Next >", count: 1
@@ -512,8 +524,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       # ------------------------------------------------------------------------------
 
-      assert_current_path survey_path(token: survey_invite.token, group_position: group_0.position, question_position: survey_question_3.position)
-
+      assert_current_path survey_path(token: survey_invite.token, survey_question_id: survey_question_3.id)
       within "#survey-question-#{survey_question_3.id}" do
         assert_selector ".survey-question-instructions", text: survey_question_3.question
         assert_selector "input", count: 0
@@ -523,14 +534,14 @@ class SurveysTest < ApplicationSystemTestCase
 
       # ------------------------------------------------------------------------------
 
-      assert_current_path survey_notes_path(survey_invite.token)
+      assert_current_path survey_path(survey_invite.token, survey_question_id: note_1.survey_question_id)
 
       assert_selector "a", text: "< Prev", count: 1
-      assert_selector "a", text: "Next >", count: 0
-      assert_selector "a", text: "Finish", count: 1
-      assert_selector ".note", count: notes_count = Note.all.count
+      assert_selector "a", text: "Next >", count: 1
+      assert_selector "a", text: "Finish", count: 0
+      assert_selector ".note", count: notes_count = 3
 
-      Note.all.each do |note|
+      [note_1,note_2,note_3].each do |note|
         url = survey_patch_path(token: survey_invite.token, id: note.survey_question_id)
         assert_selector ".note[data-url='#{url}']", count: 1
         within(".note[data-url='#{url}']") do
@@ -548,61 +559,79 @@ class SurveysTest < ApplicationSystemTestCase
       votes_left_hash[group_1.name] = group_1.votes_max
       votes_left_hash[group_2.name] = group_2.votes_max
 
-      # notes = Note.all.map {|n| n}
-      # (1..5).each do
-      #   note = notes.sample
-      #   notes.delete_at( notes.index {|n| n.id == note.id} )
-      #   url = survey_patch_path(token: survey_invite.token, id: note.survey_question_id)
+      assert_selector ".note#note-#{note_1.id}"
+      assert_selector ".note#note-#{note_2.id}"
+      assert_selector ".note#note-#{note_3.id}"
+      assert_no_selector ".note#note-#{note_4.id}"
+      assert_no_selector ".note#note-#{note_5.id}"
+      assert_no_selector ".note#note-#{note_6.id}"
+      assert_no_selector ".note#note-#{note_7.id}"
+      assert_no_selector ".note#note-#{note_8.id}"
+      assert_no_selector ".note#note-#{note_9.id}"
 
-      #   within(".note[data-url='#{url}']") do
-      #     find(".vote-down").click
-      #     assert_selector ".vote-count", text: "0"
-      #     assert_selector ".votes-left", text: votes_left_hash[note.group_name]
+      assert_selector ".note#note-#{note_1.id} .note-text", text: note_1.text
+      assert_selector ".note#note-#{note_2.id} .note-text", text: note_2.text
+      assert_selector ".note#note-#{note_3.id} .note-text", text: note_3.text
 
-      #     find(".vote-up").click
-      #     sleep 1
-      #     assert_selector ".vote-count", text: "1"
-      #     assert_selector ".votes-left", text: votes_left_hash[note.group_name] -= 1
+      click_link "Next >"
 
-      #     find(".vote-up").click
-      #     find(".vote-up").click
-      #     sleep 1
-      #     assert_selector ".vote-count", text: "3"
-      #     assert_selector ".votes-left", text: votes_left_hash[note.group_name] -= 2
+      # ------------------------------------------------------------------------------
 
-      #     find(".vote-down").click
-      #     sleep 1
-      #     assert_selector ".vote-count", text: "2"
-      #     assert_selector ".votes-left", text: votes_left_hash[note.group_name] += 1
-      #   end
-      #   [group_1,group_2].each do |group|
-      #     css = ".survey-answer-vote[data-group-id='#{group.id}'] .votes-left"
-      #     assert_selector css, text: votes_left_hash[group.name], count: 3
-      #   end
-      #   survey_answer = survey_invite.survey_answer_for(note.survey_question_id)
-      #   assert_equal votes_left_hash[note.group_name], survey_answer.reload.votes_left
-      # end
+      assert_current_path survey_path(survey_invite.token, survey_question_id: survey_question_4.id)
+
+      within "#survey-question-#{survey_question_4.id}" do
+        assert_selector ".survey-question-instructions", text: survey_question_4.question
+        assert_selector "input", count: 0
+      end
+
+      click_link "Next >"
+
+      # ------------------------------------------------------------------------------
+
+      assert_current_path survey_path(survey_invite.token, survey_question_id: note_4.survey_question_id)
+
+      assert_selector "a", text: "< Prev", count: 1
+      assert_selector "a", text: "Next >", count: 0
+      assert_selector "a", text: "Finish", count: 1
+      assert_selector ".note", count: notes_count = 6
+
+      assert_no_selector ".note#note-#{note_1.id}"
+      assert_no_selector ".note#note-#{note_2.id}"
+      assert_no_selector ".note#note-#{note_3.id}"
+      assert_selector ".note#note-#{note_4.id}"
+      assert_selector ".note#note-#{note_5.id}"
+      assert_selector ".note#note-#{note_6.id}"
+      assert_selector ".note#note-#{note_7.id}"
+      assert_selector ".note#note-#{note_8.id}"
+      assert_selector ".note#note-#{note_9.id}"
+
+      assert_selector ".note#note-#{note_4.id} .note-text", text: note_4.text
+      assert_selector ".note#note-#{note_5.id} .note-text", text: note_5.text
+      assert_selector ".note#note-#{note_6.id} .note-text", text: note_6.text
+      assert_selector ".note#note-#{note_7.id} .note-text", text: note_7.text
+      assert_selector ".note#note-#{note_8.id} .note-text", text: note_8.text
+      assert_selector ".note#note-#{note_9.id} .note-text", text: note_9.text
 
       click_link "< Prev"
 
       # ------------------------------------------------------------------------------
 
-      assert_current_path survey_path(token: survey_invite.token, group_position: survey_question_3.group_position, question_position: survey_question_3.position)
-
-      group_3 = create_survey_group(survey: survey)
-      survey_question_4 = create_survey_question({
-        survey_group: group_3,
+      assert_current_path survey_path(survey_invite.token, survey_question_id: survey_question_4.id)
+      
+      group_5 = create_survey_group(survey: survey)
+      survey_question_5 = create_survey_question({
+        survey_group: group_5,
         question_type: "Instructions",
         question: "This concludes the survey"
       })
-      survey_question_5 = create_survey_question({
-        survey_group: group_3,
+      survey_question_6 = create_survey_question({
+        survey_group: group_5,
         question_type: "Question",
         question: "Did you like it?",
         answer_type: "Yes/No"
       })
-      survey_question_6 = create_survey_question({
-        survey_group: group_3,
+      survey_question_7 = create_survey_question({
+        survey_group: group_5,
         question_type: "New Page"
       })
       
@@ -610,12 +639,12 @@ class SurveysTest < ApplicationSystemTestCase
       
       # ------------------------------------------------------------------------------
 
-      assert_current_path survey_notes_path(survey_invite.token)
+      assert_current_path survey_path(survey_invite.token, survey_question_id: note_4.survey_question_id)
       assert_selector "a", text: "< Prev", count: 1
       assert_selector "a", text: "Next >", count: 1
       assert_selector "a", text: "Finish", count: 0
 
-      Note.all.each do |note|
+      [note_4,note_5,note_6,note_7,note_8,note_9].each do |note|
         survey_answer = survey_invite.survey_answer_for(note.survey_question_id)
         url = survey_patch_path(token: survey_invite.token, id: note.survey_question_id)
         within(".note[data-url='#{url}']") do
@@ -630,24 +659,26 @@ class SurveysTest < ApplicationSystemTestCase
       
       # ------------------------------------------------------------------------------
 
+      assert_current_path survey_path(survey_invite.token, survey_question_id: survey_question_5.id)
+
       assert_selector "a", text: "< Prev", count: 1
       assert_selector "a", text: "Next >", count: 0
       assert_selector "a", text: "Finish", count: 1
       
-      within "#survey-question-#{survey_question_4.id}" do
-        assert_selector ".survey-question-instructions", text: survey_question_4.question
+      within "#survey-question-#{survey_question_5.id}" do
+        assert_selector ".survey-question-instructions", text: survey_question_5.question
         assert_selector "input", count: 0
       end
 
-      within "#survey-question-#{survey_question_5.id}" do
-        assert_selector ".survey-question-question", text: survey_question_5.question
+      within "#survey-question-#{survey_question_6.id}" do
+        assert_selector ".survey-question-question", text: survey_question_6.question
         assert_selector "input", count: 2
         within ".survey-answer-yes-no" do
           choose option: "Yes"
         end
       end
 
-      assert_selector "#survey-question-#{survey_question_6.id}", count: 0
+      assert_selector "#survey-question-#{survey_question_7.id}", count: 0
 
       click_link "Finish"
 
@@ -659,8 +690,7 @@ class SurveysTest < ApplicationSystemTestCase
 
       params_hash = {
         token: survey_invite.token,
-        group_position: -1,
-        question_position: -1
+        survey_question_id: -1
       }
       assert_current_path survey_path(params_hash)
       assert_selector "h1", text: "Thank You for taking our survey!"
@@ -697,8 +727,8 @@ class SurveysTest < ApplicationSystemTestCase
     DatabaseCleaner.cleaning do
       invite = create_survey_invite
       survey = invite.survey
-      group_0 = create_survey_group(survey: survey)
-      group_1 = create_survey_group(survey: survey)
+      group_0 = create_survey_group(survey: survey, name: "Group 0")
+      group_1 = create_survey_group(survey: survey, name: "Group 1")
       note_1 = create_note({
         survey_group: group_0,
         coords: "30px:130px"
@@ -719,8 +749,8 @@ class SurveysTest < ApplicationSystemTestCase
         create_survey_answer(survey_question: note.survey_question, survey_invite: invite)
       end
 
-      visit survey_notes_path(invite.token)
-      assert_current_path survey_notes_path(invite.token)
+      visit survey_path(invite.token, survey_question_id: note_1.survey_question_id)
+      assert_current_path survey_path(invite.token, survey_question_id: note_1.survey_question_id)
       assert_selector "#note-template", visible: :hidden, count: 1
 
       Note.all.each do |note|

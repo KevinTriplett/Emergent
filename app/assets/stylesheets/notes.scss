@@ -18,13 +18,14 @@ body#notes {
     max-width: 100%;
   }
 
-  #notes-container {
-    .links {
-      margin-top: 3px;
-      .btn {
-        position: initial;      
-      }
+  .links {
+    margin-top: 3px;
+    .btn {
+      position: initial;      
     }
+  }
+
+  #notes-container {
     .live-view {
       position: fixed;
       top: 0px;

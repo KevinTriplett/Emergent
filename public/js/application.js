@@ -380,7 +380,7 @@ var patch = function(userDom, data, success, error) {
 
 var updateChangeLog = function(model) {
   if (!model || !model.change_log) return;
-  $("td.change-log").html(model.change_log.replace(/\n/g, "<br>"));
+  $(".change-log").html(model.change_log.replace(/\n/g, "<br>"));
 }
 
 var showOpt = function(show) {
@@ -906,37 +906,6 @@ $(document).ready(function() {
   // STATUS EVENT LISTENER
   initStatusSelectMenu();
   initSurveySelectMenu();
-
-  ////////////////////////////////////////////////////
-  // EMAIL EVENT LISTENER
-  $("td.user-email a").on("click", function(e) {
-    e.preventDefault();
-    var userDom = $(this).closest("[data-id]");
-    var maxIndex = emailGreetingTemplates.length;
-    var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
-    if (!templateIndex) return;
-
-    templateIndex = parseInt(templateIndex) - 1;
-    if (templateIndex < 0 || templateIndex > maxIndex - 1) {
-      alert(`Choose an email template 1 through ${maxIndex}`);
-      return;
-    }
-
-    prevEmailTemplateIndex = templateIndex + 1;
-    setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
-
-    var newMemberName = userDom.find(".user-name").text().trim();
-    var newMemberEmail = userDom.find(".user-email a").text().trim();
-    var data = {
-      name: newMemberName,
-      greeter: greeterName
-    };
-    var body = emailGreetingTemplates[templateIndex](data);
-    body = encodeURIComponent(body);
-    var subject = "Scheduling your welcome Zoom to Emergent Commons 👋🏼"
-    // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
-    window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
-  });
 
   ////////////////////////////////////////////////////
   // SURVEY

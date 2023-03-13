@@ -62,6 +62,9 @@ class User < ActiveRecord::Base
       ],
       "Zoom Scheduled": [
         "Zoom Done (completed)",
+        "Zoom Declined (completed)",
+        "Chat Done (completed)",
+        "No Response (completed)",
         "Scheduling Zoom"
       ],
       "Zoom Done (completed)":[

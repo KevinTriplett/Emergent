@@ -24,31 +24,18 @@ class SurveyInvitesController < ApplicationController
     end
 
     get_survey
-    get_survey_questions
-    initialize_answers
     get_urls
-    @token = form_authenticity_token
-    @body_id = "survey"
-  end
-
-  # ------------------------------------------------------------------------
-
-  def notes
-    unless get_invite
-      flash[:notice] = "We're sorry, your survey was not found"
-      return redirect_to root_url
+    initialize_answers
+    if @survey_question.note?
+      get_notes_and_survey_answers
+      get_liveview_url
+      get_template
+      @body_id = "notes"
+    else
+      get_survey_questions
+      @body_id = "survey"
     end
-
-    sign_in(@survey_invite.user)
-
-    get_survey
-    get_notes_and_survey_answers
-    get_notes_urls
-    enable_live_view?
     @token = form_authenticity_token
-    @body_id = "notes"
-    last_group = @survey.last_note_survey_group
-    @template = Note.new(survey_group_id: last_group.id)
   end
 
   # ------------------------------------------------------------------------
@@ -96,7 +83,7 @@ class SurveyInvitesController < ApplicationController
     get_survey
     @survey_questions = {}
     @survey.ordered_questions.each do |sq|
-      @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
+      @survey_questions[sq.survey_group] ||= []
       @survey_questions[sq.survey_group].push sq
     end
     @body_id = "survey"
@@ -112,63 +99,44 @@ class SurveyInvitesController < ApplicationController
   end
 
   def get_survey
-    group_position = params[:group_position].to_i
-    question_position = params[:question_position].to_i
     @survey = @survey_invite.survey
-    @survey_group = @survey_invite.survey_groups.where(position: group_position).first
-    @survey_question = @survey_group.survey_questions.where(position: question_position).first
-    @survey
+    @survey_question = params[:survey_question_id] ?
+      SurveyQuestion.find(params[:survey_question_id]) :
+      @survey.ordered_questions.first
+    @survey_group = @survey_question.survey_group
   end
 
   def get_survey_questions
     @survey_questions = {}
     @survey.get_survey_questions(@survey_question).each do |sq|
-      @survey_questions[sq.survey_group] = [] unless @survey_questions[sq.survey_group]
+      @survey_questions[sq.survey_group] ||= []
       @survey_questions[sq.survey_group].push sq
     end
-    @survey_questions
   end
 
   def get_notes_and_survey_answers
-    @notes = @survey.ordered_notes
+    @notes = @survey.get_notes(@survey_question)
     @survey_answers = []
     @notes.each do |note|
       @survey_answers.push @survey_invite.survey_answer_for(note.survey_question_id)
     end
-    @survey_answers
   end
   
   def get_liveview_timestamp
     @live_view_timestamp = @survey.last_updated_note_timestamp.picker_datetime
   end
 
-  def get_urls
-    prev_group_pos, prev_question_pos = @survey.get_prev_page_start_positions(@survey_question)
-    next_group_pos, next_question_pos = @survey.get_next_page_start_positions(@survey_question)
-
-    at_beginning = @survey_question.at_beginning?
-    at_ending = @survey_question.at_ending?
-    notes_next = @survey.notes_next?(@survey_question)
-    notes_prev = @survey.notes_prev?(@survey_question)
-
-    @prev_url = at_beginning ? nil : survey_path(token: @survey_invite.token, group_position: prev_group_pos, question_position: prev_question_pos)
-    @next_url = at_ending ? nil : survey_path(token: @survey_invite.token, group_position: next_group_pos, question_position: next_question_pos)
-    @finish_url = at_ending ? survey_path(token: @survey_invite.token, group_position: -1, question_position: -1) : nil
-    @patch_url = survey_patch_path(token: @survey_invite.token)
-    @next_url = survey_notes_path(token: @survey_invite.token) if notes_next # override
-    @prev_url = survey_notes_path(token: @survey_invite.token) if notes_prev # override
+  def get_template
+    @template = Note.new(survey_group_id: @survey.survey_groups.first.id)
   end
 
-  def get_notes_urls
-    prev_group_pos, prev_question_pos = @survey.get_prev_page_start_positions_before_notes
-    next_group_pos, next_question_pos = @survey.get_next_page_start_positions_after_notes
+  def get_urls
+    prev_id = @survey.get_prev_page_start_question_id(@survey_question)
+    next_id = @survey.get_next_page_start_question_id(@survey_question)
 
-    at_beginning = @survey.ordered_questions.first.note?
-    at_ending = @survey.ordered_questions.last.note?
-    
-    @prev_url = at_beginning ? nil : survey_path(token: @survey_invite.token, group_position: prev_group_pos, question_position: prev_question_pos)
-    @next_url = at_ending ? nil : survey_path(token: @survey_invite.token, group_position: next_group_pos, question_position: next_question_pos)
-    @finish_url = at_ending ? survey_path(token: @survey_invite.token, group_position: -1, question_position: -1) : nil
+    @prev_url = prev_id == -1 ? nil : survey_path(token: @survey_invite.token, survey_question_id: prev_id)
+    @next_url = next_id == -1 ? nil : survey_path(token: @survey_invite.token, survey_question_id: next_id)
+    @finish_url = next_id == -1 ? survey_path(token: @survey_invite.token, survey_question_id: -1) : nil
     @patch_url = survey_patch_path(token: @survey_invite.token)
   end
 
@@ -176,7 +144,9 @@ class SurveyInvitesController < ApplicationController
     @survey_invite.survey_answer_for(params[:id])
   end
 
-  def enable_live_view?
+  # ------------------------------------------------------------------------
+
+  def get_liveview_url
     time = Time.now - 4.hours
     return unless @notes.any? do |note|
       note.updated_at > time
@@ -186,17 +156,17 @@ class SurveyInvitesController < ApplicationController
   end
 
   def finished?
-    params[:group_position].to_i == -1 && params[:question_position].to_i == -1
+    params[:survey_question_id].to_i == -1
   end
 
   def update_invite_state
-    state = if params[:group_position].nil? && params[:question_position].nil?
+    state = if params[:survey_question_id].nil?
       :opened
-    elsif params[:group_position].to_i > 0 || params[:question_position].to_i > 0
+    elsif params[:survey_question_id].to_i > -1
       :started
-    elsif params[:group_position].to_i == -1 && params[:question_position].to_i == -1
+    elsif params[:survey_question_id].to_i == -1
       :finished
-    elsif params[:group_position] == "0" && params[:question_position] == "0"
+    else
       return
     end
     @survey_invite.update_state(state)
@@ -206,16 +176,18 @@ class SurveyInvitesController < ApplicationController
     return if @survey_invite.survey_answers.count == @survey.survey_questions.count
     sa_sq_ids = @survey_invite.survey_answers.collect(&:survey_question_id)
     sq_ids = @survey.survey_questions.collect(&:id)
+    # create answer for each question on this invite
     sq_ids.each do |sq_id|
-      next if sa_sq_ids.index(sq_id) # skip if answer already exists
+      next if sa_sq_ids.index(sq_id) # skip -- answer already exists
       @survey_invite.survey_answers.create({
         survey_invite_id: @survey_invite.id,
         survey_question_id: sq_id,
         vote_count: 0
       })
     end
+    # delete answer if question deleted
     sa_sq_ids.each do |sa_sq_id|
-      next if sq_ids.index(sa_sq_id) # skip if question exists
+      next if sq_ids.index(sa_sq_id) # skip -- question exists
       @survey_invite.survey_answer_for(sa_sq_id).destroy
     end
   end

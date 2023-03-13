@@ -5,11 +5,11 @@
 .wizard{ data: dataset }
   .wizard-pane.jumbotron.wizard-links
     %h2.user-name= @user.name
-    %p= @user.status
+    %p.user-status= @user.status
     %p= "Email address: #{@user.email}"
     %p.user-greeter
       Greeter:
-      - link_text = @user.greeter_id == @current_user.id ? @current_user.name : "I want to greet"
+      - link_text = @user.greeter_id ? @user.greeter.name : "I want to greet"
       = link_to link_text, "#"
     = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
     = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
@@ -56,7 +56,7 @@
       %h2= "Yay! Thanks for #{result} this new member"
 
 
-  - if "Request Declined" == @user.status
+  - if "Clarification Needed" == @user.status
     .wizard-pane.jumbotron.user-email
       %h2 Asking for Clarification
       %input.email-subject.form-control{ placeholder: "Subject" }
@@ -67,10 +67,12 @@
       %p= "Email address: #{@user.email}"
       - url = admin_approve_user_path(token: @user.token)
       = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
+      - url = admin_user_wizard_path(token: @user.token, status: "request-declined")
+      = link_to "Decline This Request", url, class: "btn btn-danger user-reject"
 
 
   -# make answers to questions available throughout the process
-  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
+  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded"
   .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
     %h2 Questions and Answers
     %ol.questions-and-answers
@@ -82,8 +84,8 @@
     - if "Pending" == @user.status
       - url = admin_approve_user_path(token: @user.token)
       = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
-      - url = admin_user_wizard_path(token: @user.token, status: "request-declined")
-      = link_to "Answers Need Clarification", url, class: "btn btn-warning user-reject"
+      - url = admin_user_wizard_path(token: @user.token, status: "clarification-needed")
+      = link_to "Answers Need Clarification", url, class: "btn btn-warning user-clarify"
       .lds-hourglass#spinner
       %span.progress-message Working ...
 
@@ -96,6 +98,6 @@
     %span.save-status
 
 
-  = link_to "Reveal change log", "#", class: "reveal-change-log padded #{@user.joined? ? nil : "hidden"}"
+  = link_to "Reveal change log", "#", class: "reveal-change-log padded"
   .wizard-pane.jumbotron.change-log.hidden
     != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
