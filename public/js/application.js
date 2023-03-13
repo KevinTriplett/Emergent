@@ -733,7 +733,7 @@ $(document).ready(function() {
   // EMAIL SEND
 
   $('.use-gmail')
-    .each(function(){ this.checked = getCookie("use-gmail"); })
+    .each(function(){ this.checked = getCookie("use-gmail") == "true"; })
     .on("click", function() {
       setCookie("use-gmail", this.checked);
     });
