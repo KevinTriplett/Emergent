@@ -114,27 +114,28 @@ body#notes {
       .delete {
         position: relative;
         top: 0px;
-        left: 5px;
+        left: 10px;
       }
 
       .move {
         position: relative;
-        top: 2px;
-        left: 0px;
+        top: 0px;
+        left: 4px;
         transform: scale(2, 2);
       }
 
       .colorpicker {
         position: relative;
         top: 6px;
-        left: 2px;
+        left: 5px;
         border-radius: 15px;
         height: 18px;
+        width: 18px;
 
         .bi-circle {
-          top: -2px;
+          top: -1px;
+          left: -5px;
           position: relative;
-          margin: -10px;
           height: 5px;
           color: black
         }
@@ -157,6 +158,9 @@ body#notes {
 
       .note-group-name {
         text-align: center;
+        position: relative;
+        top: -4px;
+        left: 14px;
       }
     }
   }

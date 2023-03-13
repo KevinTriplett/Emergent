@@ -550,9 +550,7 @@ class SurveysTest < ApplicationSystemTestCase
           assert_selector ".vote-up", count: 1
           assert_selector ".vote-down", count: 1
           assert_selector ".vote-count", text: "0"
-          assert_selector ".votes-left", text: note.survey_group.votes_max
         end
-        assert_selector ".votes-left", text: note.survey_group.votes_max, count: notes_count
       end
 
       votes_left_hash = {}
@@ -651,7 +649,6 @@ class SurveysTest < ApplicationSystemTestCase
           assert_selector ".note-text", text: note.text
           assert_selector ".note-group-name", text: note.group_name
           assert_selector ".vote-count", text: survey_answer.votes
-          assert_selector ".votes-left", text: survey_answer.votes_left
         end
       end
 

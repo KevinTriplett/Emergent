@@ -61,14 +61,14 @@ body#finished {
   }
 }
 
+// ref https://moderncss.dev/pure-css-custom-checkbox-style/
 input[type='checkbox'] {
-  width: 30px;
-  height: 30px;
+  transform : scale(1.5);
+  margin-left: 3px;
 
   & ~ label {
-    position: relative;
-    top: -6px;
-    left: -6px;
+    margin-left: 10px;
+    margin-bottom: 30px;
   }
 }
 
@@ -316,16 +316,20 @@ table.users tr {
 
 table.user, #greeter.user-wizard {
   .user-notes, .user-email {
-    input.email.subject {
+    input.email-subject {
       width: 100%;
+      border: 2px solid darkslategrey;
     }
-    textarea {
-      width: 100%
+    textarea.email-body {
+      width: 100%;
+      border: 2px solid darkslategrey;
     }
-    .btn.email-template-send {
-      display: block;
-      width: 45%;
-      margin-bottom: 20px;
+    .btn.email-send {
+      width: 150px;
+    }
+    .email-greeting-template-buttons,
+    .email-clarification-template-buttons {
+      margin-bottom: 30px;
     }
   }
   .user-meeting-datetime input {
@@ -344,10 +348,6 @@ body#greeter.user-wizard {
     a {
       margin-top: 30px;
     }
-  }
-
-  .use-gmail {
-    margin-bottom: 10px;
   }
 
   .approval-buttons {
@@ -461,6 +461,9 @@ table.users, table.user, #greeter.user-wizard {
     }
   }
   .user-notes {
+    textarea {
+      width: 100%;
+    }
     span.save-status {
       font-weight: bolder;
       vertical-align: top;

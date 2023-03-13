@@ -5,15 +5,15 @@
 .wizard{ data: dataset }
   .wizard-pane.jumbotron.wizard-links
     %h2.user-name= @user.name
-    %p.user-status= @user.status
+    %p.user-status= "Status: #{@user.status}"
     %p= "Email address: #{@user.email}"
     %p.user-greeter
       Greeter:
       - link_text = @user.greeter_id ? @user.greeter.name : "I want to greet"
       = link_to link_text, "#"
     = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
-    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary", target: "_blank") if @user.profile_url
+    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary", target: "_blank") if @user.chat_url
 
 
   - if "Scheduling Zoom" == @user.status

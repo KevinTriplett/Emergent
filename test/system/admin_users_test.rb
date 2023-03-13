@@ -213,7 +213,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       assert find("input.email-subject").value.blank?
       assert find("textarea.email-body").value.blank?
-      assert_no_selector "a.email-send", text: "Send Email"
+      assert_selector "a.email-send", text: "Send Email"
       click_link "Template 2"
       assert find("input.email-subject").value
       assert find("textarea.email-body").value
