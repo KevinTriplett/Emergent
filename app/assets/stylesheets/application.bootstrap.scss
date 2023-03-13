@@ -61,6 +61,17 @@ body#finished {
   }
 }
 
+input[type='checkbox'] {
+  width: 30px;
+  height: 30px;
+
+  & ~ label {
+    position: relative;
+    top: -6px;
+    left: -6px;
+  }
+}
+
 body#survey {
   background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
   color: rgb(52, 52, 52);
@@ -333,6 +344,14 @@ body#greeter.user-wizard {
     a {
       margin-top: 30px;
     }
+  }
+
+  .use-gmail {
+    margin-bottom: 10px;
+  }
+
+  .approval-buttons {
+    padding-top: 30px;
   }
 
   .user-summary {

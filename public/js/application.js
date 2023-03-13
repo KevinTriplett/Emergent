@@ -4,7 +4,6 @@ var loaded = false;
 var greeterName = getCookie("user_name");
 if (greeterName) greeterName = greeterName.replace("+", " ");
 var greeterId = getCookie("user_id");
-var prevEmailTemplateIndex = getCookie("preferred-email-template-index");
 var pastOkay = false;
 var optVisible = false;
 var errorMsgCount = prevErrorMsgCount = 0;
@@ -677,15 +676,21 @@ $(document).ready(function() {
     button.data("func", templateFunc);
     button.on("click", function(e) {
       e.preventDefault();
+      var self = $(this);
+      var func = self.data("func");
       var data = {
         name: $(".user-name").first().text(),
         greeter: greeterName
       };
-      var func = $(this).data("func");
-      $(".user-email .email-body")
+      self
+        .closest(".user-email")
+        .find(".email-body")
         .text(func(data))
         .trigger("input");
-      $(".user-email .email-subject").val("Scheduling your welcome Zoom to Emergent Commons 👋🏼");
+      self
+        .closest(".user-email")
+        .find(".email-subject")
+        .val("Scheduling your welcome Zoom to Emergent Commons 👋🏼");
       $(".email-send").show();
     });
     var buttonText = `Template ${$(".email-greeting-template-buttons a").length + 1}`;
@@ -703,16 +708,21 @@ $(document).ready(function() {
     button.data("func", templateFunc);
     button.on("click", function(e) {
       e.preventDefault();
+      var self = $(this);
+      var func = self.data("func");
       var data = {
         name: $(".user-name").first().text(),
         greeter: greeterName
       };
-      var func = $(this).data("func");
-      $(".user-email .email-body")
+      self
+        .closest(".user-email")
+        .find(".email-body")
         .text(func(data))
         .trigger("input");
-      $(".user-email .email-subject").val("Following up on your request to join Emergent Commons 👋🏼");
-      $(".email-send").show();
+      self
+        .closest(".user-email")
+        .find(".email-subject")
+        .val("Following up on your request to join Emergent Commons 👋🏼");
     });
     var buttonText = `Template ${$(".email-clarification-template-buttons a").length + 1}`;
     button.text(buttonText);
@@ -722,13 +732,26 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // EMAIL SEND
 
-  $(".email-send").hide().on("click", function(e) {
+  $('.use-gmail')
+    .each(function(){ this.checked = getCookie("use-gmail"); })
+    .on("click", function() {
+      setCookie("use-gmail", this.checked);
+    });
+
+  $(".email-send").on("click", function(e) {
     e.preventDefault();
-    var subject = $(".user-email .email-subject").val().trim();
-    var body = $(".user-email .email-body").val().trim();
+    var self = $(this).closest(".user-email");
+    var email = self.find(".email-address").text().trim();
+    var subject = self.find(".email-subject").val().trim();
+    var body = self.find(".email-body").val().trim();
     body = encodeURIComponent(body);
-    var newMemberEmail = $(".user-email a.email-address").text().trim();
-    window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
+    var useGmail = self.find("input.use-gmail").is(":checked");
+    var mailUrl = useGmail ?
+      // ref https://stackoverflow.com/questions/6988355/open-gmail-on-mailto-action
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}` :
+      `mailto:${email}?subject=${subject}&body=${body}`
+    window.open(mailUrl);
+    // // use the app to send email:
     // var self = $(this);
     // var url = self.closest("[data-email-url]").attr("data-email-url");
     // var token = self.closest("[data-token]").attr("data-token");

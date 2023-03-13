@@ -37,7 +37,7 @@
 
 
   %br
-  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
+  = link_to "Show/Hide answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
   .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
     %h2 Questions and Answers
     %ol.questions-and-answers
@@ -49,7 +49,7 @@
 
 
   %br
-  = link_to "Reveal change log", "#", class: "reveal-change-log padded #{@user.joined? ? nil : "hidden"}"
+  = link_to "Show/Hide change log", "#", class: "reveal-change-log padded #{@user.joined? ? nil : "hidden"}"
   .wizard-pane.jumbotron.change-log.hidden
     != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
 
