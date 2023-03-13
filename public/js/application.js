@@ -726,33 +726,33 @@ $(document).ready(function() {
     e.preventDefault();
     var subject = $(".user-email .email-subject").val().trim();
     var body = $(".user-email .email-body").val().trim();
-    // body = encodeURIComponent(body);
-    // var newMemberEmail = $(".user-email a.email-address").text().trim();
-    // window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
-    var self = $(this);
-    var url = self.closest("[data-email-url]").attr("data-email-url");
-    var token = self.closest("[data-token]").attr("data-token");
-    var data = {
-      subject: subject,
-      body: body  
-    };
-    $.ajax({
-      url: url,
-      type: "POST",
-      data: JSON.stringify(data),
-      processData: false,
-      dataType: 'JSON',
-      contentType: 'application/json',
-      headers: {
-        'X-CSRF-Token': token
-      },
-      success: function(result) {
-        window.location.href = result.url;
-      },
-      error: function(data, textStatus, jqXHR) {
-        alert("Something went wrong -- ask Kevin");
-      }
-    });
+    body = encodeURIComponent(body);
+    var newMemberEmail = $(".user-email a.email-address").text().trim();
+    window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
+    // var self = $(this);
+    // var url = self.closest("[data-email-url]").attr("data-email-url");
+    // var token = self.closest("[data-token]").attr("data-token");
+    // var data = {
+    //   subject: subject,
+    //   body: body  
+    // };
+    // $.ajax({
+    //   url: url,
+    //   type: "POST",
+    //   data: JSON.stringify(data),
+    //   processData: false,
+    //   dataType: 'JSON',
+    //   contentType: 'application/json',
+    //   headers: {
+    //     'X-CSRF-Token': token
+    //   },
+    //   success: function(result) {
+    //     window.location.href = result.url;
+    //   },
+    //   error: function(data, textStatus, jqXHR) {
+    //     alert("Something went wrong -- ask Kevin");
+    //   }
+    // });
   });
 
   ////////////////////////////////////////////////////
