@@ -5,8 +5,8 @@
   #survey-container
     - @survey_questions.each_pair do |sg, asq|
       .survey-group-container.jumbotron.jumbotron-fluid{ id: "survey-group-#{sg.id}" }
-        %h1.display-4.survey-group-name= @survey_group.name
-        %p.survey-group-description= @survey_group.description
+        %h1.display-4.survey-group-name= sg.name
+        %p.survey-group-description= sg.description
         %hr      
         #survey-questions-container
           - asq.each do |sq|
