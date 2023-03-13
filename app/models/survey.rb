@@ -347,8 +347,8 @@ class Survey < ActiveRecord::Base
       new_note.survey_question.update position: new_position
     end
     # move the feedback group to the end
-    # survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
-    # survey.fixup_positions
+    survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
+    survey.fixup_positions
   end
 
   def self.create_question(group, params)
