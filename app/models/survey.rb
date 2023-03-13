@@ -32,12 +32,16 @@ class Survey < ActiveRecord::Base
     current_position_found: 11,
     first_question_found: 12,
     last_question_found: 13,
+    seeking_question: 14,
+    seeking_non_note: 15,
     page_found: 20,
     first_page_found: 21,
     second_page_found: 22,
     seeking_second_page: 30,
     non_note_found: 31,
-    note_found: 32
+    note_found: 32,
+    last_note_found: 33,
+    finished: 40
   }
 
   def get_survey_questions(survey_question)
@@ -48,6 +52,17 @@ class Survey < ActiveRecord::Base
       state = STATES[:last_question_found] if sq.new_page? || sq.note?
       STATES[:last_question_found] != state
     end
+  end
+
+  def get_notes(survey_question)
+    state = STATES[:seeking]
+    ordered_questions.collect do |sq|
+      state = STATES[:first_question_found] if sq.id == survey_question.id
+      next if STATES[:seeking] == state
+      state = STATES[:last_question_found] if !sq.note?
+      next if STATES[:last_question_found] == state
+      sq.note
+    end.compact
   end
 
   def last_note_survey_group
@@ -78,148 +93,83 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  ######
   # ------------------------------------------------------------------------
+  ######
   # PREV
   #####
-  def notes_prev?(survey_question)
-    state = STATES[:seeking]
-    ordered_questions.reverse.any? do |sq|
-      # puts "#{sq.group_position} / #{sq.position} -- #{survey_question.group_position} / #{survey_question.position}"
-      if sq.id == survey_question.id
-        # puts "current position found"
-        state = STATES[:current_position_found]
-        next
-      end
-      next if STATES[:seeking] == state
-      break if sq.new_page?
-      sq.note?
-    end
-  end
-
-  def get_prev_page_start_positions(survey_question)
-    group_position = question_position = nil
-    
+  def get_prev_page_start_question_id(survey_question)
     # | starting from the last question
     # |
     # V
     # question      <- skip
     # question      <- skip
     # question      <- current group/question position (skip)
-    # new page/note <- start looking for next page/note/group
-    # question      <- update question_position
-    # question      <- update question_position
-    # new page      <- second new page break without updating question_position
+    # new_page/note <- update question_position and start looking for next page/non-note
+    # question/note <- update question_position
+    # question/note <- update question_position
+    # new_page      <- break if new_page or non-note
+    question_id = -1
     state = STATES[:seeking]
     ordered_questions.reverse.each do |sq|
-      if sq.id == survey_question.id
-        state = STATES[:current_position_found]
-        next
+      case state
+      when STATES[:seeking]
+        next unless sq.id == survey_question.id
+        state = sq.note? ? STATES[:first_page_found] : STATES[:current_position_found]
+      when STATES[:current_position_found]
+        # assumption: previous question will be a note or new_page
+        state = STATES[:first_page_found] if sq.new_page?
+        state = STATES[:seeking_non_note] if sq.note?
+      when STATES[:seeking_non_note]
+        # when dealing with a group of notes
+        break if !sq.note?
+        question_id = sq.id
+      when STATES[:first_page_found]
+        next if sq.new_page?
+        question_id = sq.id
+        state = STATES[:seeking_second_page]
+      when STATES[:seeking_second_page]
+        break if sq.new_page? || sq.note?
+        question_id = sq.id
       end
-      next if STATES[:seeking] == state
-      if sq.new_page? || sq.note?
-        break if STATES[:seeking_second_page] == state
-        state = STATES[:first_page_found]
-        next # in case there are sequential new pages or notes
-      end
-      next unless STATES[:first_page_found] == state || STATES[:seeking_second_page] == state
-      group_position = sq.group_position
-      question_position = sq.position
-      state = STATES[:seeking_second_page]
     end
-
-    [group_position || -1, question_position || -1]
+    question_id
   end
 
-  def get_prev_page_start_positions_before_notes
-    group_position = question_position = nil
-    state = STATES[:seeking]
-    # find first question after a new-page that's before notes section
-    ordered_questions.reverse.each do |sq|
-      if sq.note?
-        state = STATES[:note_found]
-        next
-      end
-      next if STATES[:seeking] == state
-      if sq.new_page?
-        break if STATES[:non_note_found] == state
-        next # in case there are sequential new pages or notes
-      end
-      group_position = sq.group_position
-      question_position = sq.position
-      state = STATES[:non_note_found]
-    end
-
-    [group_position || -1, question_position || -1]
-  end
-
-  ######
   # ------------------------------------------------------------------------
+  ######
   # NEXT
   #####
-  def notes_next?(survey_question)
-    state = STATES[:seeking]
-    ordered_questions.any? do |sq|
-      # puts "#{sq.group_position} / #{sq.position} -- #{survey_question.group_position} / #{survey_question.position}"
-      if sq.id == survey_question.id
-        # puts "current position found"
-        state = STATES[:current_position_found]
-        next
-      end
-      next if STATES[:seeking] == state
-      break if sq.new_page?
-      sq.note?
-    end
-  end
-
-  def get_next_page_start_positions(survey_question)
-    group_position = question_position = nil
-    
+  def get_next_page_start_question_id(survey_question)
     # question      <- update question_position and break
-    # new page/note <- skip
+    # new_page/note <- update and break if note, skip if new_page
     # question      <- skip
     # question      <- skip
-    # question      <- current group/question position (skip)
+    # question      <- current question position (skip)
     # ^             <- skip all previous questions
     # |
     # | start from the first question
+    question_id = -1
     state = STATES[:seeking]
     ordered_questions.each do |sq|
-      if sq.id == survey_question.id
-        state = STATES[:current_position_found]
-        next
+      case state
+      when STATES[:seeking]
+        next unless sq.id == survey_question.id
+        state = sq.note? ? STATES[:seeking_non_note] : STATES[:current_position_found]
+      when STATES[:current_position_found]
+        state = STATES[:page_found] if sq.new_page?
+        question_id = sq.id
+        state = STATES[:finished] if sq.note?
+      when STATES[:page_found]
+        next if sq.new_page?
+        question_id = sq.id
+        state = STATES[:finished]
+      when STATES[:seeking_non_note]
+        question_id = sq.id
+        state = STATES[:finished] if !sq.note?
       end
-      next if STATES[:seeking] == state
-      if sq.new_page? || sq.note?
-        state = STATES[:page_found]
-        next # skip this and any sequential new pages or notes
-      end
-      next unless STATES[:page_found] == state
-      group_position = sq.group_position
-      question_position = sq.position
-      break
+      return question_id if STATES[:finished] == state
     end
-
-    [group_position || -1, question_position || -1]
-  end
-
-  def get_next_page_start_positions_after_notes
-    group_position = question_position = nil
-    state = STATES[:seeking]
-    # find first non-new-page after notes section
-    ordered_questions.each do |sq|
-      if sq.note?
-        state = STATES[:note_found]
-        next
-      end
-      next if STATES[:seeking] == state
-      next if sq.new_page?
-      group_position = sq.group_position
-      question_position = sq.position
-      break
-    end
-
-    [group_position || -1, question_position || -1]
+    -1
   end
 
   # ------------------------------------------------------------------------
@@ -308,8 +258,8 @@ class Survey < ActiveRecord::Base
         column += 1
         row = 0
       end
-      left = (230 * (column - 1 + new_survey_group.position - 1)) + 30
-      top = (225 * row) + 100
+      left = (225 * (column - 1 + new_survey_group.position - 1)) + 20
+      top = (225 * row) + 130
       row += 1
 
       new_note = Operation::SurveyHelper::create_new_note({
@@ -321,8 +271,10 @@ class Survey < ActiveRecord::Base
       new_position = new_survey_group.reload.survey_questions.count-1
       new_note.update position: new_position
       new_note.survey_question.update position: new_position
-
     end
+    # move the feedback group to the end
+    survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
+    survey.fixup_positions
   end
 
   # ------------------------------------------------------------------------
@@ -341,7 +293,8 @@ class Survey < ActiveRecord::Base
     })
     raise "something went wrong with survey creation / find" unless survey
 
-    column = row = 0
+    column = -1
+    row = 0
     group = nil
 
     data.each do |line|
@@ -349,30 +302,38 @@ class Survey < ActiveRecord::Base
       puts "line = #{group ? group.name : "no group"}: #{line}"
       if line.match /Vision/
         group = create_group(survey, "Vision")
+        column += 1
         row = 0
         next
       elsif line.match /Mission/
         group = create_group(survey, "Mission")
+        column += 1
         row = 0
         next
       elsif line.match /Values/
+        group = create_group(survey, "Instructions for Values")
+        question = create_question(group, {
+          question_type: "Instructions",
+          question: "Consider the following values careful and vote on the ones you feel are most important."
+        })
         group = create_group(survey, "Values")
-        row = 0
+        column = row = 0
         next
       elsif line.match /Uncategorized/
+        break # finished
         group = create_group(survey, "Uncategorized")
+        column += 1
         row = 0
         next
       end
       raise "something went wrong with group creation" unless group
-      group.update position: survey.reload.survey_groups.count-1 if group.position.nil?
 
       if row > 4
         column += 1
         row = 0
       end
-      left = (230 * (column - 1 + group.position - 1)) + 30
-      top = (225 * row) + 100
+      left = (225 * column) + 30
+      top = (225 * row) + 130
       row += 1
 
       new_note = Operation::SurveyHelper::create_new_note({
@@ -385,6 +346,22 @@ class Survey < ActiveRecord::Base
       new_note.update position: new_position
       new_note.survey_question.update position: new_position
     end
+    # move the feedback group to the end
+    # survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
+    # survey.fixup_positions
+  end
+
+  def self.create_question(group, params)
+    Operation::SurveyHelper::create_new_survey_question({
+      survey_group: group,
+      question_type: params[:question_type],
+      answer_type: params[:answer_type],
+      question: params[:question],
+      answer_labels: params[:answer_labels],
+      has_scale: params[:has_scale],
+      scale_question: params[:scale_question],
+      scale_labels: params[:scale_labels]
+    })
   end
 
   def self.create_group(survey, group_name)
@@ -399,10 +376,10 @@ class Survey < ActiveRecord::Base
         "#f7f7ad"
       when "Mission"
         "#c3edc0"
-      when "Value"
-        "#b3d4e8"
+      when "Values"
+        "#afdaea"
       else
-        "#aaffaa"
+        "#e7f2a4"
       end
     })
   end

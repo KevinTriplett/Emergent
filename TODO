@@ -70,6 +70,9 @@ SURVEYS
 - [ ] disable buttons until ajax calls resolve
 - [ ] rename notes to survey_notes
 GREETER APP
+- [ ] show only pending and assigned members
+- [ ] hover over index record pending = "Click to review this request"
+- [ ] keep when_timestamp on status change
 - [ ] request declined status is not visible in member request to join
 - [ ] default to only pending and greeter-picked entries
 - [ ] hover over tooltip for greeter main view for Pending "Click to begin"

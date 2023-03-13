@@ -46,14 +46,14 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_select "th", "Greeter"
       assert_select "th", "Status"
       assert_select "th.meeting", "Zoom Meeting\n\n(GMT)"
-      assert_select "th", "Shadow"
+      # assert_select "th", "Shadow"
       assert_select "th", "Notes"
 
       assert_select "td.user-name", user.name
       assert_select "td.user-greeter", ""
       assert_select "td.user-status", user.status
       assert_select "td.user-meeting-datetime", user.when_timestamp.picker_datetime
-      assert_select "td.user-shadow", ""
+      # assert_select "td.user-shadow", "I want to shadow"
       assert_select "td.user-notes", user.notes_abbreviated
     end
   end
@@ -70,39 +70,26 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
       get admin_user_path(token: user.token)
       
-      assert_select "h1", "Emergent Commons Volunteer App"
-      assert_select "h3", user.name
+      assert_select ".user-name", user.name
 
       assert_select "a.user-profile-button", "🙂 Profile"
       assert_select "a.user-chat-button", "💬 Chat"
 
-      assert_select "td", "Greeter"
-      assert_select "td", "Email"
-      assert_select "td", "Status"
-      assert_select "td.meeting", "Zoom Date/Time\n\n(GMT)"
-      assert_select "td", "Shadow"
-      assert_select "td", "Notes"
-      assert_select "td", "Questions"
-
-      assert_select "td.user-greeter", user.greeter.name
-      assert_select "td.user-email", user.email
-      assert_select "td.user-status select option[selected='selected']", user.status
-      assert_select "td.user-meeting-datetime input[value=?]", user.when_timestamp.picker_datetime
-      assert_select "td.user-shadow", user.shadow_greeter.name
-      assert_select "td.user-notes", user.notes
+      assert_select ".user-greeter", "Greeter:\n#{user.greeter.name}"
+      assert_select ".user-email", "Email address:\n#{user.email}"
+      # assert_select ".user-status span.ui-selectmenu-text", user.status
+      assert_select "p.user-greeting-date", "Greeting on:\n#{user.when_timestamp.picker_datetime}"
+      assert_select ".user-notes", "Notes\n(Record anything here that a greeter might need to know, in case you need to turn over this greeting)\n#{user.notes}"
+      assert_select ".user-greeter", "Greeter:\n#{user.greeter.name}"
+      assert_select ".user-status select option[selected='selected']", user.status
       
-      user.questions_responses.split(" -:- ").each do |qna|
-        q,a = *qna.split("\\")
-        assert_select "td.user-questions li", "#{q}\n\n#{a}"
+      user.questions_responses_array.each do |q, a|
+        assert_select ".user-questions li", "#{q}\n\n#{a}"
       end
 
       user.update(greeter_id: nil)
       get admin_user_path(token: user.token)
-      assert_select "td.user-greeter", "I will greet"
-
-      user.update(shadow_greeter_id: nil)
-      get admin_user_path(token: user.token)
-      assert_select "td.user-shadow", "I will shadow"
+      assert_select ".user-greeter", "Greeter:\n(nobody)"
 
       user.update(profile_url: nil)
       user.update(chat_url: nil)

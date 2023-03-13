@@ -24,7 +24,7 @@ class HomeController < ApplicationController
       user = ctx[:user]
       if user && (Rails.env.staging? || Rails.env.development?)
         sign_in(user)
-        return redirect_back
+        return redirect_back(fallback_location: root_url)
       else
         user.generate_tokens
         UserMailer.with(user).send_magic_link.deliver_now

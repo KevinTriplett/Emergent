@@ -25,7 +25,7 @@ module Survey::Operation
         question_type: "Question",
         question: "How would you like to receive a link to your survey response?",
         answer_type: "Multiple Choice",
-        answer_lables: "No Thanks|Private Message|Email"
+        answer_labels: "No Thanks|Private Message|Email"
       })
       return false unless SurveyHelper::create_new_survey_question({
         survey_group: group,

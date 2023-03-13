@@ -1,0 +1,103 @@
+- patch_url = admin_user_patch_path(token: @user.token)
+- email_url = admin_user_send_email_path(token: @user.token)
+- dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
+
+.wizard{ data: dataset }
+  .wizard-pane.jumbotron.wizard-links
+    %h2.user-name= @user.name
+    %p.user-status= @user.status
+    %p= "Email address: #{@user.email}"
+    %p.user-greeter
+      Greeter:
+      - link_text = @user.greeter_id ? @user.greeter.name : "I want to greet"
+      = link_to link_text, "#"
+    = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
+    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+
+
+  - if "Scheduling Zoom" == @user.status
+    -# greeter can compose message to send
+    -# button for "Meeting Scheduled" to go to next page
+    .wizard-pane.jumbotron.user-email
+      %h2 Scheduling a Zoom Greeting via Email
+      %input.email-subject.form-control{ placeholder: "Subject" }
+      %textarea.email-body.form-control{ placeholder: "Body of greeting" }
+      %br
+      .email-greeting-template-buttons Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-send"
+      = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
+
+
+  - if "Zoom Scheduled" == @user.status
+    -# greeter can enter date and time for meeting
+    -# button for "Meeting Done" to go to congratulatory completed page
+    .wizard-pane.jumbotron.user-meeting-datetime
+      %h2 Date and time for your greeting
+      %p When you get a response to your email, you can record the date and time here.
+      - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
+      %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
+      %br
+      - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
+      = link_to "< Prev", url, class: "btn btn-warning prev"
+      - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
+      = link_to "Greeting Done", url, class: "btn btn-success done"
+      - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
+      = link_to "Chat Done", url, class: "btn btn-success done"
+      - url = admin_user_wizard_path(token: @user.token, status: "zoom-declined")
+      = link_to "Greeting Declined", url, class: "btn btn-success done"
+      - url = admin_user_wizard_path(token: @user.token, status: "no-resposne")
+      = link_to "No Response", url, class: "btn btn-success done"
+
+  - if @user.status.match /completed/
+    -# give greeter a fun celebratory animation
+    .wizard-pane.jumbotron.greeting-done
+      - result = @user.status.match(/Done/) ? "greeting" : "attempting to greet"
+      %h2= "Yay! Thanks for #{result} this new member"
+
+
+  - if "Clarification Needed" == @user.status
+    .wizard-pane.jumbotron.user-email
+      %h2 Asking for Clarification
+      %input.email-subject.form-control{ placeholder: "Subject" }
+      %textarea.email-body.form-control{ placeholder: "Body of email" }
+      %br
+      .email-clarification-template-buttons Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-send"
+      %p= "Email address: #{@user.email}"
+      - url = admin_approve_user_path(token: @user.token)
+      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
+      - url = admin_user_wizard_path(token: @user.token, status: "request-declined")
+      = link_to "Decline This Request", url, class: "btn btn-danger user-reject"
+
+
+  -# make answers to questions available throughout the process
+  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded"
+  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
+    %h2 Questions and Answers
+    %ol.questions-and-answers
+      - @user.questions_responses_array.each do |q, a|
+        %li
+          %span.question= q
+          %br
+          %span.answer= a
+    - if "Pending" == @user.status
+      - url = admin_approve_user_path(token: @user.token)
+      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
+      - url = admin_user_wizard_path(token: @user.token, status: "clarification-needed")
+      = link_to "Answers Need Clarification", url, class: "btn btn-warning user-clarify"
+      .lds-hourglass#spinner
+      %span.progress-message Working ...
+
+
+
+  .wizard-pane.jumbotron.user-notes
+    %h2 Notes
+    %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
+    %textarea= @user.notes
+    %span.save-status
+
+
+  = link_to "Reveal change log", "#", class: "reveal-change-log padded"
+  .wizard-pane.jumbotron.change-log.hidden
+    != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"

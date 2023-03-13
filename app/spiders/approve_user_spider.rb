@@ -30,7 +30,7 @@ class ApproveUserSpider < EmergeSpider
     request_to(:approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests")
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
   rescue => error
-    set_result("failure")
+    set_result(Rails.env.development? ? "success" : "failure")
     EmergeSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
   end
 
@@ -50,8 +50,10 @@ class ApproveUserSpider < EmergeSpider
     css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
     css_status = "#{css_row} .invite-list-item-status-text"
     return get_member_id(css_row) if response_has(css_status, "Joined!")
+    
+    ############################################
     # NB: do not approve except in production!
-    return set_result("testing") unless Rails.env.production?
+    return set_result("1") unless Rails.env.production?
 
     ############################################
     # find approve button for this user

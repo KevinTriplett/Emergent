@@ -20,15 +20,22 @@ var format = {
 };
 var progressMessages = [
   "Establishing secure channel ...",
-  "Contacting HQ ...",
+  "Contacting Mighty Networks ...",
   "Exchanging credentials ...",
-  "Looking up member request ...",
-  "Sending request to approve ...",
+  "Asking about the family, getting a check-in ...",
+  "Looking up this member request ...",
+  "Politing asking to approve the request ...",
   "Getting response ...",
-  "Disconnecting from HQ ...",
-  "Cleaning up channel ...",
-  "Updating database ...",
-  "Waiting, not much longer now ..."
+  "Yep, no problem, got the approval ...",
+  "Getting a check-out, saying goodbye ...",
+  "Disconnecting from Mighty Networks ...",
+  "Cleaning up the channel ...",
+  "Updating our database ...",
+  "Waiting, not much longer now ...",
+  "I promise, not much longer ...",
+  "Thanks for being patient :) ...",
+  "Whoops, looks like something went wrong ...",
+  "Please refresh the page"
 ]
 
 ////////////////////////////////////////////////////
@@ -51,8 +58,8 @@ function setCookie(name, value) {
 }
 
 ////////////////////////////////////////////////////
-// EMAIL TEMPLATES
-var emailTemplates = [
+// EMAIL GREETING TEMPLATES
+var emailGreetingTemplates = [
 function(data) {
   return `Hi ${data.name},
 
@@ -159,6 +166,48 @@ ${data.greeter}`;
 }]
 
 ////////////////////////////////////////////////////
+// EMAIL CLARIFICATION TEMPLATES
+var emailClarificationTemplates = [
+  function(data) {
+    return `Hi ${data.name},
+  
+I am a Greeter at Emergent Commons and saw your recent request to join our community. I am writing because your responses to our Landing Page questions seem too brief and/or insufficient. If you are still interested in joining, would you please elaborate on your responses to these questions and re-submit your request?
+
+1.   What drew you to this community? What do you hope to experience here?
+2.   We do not have an individual or a team creating, curating or broadcasting content. It's our members that bring the content, create events, start groups and spark discussion. What lights you up and how do you think you might share that here?
+
+Here is the link to request joining:
+https://emergent-commons.mn.co/
+  
+If you have any questions about this, please reply to this email.
+  
+Thank you,
+${data.greeter}`;
+},
+  ////////////////////////////////////////////////////
+  function(data) {
+    return `Hi ${data.name},
+
+I am one of the greeters volunteers for the Emergent Commons community that you recently requested to join. Because a main focus in this community is relational in nature we put a lot of thought into our initial questionnaire to the prospective members and we appreciate thoughtful answers. Our onboarding process includes an offering to meet on zoom to every new member after the questionnaire gets reviewed and answers get accepted. Before I could proceed with our onboarding process I would like to get some clarifications from you sent to me as a response to this email.
+
+You answered: "Jupitor R." to our two questions:
+
+1. What drew you to this community?
+2. What do you hope to experience here?
+
+I am not familiar with that phrase in the context of our questions. Could you please try elaborating on each of these two questions for
+me?
+
+The next two questions are also pretty important for us especially because we do not have an individual or a team creating, curating or broadcasting content. It's our members that bring the content, create events, start groups and spark discussion. Based on your answer, I see that you are very interested in the meta-crisis and you are in the right place, indeed. Could you please try elaborating on the next two questions for me?
+
+3. What lights you up?
+4. How do you think you might share that here?
+
+I am looking forward to hearing from you soon,
+${data.greeter}`;
+}]
+
+////////////////////////////////////////////////////
 // DEBOUNCE
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
@@ -210,21 +259,18 @@ var convertTimeToUTC = function(datetime) {
 }
 
 var getUserMeeting = function(userDom) {
-  var userMeetingDom = userDom.find("td.user-meeting-datetime input.datetime-picker");
+  var userMeetingDom = userDom.find("input.datetime-picker");
   return convertTimeToUTC(userMeetingDom.val())
 }
 
 var getUserNotes = function(userDom) {
-  return userDom.find("td.user-notes textarea").val();
+  return userDom.find(".user-notes textarea").val();
 }
 
 var noGreeter = function(userDom) {
-  var userGreeterId = userDom.find("td.user-greeter").attr("data-greeter-id");
+  var userGreeterId = userDom.closest("[data-greeter-id]").attr("data-greeter-id");
   if (!userGreeterId) {
     if (!confirm("You will greet this new member?")) return true;
-    setUserGreeter(userDom, greeterId);
-  } else if (userGreeterId != greeterId) {
-    if (!confirm("You will greet this new member instead?")) return true;
     setUserGreeter(userDom, greeterId);
   }
   return false;
@@ -233,33 +279,16 @@ var noGreeter = function(userDom) {
 var setUserGreeter = function(userDom, newGreeterId) {
   var data = { greeter_id: newGreeterId };
   patch(userDom, data, function() {
-    var text = newGreeterId ? greeterName : "I will greet";
-    userDom.find("td.user-greeter").attr("data-greeter-id", newGreeterId);
-    userDom.find("td.user-greeter a").text(text);
+    var text = newGreeterId ? greeterName : "I want to greet";
+    userDom.attr("data-greeter-id", newGreeterId);
+    userDom.find(".user-greeter a").text(text);
   }, function() {
     alert("Could not change greeter - ask Kevin");
   });
 }
 
-var resetUserStatus = function(userDom) {
-  var status = userDom.find("td.user-status").attr("data-status");
-  userDom.find("td.user-status select").val(status).selectmenu("refresh");
-}
-
-var setStatus = function(userDom) {
-  var status = userDom.find("td.user-status select").val();
-  if ("Scheduling Zoom" == status) {
-    if (!confirm("Set status to Zoom Scheduled?")) return true;
-    setUserStatus(userDom, "Zoom Scheduled");
-  } else if ("Zoom Scheduled" != status) {
-    alert("Status must be Zoom Scheduled or Scheduling Zoom to set the Meeting date and time");
-    return true;
-  }
-  return false;
-}
-
 var setUserStatus = function(userDom, userStatus) {
-  var data = { status: userStatus || userDom.find("td.user-status select").val() };
+  var data = { status: userStatus || userDom.find(".user-status select").val() };
   patch(userDom, data, function(result) {
     var newSel = document.createElement("select");
     for (const option of result.status_options) {
@@ -269,13 +298,13 @@ var setUserStatus = function(userDom, userStatus) {
       newSel.add(newOpt, null);
     };
     userDom
-      .find("td.user-status")
+      .find(".user-status")
       .empty()
       .append(newSel);
     initStatusSelectMenu();
-    userDom.find("td.user-status").attr("data-status", result.model.status);
-    userDom.find("td.user-status select").val(result.model.status).selectmenu("refresh");
-    userDom.find("td.user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
+    userDom.find(".user-status").attr("data-status", result.model.status);
+    userDom.find(".user-status select").val(result.model.status).selectmenu("refresh");
+    userDom.find(".user-meeting-datetime input.datetime-picker").val(result.model.whenTimestamp)
   }, function() {
     alert("Could not change status - ask Kevin");
   });
@@ -285,9 +314,9 @@ var dateInPast = function(userDom, ts) {
   if (pastOkay || !ts) return false;
   if (Date.parse(ts) > (new Date).getTime()) return false;
   if (!confirm("Are you sure you want to set the Zoom meeting in the past?")) {
-    var timestamp = userDom.find("td.user-meeting-datetime").attr("data-timestamp");
+    var timestamp = userDom.find(".user-meeting-datetime").attr("data-timestamp");
     timestamp ||= "";
-    userDom.find("td.user-meeting-datetime input").val(timestamp);
+    userDom.find(".user-meeting-datetime input").val(timestamp);
     return true;
   }
   pastOkay = true;
@@ -298,7 +327,9 @@ var setUserMeeting = function(e) {
   var userDom = $(this).closest("[data-id]");
   var data = { when_timestamp: getUserMeeting(userDom) };
   if (dateInPast(userDom, data.when_timestamp)) return;
-  patch(userDom, data, null, function() {
+  patch(userDom, data, function() {
+    $(".schedule-zoom").show();
+  }, function() {
     alert("Could not set meeting date and time - ask Kevin");
   });
 }
@@ -307,10 +338,6 @@ var initStatusSelectMenu = function() {
   $(".user-status select").selectmenu({
     change: function(e) {
       var userDom = $(this).closest("[data-id]");
-      if (noGreeter(userDom)) {
-        resetUserStatus(userDom);
-        return;
-      }
       setUserStatus(userDom, null);
     }
   });
@@ -353,14 +380,16 @@ var patch = function(userDom, data, success, error) {
 
 var updateChangeLog = function(model) {
   if (!model || !model.change_log) return;
-  $("td.change-log").html(model.change_log.replace(/\n/g, "<br>"));
+  $(".change-log").html(model.change_log.replace(/\n/g, "<br>"));
 }
 
 var showOpt = function(show) {
   if (!(show ^ optVisible)) return;
   optVisible = show;
   if (show)
-    $(".opt").show();
+    debounce(function() {
+      $(".opt").show();
+    }, 5000)();
   else {
     debounce(function() {
       $(".opt").hide();
@@ -419,11 +448,12 @@ $(document).ready(function() {
   // CONNECT DATATABLE
   // ref https://datatables.net/reference/index
   $("table.users").DataTable({
-    order: [[6,"desc"]],
+    order: [[5,"desc"]],
     paging: false,
     fixedHeader: true,
     fixedColumn: true
   });
+  $(".controls").detach().appendTo(".dataTables_wrapper > div:first-child > div:first-child");
   $(".dataTables_wrapper input[type='search']").on("keyup", function() {
     var self = $(this);
     var value = self.val();
@@ -572,14 +602,17 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // RESIZE NOTES TEXTAREA
   // ref https://stackoverflow.com/a/48460773/1204064
-  var scrollHeight = $("textarea").prop("scrollHeight");
-  $("textarea")
-    .css("height", "")
-    .css("height", scrollHeight * 1.04 + "px")
-    .on("input", function(e) {
-      this.style.height = "";
-      this.style.height = this.scrollHeight * 1.04 + "px";
-    });
+  $("textarea").each(function() {
+    var self = $(this);
+    var scrollHeight = self.prop("scrollHeight");
+    self
+      .css("height", "")
+      .css("height", scrollHeight * 1.04 + "px")
+      .on("input", function(e) {
+        this.style.height = "";
+        this.style.height = this.scrollHeight * 1.04 + "px";
+      });
+  });
 
   ////////////////////////////////////////////////////
   // MAKE TABLE ROWS CLICKABLE
@@ -607,32 +640,128 @@ $(document).ready(function() {
   $("span.tzinfo").text(`(Times are ${Intl.DateTimeFormat().resolvedOptions().timeZone})`);
 
   ////////////////////////////////////////////////////
-  // APPROVE AND REJECT BUTTONS
-  $("input#my-greetings").on("change", function() {
-    if (!this.checked) {
-      $("table.users tbody tr:hidden").show();
-    } else {
-      $("table.users tbody tr").each(function() {
-        var el = $(this);
-        if (el.find("td.user-greeter").text() != greeterName) el.hide();
-      });
-    }
+  // FILTER VIEW BY PENDING AND MY GREETINGS
+  var showHideUsers = function(showAll) {
+    if (showAll) $("table.users tbody tr:hidden").show();
+    else $("table.users tbody tr").each(function() {
+      var self = $(this);
+      var hide = self.attr("data-greeter-id") != greeterId &&
+        self.attr("data-status") != "Pending" &&
+        self.attr("data-status") != "Clarification Needed"
+      if (hide) self.hide();
+    });
+  }
+  $("input#show-all-greetings").on("change", function() {
+    showHideUsers(this.checked);
+  });
+  showHideUsers(false);
+
+  ////////////////////////////////////////////////////
+  // GREETER WIZARD
+  $("a.reveal-answers").on("click", function(e) {
+    e.preventDefault();
+    $(".user-questions").toggle();
+  })
+  $("a.reveal-change-log").on("click", function(e) {
+    e.preventDefault();
+    $(".change-log").toggle();
+  });
+
+  ////////////////////////////////////////////////////
+  // GREETER EMAIL
+  $(".email-greeting-template-buttons").empty();
+  for (templateFunc of emailGreetingTemplates) {
+    var button = $(document.createElement("a"));
+    button.addClass("btn btn-secondary");
+    button.attr("href", "#");
+    button.data("func", templateFunc);
+    button.on("click", function(e) {
+      e.preventDefault();
+      var data = {
+        name: $(".user-name").first().text(),
+        greeter: greeterName
+      };
+      var func = $(this).data("func");
+      $(".user-email .email-body")
+        .text(func(data))
+        .trigger("input");
+      $(".user-email .email-subject").val("Scheduling your welcome Zoom to Emergent Commons 👋🏼");
+      $(".email-send").show();
+    });
+    var buttonText = `Template ${$(".email-greeting-template-buttons a").length + 1}`;
+    button.text(buttonText);
+    $(".email-greeting-template-buttons").append(button);
+  }
+
+  ////////////////////////////////////////////////////
+  // CLARIFICATION EMAIL
+  $(".email-clarification-template-buttons").empty();
+  for (templateFunc of emailClarificationTemplates) {
+    var button = $(document.createElement("a"));
+    button.addClass("btn btn-secondary");
+    button.attr("href", "#");
+    button.data("func", templateFunc);
+    button.on("click", function(e) {
+      e.preventDefault();
+      var data = {
+        name: $(".user-name").first().text(),
+        greeter: greeterName
+      };
+      var func = $(this).data("func");
+      $(".user-email .email-body")
+        .text(func(data))
+        .trigger("input");
+      $(".user-email .email-subject").val("Following up on your request to join Emergent Commons 👋🏼");
+      $(".email-send").show();
+    });
+    var buttonText = `Template ${$(".email-clarification-template-buttons a").length + 1}`;
+    button.text(buttonText);
+    $(".email-clarification-template-buttons").append(button);
+  }
+
+  ////////////////////////////////////////////////////
+  // EMAIL SEND
+
+  $(".email-send").hide().on("click", function(e) {
+    e.preventDefault();
+    var subject = $(".user-email .email-subject").val().trim();
+    var body = $(".user-email .email-body").val().trim();
+    // body = encodeURIComponent(body);
+    // var newMemberEmail = $(".user-email a.email-address").text().trim();
+    // window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
+    var self = $(this);
+    var url = self.closest("[data-email-url]").attr("data-email-url");
+    var token = self.closest("[data-token]").attr("data-token");
+    var data = {
+      subject: subject,
+      body: body  
+    };
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      processData: false,
+      dataType: 'JSON',
+      contentType: 'application/json',
+      headers: {
+        'X-CSRF-Token': token
+      },
+      success: function(result) {
+        window.location.href = result.url;
+      },
+      error: function(data, textStatus, jqXHR) {
+        alert("Something went wrong -- ask Kevin");
+      }
+    });
   });
 
   ////////////////////////////////////////////////////
   // APPROVE AND REJECT BUTTONS
-  $("a.user-reject").on("click", function(e) {
-    e.preventDefault();
-    alert("Contact a Host to reject this request");
-  });
-
   $("a.user-approve").on("click", function(e) {
     e.preventDefault();
-    self = $(this);
-    var userDom = self.closest("[data-id]");
-    if (noGreeter(userDom)) return;
+    var self = $(this);
     var url = self.attr("href");
-    var token = $("table.users,table.user").attr("data-token");
+    var token = self.closest("[data-token]").attr("data-token");
     $("#spinner").show();
     $(".progress-message").show();
     $(".user-approve,.user-reject").hide();
@@ -642,7 +771,7 @@ $(document).ready(function() {
     var msgTimer = setInterval(function() {
       var msg = progressMessages[count++];
       $(".progress-message").text(msg);
-    }, 5000);
+    }, 2500);
 
     $.ajax({
       url: url,
@@ -674,10 +803,6 @@ $(document).ready(function() {
     .on("click", function(e) {
       var el = $(this);
       var userDom = el.closest("[data-id]");
-      if (noGreeter(userDom) || setStatus(userDom)) {
-        el.blur();
-        return;
-      }
       if (el.attr("data-picker")) return; // return if datetime picker already instantiated
       var options = {
         showTime: true,
@@ -698,6 +823,7 @@ $(document).ready(function() {
         $(this).blur();
       }
     });
+    $(".schedule-zoom").hide();
 
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
@@ -724,7 +850,7 @@ $(document).ready(function() {
     });
   };
 
-  $("table.user td.user-notes textarea")
+  $(".user-notes textarea")
     .on("keyup", debounce(setUserNotes, 1000))
     .on("keydown", function(e) {
       $(this)
@@ -738,29 +864,26 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // GREETER EVENT LISTENER
-  $("td.user-greeter a").on("click", function(e) {
+  $(".user-greeter a").on("click", function(e) {
     e.preventDefault();
-    var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").attr("data-greeter-id");
+    var userDom = $(this).closest("[data-url]");
+    var currentGreeterId = userDom.attr("data-greeter-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as greeter?");
       newGreeterId = result ? null : id;
-    } else if (currentGreeterId) {
-      if (!confirm("You will greet instead?")) return;
     }
-    var userDom = $(this).closest("[data-id]");
     setUserGreeter(userDom, newGreeterId);
   });
 
   ////////////////////////////////////////////////////
   // SHADOW EVENT LISTENER
-  $("td.user-shadow a").on("click", function(e) {
+  $(".user-shadow a").on("click", function(e) {
     e.preventDefault();
-    var self = $(this);
     var result = true;
-    var currentGreeterId = self.closest("td").attr("data-greeter-id");
+    var userDom = $(this).closest("[data-url]");
+    var currentGreeterId = userDom.attr("data-shadow-id");
     var newGreeterId = greeterId;
     if (currentGreeterId == greeterId) {
       result = confirm("Remove yourself as shadow greeter?");
@@ -769,12 +892,11 @@ $(document).ready(function() {
       result = confirm("You will be the shadow greeter instead?\n(we prefer only one shadow greeter)");
     }
     if (!result) return;
-    var userDom = $(this).closest("[data-id]");
     var data = { shadow_greeter_id: newGreeterId };
     patch(userDom, data, function() {
-      var text = newGreeterId ? greeterName : "I will shadow";
-      self.closest("td").attr("data-greeter-id", newGreeterId);
-      userDom.find("td.user-shadow a").text(text);
+      var text = newGreeterId ? greeterName : "I want to shadow";
+      userDom.attr("data-shadow-id", newGreeterId);
+      userDom.find(".user-shadow a").text(text);
     }, function() {
       alert("Could not change shadow - ask Kevin");
     });
@@ -784,38 +906,6 @@ $(document).ready(function() {
   // STATUS EVENT LISTENER
   initStatusSelectMenu();
   initSurveySelectMenu();
-
-  ////////////////////////////////////////////////////
-  // EMAIL EVENT LISTENER
-  $("td.user-email a").on("click", function(e) {
-    e.preventDefault();
-    var userDom = $(this).closest("[data-id]");
-    if (noGreeter(userDom)) return;
-    var maxIndex = emailTemplates.length;
-    var templateIndex = prompt(`Enter an email template 1 through ${maxIndex}`, prevEmailTemplateIndex);
-    if (!templateIndex) return;
-
-    templateIndex = parseInt(templateIndex) - 1;
-    if (templateIndex < 0 || templateIndex > maxIndex - 1) {
-      alert(`Choose an email template 1 through ${maxIndex}`);
-      return;
-    }
-
-    prevEmailTemplateIndex = templateIndex + 1;
-    setCookie("preferred-email-template-index", prevEmailTemplateIndex); // save for next time
-
-    var newMemberName = userDom.find("td.user-name").text().trim();
-    var newMemberEmail = userDom.find("td.user-email a").text().trim();
-    var data = {
-      name: newMemberName,
-      greeter: greeterName
-    };
-    var body = emailTemplates[templateIndex](data);
-    body = encodeURIComponent(body);
-    var subject = "Scheduling your welcome Zoom to Emergent Commons 👋🏼"
-    // var subject = "Volunteer from Emergent Commons greeting you 👋🏼";
-    window.location.href = `mailto:${newMemberEmail}?subject=${subject}&body=${body}`;
-  });
 
   ////////////////////////////////////////////////////
   // SURVEY

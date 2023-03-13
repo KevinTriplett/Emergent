@@ -18,7 +18,7 @@ class SurveysTest < ActionDispatch::IntegrationTest
       assert_select ".survey-name", survey.name
       assert_select "#survey-questions-container", count: 1
       assert_select ".survey-question-question", "#{question.question}\n\n Yes No"
-      assert_select "a[href=?]", survey_path(token: invite.token, group_position: "-1", question_position: "-1"), "Finish"
+      assert_select "a[href=?]", survey_path(token: invite.token, survey_question_id: -1), "Finish"
     end
   end
 
@@ -32,8 +32,15 @@ class SurveysTest < ActionDispatch::IntegrationTest
       note_2 = create_note(survey_group: group)
 
       get survey_path(invite.token)
-      get survey_notes_path(invite.token)
+      assert_response :success
+      assert_not_nil assigns(:survey_questions)
+      assert_nil assigns(:notes)
+      get survey_path(invite.token, survey_question_id: note_1.survey_question_id)
+      assert_response :success
+      assert_not_nil assigns(:notes)
+      assert_nil assigns(:survey_questions)
 
+      assert_select ".live-view[data-timestamp]"
       assert_select ".live-view[data-timestamp=?]", note_2.updated_at.picker_datetime
       assert_select ".live-view[data-url=?]", survey_live_view_path(invite.token)
 

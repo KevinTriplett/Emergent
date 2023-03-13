@@ -182,7 +182,7 @@ body.home {
   }
 }
 
-.opt {
+.hidden, .opt {
   display: none;
 }
 
@@ -280,15 +280,8 @@ p.timestamp {
   }
 }
 
-input#my-greetings {
-  margin-top: 12px;
-  position: absolute;
-}
-
-input#my-greetings + label {
-  margin-top: 5px;
-  margin-left: 20px;
-  position: absolute;
+input#show-all-greetings {
+  margin-top: 15px;
 }
 
 table.survey-questions {
@@ -308,18 +301,86 @@ table.users tr {
   &:hover {
     background-color: #beebf4;
   }
-  .hidden {
-    display: none;
+}
+
+table.user, #greeter.user-wizard {
+  .user-notes, .user-email {
+    input.email.subject {
+      width: 100%;
+    }
+    textarea {
+      width: 100%
+    }
+    .btn.email-template-send {
+      display: block;
+      width: 45%;
+      margin-bottom: 20px;
+    }
+  }
+  .user-meeting-datetime input {
+    width: 165px;
   }
 }
 
-table.user {
-  td.user-notes textarea {
-    width: 100%
+body#greeter.user-wizard {
+  background-color: lightcyan;
+
+  .wizard-links {
+    p {
+      margin: 0px;
+    }
+
+    a {
+      margin-top: 30px;
+    }
+  }
+
+  .user-summary {
+    p {
+      margin: 0px;
+    }
+
+    a {
+      margin-top: 30px;
+    }
+
+    h5 {
+      margin: 15px 0px 5px 0px;
+    }
+    .user-status {
+      select ~ span {
+        width: 235px;
+      }
+    }
+  }
+
+  .jumbotron {
+    margin: 13px;
+    background-color: rgb(227, 227, 227);
+    padding: 24px;
+    border-radius: 10px;
+    border: 8px solid rgb(74, 73, 73);
+
+    h3, h2 {
+      margin: -10px 0px 20px 0px;
+    }
+  }
+
+  a.padded {
+    padding-bottom: 50px;
+  }
+
+  .greeting-done {
+    // background-image: url(images/horn.gif);
+    // background-repeat: no-repeat;
+    background-image: url(images/confetti.gif);
+    background-repeat: repeat-x;
+    background-color: white;
+    min-height: 510px;
   }
 }
 
-table.users, table.user {
+table.users, table.user, #greeter.user-wizard {
   width: 100%;
   thead {
     th {
@@ -336,6 +397,9 @@ table.users, table.user {
   tbody {
     tr.pending {
       background-color: rgb(253, 248, 169);
+    }
+    tr.clarification {
+      background-color: rgb(253, 200, 169);
     }
     tr.declined {
       background-color: rgb(142, 141, 141);
@@ -354,39 +418,39 @@ table.users, table.user {
         font-size: x-small;
       }
     }
-    td.user-questions {
-      li {
-        margin-bottom: 7px;
-      }
-      span.question {
-        font-size: small;
-        color: lightslategray;
-      }
-      span.answer {
-        font-size: large;
-      }
-      p {
-        color: red;
-        font-size: larger;
-        font-weight: bold;
-      }
-      p.approved {
-        color: green;
-        font-size: larger;
-        font-weight: bold;
-      }
+  }
+  .user-questions {
+    li {
+      margin-bottom: 7px;
     }
-    td.user-notes {
-      span.save-status {
-        font-weight: bolder;
-        vertical-align: top;
-      }
-      span.save-status.success {
-        color: green;
-      }
-      span.save-status.failure {
-        color: red;
-      }
+    span.question {
+      font-size: small;
+      color: lightslategray;
+    }
+    span.answer {
+      font-size: large;
+    }
+    p {
+      color: red;
+      font-size: larger;
+      font-weight: bold;
+    }
+    p.approved {
+      color: green;
+      font-size: larger;
+      font-weight: bold;
+    }
+  }
+  .user-notes {
+    span.save-status {
+      font-weight: bolder;
+      vertical-align: top;
+    }
+    span.save-status.success {
+      color: green;
+    }
+    span.save-status.failure {
+      color: red;
     }
   }
 }

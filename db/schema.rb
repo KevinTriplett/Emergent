@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_04_012248) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_07_025619) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -31,6 +31,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_04_012248) do
     t.integer "survey_question_id"
     t.integer "z_index"
     t.index ["survey_question_id"], name: "index_notes_on_survey_question_id"
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.string "name"
+    t.string "resource_type"
+    t.integer "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
+    t.index ["name"], name: "index_roles_on_name"
+    t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -133,13 +144,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_04_012248) do
     t.integer "greeter_id"
     t.integer "shadow_greeter_id"
     t.boolean "notifications"
-    t.string "roles"
     t.boolean "joined"
     t.boolean "locked"
     t.index ["email"], name: "index_users_on_email"
     t.index ["session_token"], name: "index_users_on_session_token", unique: true
     t.index ["status"], name: "index_users_on_status"
     t.index ["token"], name: "index_users_on_token", unique: true
+  end
+
+  create_table "users_roles", id: false, force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "role_id"
+    t.index ["role_id"], name: "index_users_roles_on_role_id"
+    t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
+    t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
 end

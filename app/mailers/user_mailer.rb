@@ -19,4 +19,11 @@ class UserMailer < ApplicationMailer
     headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @invite.token, protocol: "https")}>"
     mail(to: params[:email], subject: @message[:subject])
   end
+
+  def send_greeter_invite_email
+    user = params[:user]
+    subject = params[:subject]
+    body = params[:body]
+    mail(to: user.email, subject: subject, body: body, content_type: "text/plain")
+  end
 end

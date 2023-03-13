@@ -319,6 +319,7 @@ GEM
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
     rexml (3.2.5)
+    rolify (6.0.1)
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -441,6 +442,7 @@ DEPENDENCIES
   rails (~> 7.0.4)
   rails-controller-testing
   reform
+  rolify
   sassc-rails
   selenium-webdriver
   simple_form

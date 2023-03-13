@@ -1,73 +1,66 @@
-%h3= "#{@user.name}#{@user.locked? ? " (locked)" : nil}"
-%p
-  =link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
-  = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
-  = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+- dataset = {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id, greeter_id: @user.greeter_id, status: @user.status, timestamp: @user.when_timestamp, shadow_id: @user.shadow_greeter_id}
 
-%table.user.table.table-bordered.table-striped{ data: {url: admin_user_patch_url(token: @user.token), token: @token, id: @user.id } }
-  %tbody
-    %tr
-      %td.header Greeter
-      %td.user-greeter{ data: {greeter_id: @user.greeter_id.to_s} }
-        = link_to((@user.greeter_id ? @user.greeter.name : "I will greet"), "#")
-    %tr
-      %td.header Email
-      %td.user-email= link_to @user.email, "mailto:#{ @user.email }"
-    %tr
-      %td.header Status
-      %td.user-status{ data: {status: @user.status} }
-        %select
-          - @status_options.each do |o|
-            - selected = (o == @user.status ? "selected" : nil)
-            %option{ selected: selected }= o
-    %tr
-      %td.header.meeting
-        .wordwrap
-          Zoom Date/Time
+- patch_url = admin_user_patch_path(token: @user.token)
+- email_url = admin_user_send_email_path(token: @user.token)
+- dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
+
+.wizard{ data: dataset }
+  .wizard-pane.jumbotron.user-summary
+    %h2
+      %span.user-name= @user.name
+      %span= @user.locked? ? " (locked)" : nil
+    %p.user-greeter
+      %strong Greeter:
+      = @user.greeter_id ? @user.greeter.name : "(nobody)"
+    %p.user-email
+      %strong Email address:
+      = link_to @user.email, "mailto:#{@user.email}"
+    %p.user-greeting-date.utc-time
+      %strong Greeting on:
+      = @user.when_timestamp ? @user.when_timestamp.picker_datetime : "(no date set)"
+
+    = link_to("👈 Back", admin_users_url, class: "user-back btn btn-secondary")
+    = link_to("🙂 Profile", @user.profile_url, class: "user-profile-button btn btn-primary #{@user.profile_url ? "" : "hidden"}", target: "_blank")
+    = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary #{@user.chat_url ? "" : "hidden"}", target: "_blank")
+
+    %h5 Status:
+    .user-status
+      %select
+        - @status_options.each do |o|
+          - selected = (o == @user.status ? "selected" : nil)
+          %option{ selected: selected }= o
+    .user-notes
+      %h5 Notes
+      %p (Record anything here that a greeter might need to know, in case you need to turn over this greeting)
+      %textarea= @user.notes
+      %span.save-status
+
+
+  %br
+  = link_to "Reveal answers to questions", "#", class: "reveal-answers padded #{@user.joined? ? nil : "hidden"}"
+  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
+    %h2 Questions and Answers
+    %ol.questions-and-answers
+      - @user.questions_responses_array.each do |q, a|
+        %li
+          %span.question= q
           %br
-          %span.tzinfo (GMT)
-      %td.user-meeting-datetime{ data: {timestamp: @user.when_timestamp} }
-        - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
-        %input.datetime-picker.utc-time{ type: "text", value: datetime }
-    %tr
-      %td.header Shadow
-      %td.user-shadow{ data: {greeter_id: @user.shadow_greeter_id.to_s} }
-        = link_to((@user.shadow_greeter_id? ? @user.shadow_greeter.name : "I will shadow"), "#")
-    %tr
-      %td.header Request Date
-      %td.user-request= @user.request_timestamp ? @user.request_timestamp.human_date : nil
-    %tr
-      %td.header Notes
-      %td.user-notes
-        %textarea{ cols: "40" }= @user.notes
-        %span.save-status
-    %tr
-      %td.header Questions
-      %td.user-questions
-        %ol
-          - (@user.questions_responses || []).split(" -:- ").each do |qna|
-            - q, a = *qna.split("\\")
-            %li
-              %span.question= q
-              %br
-              %span.answer= a
-        - unless @user.joined? || @user.status == "Request Declined"
-          - url = @user.email.blank? ? "#" : admin_approve_user_path(token: @user.token)
-          = link_to "Approve", url, class: "btn btn-primary user-approve"
-          = link_to "Reject", "#", class: "btn btn-warning user-reject"
-          .lds-hourglass#spinner
-          %span.progress-message Working ...
-    %tr
-      %td.header ChangeLog
-      %td.change-log!= @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
-    %tr.opt
-      %td Admin
-      %td
-        = link_to "Generate Tokens", admin_user_token_url(token: @user.token, command: "generate")
-        |
-        = link_to "Regenerate Tokens", admin_user_token_url(token: @user.token, command: "regenerate")
-        |
-        = link_to "Revoke Tokens", admin_user_token_url(token: @user.token, command: "revoke")
-        |
-        - command_text = "#{@user.locked? ? "Unlock" : "Lock"} User"
-        = link_to command_text, admin_user_token_url(token: @user.token, command: "toggle_lock")
+          %span.answer= a
+
+
+  %br
+  = link_to "Reveal change log", "#", class: "reveal-change-log padded #{@user.joined? ? nil : "hidden"}"
+  .wizard-pane.jumbotron.change-log.hidden
+    != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
+
+
+  .wizard-pane.jumbotron.admin.opt.hidden
+    %h5 Admin Use Only!
+    = link_to "Generate Tokens", admin_user_token_url(token: @user.token, command: "generate")
+    |
+    = link_to "Regenerate Tokens", admin_user_token_url(token: @user.token, command: "regenerate")
+    |
+    = link_to "Revoke Tokens", admin_user_token_url(token: @user.token, command: "revoke")
+    |
+    - command_text = "#{@user.locked? ? "Unlock" : "Lock"} User"
+    = link_to command_text, admin_user_token_url(token: @user.token, command: "toggle_lock")

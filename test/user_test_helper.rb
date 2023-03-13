@@ -25,7 +25,7 @@ def last_random_user_name
 end
 
 def mock_qna
-  "1q\\2a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a"
+  "1q\\1a -:- 2q\\2a -:- 3q\\3a -:- 4q\\4a -:- 5q\\5a"
 end
 
 def set_authorization_cookie
@@ -69,6 +69,8 @@ end
 
 def login(params = {})
   user = create_authorized_user(params)
+  user.first_name, user.last_name = user.name.split(" ")
+  user.save
   visit login_url(token: user.token)
   user
 end

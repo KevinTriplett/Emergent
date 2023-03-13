@@ -14,6 +14,7 @@ gem "dry-validation"
 gem "cells-hamlit"
 gem "cells-rails"
 gem "reform"
+gem "rolify"
 
 # web scraping
 gem "kimurai", path: "vendor/bundle/kimuraframework"

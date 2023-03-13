@@ -2,8 +2,8 @@
 
 .row
   .col.controls
-    %input#my-greetings{ type: "checkbox" }
-    %label{ for: "my-greetings" } Show only my greetings
+    %input#show-all-greetings{ type: "checkbox" }
+    %label{ for: "show-all-greetings" } Show all greetings
 
 .row
   .col{ data: {url: user_search_path} }
@@ -17,16 +17,17 @@
             Zoom Meeting
             %br
             %span.tzinfo (GMT)
-          %th.shadow Shadow
+          -# %th.shadow Shadow
           %th.notes Notes
           %th.request Requested
       %tbody
         - @users.each do |u|
-          %tr{ data: {url: admin_user_url(token: u[:token]), id: u[:id]}, class: u[:classnames] }
+          - dataset = {url: u[:url], id: u[:id], status: u[:status], greeter_id: u[:greeter_id], shadow_id: u[:shadow_id] }
+          %tr{ class: u[:css_class], data: dataset }
             %td.user-name= u[:name]
             %td.user-greeter= u[:greeter]
             %td.user-status= u[:status]
             %td.user-meeting-datetime.utc-time= u[:when]
-            %td.user-shadow= u[:shadow]
+            -# %td.user-shadow= link_to((u[:shadow] ? u[:shadow] : "I want to shadow"), "#")
             %td.user-notes{ title: u[:truncated] }= u[:notes]
             %td.user-request= u[:request]
