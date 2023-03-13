@@ -258,8 +258,8 @@ class Survey < ActiveRecord::Base
         column += 1
         row = 0
       end
-      left = (230 * (column - 1 + new_survey_group.position - 1)) + 30
-      top = (225 * row) + 100
+      left = (225 * (column - 1 + new_survey_group.position - 1)) + 20
+      top = (225 * row) + 130
       row += 1
 
       new_note = Operation::SurveyHelper::create_new_note({
@@ -271,8 +271,10 @@ class Survey < ActiveRecord::Base
       new_position = new_survey_group.reload.survey_questions.count-1
       new_note.update position: new_position
       new_note.survey_question.update position: new_position
-
     end
+    # move the feedback group to the end
+    survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
+    survey.fixup_positions
   end
 
   # ------------------------------------------------------------------------
@@ -291,7 +293,8 @@ class Survey < ActiveRecord::Base
     })
     raise "something went wrong with survey creation / find" unless survey
 
-    column = row = 0
+    column = -1
+    row = 0
     group = nil
 
     data.each do |line|
@@ -299,30 +302,38 @@ class Survey < ActiveRecord::Base
       puts "line = #{group ? group.name : "no group"}: #{line}"
       if line.match /Vision/
         group = create_group(survey, "Vision")
+        column += 1
         row = 0
         next
       elsif line.match /Mission/
         group = create_group(survey, "Mission")
+        column += 1
         row = 0
         next
       elsif line.match /Values/
+        group = create_group(survey, "Instructions for Values")
+        question = create_question(group, {
+          question_type: "Instructions",
+          question: "Consider the following values careful and vote on the ones you feel are most important."
+        })
         group = create_group(survey, "Values")
-        row = 0
+        column = row = 0
         next
       elsif line.match /Uncategorized/
+        break # finished
         group = create_group(survey, "Uncategorized")
+        column += 1
         row = 0
         next
       end
       raise "something went wrong with group creation" unless group
-      group.update position: survey.reload.survey_groups.count-1 if group.position.nil?
 
       if row > 4
         column += 1
         row = 0
       end
-      left = (230 * (column - 1 + group.position - 1)) + 30
-      top = (225 * row) + 100
+      left = (225 * column) + 30
+      top = (225 * row) + 130
       row += 1
 
       new_note = Operation::SurveyHelper::create_new_note({
@@ -335,6 +346,22 @@ class Survey < ActiveRecord::Base
       new_note.update position: new_position
       new_note.survey_question.update position: new_position
     end
+    # move the feedback group to the end
+    # survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
+    # survey.fixup_positions
+  end
+
+  def self.create_question(group, params)
+    Operation::SurveyHelper::create_new_survey_question({
+      survey_group: group,
+      question_type: params[:question_type],
+      answer_type: params[:answer_type],
+      question: params[:question],
+      answer_labels: params[:answer_labels],
+      has_scale: params[:has_scale],
+      scale_question: params[:scale_question],
+      scale_labels: params[:scale_labels]
+    })
   end
 
   def self.create_group(survey, group_name)
@@ -349,10 +376,10 @@ class Survey < ActiveRecord::Base
         "#f7f7ad"
       when "Mission"
         "#c3edc0"
-      when "Value"
-        "#b3d4e8"
+      when "Values"
+        "#afdaea"
       else
-        "#aaffaa"
+        "#e7f2a4"
       end
     })
   end
