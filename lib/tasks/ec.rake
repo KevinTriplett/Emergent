@@ -36,7 +36,7 @@ namespace :ec do
 end
 
 namespace :ec do
-  desc "Imports sticky notes from tmp/arg.csv (a \"comma separated value\" file)"
+  desc "Imports sticky notes from tmp/arg.csv (for xxx.csv use 'rake ec:import_stickies_csv fn=xxx')"
   task import_stickies_csv: :environment do
     Survey.import_sticky_notes_csv(ENV["fn"])
   end
