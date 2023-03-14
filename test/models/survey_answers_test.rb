@@ -133,4 +133,32 @@ class SurveyAnswersTest < MiniTest::Spec
       assert_equal 5, answer.votes_left
     end
   end
+
+  it "allows incremental change in votes" do
+    DatabaseCleaner.cleaning do
+      group = create_survey_group(votes_max: 5)
+      question = create_survey_question(survey_group: group, answer_type: "Vote")
+      invite = create_survey_invite(survey_id: group.survey_id)
+      answer = create_survey_answer(survey_invite: invite, survey_question: question)
+
+      assert_equal 5, answer.votes_left
+      answer.votes = 0
+      answer.save
+      assert_equal 0, answer.reload.votes
+      assert_equal 5, answer.votes_left
+      answer.vote_change = -1
+      answer.save
+      assert_equal 0, answer.reload.votes
+      assert_equal 5, answer.votes_left
+      answer.vote_change = 1
+      answer.save
+      assert_equal 1, answer.reload.votes
+      assert_equal 4, answer.votes_left
+      answer.vote_change = 1
+      answer.vote_change = 1
+      answer.save
+      assert_equal 3, answer.reload.votes
+      assert_equal 2, answer.votes_left
+    end
+  end
 end

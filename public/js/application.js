@@ -964,9 +964,8 @@ $(document).ready(function() {
   var processVote = function(e) {
     var self = $(this);
     var count = self.parent().find(".vote-count");
-    var votes = parseInt(count.text());
-    votes = votes + (self.hasClass("vote-up") ? 1 : -1);
-    surveyAnswerPatch(self, {votes: votes}, function(result) {
+    vote_change = self.hasClass("vote-up") ? 1 : -1;
+    surveyAnswerPatch(self, {vote_change: vote_change}, function(result) {
       count.text(result.vote_count);
       self
         .closest("#survey-container, #notes-container")

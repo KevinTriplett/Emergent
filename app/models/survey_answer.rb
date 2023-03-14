@@ -16,6 +16,10 @@ class SurveyAnswer < ActiveRecord::Base
     self.vote_count = count
   end
 
+  def vote_change=(change)
+    self.votes = votes + change
+  end
+
   def votes_left
     votes_max - votes_total
   end
