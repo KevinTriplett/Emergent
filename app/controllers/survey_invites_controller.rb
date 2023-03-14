@@ -28,7 +28,7 @@ class SurveyInvitesController < ApplicationController
     initialize_answers
     if @survey_question.note?
       get_notes_and_survey_answers
-      get_liveview_url
+      # get_liveview_url
       get_template
       @body_id = "notes"
     else
