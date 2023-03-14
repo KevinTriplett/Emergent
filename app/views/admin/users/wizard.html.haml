@@ -40,9 +40,10 @@
     -# button for "Meeting Scheduled" to go to next page
     .wizard-pane.jumbotron.user-email
       %h2 Scheduling a Zoom Greeting via Email
+      %p.no-margin= "To: #{@user.name}"
       %p
         To email:
-        %span.email-address= @user.email
+        %span.email-address= link_to @user.email, "mailto:#{@user.email}"
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of greeting" }
       %input#use-gmail1.use-gmail{ type: "checkbox" }
@@ -83,9 +84,10 @@
   - if "Clarification Needed" == @user.status
     .wizard-pane.jumbotron.user-email
       %h2 Asking for Clarification
+      %p.no-margin= "To: #{@user.name}"
       %p
         To email:
-        %span.email-address= @user.email
+        %span.email-address= link_to @user.email, "mailto:#{@user.email}"
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of email" }
       %input#use-gmail2.use-gmail{ type: "checkbox" }
