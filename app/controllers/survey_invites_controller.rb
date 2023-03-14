@@ -16,7 +16,7 @@ class SurveyInvitesController < ApplicationController
         @url = admin_survey_path(@survey_invite.survey_id)
         @survey_invite.delete
       else
-        @survey_invite.update url: survey_show_results_path(@survey_invite.token)
+        @survey_invite.update url: survey_show_results_url(token: @survey_invite.token)
         @survey_invite.send_finished_survey_link
       end
       @body_id = "finished"
