@@ -302,6 +302,13 @@ class Survey < ActiveRecord::Base
       puts "line = #{group ? group.name : "no group"}: #{line}"
       if line.match /Vision/
         assign_max_votes(group)
+        group = create_group(survey, "Instructions for Vision / Mission", "")
+        question = create_question(group, {question_type: "New Page"})
+        question = create_question(group, {
+          question_type: "Instructions",
+          question: "Carefully consider the following Vision and Mission nuggets and vote on the ones you feel are most important.\n
+          Note: You can cast multiple votes for any one nugget. The number of votes you have left is shown under the up/down vote buttons."
+        })
         group = create_group(survey, "Vision")
         column += 1
         row = 0
@@ -314,10 +321,10 @@ class Survey < ActiveRecord::Base
         next
       elsif line.match /Values/
         assign_max_votes(group)
-        group = create_group(survey, "Instructions for Values")
+        group = create_group(survey, "Instructions for Values", "")
         question = create_question(group, {
           question_type: "Instructions",
-          question: "Consider the following values careful and vote on the ones you feel are most important."
+          question: "Now carefully consider the following values and vote on the ones that resonate with you."
         })
         group = create_group(survey, "Values")
         column = row = 0
@@ -368,12 +375,12 @@ class Survey < ActiveRecord::Base
     })
   end
 
-  def self.create_group(survey, group_name)
+  def self.create_group(survey, group_name, description=nil)
     puts "creating #{group_name} group..."
     Operation::SurveyHelper::create_new_survey_group({
       survey: survey,
       name: group_name,
-      description: "change this description",
+      description: description || "change this description",
       votes_max: nil, # will be assigned based on algorithm below
       note_color: case group_name
       when "Vision"
