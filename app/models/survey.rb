@@ -307,7 +307,11 @@ class Survey < ActiveRecord::Base
         question = create_question(group, {
           question_type: "Instructions",
           question: "Carefully consider the following Vision and Mission nuggets and vote on the ones you feel are most important.\n
-          Note: You can cast multiple votes for any one nugget. The number of votes you have left is shown under the up/down vote buttons."
+          NOTE:\n
+          * Vision and Mission nuggets are on different colored sticky notes.\n
+          * You may have to scroll right to see the Mission notes\n
+          * You can cast multiple votes for any one nugget up to a maximum number of votes.
+          * The number of votes you have left is shown under the up/down vote buttons."
         })
         group = create_group(survey, "Vision")
         column += 1
