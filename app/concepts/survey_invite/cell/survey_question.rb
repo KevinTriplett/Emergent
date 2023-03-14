@@ -60,7 +60,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def question
-    survey_question.question
+    "<p>#{survey_question.question.split("\n").join("</p><p>")}</p>"
   end
   def answer
     survey_answer.answer
