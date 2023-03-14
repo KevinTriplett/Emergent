@@ -48,8 +48,8 @@
       %input#use-gmail1.use-gmail{ type: "checkbox" }
       %label{ for: "use-gmail1" } Use GMail to send email
       %p You can choose from these templates or compose your own email.
-      .email-greeting-template-buttons Template buttons will be visible here
-      = link_to "Send Email", "#", class: "btn btn-primary email-send"
+      .email-template-buttons.greeting Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-send greeting"
       = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
 
 
@@ -91,8 +91,8 @@
       %input#use-gmail2.use-gmail{ type: "checkbox" }
       %label{ for: "use-gmail2" } Use GMail to send email
       %p You can choose from these templates or compose your own email.
-      .email-clarification-template-buttons Template buttons will be visible here
-      = link_to "Send Email", "#", class: "btn btn-primary email-send"
+      .email-template-buttons.clarification Template buttons will be visible here
+      = link_to "Send Email", "#", class: "btn btn-primary email-send clarification"
       .approval-buttons
         %p When you've received a response, or enough time has gone by, you can choose one of these actions:
         - url = admin_approve_user_path(token: @user.token)

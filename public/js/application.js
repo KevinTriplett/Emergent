@@ -667,13 +667,13 @@ $(document).ready(function() {
   });
 
   ////////////////////////////////////////////////////
-  // GREETER EMAIL
-  $(".email-greeting-template-buttons").empty();
-  for (templateFunc of emailGreetingTemplates) {
+  // GREETER AND CLARIFICATION EMAIL TEMPLATE BUTTONS
+  // USED BY THE FOLLOWING TWO CONDITIONAL STATEMENTS
+  var createEmailTemplateButton = function(dom, func, subject, buttonText=null) {
     var button = $(document.createElement("a"));
     button.addClass("btn btn-secondary");
     button.attr("href", "#");
-    button.data("func", templateFunc);
+    button.data("func", func);
     button.on("click", function(e) {
       e.preventDefault();
       var self = $(this);
@@ -690,43 +690,47 @@ $(document).ready(function() {
       self
         .closest(".user-email")
         .find(".email-subject")
-        .val("Scheduling your welcome Zoom to Emergent Commons 👋🏼");
-      $(".email-send").show();
+        .val(subject);
     });
-    var buttonText = `Template ${$(".email-greeting-template-buttons a").length + 1}`;
+    buttonText ||= `Template ${dom.children().length + 1}`;
     button.text(buttonText);
-    $(".email-greeting-template-buttons").append(button);
+    dom.append(button);
   }
 
-  ////////////////////////////////////////////////////
-  // CLARIFICATION EMAIL
-  $(".email-clarification-template-buttons").empty();
-  for (templateFunc of emailClarificationTemplates) {
-    var button = $(document.createElement("a"));
-    button.addClass("btn btn-secondary");
-    button.attr("href", "#");
-    button.data("func", templateFunc);
-    button.on("click", function(e) {
-      e.preventDefault();
-      var self = $(this);
-      var func = self.data("func");
-      var data = {
-        name: $(".user-name").first().text(),
-        greeter: greeterName
-      };
-      self
-        .closest(".user-email")
-        .find(".email-body")
-        .text(func(data))
-        .trigger("input");
-      self
-        .closest(".user-email")
-        .find(".email-subject")
-        .val("Following up on your request to join Emergent Commons 👋🏼");
-    });
-    var buttonText = `Template ${$(".email-clarification-template-buttons a").length + 1}`;
-    button.text(buttonText);
-    $(".email-clarification-template-buttons").append(button);
+  var templateButtons = $(".email-template-buttons.greeting");
+  if (templateButtons.length > 0) {
+    templateButtons.empty();
+    for (templateFunc of emailGreetingTemplates) {
+      createEmailTemplateButton(
+        templateButtons, 
+        templateFunc,
+        "Scheduling your welcome Zoom to Emergent Commons"
+      );
+    }
+    var lastEmailSubject = getCookie("subject");
+    var lastEmailBody = getCookie("body");
+    if (lastEmailSubject || lastEmailBody) {
+      lastEmailBody = decodeURIComponent(lastEmailBody);
+      var lastEmailFunc = function() { return lastEmailBody; };
+      createEmailTemplateButton(
+        templateButtons, 
+        lastEmailFunc,
+        lastEmailSubject,
+        "Your Most Recent Email"
+      );
+    }
+  }
+
+  templateButtons = $(".email-template-buttons.clarification");
+  if (templateButtons.length > 0) {
+    templateButtons.empty();
+    for (templateFunc of emailClarificationTemplates) {
+      createEmailTemplateButton(
+        templateButtons, 
+        templateFunc,
+        "Following up on your request to join Emergent Commons"
+      );
+    }
   }
 
   ////////////////////////////////////////////////////
@@ -751,6 +755,9 @@ $(document).ready(function() {
       `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}` :
       `mailto:${email}?subject=${subject}&body=${body}`
     window.open(mailUrl);
+    if ($(this).hasClass("clarification")) return;
+    setCookie("subject", subject);
+    setCookie("body", body);
     // // use the app to send email:
     // var self = $(this);
     // var url = self.closest("[data-email-url]").attr("data-email-url");
