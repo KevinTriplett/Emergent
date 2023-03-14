@@ -111,4 +111,4 @@
 
   = link_to "Show/Hide change log", "#", class: "reveal-change-log padded"
   .wizard-pane.jumbotron.change-log.hidden
-    != @user.change_log ? @user.change_log.gsub("\n","<br>") : "(no changes)"
+    != @user.change_log ? @user.change_log.chomp.gsub("\n","<br>") : "(no changes)"

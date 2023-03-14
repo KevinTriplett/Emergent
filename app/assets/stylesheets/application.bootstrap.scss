@@ -332,8 +332,19 @@ table.user, #greeter.user-wizard {
       margin-bottom: 30px;
     }
   }
+  .user-notes {
+    p {
+      font-size: larger;
+    }
+    textarea {
+      font-size: larger;
+    }
+  }
   .user-meeting-datetime input {
     width: 165px;
+  }
+  .change-log {
+    font-size: larger;
   }
 }
 
@@ -383,10 +394,6 @@ body#greeter.user-wizard {
     h3, h2 {
       margin: -10px 0px 20px 0px;
     }
-  }
-
-  a.padded {
-    padding-bottom: 50px;
   }
 
   .greeting-done {
@@ -474,6 +481,12 @@ table.users, table.user, #greeter.user-wizard {
     span.save-status.failure {
       color: red;
     }
+  }
+  a.reveal-answers,
+  a.reveal-change-log {
+    font-size: x-large;
+    display: block;
+    padding: 20px 0px;
   }
 }
 
