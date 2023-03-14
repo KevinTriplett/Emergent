@@ -24,8 +24,8 @@ class SurveysTest < ActionDispatch::IntegrationTest
 
   test "User cam see notes and live views are enabled" do
     DatabaseCleaner.cleaning do
-      invite = create_survey_invite
-      survey = invite.survey
+      survey = create_survey(liveview: true)
+      invite = create_survey_invite(survey: survey)
       group = create_survey_group(survey: survey)
       question = create_survey_question(survey_group: group)
       note_1 = create_note(survey_group: group)

@@ -28,7 +28,7 @@ class SurveyInvitesController < ApplicationController
     initialize_answers
     if @survey_question.note?
       get_notes_and_survey_answers
-      # get_liveview_url
+      get_liveview_url
       get_template
       @body_id = "notes"
     else
@@ -148,6 +148,7 @@ class SurveyInvitesController < ApplicationController
   # ------------------------------------------------------------------------
 
   def get_liveview_url
+    return unless @survey.liveview
     time = Time.now - 4.hours
     return unless @notes.any? do |note|
       note.updated_at > time

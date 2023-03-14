@@ -64,7 +64,8 @@ def create_survey_with_result(params = {})
     params: {
       survey: {
         name: params[:name],
-        description: params[:description]
+        description: params[:description],
+        liveview: params[:liveview]
       },
       create_initial_questions: params[:create_initial_questions]
     }
