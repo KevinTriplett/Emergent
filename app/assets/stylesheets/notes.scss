@@ -5,6 +5,29 @@
   outline: none;
 }
 
+body#notes, body#survey {
+  .hearts {
+    font-size: x-large;
+    position: absolute;
+    top: -10px;
+    left: -11px;
+  }
+  .survey-answer-vote {
+    margin-top: -17px;
+  }
+  .hearts, .survey-answer-vote {
+    .one-third {
+      color: rgb(8, 0, 255);
+    }
+    .two-thirds {
+      color: rgb(238, 0, 255);
+    }
+    .three-thirds {
+      color: rgb(255, 0, 0);
+    }
+  }
+}
+
 body#notes {
   background-color: #9fc0c8;
   font-family: 'Poppins', sans-serif;
@@ -71,24 +94,7 @@ body#notes {
         .survey-answer-vote {
           z-index: 10;
         }
-
-        .hearts {
-          font-size: x-large;
-          position: absolute;
-          top: -10px;
-          left: -11px;
-          .one-third {
-            color: rgb(8, 0, 255);
-          }
-          .two-thirds {
-            color: rgb(238, 0, 255);
-          }
-          .three-thirds {
-            color: rgb(255, 0, 0);
-          }
-        }
-      }
-  
+      }  
     }
   }
   
