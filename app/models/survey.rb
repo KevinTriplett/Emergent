@@ -357,6 +357,7 @@ class Survey < ActiveRecord::Base
       new_note.update position: new_position
       new_note.survey_question.update position: new_position
     end
+    assign_max_votes(group)
     # move the feedback group to the end
     survey.survey_groups.where(name: "Feedback").first.update position: survey.survey_groups.count
     survey.fixup_positions
