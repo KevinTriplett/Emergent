@@ -730,6 +730,12 @@ class SurveysTest < ApplicationSystemTestCase
             next unless sq.has_scale?
             assert_selector ".survey-question-scale-question", text: sq.scale_question
             assert_selector ".survey-answer-scale", text: answer.scale
+            next unless sq.note?
+            assert_selector ".survey-question-vote", text: "You gave this #{amswer.votes} votes"
+            thirds = answer.vote_thirds
+            assert_selector ".survey-question-vote i.one-third", count: 1 == thirds ? 1 : 0
+            assert_selector ".survey-question-vote i.two-thirds", count: 2 == thirds ? 1 : 0
+            assert_selector ".survey-question-vote i.three-thirds", count: 3 == thirds ? 1 : 0
           end
         end
       end
