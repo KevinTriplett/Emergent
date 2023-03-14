@@ -83,14 +83,13 @@ class SurveyInvite < ActiveRecord::Base
       email_question = first_group.survey_questions.where(answer_type: "Email").first
       return true unless email_question
       email = survey_answer_for(email_question.id)
-      return true unless email && email.answer
+      return true unless email && !email.answer.blank?
       UserMailer.with({
         email: email.answer,
         invite: self,
         message: get_finished_message,
         url: url
       }).send_finished_survey_link.deliver_now
-      return true
     when "Private Message"
       Spider.set_message("private_message_spider", get_finished_message)
       PrivateMessageSpider.crawl!
@@ -98,49 +97,31 @@ class SurveyInvite < ActiveRecord::Base
         sleep 1
       end
       "success" == result
+    else
+      true
     end
-  rescue
+  rescue => error
     false
   end
 
   def get_invite_message
     [
-      user.id.to_s,
+      user.id,
       subject,
       body,
       "Here's your personal link to your completed survey:",
       url
     ].join("|")
-    # this fails with postgresql error: PG::CharacterNotInRepertoire: ERROR:  invalid byte sequence for encoding "UTF8": 0xcf 0x3a
-    # Marshal.dump({
-    #   user_id: user.id,
-    #   subject: subject,
-    #   body: body,
-    #   lines: [
-    #     "Here's your personal link to the survey:"
-    #   ],
-    #   url: url
-    # }).encode('UTF-8')
   end
 
   def get_finished_message
     [
-      user.id.to_s,
+      user.id,
       "Emergent Commons - your completed survey link",
       "Thank you again for completing the survey!",
       "Here's your personal link to your completed survey:",
       url
     ].join("|")
-    # this fails with postgresql error: PG::CharacterNotInRepertoire: ERROR:  invalid byte sequence for encoding "UTF8": 0xcf 0x3a
-    # Marshal.dump({
-    #   user_id: user.id,
-    #   subject: "Emergent Commons - your completed survey link",
-    #   body: "Thank you again for completing the survey!",
-    #   lines: [
-    #     "Here's your personal link to your completed survey:"
-    #   ],
-    #   url: url
-    # })
   end
 
   # ----------------------------------------------------------------------

@@ -8,16 +8,22 @@ class UserMailer < ApplicationMailer
 
   def send_survey_invite_link
     @invite = params[:invite]
-    @message = Marshal.load(params[:message])
+    message = params[:message].split("|")
+    user = User.find message[0]
+    subject = message[1]
+    body = "#{message[2]}\n#{message[3]}\n#{message[4]}"
     headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @invite.token, protocol: "https")}>"
-    mail(to: params[:email], subject: @message[:subject])
+    mail(to: user.email, subject: subject, body: body, content_type: "text/plain")
   end
 
   def send_finished_survey_link
     @invite = params[:invite]
-    @message = Marshal.load(params[:message])
+    message = params[:message].split("|")
+    user = User.find message[0]
+    subject = message[1]
+    body = "#{message[2]}\n#{message[3]}\n#{message[4]}"
     headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @invite.token, protocol: "https")}>"
-    mail(to: params[:email], subject: @message[:subject])
+    mail(to: user.email, subject: subject, body: body, content_type: "text/plain")
   end
 
   def send_greeter_invite_email

@@ -425,25 +425,23 @@ class SurveysTest < ApplicationSystemTestCase
 
   test "User can view and vote on survey notes" do
     DatabaseCleaner.cleaning do
-      survey_invite = create_survey_invite
-      survey = survey_invite.survey
-      group_0 = create_survey_group(survey: survey)
+      survey = create_survey(create_initial_questions: true)
+
+      survey_question_1a = survey.ordered_questions[0]
+      survey_question_1b = survey.ordered_questions[1]
+      survey_question_5  = survey.ordered_questions[2]
+
+      survey_invite = create_survey_invite(survey: survey)
+      user = survey_invite.user
+      group_0 = survey.survey_groups[0]
       group_1 = create_survey_group(survey: survey, votes_max: 30, name: "Group 1")
       group_2 = create_survey_group(survey: survey, votes_max: 30, name: "Group 2")
       group_3 = create_survey_group(survey: survey, votes_max: 30, name: "Group 3")
       group_4 = create_survey_group(survey: survey, votes_max: 30, name: "Group 4")
+      group_5 = survey.survey_groups[1]
+      group_5.update position: survey.survey_groups.count
+      survey.fixup_positions
 
-      survey_question_0 = create_survey_question({
-        survey_group: group_0,
-        question_type: "Instructions",
-        question: "This is the instruction for the beginning"
-      })
-      survey_question_1 = create_survey_question({
-        survey_group: group_0,
-        question_type: "Question",
-        question: "Maybe enter your email address?",
-        answer_type: "Email"
-      })      
       survey_question_2 = create_survey_question({
         survey_group: group_0,
         question_type: "New Page"
@@ -503,20 +501,26 @@ class SurveysTest < ApplicationSystemTestCase
       assert_current_path survey_path(survey_invite.token)
       assert_selector "a", text: "Next >", count: 1
 
-      within "#survey-question-#{survey_question_0.id}" do
-        assert_selector ".survey-question-instructions", text: survey_question_0.question
-        assert_selector "input[type='email']", count: 0
+      within "#survey-question-#{survey_question_1a.id}" do
+        assert_selector ".survey-question-question", text: survey_question_1a.question
+        assert_selector "input", count: 3
+        survey_question_1a.answer_labels.split("|").each_with_index do |label, i|
+          assert_selector ".survey-answer-multiple-choice label:nth-of-type(#{i+1})", text: label
+        end
+        within ".survey-answer-multiple-choice" do
+          choose option: "Email"
+        end
       end
 
-      within "#survey-question-#{survey_question_1.id}" do
-        assert_selector ".survey-question-question", text: survey_question_1.question
+      within "#survey-question-#{survey_question_1b.id}" do
+        assert_selector ".survey-question-question", text: survey_question_1b.question
         assert_selector "input[type='email']", count: 1
-        find(".survey-answer-email input").send_keys("name@example.com")
+        find(".survey-answer-email input").send_keys(user.email)
       end
-      sleep 2
+      sleep 1
 
-      survey_answer_1 = survey_invite.survey_answer_for(survey_question_1.id)
-      assert_equal "name@example.com", survey_answer_1.answer
+      answer = survey_invite.survey_answers.where(survey_question_id: survey_question_1b.id).first
+      assert_equal user.email, answer.answer
 
       assert_selector "#survey-question-#{survey_question_2.id}", count: 0
 
@@ -589,8 +593,8 @@ class SurveysTest < ApplicationSystemTestCase
       assert_current_path survey_path(survey_invite.token, survey_question_id: note_4.survey_question_id)
 
       assert_selector "a", text: "< Prev", count: 1
-      assert_selector "a", text: "Next >", count: 0
-      assert_selector "a", text: "Finish", count: 1
+      assert_selector "a", text: "Next >", count: 1
+      assert_selector "a", text: "Finish", count: 0
       assert_selector ".note", count: notes_count = 6
 
       assert_no_selector ".note#note-#{note_1.id}"
@@ -615,32 +619,12 @@ class SurveysTest < ApplicationSystemTestCase
       # ------------------------------------------------------------------------------
 
       assert_current_path survey_path(survey_invite.token, survey_question_id: survey_question_4.id)
-      
-      group_5 = create_survey_group(survey: survey)
-      survey_question_5 = create_survey_question({
-        survey_group: group_5,
-        question_type: "Instructions",
-        question: "This concludes the survey"
-      })
-      survey_question_6 = create_survey_question({
-        survey_group: group_5,
-        question_type: "Question",
-        question: "Did you like it?",
-        answer_type: "Yes/No"
-      })
-      survey_question_7 = create_survey_question({
-        survey_group: group_5,
-        question_type: "New Page"
-      })
-      
+
       click_link "Next >"
       
       # ------------------------------------------------------------------------------
 
       assert_current_path survey_path(survey_invite.token, survey_question_id: note_4.survey_question_id)
-      assert_selector "a", text: "< Prev", count: 1
-      assert_selector "a", text: "Next >", count: 1
-      assert_selector "a", text: "Finish", count: 0
 
       [note_4,note_5,note_6,note_7,note_8,note_9].each do |note|
         survey_answer = survey_invite.survey_answer_for(note.survey_question_id)
@@ -663,21 +647,25 @@ class SurveysTest < ApplicationSystemTestCase
       assert_selector "a", text: "Finish", count: 1
       
       within "#survey-question-#{survey_question_5.id}" do
-        assert_selector ".survey-question-instructions", text: survey_question_5.question
-        assert_selector "input", count: 0
+        assert_selector ".survey-question-question", text: survey_question_5.question
+        assert_selector ".survey-question-scale-question", text: survey_question_5.scale_question
+        assert_selector ".survey-answer-essay textarea", count: 1
+        find(".survey-answer-essay textarea").click
+        find(".survey-answer-essay textarea").send_keys("This was a great survey!")
+        assert_selector ".survey-answer-scale label:nth-of-type(1)", text: survey_question_5.scale_labels.split("|")[0]
+        assert_selector ".survey-answer-scale label:nth-of-type(2)", text: survey_question_5.scale_labels.split("|")[1]
+        assert_selector ".survey-answer-scale input[type='range']", count: 1
+        find(".survey-answer-scale input[type='range']").set(3)
       end
 
-      within "#survey-question-#{survey_question_6.id}" do
-        assert_selector ".survey-question-question", text: survey_question_6.question
-        assert_selector "input", count: 2
-        within ".survey-answer-yes-no" do
-          choose option: "Yes"
-        end
-      end
-
-      assert_selector "#survey-question-#{survey_question_7.id}", count: 0
-
+      ActionMailer::Base.deliveries.clear
       click_link "Finish"
+      email = ActionMailer::Base.deliveries.last
+      assert_equal email.to, [user.email]
+      assert_equal email.subject, "Emergent Commons - your completed survey link"
+      assert_match /#{unsubscribe_url(token: survey_invite.token, protocol: "https")}/, email.header['List-Unsubscribe'].inspect
+      assert_match /#{survey_show_results_path(survey_invite.token)}/, email.body.inspect
+      ActionMailer::Base.deliveries.clear
 
       assert_nothing_raised do
         survey_invite.reload # not deleted, as in tests
@@ -694,8 +682,8 @@ class SurveysTest < ApplicationSystemTestCase
 
       # ------------------------------------------------------------------------------
 
-      visit survey_show_results_path(survey_invite.token)
-      assert_current_path survey_show_results_path(survey_invite.token)
+      visit survey_show_results_path(token: survey_invite.token)
+      assert_current_path survey_show_results_path(token: survey_invite.token)
 
       survey.ordered_groups.each do |sg|
         within "#survey-group-#{sg.id}" do
@@ -705,16 +693,18 @@ class SurveysTest < ApplicationSystemTestCase
       end
 
       survey.ordered_questions.each do |sq|
-        within "#survey-question-#{sq.id}" do
-          question_css = ".survey-question-#{sq.question_type.downcase.gsub(" ", "-").gsub("/", "-")}"
-          answer_css = ".survey-answer-#{sq.answer_type.downcase.gsub(" ", "-").gsub("/", "-")}"
-          assert_selector question_css, text: sq.question
-          next if sq.na?
-          answer = survey_invite.survey_answer_for(sq.id)
-          assert_selector answer_css, text: /#{answer.answer}/
-          next unless sq.has_scale?
-          assert_selector ".survey-question-scale-question", text: sq.scale_question
-          assert_selector ".survey-answer-scale", text: answer.scale
+        within "#survey-group-#{sq.survey_group_id}" do
+          within "#survey-question-#{sq.id}" do
+            question_css = ".survey-question-#{sq.question_type.downcase.gsub(" ", "-").gsub("/", "-")}"
+            answer_css = ".survey-answer-#{sq.answer_type.downcase.gsub(" ", "-").gsub("/", "-")}"
+            assert_selector question_css, text: sq.question
+            next if sq.na?
+            answer = survey_invite.survey_answer_for(sq.id)
+            assert_selector answer_css, text: /#{answer.answer}/
+            next unless sq.has_scale?
+            assert_selector ".survey-question-scale-question", text: sq.scale_question
+            assert_selector ".survey-answer-scale", text: answer.scale
+          end
         end
       end
     end
