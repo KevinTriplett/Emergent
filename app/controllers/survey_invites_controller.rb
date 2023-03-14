@@ -70,6 +70,7 @@ class SurveyInvitesController < ApplicationController
       answer: survey_answer.reload.answer,
       scale: survey_answer.scale,
       vote_count: survey_answer.vote_count,
+      vote_thirds: survey_answer.vote_thirds,
       votes_left: survey_answer.votes_left,
       group_id: survey_answer.survey_group_id,
       color: survey_answer.survey_group.note_color

@@ -35,7 +35,7 @@ class SurveyAnswer < ActiveRecord::Base
       0
     when 1..one_third
       1
-    when one_third..one_third*2
+    when one_third+1..one_third*2
       2
     else
       3

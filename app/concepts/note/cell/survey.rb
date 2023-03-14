@@ -68,4 +68,11 @@ class Note::Cell::Survey < Cell::ViewModel
     <i class='vote-down bi-caret-down-fill'></i><br>
     <span class='votes-left'>#{votes_left}</span>"
   end
+
+  def hearts
+    vote_thirds = survey_answer ? survey_answer.vote_thirds : 0
+    "<i class='bi-heart#{1 == vote_thirds ? nil : " hidden"} one-third'></i>
+    <i class='bi-heart-half#{2 == vote_thirds ? nil : " hidden"} two-thirds'></i>
+    <i class='bi-heart-fill#{3 == vote_thirds ? nil : " hidden"} three-thirds'></i>"
+  end
 end

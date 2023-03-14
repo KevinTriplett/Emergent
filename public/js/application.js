@@ -968,6 +968,22 @@ $(document).ready(function() {
         .find(`[data-group-id='${result.group_id}']`)
         .find(".votes-left")
         .text(result.votes_left);
+      switch(result.vote_thirds) {
+      case 0:
+        self.closest(".main").find(".hearts i").hide();
+        break;
+      case 1:
+        self.closest(".main").find(".hearts i").hide();
+        self.closest(".main").find(".hearts i.one-third").show();
+        break;
+      case 2:
+        self.closest(".main").find(".hearts i").hide();
+        self.closest(".main").find(".hearts i.two-thirds").show();
+        break;
+      case 3:
+        self.closest(".main").find(".hearts i").hide();
+        self.closest(".main").find(".hearts i.three-thirds").show();
+      }
     });
   }
   $("#survey-container .vote-up, #survey-container .vote-down").on("click", processVote);

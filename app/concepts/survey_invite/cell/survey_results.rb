@@ -77,11 +77,11 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
         when 0
           nil
         when 1
-          "<i class='bi-heart'></i>"
+          "<i class='bi-heart one-third'></i>"
         when 2
-          "<i class='bi-heart-half'></i>"
+          "<i class='bi-heart-half two-thirds'></i>"
         else
-          "<i class='bi-heart-fill'></i>"
+          "<i class='bi-heart-fill three-thirds'></i>"
         end,
         "You gave this #{survey_answer.votes} votes",
         ].compact.join(" ")
