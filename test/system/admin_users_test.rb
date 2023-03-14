@@ -147,7 +147,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-greeter", text: admin_1.name
       assert_no_selector "input.email-subject"
       assert_no_selector "textarea.email-body"
-      assert_no_selector ".email-greeting-template-buttons a.btn.btn-secondary", count: 5
+      assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 5
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_selector "a.btn.btn-success.user-approve", text: "Answers Are Acceptable"
       assert_selector "a.btn.btn-warning.user-clarify", text: "Answers Need Clarification"
@@ -161,7 +161,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-greeter", text: admin_1.name
       assert_selector "input.email-subject"
       assert_selector "textarea.email-body"
-      assert_selector ".email-clarification-template-buttons a.btn.btn-secondary", count: 2
+      assert_selector ".email-template-buttons.clarification a.btn.btn-secondary", count: 2
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_selector "a.btn.btn-success.user-approve", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
@@ -175,7 +175,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-greeter", text: admin_1.name
       assert_no_selector "input.email-subject"
       assert_no_selector "textarea.email-body"
-      assert_no_selector ".email-greeting-template-buttons a.btn.btn-secondary"
+      assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary"
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_no_selector "a", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
@@ -194,7 +194,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-greeter", text: admin_1.name
       assert_selector "input.email-subject"
       assert_selector "textarea.email-body"
-      assert_selector ".email-greeting-template-buttons a.btn.btn-secondary", count: 5
+      assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 5
       assert_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_no_selector "a", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
@@ -221,13 +221,15 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       click_link "Send Email"
 
+      visit admin_user_wizard_path(token: existing_user.token)
       assert_current_path admin_user_wizard_path(token: existing_user.token)
       assert_equal "Scheduling Zoom", existing_user.reload.status
       assert_selector ".user-status", text: existing_user.status
       assert_selector ".user-greeter", text: admin_1.name
       assert_selector "input.email-subject"
       assert_selector "textarea.email-body"
-      assert_selector ".email-greeting-template-buttons a.btn.btn-secondary", count: 5
+      assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 6
+      assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", text: "Your Most Recent Email"
       assert_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_no_selector "a", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
@@ -241,7 +243,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-greeter", text: admin_1.name
       assert_no_selector "input.email-subject"
       assert_no_selector "textarea.email-body"
-      assert_no_selector ".email-greeting-template-buttons a.btn.btn-secondary"
+      assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary"
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_no_selector "a", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"

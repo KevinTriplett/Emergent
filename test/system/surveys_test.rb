@@ -557,6 +557,32 @@ class SurveysTest < ApplicationSystemTestCase
         end
       end
 
+      note_1.survey_group.update votes_max: 3
+      within(".note#note-#{note_1.id}") do
+        assert_selector ".vote-count", text: "0"
+        assert_selector ".hearts i.one-third", count: 0
+        assert_selector ".hearts i.two-thirds", count: 0
+        assert_selector ".hearts i.three-thirds", count: 0
+        find(".vote-up").click
+        sleep 1
+        assert_selector ".vote-count", text: "1"
+        assert_selector ".hearts i.one-third", count: 1
+        assert_selector ".hearts i.two-thirds", count: 0
+        assert_selector ".hearts i.three-thirds", count: 0
+        find(".vote-up").click
+        sleep 1
+        assert_selector ".vote-count", text: "2"
+        assert_selector ".hearts i.one-third", count: 0
+        assert_selector ".hearts i.two-thirds", count: 1
+        assert_selector ".hearts i.three-thirds", count: 0
+        find(".vote-up").click
+        sleep 1
+        assert_selector ".vote-count", text: "3"
+        assert_selector ".hearts i.one-third", count: 0
+        assert_selector ".hearts i.two-thirds", count: 0
+        assert_selector ".hearts i.three-thirds", count: 1
+      end
+
       votes_left_hash = {}
       votes_left_hash[group_1.name] = group_1.votes_max
       votes_left_hash[group_2.name] = group_2.votes_max

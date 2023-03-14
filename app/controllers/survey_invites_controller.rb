@@ -153,7 +153,7 @@ class SurveyInvitesController < ApplicationController
       note.updated_at > time
     end
     get_liveview_timestamp
-    @live_view_url = survey_live_view_path(@survey_invite.token)
+    @live_view_url = survey_live_view_path(@survey_invite.token, survey_question_id: @survey_question.id)
   end
 
   def finished?

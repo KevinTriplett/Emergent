@@ -42,7 +42,7 @@ class SurveysTest < ActionDispatch::IntegrationTest
 
       assert_select ".live-view[data-timestamp]"
       assert_select ".live-view[data-timestamp=?]", note_2.updated_at.picker_datetime
-      assert_select ".live-view[data-url=?]", survey_live_view_path(invite.token)
+      assert_select ".live-view[data-url=?]", survey_live_view_path(token: invite.token, survey_question_id: note_1.survey_question_id)
 
       # TODO: test for not live-view (updated_at before X time)
     end

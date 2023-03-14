@@ -980,7 +980,7 @@ $(document).ready(function() {
         self.closest(".main").find(".hearts i").hide();
         self.closest(".main").find(".hearts i.two-thirds").show();
         break;
-      case 3:
+      default:
         self.closest(".main").find(".hearts i").hide();
         self.closest(".main").find(".hearts i.three-thirds").show();
       }
