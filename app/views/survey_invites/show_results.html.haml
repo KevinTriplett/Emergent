@@ -10,3 +10,9 @@
       #survey-questions-container
         - asq.each do |sq|
           = cell(SurveyInvite::Cell::SurveyResults, {survey_invite: @survey_invite, survey_question: sq, patch_url: @patch_url, token: @token})
+
+.links
+  %h2 Changed your mind?
+  %p If you want to change any of your answers, you can edit your survey using this link:
+  - url = survey_path(token: @survey_invite.token)
+  = link_to url, url

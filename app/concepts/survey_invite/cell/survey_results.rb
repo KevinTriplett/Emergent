@@ -24,8 +24,12 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
     "survey-question-#{survey_question.question_type.downcase.gsub(" ", "-").gsub("/", "-")}"
   end
 
-  def answer_type_class
+  def answer_type_class_name
     "survey-answer-#{survey_question.answer_type.downcase.gsub(" ", "-").gsub("/", "-")}"
+  end
+
+  def answer_type_class
+    [answer_type_class_name, voted? ? "voted" : nil].compact.join(" ")
   end
 
   def name
@@ -38,6 +42,10 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
 
   def answer?
     !survey_question.na?
+  end
+
+  def voted?
+    survey_question.vote? && survey_answer.votes > 0
   end
 
   def question
@@ -64,7 +72,19 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
       <label>#{right}</label>"
     #----------------------
     when "Vote"
-      "You gave this #{survey_answer.vote_count} votes"
+      [
+        case survey_answer.vote_thirds
+        when 0
+          nil
+        when 1
+          "<i class='bi-heart'></i>"
+        when 2
+          "<i class='bi-heart-half'></i>"
+        else
+          "<i class='bi-heart-fill'></i>"
+        end,
+        "You gave this #{survey_answer.votes} votes",
+        ].compact.join(" ")
     #----------------------
     when "NA"
     else

@@ -27,4 +27,18 @@ class SurveyAnswer < ActiveRecord::Base
   def votes_total
     survey_invite.votes_total(survey_group_id) || 0
   end
+
+  def vote_thirds
+    one_third = (votes_max / 3).to_i
+    case votes
+    when 0
+      0
+    when 1..one_third
+      1
+    when one_third..one_third*2
+      2
+    else
+      3
+    end
+  end
 end
