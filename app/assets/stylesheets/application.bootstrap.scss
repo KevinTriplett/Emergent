@@ -314,14 +314,58 @@ table.survey-questions {
   }
 }
 
-table.users tr {
-  cursor: pointer;
-  &:hover {
-    background-color: #beebf4;
+table.users {
+  thead {
+    th {
+      background-color: rgb(59, 94, 64);
+      color: white;
+      & span.tzinfo {
+        font-size: x-small;
+      }
+    }
+    th.meeting {
+      line-height: 0.8em;
+    }
+  }
+  tbody {
+    cursor: pointer;
+    tr.pending {
+      background-color: rgb(253, 248, 169);
+      &:hover { background-color: #beebf4; }
+    }
+    tr.clarification {
+      background-color: rgb(253, 200, 169);
+      &:hover { background-color: #beebf4; }
+    }
+    tr.declined {
+      background-color: rgb(142, 141, 141);
+      &:hover { background-color: #beebf4; }
+    }
+    tr.scheduling, tr.scheduled {
+      background-color: rgb(179, 212, 254);
+      &:hover { background-color: #beebf4; }
+    }
+    tr.complete {
+      background-color: rgb(211, 244, 211);
+      &:hover { background-color: #beebf4; }
+    }
+    td.header .wordwrap {
+      line-height: 1.3em;
+      span.tzinfo {
+        display: inline-block;
+        line-height: 1.5em;
+        font-size: x-small;
+      }
+    }
+  }
+  tfoot {
+    tr {
+      background-color: #c7fcd8;
+    }
   }
 }
 
-table.user, #greeter.user-wizard {
+#greeter.user-wizard {
   .user-notes, .user-email {
     input.email-subject {
       width: 100%;
@@ -413,45 +457,8 @@ body#greeter.user-wizard {
   }
 }
 
-table.users, table.user, #greeter.user-wizard {
+table.users, #greeter.user-wizard {
   width: 100%;
-  thead {
-    th {
-      background-color: rgb(59, 94, 64);
-      color: white;
-      & span.tzinfo {
-        font-size: x-small;
-      }
-    }
-    th.meeting {
-      line-height: 0.8em;
-    }
-  }
-  tbody {
-    tr.pending {
-      background-color: rgb(253, 248, 169);
-    }
-    tr.clarification {
-      background-color: rgb(253, 200, 169);
-    }
-    tr.declined {
-      background-color: rgb(142, 141, 141);
-    }
-    tr.scheduling, tr.scheduled {
-      background-color: rgb(179, 212, 254);
-    }
-    tr.complete {
-      background-color: rgb(211, 244, 211);
-    }
-    td.header .wordwrap {
-      line-height: 1.3em;
-      span.tzinfo {
-        display: inline-block;
-        line-height: 1.5em;
-        font-size: x-small;
-      }
-    }
-  }
   .user-questions {
     li {
       margin-bottom: 7px;

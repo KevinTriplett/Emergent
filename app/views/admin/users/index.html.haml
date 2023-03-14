@@ -31,3 +31,6 @@
             -# %td.user-shadow= link_to((u[:shadow] ? u[:shadow] : "I want to shadow"), "#")
             %td.user-notes{ title: u[:truncated] }= u[:notes]
             %td.user-request= u[:request]
+      %tfoot
+        %tr
+          %td{ colspan: 6} No pending requests to join and you have no active greetings

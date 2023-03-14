@@ -642,13 +642,18 @@ $(document).ready(function() {
   // FILTER VIEW BY PENDING AND MY GREETINGS
   var showHideUsers = function(showAll) {
     if (showAll) $("table.users tbody tr:hidden").show();
-    else $("table.users tbody tr").each(function() {
-      var self = $(this);
-      var hide = self.attr("data-greeter-id") != greeterId &&
-        self.attr("data-status") != "Pending" &&
-        self.attr("data-status") != "Clarification Needed"
-      if (hide) self.hide();
-    });
+    else {
+      $("table.users tbody tr").each(function() {
+        var self = $(this);
+        var hide = self.attr("data-greeter-id") != greeterId &&
+          self.attr("data-status") != "Pending" &&
+          self.attr("data-status") != "Clarification Needed"
+        if (hide) self.hide();
+      });
+      $("table.users tbody tr").length == 1 ?
+      $("table.users tfoot").show() :
+      $("table.users tfoot").hide();
+    }
   }
   $("input#show-all-greetings").on("change", function() {
     showHideUsers(this.checked);
