@@ -650,7 +650,7 @@ $(document).ready(function() {
           self.attr("data-status") != "Clarification Needed"
         if (hide) self.hide();
       });
-      $("table.users tbody tr").length == 1 ?
+      $("table.users tbody tr:visible").length == 0 ?
       $("table.users tfoot").show() :
       $("table.users tfoot").hide();
     }
