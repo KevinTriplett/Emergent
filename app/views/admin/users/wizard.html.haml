@@ -16,6 +16,25 @@
     = link_to("💬 Chat", @user.chat_url, class: "user-chat-button btn btn-primary", target: "_blank") if @user.chat_url
 
 
+  -# make answers to questions available throughout the process
+  = link_to "Show/Hide answers to questions", "#", class: "reveal-answers padded"
+  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
+    %h2 Questions and Answers
+    %ol.questions-and-answers
+      - @user.questions_responses_array.each do |q, a|
+        %li
+          %span.question= q
+          %br
+          %span.answer= a
+    - if "Pending" == @user.status
+      - url = admin_approve_user_path(token: @user.token)
+      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
+      - url = admin_user_wizard_path(token: @user.token, status: "clarification-needed")
+      = link_to "Answers Need Clarification", url, class: "btn btn-warning user-clarify"
+      .lds-hourglass#spinner
+      %span.progress-message Working ...
+
+
   - if "Scheduling Zoom" == @user.status
     -# greeter can compose message to send
     -# button for "Meeting Scheduled" to go to next page
@@ -80,26 +99,6 @@
         = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
         - url = admin_user_wizard_path(token: @user.token, status: "request-declined")
         = link_to "Decline This Request", url, class: "btn btn-danger user-reject"
-
-
-  -# make answers to questions available throughout the process
-  = link_to "Show/Hide answers to questions", "#", class: "reveal-answers padded"
-  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
-    %h2 Questions and Answers
-    %ol.questions-and-answers
-      - @user.questions_responses_array.each do |q, a|
-        %li
-          %span.question= q
-          %br
-          %span.answer= a
-    - if "Pending" == @user.status
-      - url = admin_approve_user_path(token: @user.token)
-      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
-      - url = admin_user_wizard_path(token: @user.token, status: "clarification-needed")
-      = link_to "Answers Need Clarification", url, class: "btn btn-warning user-clarify"
-      .lds-hourglass#spinner
-      %span.progress-message Working ...
-
 
 
   .wizard-pane.jumbotron.user-notes
