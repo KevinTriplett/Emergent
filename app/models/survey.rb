@@ -301,16 +301,19 @@ class Survey < ActiveRecord::Base
       # line.gsub!(/^"(.+)"$/, '\1')
       puts "line = #{group ? group.name : "no group"}: #{line}"
       if line.match /Vision/
+        assign_max_votes(group)
         group = create_group(survey, "Vision")
         column += 1
         row = 0
         next
       elsif line.match /Mission/
+        assign_max_votes(group)
         group = create_group(survey, "Mission")
         column += 1
         row = 0
         next
       elsif line.match /Values/
+        assign_max_votes(group)
         group = create_group(survey, "Instructions for Values")
         question = create_question(group, {
           question_type: "Instructions",
@@ -320,6 +323,7 @@ class Survey < ActiveRecord::Base
         column = row = 0
         next
       elsif line.match /Uncategorized/
+        assign_max_votes(group)
         break # finished
         group = create_group(survey, "Uncategorized")
         column += 1
@@ -370,7 +374,7 @@ class Survey < ActiveRecord::Base
       survey: survey,
       name: group_name,
       description: "change this description",
-      votes_max: 30,
+      votes_max: nil, # will be assigned based on algorithm below
       note_color: case group_name
       when "Vision"
         "#f7f7ad"
@@ -382,5 +386,19 @@ class Survey < ActiveRecord::Base
         "#e7f2a4"
       end
     })
+  end
+
+  def self.assign_max_votes(group)
+    return unless group
+    notes_count = group.notes.count
+    votes_max = case notes_count
+    when 1..5
+      3
+    when 6..18
+      (2 * notes_count / 3).to_i
+    else
+      12 # max of 12
+    end
+    group.update votes_max: votes_max
   end
 end
