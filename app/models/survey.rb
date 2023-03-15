@@ -312,6 +312,14 @@ class Survey < ActiveRecord::Base
           * You may have to scroll right to see the Mission notes\n
           * You can cast multiple votes for any one nugget up to a maximum number of votes.
           * The number of votes you have left is shown under the up/down vote buttons."
+
+
+  # • What supports an inspiring future for you in Emergent Commons?
+  # • What facilitates impact in your life and your community outside of Emergent Commons?
+  # • Vote for what energizes and motivates you to be in this community - choose options that stir passion.
+  # • Focus on what matters most - what are our core values and priorities?
+
+
         })
         group = create_group(survey, "Vision")
         column += 1
