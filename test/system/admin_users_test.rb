@@ -72,7 +72,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       find(".ui-menu-item-wrapper", text: "Zoom Declined (completed)", exact_text: true).click
       assert_selector ".ui-selectmenu-text", text: "Zoom Declined (completed)"
       assert_equal "Zoom Declined (completed)", user.reload.status
-      click_link "Show/Hide change log"
+      click_link "Show or Hide change log"
       assert_selector ".change-log", text: user.change_log.chomp
 
       visit admin_user_path(token: user.token)
@@ -84,7 +84,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-greeter", text: admin.name
       assert_selector ".ui-selectmenu-text", text: "Zoom Declined (completed)"
       assert_no_selector ".questions-and-answers"
-      # click_link "Show/Hide answers to questions"
+      # click_link "Show or Hide answers to questions"
       # assert_selector ".questions-and-answers"
     end
   end
@@ -107,7 +107,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       existing_user.reload
       assert_equal admin_1.id, existing_user.greeter_id
       assert_selector ".user-greeter a", text: admin_1.name
-      click_link "Show/Hide change log"
+      click_link "Show or Hide change log"
       page.find(".change-log").text.match /greeter changed: \(blank\) -> #{admin_1.name}/
 
       # check for ability to remove greeter
@@ -320,7 +320,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       user.reload
       assert_equal old_notes + keys, user.notes
       assert_selector ".user-notes span", text: "saved"
-      click_link "Show/Hide change log"
+      click_link "Show or Hide change log"
       page.find(".change-log").text.match /notes changed: this are notes -> this are notes hello this is new notes/
 
       keys = " hello this is more stuff"
