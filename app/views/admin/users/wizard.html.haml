@@ -73,11 +73,11 @@
       - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
       = link_to "Scheduling Zoom", url, class: "btn btn-warning prev"
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
-      = link_to "Greeting Done", url, class: "btn btn-success done"
+      = link_to "Zoom Done", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
       = link_to "Chat Done", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-declined")
-      = link_to "Greeting Declined", url, class: "btn btn-success done"
+      = link_to "Zoom Declined", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "no-resposne")
       = link_to "No Response", url, class: "btn btn-success done"
 
