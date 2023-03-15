@@ -213,13 +213,13 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       assert find("input.email-subject").value.blank?
       assert find("textarea.email-body").value.blank?
-      assert_selector "a.email-send", text: "Send Email"
+      assert_selector "a.email-send", text: "Launch Chosen Email Client"
       click_link "Template 2"
       assert find("input.email-subject").value
       assert find("textarea.email-body").value
-      assert_selector "a.email-send", text: "Send Email"
+      assert_selector "a.email-send", text: "Launch Chosen Email Client"
 
-      click_link "Send Email"
+      click_link "Launch Chosen Email Client"
 
       visit admin_user_wizard_path(token: existing_user.token)
       assert_current_path admin_user_wizard_path(token: existing_user.token)

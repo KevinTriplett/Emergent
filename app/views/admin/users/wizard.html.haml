@@ -46,6 +46,8 @@
         %span.email-address= link_to @user.email, "mailto:#{@user.email}"
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of greeting" }
+      %p You can choose from these templates or compose your own email.
+      .email-template-buttons.greeting Template buttons will be visible here
       .email-client
         %input#gmail{type: "radio", name: "email-client"}
         %label{for: "gmail"} Use GMail
@@ -55,9 +57,7 @@
         %label{for: "yahoo"} Use Yahoo
         %input#other{type: "radio", name: "email-client"}
         %label{for: "other"} Other
-      %p You can choose from these templates or compose your own email.
-      .email-template-buttons.greeting Template buttons will be visible here
-      = link_to "Launch Email Client", "#", class: "btn btn-primary email-send greeting"
+      = link_to "Launch Chosen Email Client", "#", class: "btn btn-primary email-send greeting"
       = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
 
 
@@ -97,6 +97,8 @@
         %span.email-address= link_to @user.email, "mailto:#{@user.email}"
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of email" }
+      %p You can choose from these templates or compose your own email.
+      .email-template-buttons.clarification Template buttons will be visible here
       .email-client
         %input#gmail{type: "radio", name: "email-client"}
         %label{for: "gmail"} Use GMail
@@ -106,8 +108,6 @@
         %label{for: "yahoo"} Use Yahoo
         %input#email{type: "radio", name: "email-client"}
         %label{for: "email"} Other
-      %p You can choose from these templates or compose your own email.
-      .email-template-buttons.clarification Template buttons will be visible here
       = link_to "Launch Email Client", "#", class: "btn btn-primary email-send clarification"
       .approval-buttons
         %p When you've received a response, or enough time has gone by, you can choose one of these actions:
