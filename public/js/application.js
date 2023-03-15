@@ -851,6 +851,10 @@ $(document).ready(function() {
     });
   });
 
+  $(".user-reject").on("click", function(e) {
+    if (!confirm("Have you asked a host to decline this request?")) e.preventDefault();
+  });
+
   ////////////////////////////////////////////////////
   // MEETING DATETIME PICKER LISTENER
   $( ".datetime-picker" )
