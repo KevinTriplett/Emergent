@@ -46,8 +46,16 @@
         %span.email-address= link_to @user.email, "mailto:#{@user.email}"
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of greeting" }
-      %input#use-gmail1.use-gmail{ type: "checkbox" }
-      %label{ for: "use-gmail1" } Use GMail to send email
+      .email-client
+        %input#gmail{type: "radio", name: "email-client"}
+        %label{for: "gmail"} Use GMail
+        %input#outlook{type: "radio", name: "email-client"}
+        %label{for: "outlook"} Use Outlook
+        %input#yahoo{type: "radio", name: "email-client"}
+        %label{for: "yahoo"} Use Yahoo
+        %input#fastmail{type: "radio", name: "email-client"}
+        %label{for: "fastmail"} Use Fastmail
+        = link_to "(how to setup Fastmail)", "https://www.fastmail.help/hc/en-us/articles/360058753694-Open-mailto-links-in-Fastmail", target: "_blank"
       %p You can choose from these templates or compose your own email.
       .email-template-buttons.greeting Template buttons will be visible here
       = link_to "Send Email", "#", class: "btn btn-primary email-send greeting"
@@ -90,8 +98,16 @@
         %span.email-address= link_to @user.email, "mailto:#{@user.email}"
       %input.email-subject.form-control{ placeholder: "Subject" }
       %textarea.email-body.form-control{ placeholder: "Body of email" }
-      %input#use-gmail2.use-gmail{ type: "checkbox" }
-      %label{ for: "use-gmail2" } Use GMail to send email
+      .email-client
+        %input#gmail{type: "radio", name: "email-client"}
+        %label{for: "gmail"} Use GMail
+        %input#outlook{type: "radio", name: "email-client"}
+        %label{for: "outlook"} Use Outlook
+        %input#yahoo{type: "radio", name: "email-client"}
+        %label{for: "yahoo"} Use Yahoo
+        %input#yahoo{type: "radio", name: "email-client"}
+        %label{for: "yahoo"} Use Fastmail
+        = link_to "(how to setup Fastmail)", "https://www.fastmail.help/hc/en-us/articles/360058753694-Open-mailto-links-in-Fastmail", target: "_blank"
       %p You can choose from these templates or compose your own email.
       .email-template-buttons.clarification Template buttons will be visible here
       = link_to "Send Email", "#", class: "btn btn-primary email-send clarification"

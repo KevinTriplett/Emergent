@@ -741,11 +741,14 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // EMAIL SEND
 
-  $('.use-gmail')
-    .each(function(){ this.checked = getCookie("use-gmail") == "true"; })
+  $(".email-client input[type='radio']")
+    .each(function(){
+      this.checked = getCookie("email-client") == this.id;
+    })
     .on("click", function() {
-      setCookie("use-gmail", this.checked);
+      setCookie("email-client", this.id);
     });
+
 
   $(".email-send").on("click", function(e) {
     e.preventDefault();
@@ -754,16 +757,32 @@ $(document).ready(function() {
     var subject = self.find(".email-subject").val().trim();
     var body = self.find(".email-body").val().trim();
     body = encodeURIComponent(body);
-    var useGmail = self.find("input.use-gmail").is(":checked");
-    var mailUrl = useGmail ?
+
+    var emailClient = getCookie("email-client");
+    var mailUrl = null;
+    switch(emailClient) {
+    case "gmail":
       // ref https://stackoverflow.com/questions/6988355/open-gmail-on-mailto-action
-      `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}` :
-      `mailto:${email}?subject=${subject}&body=${body}`
+      mailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+      break;
+    case "yahoo":
+      // ref https://stackoverflow.com/questions/38556765/html-mailto-yahoo-mail-with-recipient-name
+      mailUrl = `https://compose.mail.yahoo.com/?to=${email}&subject=${subject}&body=${body}`
+      break;
+    case "outlook":
+      // ref https://github.com/mariordev/mailtoui/blob/master/src/js/mailtoui.js
+      mailUrl = `https://outlook.office.com/owa/?path=/mail/action/compose&to=${email}&subject=${subject}&body=${body}`;
+      break;
+    default:
+      mailUrl = `mailto:${email}?subject=${subject}&body=${body}`;
+    }
     window.open(mailUrl);
     if ($(this).hasClass("clarification")) return;
+    // store greeting emails for later recall
     setCookie("subject", subject);
     setCookie("body", body);
-    // // use the app to send email:
+
+    // // to use the app for sending email:
     // var self = $(this);
     // var url = self.closest("[data-email-url]").attr("data-email-url");
     // var token = self.closest("[data-token]").attr("data-token");
