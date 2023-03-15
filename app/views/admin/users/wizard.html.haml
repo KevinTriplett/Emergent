@@ -53,12 +53,11 @@
         %label{for: "outlook"} Use Outlook
         %input#yahoo{type: "radio", name: "email-client"}
         %label{for: "yahoo"} Use Yahoo
-        %input#fastmail{type: "radio", name: "email-client"}
-        %label{for: "fastmail"} Use Fastmail
-        = link_to "(how to setup Fastmail)", "https://www.fastmail.help/hc/en-us/articles/360058753694-Open-mailto-links-in-Fastmail", target: "_blank"
+        %input#other{type: "radio", name: "email-client"}
+        %label{for: "other"} Other
       %p You can choose from these templates or compose your own email.
       .email-template-buttons.greeting Template buttons will be visible here
-      = link_to "Send Email", "#", class: "btn btn-primary email-send greeting"
+      = link_to "Launch Email Client", "#", class: "btn btn-primary email-send greeting"
       = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
 
 
@@ -105,12 +104,11 @@
         %label{for: "outlook"} Use Outlook
         %input#yahoo{type: "radio", name: "email-client"}
         %label{for: "yahoo"} Use Yahoo
-        %input#yahoo{type: "radio", name: "email-client"}
-        %label{for: "yahoo"} Use Fastmail
-        = link_to "(how to setup Fastmail)", "https://www.fastmail.help/hc/en-us/articles/360058753694-Open-mailto-links-in-Fastmail", target: "_blank"
+        %input#email{type: "radio", name: "email-client"}
+        %label{for: "email"} Other
       %p You can choose from these templates or compose your own email.
       .email-template-buttons.clarification Template buttons will be visible here
-      = link_to "Send Email", "#", class: "btn btn-primary email-send clarification"
+      = link_to "Launch Email Client", "#", class: "btn btn-primary email-send clarification"
       .approval-buttons
         %p When you've received a response, or enough time has gone by, you can choose one of these actions:
         - url = admin_approve_user_path(token: @user.token)
