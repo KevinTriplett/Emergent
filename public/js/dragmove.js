@@ -56,8 +56,8 @@ var dragmove = function(target, handler, onStart, onEnd) {
   // On the first click and hold, record the offset of the target in relation
   // to the point of the click
   handler.addEventListener(_isTouch ? "touchstart" : "mousedown", function(e) {
-    e.stopPropagation();
-    e.preventDefault();
+    // e.stopPropagation();
+    // e.preventDefault();
     if (target.dataset.dragEnabled === "false") return;
 
     let c = e.touches ? e.touches[0] : e;
