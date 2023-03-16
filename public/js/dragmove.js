@@ -69,7 +69,7 @@ var dragmove = function(target, handler, onStart, onEnd) {
     dragDelay(function() {
       if (dragging) return;
       dragging = (lastX == 0 && lastY == 0);
-    }, 333)();
+    }, 150)();
 
     deltaX = c.clientX - target.offsetLeft;
     deltaY = c.clientY - target.offsetTop;
