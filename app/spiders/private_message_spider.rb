@@ -27,10 +27,9 @@ class PrivateMessageSpider < EmergeSpider
     EmergeSpider.logger.info "SPIDER #{name} STARTING"
     sign_in
 
-    # @@message = Marshal.load(get_message)
-    @@message = get_message.split("|")
-    @@user = User.find @@message[0].to_i
-    EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@message[1]}"
+    @@lines = get_message.split("|")
+    @@user = User.find @@lines.shift # first element in array is user_id
+    EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@lines.first}"
     request_to(:send_message, url: @@user.chat_url)
 
     EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
@@ -44,16 +43,13 @@ class PrivateMessageSpider < EmergeSpider
     wait_until(".universal-input.chat-prompt .fr-element.fr-view")
     EmergeSpider.logger.debug "#{name} ATTEMPTING TO CLICK CHAT CHANNEL"
     browser.find(:css, ".universal-input.chat-prompt .fr-element.fr-view").click
-    browser.send_keys(@@message[1])
-    browser.send_keys [:enter]
-    sleep 1
-    browser.send_keys(@@message[2])
-    browser.send_keys [:enter]
-    sleep 1
-    browser.send_keys(@@message[3])
-    browser.send_keys [:enter]
-    sleep 1
-    browser.send_keys(@@message[4])
-    browser.send_keys [:enter]
+    EmergeSpider.logger.debug "#{name} ATTEMPTING TO SEND #{@@lines}"
+    @@lines.each do |line|
+      next if line.blank?
+      browser.send_keys(line)
+      browser.send_keys [:enter]
+      browser.send_keys [:enter]
+      sleep 2
+    end
   end
 end
