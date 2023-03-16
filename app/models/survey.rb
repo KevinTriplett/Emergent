@@ -310,10 +310,10 @@ class Survey < ActiveRecord::Base
 ---
 #### When voting on these nuggets, ask these questions **from your felt perspective**:
 
-- What supports an inspiring future in Emergent Commons?
-- What would enable an impact in life?
+- What supports an inspiring future for you in Emergent Commons?
 - What energizes and motivates you to be in this community - choose nuggets that stir passion.
-- Focus on what matters most - what are our core values and priorities?"
+- What would facilitate impact in your life outside Emergent Commons?
+- Focus on what matters most, that supports our core values and ethos?"
         })
         question = create_question(group, {
           question_type: "Instructions",
