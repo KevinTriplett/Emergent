@@ -14,6 +14,28 @@ let _loaded = false;
 let _callbacks = [];
 const _isTouch = window.ontouchstart !== undefined;
 
+////////////////////////////////////////////////////
+// Drag Delay
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// `wait` milliseconds. If `immediate = true` is passed, trigger the function
+// on the leading edge, instead of the trailing.
+var dragDelay = function(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};
+
+
 var dragmove = function(target, handler, onStart, onEnd) {
   // Register a global event to capture mouse moves (once).
   if (!_loaded) {
@@ -28,8 +50,8 @@ var dragmove = function(target, handler, onStart, onEnd) {
   }
 
   _loaded = true;
-  let isMoving = false, hasStarted = false;
-  let deltaX = 0, deltaY = 0, lastX = 0, lastY = 0;
+  let dragging = hasStarted = delayDone = onStartFired = false;
+  let deltaX = deltaY = holdDeltaX = holdDeltaY = lastX = lastY = 0;
 
   // On the first click and hold, record the offset of the target in relation
   // to the point of the click
@@ -39,8 +61,16 @@ var dragmove = function(target, handler, onStart, onEnd) {
     if (target.dataset.dragEnabled === "false") return;
 
     let c = e.touches ? e.touches[0] : e;
+    lastX = lastY = 0;
 
-    isMoving = true;
+    dragging = !e.touches; // delay dragging only for touch interface, to allow for scrolling
+    hasStarted = true;
+
+    dragDelay(function() {
+      if (dragging) return;
+      dragging = (lastX == 0 && lastY == 0);
+    }, 333)();
+
     deltaX = c.clientX - target.offsetLeft;
     deltaY = c.clientY - target.offsetTop;
   });
@@ -51,25 +81,23 @@ var dragmove = function(target, handler, onStart, onEnd) {
       onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
     }
 
-    isMoving = false;
-    hasStarted = false;
+    dragging = hasStarted = onStartFired = false;
+  });
+  // Register mouse-move callback to determine if touch is held (moving v. scrolling)
+  _callbacks.push(function move(x, y) {
+    if (!hasStarted) return;
+    lastX = x - deltaX;
+    lastY = y - deltaY;
   });
 
   // Register mouse-move callback to move the element.
   _callbacks.push(function move(x, y) {
-    if (!isMoving) {
-      return;
-    }
+    if (!dragging) return;
 
-    if (!hasStarted) {
-      hasStarted = true;
-      if (onStart) {
-        onStart(target, lastX, lastY);
-      }
+    if (onStart && !onStartFired) {
+      onStart(target, lastX, lastY);
+      onStartFired = true;
     }
-
-    lastX = x - deltaX;
-    lastY = y - deltaY;
 
     // If boundary checking is on, don't let the element cross the viewport.
     if (target.dataset.dragBoundary === "true") {
