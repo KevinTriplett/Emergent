@@ -13,6 +13,11 @@
 let _loaded = false;
 let _callbacks = [];
 const _isTouch = window.ontouchstart !== undefined;
+const touchStartEvent = new TouchEvent("touchstart", {
+  view: window,
+  bubbles: true,
+  cancelable: true,
+});
 
 ////////////////////////////////////////////////////
 // Drag Delay
@@ -56,9 +61,11 @@ var dragmove = function(target, handler, onStart, onEnd) {
   // On the first click and hold, record the offset of the target in relation
   // to the point of the click
   handler.addEventListener(_isTouch ? "touchstart" : "mousedown", function(e) {
-    // e.stopPropagation();
-    // e.preventDefault();
     if (target.dataset.dragEnabled === "false") return;
+    if (!dragging) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
 
     let c = e.touches ? e.touches[0] : e;
     lastX = lastY = 0;
@@ -69,6 +76,7 @@ var dragmove = function(target, handler, onStart, onEnd) {
     dragDelay(function() {
       if (dragging) return;
       dragging = (lastX == 0 && lastY == 0);
+      if (!dragging) handler.dispatchEvent(touchStartEvent);
     }, 150)();
 
     deltaX = c.clientX - target.offsetLeft;
