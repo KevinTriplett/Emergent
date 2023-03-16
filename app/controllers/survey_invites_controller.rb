@@ -17,7 +17,8 @@ class SurveyInvitesController < ApplicationController
         @survey_invite.delete
       else
         @survey_invite.update url: survey_show_results_url(token: @survey_invite.token)
-        @survey_invite.send_finished_survey_link
+        # @survey_invite.send_finished_survey_link
+        # this will be cron job
       end
       @body_id = "finished"
       return render template: "survey_invites/finished"
