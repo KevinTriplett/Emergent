@@ -10,14 +10,16 @@
 // onStart(target, lastX, lastY);
 // onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
 
-let _loaded = false;
+let _loadedDragMove = false;
 let _callbacks = [];
 const _isTouch = window.ontouchstart !== undefined;
-const touchStartEvent = new TouchEvent("touchstart", {
-  view: window,
-  bubbles: true,
-  cancelable: true,
-});
+if (_isTouch) {
+  const touchStartEvent = new TouchEvent("touchstart", {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+  });
+}
 
 ////////////////////////////////////////////////////
 // Drag Delay
@@ -43,7 +45,7 @@ var dragDelay = function(func, wait, immediate) {
 
 var dragmove = function(target, handler, onStart, onEnd) {
   // Register a global event to capture mouse moves (once).
-  if (!_loaded) {
+  if (!_loadedDragMove) {
     document.addEventListener(_isTouch ? "touchmove" : "mousemove", function(e) {
       let c = e.touches ? e.touches[0] : e;
 
@@ -54,7 +56,7 @@ var dragmove = function(target, handler, onStart, onEnd) {
     });
   }
 
-  _loaded = true;
+  _loadedDragMove = true;
   let dragging = hasStarted = delayDone = onStartFired = false;
   let deltaX = deltaY = holdDeltaX = holdDeltaY = lastX = lastY = 0;
 

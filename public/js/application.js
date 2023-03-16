@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
-var _loaded = false;
+var _loadedApp = false;
 const _isTouchUI = window.ontouchstart !== undefined;
 var greeterName = getCookie("user_name");
 if (greeterName) greeterName = greeterName.replace("+", " ");
@@ -400,8 +400,8 @@ var showOpt = function(show) {
 ////////////////////////////////////////////////////
 // PAGE INITIALIZATION
 $(document).ready(function() {
-  if (_loaded) return; // set listeners only once
-  _loaded = true;
+  if (_loadedApp) return; // set listeners only once
+  _loadedApp = true;
   $("#spinner").hide();
   $(document)
     .uitooltip()
