@@ -78,7 +78,7 @@ var dragmove = function(target, handler, onStart, onEnd) {
     dragDelay(function() {
       if (dragging) return;
       dragging = (lastX == 0 && lastY == 0);
-      if (!dragging) handler.dispatchEvent(touchStartEvent);
+      if (!dragging && _isTouch) handler.dispatchEvent(touchStartEvent);
     }, 150)();
 
     deltaX = c.clientX - target.offsetLeft;
