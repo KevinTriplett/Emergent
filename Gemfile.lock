@@ -309,6 +309,7 @@ GEM
       zeitwerk (~> 2.5)
     rake (13.0.6)
     rbcat (0.2.2)
+    redcarpet (3.6.0)
     reform (2.6.2)
       disposable (>= 0.5.0, < 1.0.0)
       representable (>= 3.1.1, < 4)
@@ -441,6 +442,7 @@ DEPENDENCIES
   puma (~> 5.0)
   rails (~> 7.0.4)
   rails-controller-testing
+  redcarpet
   reform
   rolify
   sassc-rails

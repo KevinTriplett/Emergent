@@ -21,6 +21,7 @@ gem "kimurai", path: "vendor/bundle/kimuraframework"
 gem "whenever", require: false
 gem "simple_form"
 gem "haml"
+gem "redcarpet"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"

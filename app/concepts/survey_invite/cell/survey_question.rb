@@ -21,6 +21,17 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def survey_answer
     survey_invite.survey_answer_for(survey_question_id)
   end
+  def markdown
+    @renderer ||= Redcarpet::Render::HTML.new(hard_wrap: true, safe_links_only: true)
+    @markdown ||= Redcarpet::Markdown.new(@renderer, {
+      autolink: true,
+      tables: true,
+      space_after_headers: true,
+      strikethrough: true,
+      highlight: true,
+      underline: true
+    })
+  end
 
   def patch_url
     "#{model[:patch_url]}/#{survey_question_id}"
@@ -60,8 +71,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def question
-    return "" unless survey_question.question
-    "<p>#{survey_question.question.split("\n").join("</p><p>")}</p>"
+    markdown.render(survey_question.question) if survey_question.question
   end
   def answer
     survey_answer.answer

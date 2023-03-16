@@ -306,20 +306,23 @@ class Survey < ActiveRecord::Base
         question = create_question(group, {question_type: "New Page"})
         question = create_question(group, {
           question_type: "Instructions",
-          question: "Carefully consider the following Vision and Mission nuggets and vote on the ones you feel are most important.\n
-          NOTE:\n
-          * Vision and Mission nuggets are on different colored sticky notes.\n
-          * You may have to scroll right to see the Mission notes\n
-          * You can cast multiple votes for any one nugget up to a maximum number of votes.
-          * The number of votes you have left is shown under the up/down vote buttons."
+          question: "### Carefully consider the following Vision and Mission nuggets and vote on the ones you feel are most important.
+---
+#### When voting on these nuggets, ask these questions **from your felt perspective**:
 
+- What supports an inspiring future in Emergent Commons?
+- What would enable an impact in life?
+- What energizes and motivates you to be in this community - choose nuggets that stir passion.
+- Focus on what matters most - what are our core values and priorities?"
+        })
+        question = create_question(group, {
+          question_type: "Instructions",
+          question: "#### _INSTRUCTIONS_:
 
-  # • What supports an inspiring future for you in Emergent Commons?
-  # • What facilitates impact in your life and your community outside of Emergent Commons?
-  # • Vote for what energizes and motivates you to be in this community - choose options that stir passion.
-  # • Focus on what matters most - what are our core values and priorities?
-
-
+- Vision and Mission nuggets are on different colored sticky notes.
+- You *may* have to scroll right to see the Mission notes
+- Cast multiple tokens for any one nugget, up to a maximum number of tokens.
+- The number of tokens you have left is shown under the up/down buttons."
         })
         group = create_group(survey, "Vision")
         column += 1
@@ -336,7 +339,7 @@ class Survey < ActiveRecord::Base
         group = create_group(survey, "Instructions for Values", "")
         question = create_question(group, {
           question_type: "Instructions",
-          question: "Now carefully consider the following values and vote on the ones that resonate with you."
+          question: "Now carefully consider the following values and vote on the ones that most resonate with you as important to the purpose of Emergent Commons."
         })
         group = create_group(survey, "Values")
         column = row = 0

@@ -19,6 +19,17 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
   def question_position
     survey_question.position
   end
+  def markdown
+    @renderer ||= Redcarpet::Render::HTML.new(hard_wrap: true, safe_links_only: true)
+    @markdown ||= Redcarpet::Markdown.new(@renderer, {
+      autolink: true,
+      tables: true,
+      space_after_headers: true,
+      strikethrough: true,
+      highlight: true,
+      underline: true
+    })
+  end
 
   def question_type_class
     "survey-question-#{survey_question.question_type.downcase.gsub(" ", "-").gsub("/", "-")}"
@@ -49,8 +60,7 @@ class SurveyInvite::Cell::SurveyResults < Cell::ViewModel
   end
 
   def question
-    return "" unless survey_question.question
-    "<p>#{survey_question.question.split("\n").join("</p><p>")}</p>"
+    markdown.render(survey_question.question) if survey_question.question
   end
   def answer
     survey_answer.answer
