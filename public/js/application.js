@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 var _loadedApp = false;
-const _isTouchUI = window.ontouchstart !== undefined;
+const _isTouchUI = (window.ontouchstart !== undefined);
 var greeterName = getCookie("user_name");
 if (greeterName) greeterName = greeterName.replace("+", " ");
 var greeterId = getCookie("user_id");
@@ -1420,7 +1420,7 @@ $(document).ready(function() {
         e.stopPropagation();
       });
     note.on(_isTouchUI ? "touchstart" : "mousedown", bringToFront);
-    var domHandler = note.hasClass("move") ? domNote : domNote.querySelector(".move");
+    var domHandler = note.hasClass("move") && !_isTouchUI ? domNote : domNote.querySelector(".move");
     dragmove(domNote, domHandler, onDragStart, onDragEnd);
     if (userView()) return; // stop if user view
 
