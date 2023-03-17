@@ -1322,6 +1322,7 @@ $(document).ready(function() {
   // NOTE DRAGGING
 
   var onDragStart = function(target, x, y) {
+    bringToFront.call(target);
     if (userView()) return;
     // if command key held down
     //   replace the target with a new note
@@ -1419,7 +1420,7 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
       });
-    note.on(_isTouchUI ? "touchstart" : "mousedown", bringToFront);
+    note.on("mousedown", bringToFront);
     var domHandler = note.hasClass("move") && !_isTouchUI ? domNote : domNote.querySelector(".move");
     dragmove(domNote, domHandler, onDragStart, onDragEnd);
     if (userView()) return; // stop if user view
