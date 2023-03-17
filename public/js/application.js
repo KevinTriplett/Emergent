@@ -1060,152 +1060,130 @@ $(document).ready(function() {
   // ----------------------------------------------------------------------
   // NOTE SETTERS-GETTERS
 
-  var getNoteData = function(note) {
-    return {
-      noteCssId: getNoteId(note),
-      text: getNoteText(note),
-      groupName: getNoteGroupName(note),
-      groupId: getNoteGroupId(note),
-      color: getNoteColor(note),
-      coords: getNoteCoords(note),
-      patchUrl: getNotePatchUrl(note),
-      deleteUrl: getNoteDeleteUrl(note),
-      zIndex: getNoteZIndex(note),
-      dataset: getNoteDataset(note),
-      style: getNoteStyle(note),
-      prevData: getNotePrevData(note)
+  var noteEssence = function(note, data) {
+    if (!data) return {
+      noteCssId: noteId(note),
+      text: noteText(note),
+      groupName: noteGroupName(note),
+      groupId: noteGroupId(note),
+      color: noteColor(note),
+      coords: noteCoords(note),
+      patchUrl: notePatchUrl(note),
+      deleteUrl: noteDeleteUrl(note),
+      zIndex: noteZIndex(note),
+      dataset: noteDataset(note),
+      style: noteStyle(note),
+      prevData: notePrevData(note)
     }
-  }
-  var updateNoteFromData = function(note, data) {
-    updateNoteId(note, data.noteCssId);
-    updateNoteText(note, data.text);
-    updateNoteGroupName(note, data.groupName);
+    noteId(note, data.noteCssId);
+    noteText(note, data.text);
+    noteGroupName(note, data.groupName);
     if (data.dataset && Object.keys(data.dataset).length > 1) {
-      setNoteDataset(note, data.dataset);
+      noteDataset(note, data.dataset);
     } else {
-      updateNoteGroupId(note, data.groupId);
-      updateNotePatchUrl(note, data.patchUrl);
+      noteGroupId(note, data.groupId);
+      notePatchUrl(note, data.patchUrl);
     }
-    updateNoteDeleteUrl(note, data.deleteUrl);
+    noteDeleteUrl(note, data.deleteUrl);
     if (data.style) {
-      setNoteStyle(note, data.style);
+      noteStyle(note, data.style);
     } else {
-      updateNoteCoords(note, data.coords);
-      updateNoteColor(note, data.color);
-      updateNoteZIndex(note, data.zIndex);
+      noteCoords(note, data.coords);
+      noteColor(note, data.color);
+      noteZIndex(note, data.zIndex);
     }
-    if (data.prevData) setNotePrevData(note, data.prevData);
+    if (data.prevData) notePrevData(note, data.prevData);
   }
 
-  var getNoteText = function(note) {
-    return note.find(".note-text").text();
-  }
-  var updateNoteText = function(note, text) {
-    if (!text) return;
+  var noteText = function(note, text) {
+    if (!text) return note.find(".note-text").text();
     note.find(".note-text").text(text);
   }
-  var getNoteGroupName = function(note) {
-    return note.find(".note-group-name select").val() ||
-    note.find(".note-group-name").text();
-  }
-  var updateNoteGroupName = function(note, groupName) {
-    if (!groupName) return;
+
+  var noteGroupName = function(note, groupName) {
+    if (!groupName) {
+      return note.find(".note-group-name select").val() ||
+      note.find(".note-group-name").text();
+    }
     userView() ? note.find(".note-group-name").text(groupName) :
     updateAdminNoteGroupSelect(note, groupName);
   }
-  var getNoteColor = function(note) {
-    return note.find("input.colorpicker").val();
-  }
-  var updateNoteColor = function(note, color) {
-    if (!color) return;
+
+  var noteColor = function(note, color) {
+    if (!color) return note.find("input.colorpicker").val();
     note
       .css("background-color", color)
       .find(".color-style")
       .css("background-color", color);
     note.find("input.colorpicker").val(color);
   }
-  var getNoteCoords = function(note) {
-    var x = note.css("left");
-    var y = note.css("top");
-    return `${x}:${y}`;
-  }
-  var updateNoteCoords = function(note, coords) {
-    if (!coords) return;
+
+  var noteCoords = function(note, coords) {
+    if (!coords) {
+      var x = note.css("left");
+      var y = note.css("top");
+      return `${x}:${y}`;
+    }
     var x = parseInt(coords.split(":")[0]);
     var y  = parseInt(coords.split(":")[1]);
     note.css("left", x).css("top", y);
   }
-  var getNoteZIndex = function(note) {
-    return note.css("z-index");
-  }
-  var updateNoteZIndex = function(note, zIndex) {
-    if (!zIndex) return;
+
+  var noteZIndex = function(note, zIndex) {
+    if (!zIndex) return note.css("z-index");
     note.css("z-index", zIndex);
   }
-  var getNoteDataset = function(note) {
-    var dataset = {};
-    var noteDataset = note.get()[0].dataset;
-    for (key in noteDataset) {
-      dataset[key] = noteDataset[key];
+
+  var noteDataset = function(note, dataset) {
+    if (!dataset) {
+      dataset = {};
+      var noteDataset = note.get()[0].dataset;
+      for (key in noteDataset) {
+        dataset[key] = noteDataset[key];
+      }
+      return dataset;
     }
-    return dataset;
-  }
-  var setNoteDataset = function(note, dataset) {
-    if (!dataset) return;
     for (key in dataset) {
       var attr = `data-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
       note.attr(attr, dataset[key]);
     }
   }
-  var getNotePrevData = function(note) {
-    var data = {};
-    var noteData = note.data();
-    for (key in noteData) {
-      data[key] = noteData[key];
+  var notePrevData = function(note, data) {
+    if (!data) {
+      data = {};
+      var noteData = note.data();
+      for (key in noteData) {
+        data[key] = noteData[key];
+      }
+      return data;
     }
-    return data;
-  }
-  var setNotePrevData = function(note, data) {
-    if (!data) return;
     for (key in data) {
       note.data(key, data[key]);
     }
   }
-  var getNoteStyle = function(note) {
-    return note.attr("style");
-  }
-  var setNoteStyle = function(note, style) {
-    if (!style) return;
+
+  var noteStyle = function(note, style) {
+    if (!style) return note.attr("style");
     note.attr("style", style);
   }
 
-  var getNotePatchUrl = function(note) {
-    return note.attr("data-url");
-  }
-  var updateNotePatchUrl = function(note, url) {
-    if (!url) return;
+  var notePatchUrl = function(note, url) {
+    if (!url) return note.attr("data-url");
     note.attr("data-url", url);
   }
-  var getNoteDeleteUrl = function(note) {
-    return note.find(".delete").attr("data-url");
-  }
-  var updateNoteDeleteUrl = function(note, url) {
-    if (!url) return;
+
+  var noteDeleteUrl = function(note, url) {
+    if (!url) return note.find(".delete").attr("data-url");
     note.find(".delete").attr("data-url", url);
   }
 
-  var getNoteId = function(note) {
-    return note.attr("id");
-  }
-  var updateNoteId = function(note, cssId) {
-    if (!cssId) return;
+  var noteId = function(note, cssId) {
+    if (!cssId) return note.attr("id");
     note.attr("id", cssId);
   }
-  var getNoteGroupId = function(note) {
-    return note.attr("data-group-id");
-  }
-  var updateNoteGroupId = function(note, groupId) {
-    if (!groupId) return;
+
+  var noteGroupId = function(note, groupId) {
+    if (!groupId) return note.attr("data-group-id");
     note
       .attr("data-group-id", groupId)
       .find("[data-group-id]").each(function() {
@@ -1227,6 +1205,13 @@ $(document).ready(function() {
       note.data("selectmenuInstalled", true);
     }
   }
+
+  var swapZIndex = function(note1, note2) {
+    var zIndex1 = noteZIndex(note1);
+    var zIndex2 = noteZIndex(note2);
+    noteZIndex(note1, zIndex2);
+    noteZIndex(note2, zIndex1);
+  }
   
   // ----------------------------------------------------------------------
   // NOTE CRUD
@@ -1240,7 +1225,7 @@ $(document).ready(function() {
       dataType: "JSON",
       contentType: "application/json",
       success: function(result) {
-        note = newNoteFromData(convertResultToNoteData(result));
+        note = newNoteFromEssence(convertResultToNoteEssence(result));
         bringToFront.call(note);
         if (success) success(result, note);
       },
@@ -1250,10 +1235,10 @@ $(document).ready(function() {
     });
   };
 
-  var newNoteFromData = function(noteData) {
+  var newNoteFromEssence = function(noteData) {
     // clone(false): do not clone event handlers, they are installed afterwards
     var note = $("#note-template .note").first().clone(false);
-    updateNoteFromData(note, noteData);
+    noteEssence(note, noteData);
     $("#notes-container").append(note);
     initializeNote(note);
     return note;
@@ -1279,7 +1264,7 @@ $(document).ready(function() {
       success: function(result) {
         flashSuccess(note);
         result.model.text = null; // NB: do not overwrite text while user is typing
-        updateNoteFromData(note, convertResultToNoteData(result));
+        noteEssence(note, convertResultToNoteEssence(result));
         setPrevDataForUpdateNote(note);
       }, function() {
         flashError(note);
@@ -1300,7 +1285,7 @@ $(document).ready(function() {
     );
   }
 
-  var convertResultToNoteData = function(result) {
+  var convertResultToNoteEssence = function(result) {
     return {
       noteCssId: `note-${result.model.id}`,
       id: result.model.id,
@@ -1317,20 +1302,20 @@ $(document).ready(function() {
   
   var getDataForUpdateNote = function(note) {
     var data = {};
-    if (getNoteText(note) != note.data("prevText")) data.text = getNoteText(note);
-    if (getNoteGroupName(note) != note.data("prevGroupName")) data.group_name = getNoteGroupName(note);
-    if (getNoteColor(note) != note.data("prevColor")) data.group_color = getNoteColor(note);
-    if (getNoteCoords(note) != note.data("prevCoords")) data.coords = getNoteCoords(note);
-    if (getNoteZIndex(note) != note.data("prevZIndex")) data.z_index = getNoteZIndex(note);
+    if (noteText(note) != note.data("prevText")) data.text = noteText(note);
+    if (noteGroupName(note) != note.data("prevGroupName")) data.group_name = noteGroupName(note);
+    if (noteColor(note) != note.data("prevColor")) data.group_color = noteColor(note);
+    if (noteCoords(note) != note.data("prevCoords")) data.coords = noteCoords(note);
+    if (noteZIndex(note) != note.data("prevZIndex")) data.z_index = noteZIndex(note);
     return Object.keys(data).length == 0 ? null : data;
   }
 
   var setPrevDataForUpdateNote = function(note) {
-    note.data("prevText", getNoteText(note));
-    note.data("prevGroupName", getNoteGroupName(note));
-    note.data("prevColor", getNoteColor(note));
-    note.data("prevCoords", getNoteCoords(note));
-    note.data("prevZIndex", getNoteZIndex(note));
+    note.data("prevText", noteText(note));
+    note.data("prevGroupName", noteGroupName(note));
+    note.data("prevColor", noteColor(note));
+    note.data("prevCoords", noteCoords(note));
+    note.data("prevZIndex", noteZIndex(note));
   }
 
   // ----------------------------------------------------------------------
@@ -1349,22 +1334,22 @@ $(document).ready(function() {
         // leave the target where it was
         // do this by swapping the vital data between the two
         // make the group the same between the two since the user expects this behavior
-        var newNoteData = getNoteData(newNote);
-        var draggedNoteData = getNoteData(draggedNote);
-        newNoteData.groupName = draggedNoteData.groupName;
-        newNoteData.groupId = draggedNoteData.groupId;
-        newNoteData.style = draggedNoteData.style; // includes color and coords (and z-index)
-        draggedNoteData.zIndex = getNoteZIndex(newNote);
-        newNoteData.zIndex = getNoteZIndex(draggedNote);
-        updateNoteFromData(newNote, draggedNoteData);
-        updateNoteFromData(draggedNote, newNoteData);
+        swapZIndex(newNote, draggedNote);
+        var newNoteEssence = noteEssence(newNote);
+        var draggedNoteEssence = noteEssence(draggedNote);
+        newNoteEssence.groupName = draggedNoteEssence.groupName;
+        newNoteEssence.groupId = draggedNoteEssence.groupId;
+        newNoteEssence.style = draggedNoteEssence.style; // includes color and coords (and z-index)
+        noteEssence(newNote, draggedNoteEssence);
+        noteEssence(draggedNote, newNoteEssence);
+        updateNote.call(draggedNote);
       });
     }
   }
 
   var onDragEnd = function(target, x, y) {
     var note = $(target).closest(".note");
-    updateNoteCoords(note, `${x}:${y}`);
+    noteCoords(note, `${x}:${y}`);
     if (userView()) return;
     updateNote.call(target);
   }
@@ -1376,8 +1361,8 @@ $(document).ready(function() {
       var thisZIndex = parseInt($(this).css("z-index"));
       if (thisZIndex > zIndex) zIndex = thisZIndex;
     })
-    if (parseInt(getNoteZIndex(note)) >= zIndex) return;
-    updateNoteZIndex(note, zIndex+1);
+    if (parseInt(noteZIndex(note)) >= zIndex) return;
+    noteZIndex(note, zIndex+1);
     if (userView()) return;
     updateNote.call(note);
   }
@@ -1406,10 +1391,10 @@ $(document).ready(function() {
         var color = this.color(r, g, b, a);
         var note = $(this.source).closest(".note");
         var prevColor = note.data("prevColor");
-        var groupId = getNoteGroupId(note);
+        var groupId = noteGroupId(note);
         $(`.note[data-group-id='${groupId}']`).each(function() {
           var groupNote = $(this);
-          updateNoteColor(groupNote, color);
+          noteColor(groupNote, color);
           groupNote.data("prevColor", color);
         });
         note.data("prevColor", prevColor);
@@ -1451,7 +1436,7 @@ $(document).ready(function() {
     note
       .find(".delete")
       .on("click", deleteNote);
-    updateAdminNoteGroupSelect(note, getNoteGroupName(note));
+    updateAdminNoteGroupSelect(note, noteGroupName(note));
     setPrevDataForUpdateNote(note);
     initializeColorPicker(domNote);
   }
@@ -1484,14 +1469,14 @@ $(document).ready(function() {
         // update all notes
         for (result of data.results) {
           var note = $(`#notes-container #note-${result.model.id}`);
-          noteData = convertResultToNoteData(result);
+          noteData = convertResultToNoteEssence(result);
           switch (note.length) {
           case 0:
-            var newNote = newNoteFromData(noteData);
+            var newNote = newNoteFromEssence(noteData);
             newNote.data("updated", true);
             break;
           case 1:
-            updateNoteFromData(note, noteData);
+            noteEssence(note, noteData);
             note.data("updated", true);
             break;
           }

@@ -10,45 +10,15 @@
 // onStart(target, lastX, lastY);
 // onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
 
-let _loadedDragMove = false;
 let _callbacks = [];
+let _loadedDM = isDragging = false;
 const _isTouch = window.ontouchstart !== undefined;
-if (_isTouch) {
-  const touchStartEvent = new TouchEvent("touchstart", {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  });
-}
-
-////////////////////////////////////////////////////
-// Drag Delay
-// Returns a function, that, as long as it continues to be invoked, will not
-// be triggered. The function will be called after it stops being called for
-// `wait` milliseconds. If `immediate = true` is passed, trigger the function
-// on the leading edge, instead of the trailing.
-var dragDelay = function(func, wait, immediate) {
-  var timeout;
-  return function() {
-    var context = this, args = arguments;
-    var later = function() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
-};
-
 
 var dragmove = function(target, handler, onStart, onEnd) {
   // Register a global event to capture mouse moves (once).
-  if (!_loadedDragMove) {
+  if (!_loadedDM) {
     document.addEventListener(_isTouch ? "touchmove" : "mousemove", function(e) {
       let c = e.touches ? e.touches[0] : e;
-
       // On mouse move, dispatch the coords to all registered callbacks.
       for (callback of _callbacks) {
         callback(c.clientX, c.clientY);
@@ -56,66 +26,43 @@ var dragmove = function(target, handler, onStart, onEnd) {
     });
   }
 
-  _loadedDragMove = true;
-  let dragging = hasStarted = delayDone = onStartFired = false;
-  let deltaX = deltaY = holdDeltaX = holdDeltaY = lastX = lastY = 0;
+  _loadedDM = true;
+  let deltaX = deltaY = lastX = lastY = 0;
+
+  var trackDrag = function(x, y) {    // If boundary checking is on, don't let the element cross the viewport.
+    if (target.dataset.dragBoundary === "true") {
+      lastX = Math.min(window.innerWidth - target.offsetWidth, Math.max(0, lastX));
+      lastY = Math.min(window.innerHeight - target.offsetHeight, Math.max(0, lastY));
+    }
+    lastX = x - deltaX;
+    lastY = y - deltaY;
+    target.style.left = `${lastX}px`;
+    target.style.top = `${lastY}px`;
+  }
 
   // On the first click and hold, record the offset of the target in relation
   // to the point of the click
   handler.addEventListener(_isTouch ? "touchstart" : "mousedown", function(e) {
     if (target.dataset.dragEnabled === "false") return;
-    if (!dragging) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // callback for start of drag
+    if (onStart) onStart(target, lastX, lastY);
 
     let c = e.touches ? e.touches[0] : e;
-    lastX = lastY = 0;
-
-    dragging = !e.touches; // delay dragging only for touch interface, to allow for scrolling
-    hasStarted = true;
-
-    dragDelay(function() {
-      if (dragging) return;
-      dragging = (lastX == 0 && lastY == 0);
-      if (!dragging && _isTouch) handler.dispatchEvent(touchStartEvent);
-    }, 150)();
-
     deltaX = c.clientX - target.offsetLeft;
     deltaY = c.clientY - target.offsetTop;
+    
+    // register callback to track the drag
+    _callbacks.push(trackDrag);
+    isDragging = true;
   });
 
-  // On leaving click, stop moving.
+  // On leaving click, stop moving, call onEnd and remove callbacks
   document.addEventListener(_isTouch ? "touchend" : "mouseup", function(e) {   
-    if (onEnd && hasStarted) {
-      onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
-    }
-
-    dragging = hasStarted = onStartFired = false;
-  });
-  // Register mouse-move callback to determine if touch is held (moving v. scrolling)
-  _callbacks.push(function move(x, y) {
-    if (!hasStarted) return;
-    lastX = x - deltaX;
-    lastY = y - deltaY;
-  });
-
-  // Register mouse-move callback to move the element.
-  _callbacks.push(function move(x, y) {
-    if (!dragging) return;
-
-    if (onStart && !onStartFired) {
-      onStart(target, lastX, lastY);
-      onStartFired = true;
-    }
-
-    // If boundary checking is on, don't let the element cross the viewport.
-    if (target.dataset.dragBoundary === "true") {
-      lastX = Math.min(window.innerWidth - target.offsetWidth, Math.max(0, lastX));
-      lastY = Math.min(window.innerHeight - target.offsetHeight, Math.max(0, lastY));
-    }
-
-    target.style.left = lastX + "px";
-    target.style.top = lastY + "px";
+    if (onEnd && isDragging) onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
+    _callbacks.length = 0;
+    isDragging = false;
   });
 }
