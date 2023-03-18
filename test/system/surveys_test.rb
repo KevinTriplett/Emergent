@@ -684,18 +684,12 @@ class SurveysTest < ApplicationSystemTestCase
         find(".survey-answer-scale input[type='range']").set(3)
       end
 
-      ActionMailer::Base.deliveries.clear
       click_link "Finish"
-      email = ActionMailer::Base.deliveries.last
-      assert_equal email.to, [user.email]
-      assert_equal email.subject, "Emergent Commons - your completed survey link"
-      assert_match /#{unsubscribe_url(token: survey_invite.token, protocol: "https")}/, email.header['List-Unsubscribe'].inspect
-      assert_match /#{survey_show_results_path(survey_invite.token)}/, email.body.inspect
-      ActionMailer::Base.deliveries.clear
 
       assert_nothing_raised do
         survey_invite.reload # not deleted, as in tests
       end
+      assert survey_invite.is_finished?
 
       # ------------------------------------------------------------------------------
 

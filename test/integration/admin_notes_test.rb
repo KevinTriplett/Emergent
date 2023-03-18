@@ -13,7 +13,7 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Jamboard"
       assert_select "h5", "Notes for #{survey.name}"
-      assert_select "button.add-note", count: 1
+      assert_select "a.add-note", count: 1
       assert_select "a.return", count: 1
       assert_select "a.new-group", count: 1
       assert_select "#notes-container .note", count: 0
@@ -36,7 +36,7 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
 
       assert_select "h1", "Emergent Commons Jamboard"
       assert_select "h5", "Notes for #{survey.name}"
-      assert_select "button.add-note", count: 1
+      assert_select "a.add-note", count: 1
       assert_select "a.return", count: 1
       assert_select "a.new-group", count: 1
       assert_select "#notes-container .note", count: 1

@@ -167,8 +167,18 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_selector "a.btn.btn-danger.user-reject", text: "Decline This Request"
 
-      click_link "Decline This Request"
-      
+      old_status = existing_user.status
+      message = dismiss_prompt do
+        click_link "Decline This Request"
+      end
+      assert_equal "Have you asked a host to decline this request?", message
+      existing_user.reload
+      assert_equal old_status, existing_user.status
+
+      accept_prompt do
+        click_link "Decline This Request"
+      end
+      sleep 1
       assert_current_path admin_user_wizard_path(token: existing_user.token)
       assert_equal "Request Declined", existing_user.reload.status
       assert_selector ".user-status", text: existing_user.status

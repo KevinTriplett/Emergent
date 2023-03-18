@@ -17,7 +17,7 @@ class SurveysTest < ActionDispatch::IntegrationTest
       assert_select "h1", "Emergent Commons Survey"
       assert_select ".survey-name", survey.name
       assert_select "#survey-questions-container", count: 1
-      assert_select ".survey-question-question", "#{question.question}\n\n Yes No"
+      assert_select ".survey-question-question", "#{question.question}\n\n\n Yes No"
       assert_select "a[href=?]", survey_path(token: invite.token, survey_question_id: -1), "Finish"
     end
   end
