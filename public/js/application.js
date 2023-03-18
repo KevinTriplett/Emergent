@@ -1235,10 +1235,10 @@ $(document).ready(function() {
     });
   };
 
-  var newNoteFromEssence = function(noteData) {
+  var newNoteFromEssence = function(noteEssence) {
     // clone(false): do not clone event handlers, they are installed afterwards
     var note = $("#note-template .note").first().clone(false);
-    noteEssence(note, noteData);
+    noteEssence(note, noteEssence);
     $("#notes-container").append(note);
     initializeNote(note);
     return note;
