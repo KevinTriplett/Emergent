@@ -88,8 +88,8 @@ class Survey < ActiveRecord::Base
   end
 
   def clean_up_notes_z_index
-    ordered_notes.each_with_index do |note, i|
-      note.update z_index: i+1
+    notes.order(z_index: :asc).each_with_index do |note, i|
+      note.update(z_index: i+1) if note.z_index != i+1
     end
   end
 
