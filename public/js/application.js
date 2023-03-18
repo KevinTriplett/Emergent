@@ -1217,7 +1217,7 @@ $(document).ready(function() {
   // NOTE CRUD
 
   var createNote = function(success) {
-    var url = $(".add-note").attr("data-url");
+    var url = $(".add-note").attr("href");
     $.ajax({
       url: url,
       type: "GET",
@@ -1235,10 +1235,10 @@ $(document).ready(function() {
     });
   };
 
-  var newNoteFromEssence = function(noteEssence) {
+  var newNoteFromEssence = function(essence) {
     // clone(false): do not clone event handlers, they are installed afterwards
     var note = $("#note-template .note").first().clone(false);
-    noteEssence(note, noteEssence);
+    noteEssence(note, essence);
     $("#notes-container").append(note);
     initializeNote(note);
     return note;
@@ -1494,7 +1494,8 @@ $(document).ready(function() {
   // ----------------------------------------------------------------------
   // GLOBAL NOTE LISTENERS
 
-  $("body#notes button.add-note").on("click", function() {
+  $("body#notes a.add-note").on("click", function(e) {
+    e.preventDefault();
     createNote();
   });
 
