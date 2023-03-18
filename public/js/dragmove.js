@@ -11,7 +11,7 @@
 // onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
 
 let _callbacks = [];
-let _loadedDM = isDragging = false;
+let _loadedDM = false;
 const _isTouch = window.ontouchstart !== undefined;
 
 var dragmove = function(target, handler, onStart, onEnd) {
@@ -28,6 +28,7 @@ var dragmove = function(target, handler, onStart, onEnd) {
 
   _loadedDM = true;
   let deltaX = deltaY = lastX = lastY = 0;
+  let isDragging = false;
 
   var trackDrag = function(x, y) {    // If boundary checking is on, don't let the element cross the viewport.
     if (target.dataset.dragBoundary === "true") {
@@ -60,8 +61,9 @@ var dragmove = function(target, handler, onStart, onEnd) {
   });
 
   // On leaving click, stop moving, call onEnd and remove callbacks
-  document.addEventListener(_isTouch ? "touchend" : "mouseup", function(e) {   
-    if (onEnd && isDragging) onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
+  document.addEventListener(_isTouch ? "touchend" : "mouseup", function(e) {  
+    if (!isDragging) return; 
+    if (onEnd) onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
     _callbacks.length = 0;
     isDragging = false;
   });
