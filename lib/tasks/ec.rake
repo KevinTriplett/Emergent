@@ -16,13 +16,14 @@ end
 namespace :ec do
   desc "Crawls the Emergent Commons MN site only for new member requests"
   task nm_crawl_new: :environment do
-    result = nil
-    until result == "success"
+    success = nil
+    for i in 1..10 # limit the loop
       Spider.set_message("new_user_spider", "50")
       NewUserSpider.crawl!
-      until result = Spider.get_result("new_user_spider")
-        sleep 1
+      until success = (Spider.get_result("new_user_spider") == "success")
+        sleep i # use the loop index to extend the wait gradually
       end
+      break if success
     end
   end
 end
