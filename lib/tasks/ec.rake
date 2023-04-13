@@ -16,8 +16,14 @@ end
 namespace :ec do
   desc "Crawls the Emergent Commons MN site only for new member requests"
   task nm_crawl_new: :environment do
-    Spider.set_message("new_user_spider", "100")
-    NewUserSpider.crawl!
+    result = nil
+    until result == "success"
+      Spider.set_message("new_user_spider", "50")
+      NewUserSpider.crawl!
+      until result = Spider.get_result("new_user_spider")
+        sleep 1
+      end
+    end
   end
 end
 
