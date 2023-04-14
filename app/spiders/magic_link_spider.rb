@@ -24,22 +24,22 @@ class MagicLinkSpider < EmergeSpider
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
-    EmergeSpider.logger.info "SPIDER #{name} STARTING"
+    logger.info "STARTING"
     sign_in
 
     @@url, user_id = get_message.split("|")
     user = User.find user_id
     request_to(:send_link, url: user.chat_url)
 
-    EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
+    logger.info "COMPLETED SUCCESSFULLY"
     set_result("success")
   rescue => error
     set_result("failure")
-    EmergeSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
+    logger.fatal "#{error.class}: #{error.message}"
   end
 
   def send_link(response, url:, data: {})
-    EmergeSpider.logger.info "SPIDER #{name} OPENING CHAT CHANNEL"
+    logger.info "SPIDER OPENING CHAT CHANNEL"
     wait_until(".universal-input-form-body-container .fr-element.fr-view")
     browser.find(:css, ".universal-input-form-body-container .fr-element.fr-view").click
     browser.send_keys("Someone requested your Volunteer App magic link -- here it is:")
@@ -50,6 +50,6 @@ class MagicLinkSpider < EmergeSpider
     sleep 1
     browser.send_keys("If you did not request this link, alert a Moderation Team First Responder")
     browser.send_keys [:enter]
-    EmergeSpider.logger.info "SPIDER #{name} SENT LINK VIA CHAT CHANNEL"
+    logger.info "SPIDER SENT LINK VIA CHAT CHANNEL"
   end
 end

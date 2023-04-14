@@ -24,19 +24,19 @@ class ApproveUserSpider < EmergeSpider
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
-    EmergeSpider.logger.info "SPIDER #{name} STARTING"
+    logger.info "STARTING"
     sign_in
 
     request_to(:approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests")
-    EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
+    logger.info "COMPLETED SUCCESSFULLY"
   rescue => error
     set_result(Rails.env.development? ? "success" : "failure")
-    EmergeSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
+    logger.fatal "#{error.class}: #{error.message}"
   end
 
   def approve_user(response, url:, data: {})
     first_name, last_name = get_message.split('|')
-    EmergeSpider.logger.info "APPROVING #{first_name} #{last_name}"
+    logger.info "APPROVING #{first_name} #{last_name}"
 
     ############################################
     # wait until the modal dialog box is visible
@@ -58,12 +58,12 @@ class ApproveUserSpider < EmergeSpider
     ############################################
     # find approve button for this user
     css_approve = "#{css_row} a.invite-list-item-approve-button"
-    EmergeSpider.logger.debug "LOOKING FOR #{css_approve}"
+    logger.debug "LOOKING FOR #{css_approve}"
     begin
       browser.find(:css, css_approve).click
       wait_until(css_status, "Joined!")
     rescue Selenium::WebDriver::Error::ElementNotInteractableError
-      EmergeSpider.logger.fatal "Approve button not interactable on MN platform"
+      logger.fatal "Approve button not interactable on MN platform"
     end
 
     ############################################
@@ -72,12 +72,12 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def get_member_id(css)
-    EmergeSpider.logger.debug "ATTEMPTING TO GET MEMBER ID"
+    logger.debug "ATTEMPTING TO GET MEMBER ID"
     css_link = "#{css} .invite-list-item-first-name-text a"
     link = browser.find(:css, css_link)["href"]
 
     member_id = link.split("/").last
-    EmergeSpider.logger.info "GOT MEMBER ID '#{member_id}'"
+    logger.info "GOT MEMBER ID '#{member_id}'"
     set_result(member_id)
   end
 end

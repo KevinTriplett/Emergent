@@ -24,26 +24,26 @@ class PrivateMessageSpider < EmergeSpider
   ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
 
   def parse(response, url:, data: {})
-    EmergeSpider.logger.info "SPIDER #{name} STARTING"
+    logger.info "STARTING"
     sign_in
 
     @@lines = get_message.split("|")
     @@user = User.find @@lines.shift # first element in array is user_id
-    EmergeSpider.logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@lines.first}"
+    logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@lines.first}"
     request_to(:send_message, url: @@user.chat_url)
 
-    EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
+    logger.info "COMPLETED SUCCESSFULLY"
     set_result("success")
   rescue => error
     set_result("failure")
-    EmergeSpider.logger.fatal "#{name} #{error.class}: #{error.message}"
+    logger.fatal "#{error.class}: #{error.message}"
   end
 
   def send_message(response, url:, data: {})
     wait_until(".universal-input.chat-prompt .fr-element.fr-view")
-    EmergeSpider.logger.debug "#{name} ATTEMPTING TO CLICK CHAT CHANNEL"
+    logger.debug "ATTEMPTING TO CLICK CHAT CHANNEL"
     browser.find(:css, ".universal-input.chat-prompt .fr-element.fr-view").click
-    EmergeSpider.logger.debug "#{name} ATTEMPTING TO SEND #{@@lines}"
+    logger.debug "ATTEMPTING TO SEND #{@@lines}"
     @@lines.each do |line|
       next if line.blank?
       browser.send_keys(line)

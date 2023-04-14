@@ -26,23 +26,23 @@ class NewUserSpider < EmergeSpider
   ##################################################
   ## PARSE
   def parse(response, url:, data: {})
-    EmergeSpider.logger.info "SPIDER #{name} STARTING"
+    logger.info "STARTING"
     sign_in
 
     @@limit_user_count = get_message.to_i || 100
     request_to :parse_members, url: "https://emergent-commons.mn.co/settings/invite/requests"
 
     set_result("success")
-    EmergeSpider.logger.info "#{name} COMPLETED SUCCESSFULLY"
+    logger.info "COMPLETED SUCCESSFULLY"
   rescue => error
     set_result("failure")
-    EmergeSpider.logger.fatal "#{name} COMPLETED FAILURE: #{error.message}"
+    logger.fatal "COMPLETED FAILURE: #{error.message}"
   end
 
   ##################################################
   ## PARSE NEW
   def parse_members(response, url:, data: {})
-    EmergeSpider.logger.debug "LOOKING FOR NEW JOIN REQUESTS"
+    logger.debug "LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
@@ -51,7 +51,7 @@ class NewUserSpider < EmergeSpider
     browser.find(:css, "#gdpr-cookie-accept").click if response_has("#gdpr-cookie-accept")
 
     # MN is cloaking member emails so reveal emails
-    EmergeSpider.logger.info "MAKING EMAILS VISIBLE"
+    logger.info "MAKING EMAILS VISIBLE"
     begin
       browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
       wait_until(".confirmation-modal-container .modal-confirm-button")
@@ -59,7 +59,7 @@ class NewUserSpider < EmergeSpider
       browser.find(:css, ".confirmation-modal-container .modal-confirm-button").click
       sleep 1
     rescue => error
-      EmergeSpider.logger.info "COULD NOT REVEAL EMAIL BECAUSE: #{error}"
+      logger.info "COULD NOT REVEAL EMAIL BECAUSE: #{error}"
     end
     
     # now check row-by-row for new users and missing information
@@ -79,14 +79,14 @@ class NewUserSpider < EmergeSpider
     member_id = get_member_id(row)
     email = row.css(".invite-list-item-email-text").text.strip
     if email.match /\*{3}/ # emails are cloaked with asterisks
-      EmergeSpider.logger.info "EMAILS ARE CLOAKED"
+      logger.info "EMAILS ARE CLOAKED"
       email = nil
     end
     first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
     last_name = row.css(".invite-list-item-last-name-text").text.strip
     full_name = "#{first_name} #{last_name}"
     request_date = row.css(".invite-list-item-last-updated").text.strip
-    EmergeSpider.logger.debug "LOOKING AT USER #{full_name}"
+    logger.debug "LOOKING AT USER #{full_name}"
 
     # users can be in one of three states:
     #   user not in database
@@ -110,13 +110,13 @@ class NewUserSpider < EmergeSpider
     #   member_id in database
     #     skip since we already have all the information we can get
     if user && (user.member_id || "Request Declined" == user.status) && !user.questions_responses.blank?
-      EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
-      EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
+      logger.debug "  SKIP #{full_name} BECAUSE ALREADY IN DATABASE WITH member_id" if user.member_id
+      logger.debug "  SKIP #{full_name} BECAUSE PREVIOUSLY DECLINED" if "Request Declined" == user.status
       return
     end
 
     if user && !member_id && !user.questions_responses.blank?
-      EmergeSpider.logger.debug "  SKIP #{full_name} BECAUSE IN DATABASE BUT NOT JOINED YET"
+      logger.debug "  SKIP #{full_name} BECAUSE IN DATABASE BUT NOT JOINED YET"
       return
     end
 
@@ -132,23 +132,23 @@ class NewUserSpider < EmergeSpider
       questions_and_answers = get_questions_and_answers(joined, row) if !user || user.questions_responses.blank?
     rescue => error
       # skip this member but output an error message in the log
-      EmergeSpider.logger.fatal "skipping user ------------------------------------"
-      EmergeSpider.logger.fatal "for member #{full_name}"
-      EmergeSpider.logger.fatal "#{name} failed to open Answers modal:"
-      EmergeSpider.logger.fatal error
-      EmergeSpider.logger.fatal "skipping user ------------------------------------"
+      logger.fatal "skipping user ------------------------------------"
+      logger.fatal "for member #{full_name}"
+      logger.fatal "failed to open Answers modal:"
+      logger.fatal error
+      logger.fatal "skipping user ------------------------------------"
     end
 
-    EmergeSpider.logger.debug "\n\n-------------------------------------------------------"
-    EmergeSpider.logger.debug "Adding name = #{full_name}"
-    EmergeSpider.logger.debug "email = #{email}"
-    EmergeSpider.logger.debug "request_date = #{request_date}"
-    EmergeSpider.logger.debug "status = #{status}"
-    EmergeSpider.logger.debug "joined = #{joined}"
-    EmergeSpider.logger.debug "member_id = #{member_id}"
-    EmergeSpider.logger.debug "profile_url = #{profile_url}"
-    EmergeSpider.logger.debug "chat_url = #{chat_url}"
-    EmergeSpider.logger.debug "qna = #{(questions_and_answers || []).join("\n\n")}"
+    logger.debug "\n\n-------------------------------------------------------"
+    logger.debug "Adding name = #{full_name}"
+    logger.debug "email = #{email}"
+    logger.debug "request_date = #{request_date}"
+    logger.debug "status = #{status}"
+    logger.debug "joined = #{joined}"
+    logger.debug "member_id = #{member_id}"
+    logger.debug "profile_url = #{profile_url}"
+    logger.debug "chat_url = #{chat_url}"
+    logger.debug "qna = #{(questions_and_answers || []).join("\n\n")}"
 
     {
       name: full_name,
@@ -187,22 +187,22 @@ class NewUserSpider < EmergeSpider
       #   user not in database but has a member_id (may have been approved using MN platform)
       #     scrap answers to questions
       #     requires a little more to get to their answers than non-joined members
-      EmergeSpider.logger.debug "ATTEMPTING ANSWERS HOVER"
+      logger.debug "ATTEMPTING ANSWERS HOVER"
       # browser.save_screenshot
       browser.find(:css, css).hover
       # browser.save_screenshot
-      EmergeSpider.logger.debug "ATTEMPTING TO OPEN DROP DOWN MENU"
+      logger.debug "ATTEMPTING TO OPEN DROP DOWN MENU"
       css += " a.mighty-drop-down-toggle"
       browser.find(:css, css).click
       # browser.save_screenshot
-      EmergeSpider.logger.debug "ATTEMPTING TO OPEN MODAL"
+      logger.debug "ATTEMPTING TO OPEN MODAL"
       css = ".mighty-drop-down-items-container a.mighty-menu-list-item[name='menu-list-item-answers']"
     else
       #   user not in database and not approved yet
       #     for pending requests, just click the handy "View Answers" button
       #     scrap answers to questions
       css += " td.invite-list-item-status a.invite-list-item-view-answers-button"
-      EmergeSpider.logger.debug "CLICKING THE VIEW ANSWER BUTTON"
+      logger.debug "CLICKING THE VIEW ANSWER BUTTON"
     end
 
     # browser.save_screenshot
@@ -210,7 +210,7 @@ class NewUserSpider < EmergeSpider
     sleep 1
     # browser.save_screenshot
     questions_and_answers = parse_questions_and_answers
-    EmergeSpider.logger.debug "ATTEMPTING TO CLOSE MODAL"
+    logger.debug "ATTEMPTING TO CLOSE MODAL"
     css = ".modal-form-container-header a.modal-form-container-left-button"
     browser.find(:css, css).click
     # browser.save_screenshot
@@ -233,7 +233,7 @@ class NewUserSpider < EmergeSpider
   def create_or_update_user(u_hash)
     user = find_user_by_user_hash(u_hash)
     if user
-      EmergeSpider.logger.info "updating user: #{user.name}"
+      logger.info "updating user: #{user.name}"
       user.member_id ||= u_hash[:member_id]
       user.profile_url ||= u_hash[:profile_url]
       user.chat_url ||= u_hash[:chat_url]
@@ -242,7 +242,7 @@ class NewUserSpider < EmergeSpider
       user.questions_responses = u_hash[:questions_responses] if user.questions_responses.blank?
       user.save!
     else
-      EmergeSpider.logger.info "creating user: #{u_hash[:name]}"
+      logger.info "creating user: #{u_hash[:name]}"
       User.create!(u_hash)
     end
   rescue => error
@@ -260,7 +260,7 @@ class NewUserSpider < EmergeSpider
   def scroll_to_end(css, modal_css)
     new_count = 0
     prev_count = browser.current_response.css(css).count
-    EmergeSpider.logger.debug "#{name} SCROLLING TO #{@@limit_user_count} ROWS ..."
+    logger.debug "SCROLLING TO #{@@limit_user_count} ROWS ..."
 
     return prev_count if prev_count == 0 || (@@limit_user_count > 0 && prev_count >= @@limit_user_count)
     
@@ -271,7 +271,7 @@ class NewUserSpider < EmergeSpider
         browser.execute_script("window.scrollBy(0,10000)")
       end
 
-      EmergeSpider.logger.debug "#{name} WAITING FOR NEW ROW COUNT ..."
+      logger.debug "WAITING FOR NEW ROW COUNT ..."
       for i in 0..20
         break if browser.current_response.css(css).count > prev_count
         sleep 1
@@ -279,7 +279,7 @@ class NewUserSpider < EmergeSpider
       break if browser.current_response.css(css).count == prev_count
 
       new_count = browser.current_response.css(css).count
-      EmergeSpider.logger.info "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
+      logger.info "INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
       prev_count = new_count
       break if @@limit_user_count > 0 && new_count >= @@limit_user_count
     end
