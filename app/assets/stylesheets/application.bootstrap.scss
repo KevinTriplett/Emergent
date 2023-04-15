@@ -466,6 +466,13 @@ body#greeter.user-wizard {
   }
 }
 
+p.magic-link {
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
 table.users, #greeter.user-wizard {
   width: 100%;
   .user-questions {
