@@ -15,7 +15,9 @@ class EmergeSpider < Kimurai::Base
 
   def send_request_to(method, url)
     for i in 1..10 # limit the loop
+      puts "sending request in loop #{i}"
       break if looped_request_to(method, url)
+      sleep i
     end
   end
 
@@ -26,10 +28,12 @@ class EmergeSpider < Kimurai::Base
     true # don't loop
   rescue Net::ReadTimeout
     logger.info "TIMEOUT ERROR, TRYING AGAIN"
+    puts "TIMEOUT ERROR, TRYING AGAIN"
     false # continue loop
   rescue => error
     set_result("failure")
     logger.fatal "ERROR #{error.class}: #{error.message}"
+    puts "ERROR #{error.class}: #{error.message}"
     true # don't loop
   end
 
