@@ -30,7 +30,7 @@ class MagicLinkSpider < EmergeSpider
     @@url, user_id = get_message.split("|")
 
     user = User.find user_id
-    send_request_to(:send_link, url: user.chat_url)
+    send_request_to(:send_link, user.chat_url)
   end
 
   def send_link(response, url:, data: {})
