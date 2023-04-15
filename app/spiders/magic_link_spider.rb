@@ -28,14 +28,9 @@ class MagicLinkSpider < EmergeSpider
     sign_in
 
     @@url, user_id = get_message.split("|")
-    user = User.find user_id
-    request_to(:send_link, url: user.chat_url)
 
-    logger.info "COMPLETED SUCCESSFULLY"
-    set_result("success")
-  rescue => error
-    set_result("failure")
-    logger.fatal "#{error.class}: #{error.message}"
+    user = User.find user_id
+    send_request_to(:send_link, url: user.chat_url)
   end
 
   def send_link(response, url:, data: {})
