@@ -78,7 +78,8 @@ class NewUserSpider < EmergeSpider
     joined = "Joined!" == status
     member_id = get_member_id(row)
     email = row.css(".invite-list-item-email-text").text.strip
-    if email.match /\*{3}/ # emails are cloaked with asterisks
+    email = nil if email == "--"
+    if email && email.match /\*{3}/ # emails are cloaked with asterisks
       logger.info "EMAILS ARE CLOAKED"
       email = nil
     end
