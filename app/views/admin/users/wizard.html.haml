@@ -35,51 +35,56 @@
       %span.progress-message Working ...
 
 
-  - if "Scheduling Zoom" == @user.status
+  - if "Scheduling Zoom" == @user.status || "Zoom Scheduled" == @user.status
     -# greeter can compose message to send
     -# button for "Meeting Scheduled" to go to next page
-    .wizard-pane.jumbotron.user-email
-      %h2 Scheduling a Zoom Greeting via Email
-      %p.no-margin= "To: #{@user.name}"
-      %p
-        To email:
-        %span.email-address= link_to @user.email, "mailto:#{@user.email}"
-      %input.email-subject.form-control{ placeholder: "Subject" }
-      %textarea.email-body.form-control{ placeholder: "Body of greeting" }
-      %p You can choose from these templates or compose your own email.
-      .email-template-buttons.greeting Template buttons will be visible here
-      .email-client
-        %input#gmail{type: "radio", name: "email-client"}
-        %label{for: "gmail"} Use GMail
-        %input#outlook{type: "radio", name: "email-client"}
-        %label{for: "outlook"} Use Outlook
-        %input#yahoo{type: "radio", name: "email-client"}
-        %label{for: "yahoo"} Use Yahoo
-        %input#other{type: "radio", name: "email-client"}
-        %label{for: "other"} Other
-      = link_to "Launch Chosen Email Client", "#", class: "btn btn-primary email-send greeting"
-      = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
-
-
-  - if "Zoom Scheduled" == @user.status
-    -# greeter can enter date and time for meeting
-    -# button for "Meeting Done" to go to congratulatory completed page
-    .wizard-pane.jumbotron.user-meeting-datetime
-      %h2 Date and time for your greeting
-      %p When you get a response to your email, you can record the date and time here.
-      - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
-      %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
-      %br
-      - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
-      = link_to "Scheduling Zoom", url, class: "btn btn-warning prev"
-      - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
-      = link_to "Zoom Done", url, class: "btn btn-success done"
-      - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
-      = link_to "Chat Done", url, class: "btn btn-success done"
-      - url = admin_user_wizard_path(token: @user.token, status: "zoom-declined")
-      = link_to "Zoom Declined", url, class: "btn btn-success done"
-      - url = admin_user_wizard_path(token: @user.token, status: "no-resposne")
-      = link_to "No Response", url, class: "btn btn-success done"
+    .wizard-pane.jumbotron.action
+      %h2 Select action for this new member:
+      = link_to "Compose Email", "#", class: "btn btn-primary action-send-email"
+      - url = admin_user_wizard_path(token: @user.token, status: "zoom-scheduled")
+      = link_to "Enter Greeting Date", url, class: "btn btn-primary action-schedule-zoom"
+      = link_to "Complete / Done", "#", class: "btn btn-success action-complete"
+      %hr
+      .user-email.hidden
+        %h2 Scheduling a Zoom Greeting via Email
+        %p.no-margin= "To: #{@user.name}"
+        %p
+          To email:
+          %span.email-address= link_to @user.email, "mailto:#{@user.email}"
+        %input.email-subject.form-control{ placeholder: "Subject" }
+        %textarea.email-body.form-control{ placeholder: "Body of greeting" }
+        %p You can choose from these templates or compose your own email.
+        .email-template-buttons.greeting Template buttons will be visible here
+        .email-client
+          %input#gmail{type: "radio", name: "email-client"}
+          %label{for: "gmail"} Use GMail
+          %input#outlook{type: "radio", name: "email-client"}
+          %label{for: "outlook"} Use Outlook
+          %input#yahoo{type: "radio", name: "email-client"}
+          %label{for: "yahoo"} Use Yahoo
+          %input#other{type: "radio", name: "email-client"}
+          %label{for: "other"} Other
+        = link_to "Launch Chosen Email Client", "#", class: "btn btn-primary email-send greeting"
+        = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
+      .complete.hidden
+        - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
+        = link_to "Zoom Done", url, class: "btn btn-success done"
+        - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
+        = link_to "Chat Done", url, class: "btn btn-success done"
+        - url = admin_user_wizard_path(token: @user.token, status: "zoom-declined")
+        = link_to "Zoom Declined", url, class: "btn btn-success done"
+        - url = admin_user_wizard_path(token: @user.token, status: "no-resposne")
+        = link_to "No Response", url, class: "btn btn-success done"
+      -# greeter can enter date and time for meeting
+      -# button for "Meeting Done" to go to congratulatory completed page
+      .user-meeting-datetime.hidden
+        %h2 Date and time for your greeting
+        %p When you get a response to your email, you can record the date and time here.
+        - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
+        %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
+        %br
+        - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
+        = link_to "Compose Email", url, class: "btn btn-warning prev"
 
   - if @user.status.match /completed/
     -# give greeter a fun celebratory animation

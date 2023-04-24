@@ -671,6 +671,24 @@ $(document).ready(function() {
     e.preventDefault();
     $(".change-log").toggle();
   });
+  $("a.action-send-email").on("click", function(e) {
+    e.preventDefault();
+    $(".user-email").show();
+    $(".user-meeting-datetime").hide();
+    $(".complete").hide();
+  });
+  $("a.action-schedule-zoom").on("click", function(e) {
+    e.preventDefault();
+    $(".user-email").hide();
+    $(".user-meeting-datetime").show();
+    $(".complete").hide();
+  });
+  $("a.action-complete").on("click", function(e) {
+    e.preventDefault();
+    $(".user-email").hide();
+    $(".user-meeting-datetime").hide();
+    $(".complete").show();
+  });
 
   ////////////////////////////////////////////////////
   // GREETER AND CLARIFICATION EMAIL TEMPLATE BUTTONS
