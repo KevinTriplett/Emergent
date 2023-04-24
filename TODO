@@ -64,17 +64,17 @@ SURVEYS
 - [X] allow surveys to be duplicated
 - [X] allow stickies to be moved in survey invite
 - [X] create nice user interface for surveys
-- [ ] use markdown for survey questions and instructions and notes
+- [X] use markdown for survey questions and instructions and notes
 - [ ] notes have a way to show total votes from others
 - [ ] rules for question branching / skipping
 - [ ] disable buttons until ajax calls resolve
 - [ ] rename notes to survey_notes
 GREETER APP
-- [ ] show only pending and assigned members
+- [X] show only pending and assigned members
+- [X] keep when_timestamp on status change
+- [X] default to only pending and greeter-picked entries
 - [ ] hover over index record pending = "Click to review this request"
-- [ ] keep when_timestamp on status change
 - [ ] request declined status is not visible in member request to join
-- [ ] default to only pending and greeter-picked entries
 - [ ] hover over tooltip for greeter main view for Pending "Click to begin"
 - [ ] do not log notes change if it's the same
 - [ ] wizard for greeters for step-by-step
