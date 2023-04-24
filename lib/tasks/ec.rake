@@ -1,7 +1,7 @@
 namespace :ec do
   desc "Send all queued magic link requests"
   task send_magic_links: :environment do
-    NewUserSpider.crawl! if 
+    MagicLinkSpider.crawl! if Spider.message?("magic_link_spider")
   end
 end
 
@@ -15,7 +15,8 @@ end
 namespace :ec do
   desc "Crawls the Emergent Commons MN site for all member requests"
   task nm_crawl_all: :environment do
-    MagicLinkSpider.crawl! if Spider.message?("magic_link_spider")
+    Spider.set_message("new_user_spider", "0")
+    NewMemberSpider.crawl!
   end
 end
 
