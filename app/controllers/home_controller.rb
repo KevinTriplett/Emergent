@@ -32,7 +32,7 @@ class HomeController < ApplicationController
           url = login_url(token: user.token, protocol: "https")
           Spider.append_message("magic_link_spider", "#{url}|#{user.id}")
         end
-        flash[:notice] = "Please be patient, it can take up to five minutes to receive the link via EC chat and email (check your SPAM folder)"
+        flash[:notice] = "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
       end
       return redirect_to root_url
     end
