@@ -30,8 +30,7 @@ class HomeController < ApplicationController
         UserMailer.with(user).send_magic_link.deliver_now
         if Rails.env.production?
           url = login_url(token: user.token, protocol: "https")
-          Spider.set_message("magic_link_spider", "#{url}|#{user.id}")
-          MagicLinkSpider.crawl!
+          Spider.append_message("magic_link_spider", "#{url}|#{user.id}")
         end
         flash[:notice] = "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
       end

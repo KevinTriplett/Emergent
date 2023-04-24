@@ -1,7 +1,19 @@
 class Spider < ActiveRecord::Base
-  def self.set_message(name, message)
+  def self.set_message(name, new_msg)
     spider = find_by_name(name) || create_spider(name)
-    spider.update(message: message)
+    spider.update(message: new_msg)
+  end
+
+  def self.append_message(name, new_msg)
+    spider = find_by_name(name) || create_spider(name)
+    messages = spider.message.blank? ? [] : spider.message.split(",")
+    messages.push new_msg
+    spider.update(message: messages.join(","))
+  end
+
+  def self.message?(name)
+    spider = find_by_name(name)
+    !spider.message.blank?
   end
 
   def self.get_message(name)

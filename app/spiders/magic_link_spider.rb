@@ -27,10 +27,13 @@ class MagicLinkSpider < EmergeSpider
     logger.info "STARTING"
     sign_in
 
-    @@url, user_id = get_message.split("|")
+    messages = get_message.split(",")
+    messages.each do |message|
+      @@url, user_id = message.split("|")
 
-    user = User.find user_id
-    send_request_to(:send_link, user.chat_url)
+      user = User.find user_id
+      send_request_to(:send_link, user.chat_url)
+    end
   end
 
   def send_link(response, url:, data: {})

@@ -15,16 +15,10 @@ set :output, "/home/deploy/Emergent/production/current/log/cron.log"
 env 'MAILTO', 'output_of_cron@kevintriplett.com'
 
 if 'production' == @environment
-  every 1.day, at: "4:30 am" do
-    rake "ec:nm_crawl_all"
-  end
-
-  every 15.minutes do
+  every 5.minutes do
     rake "ec:nm_crawl_new"
-  end
-
-  every 8.minutes do
     rake "ec:send_survey_invite_messages"
+    rake "ec:send_magic_links"
   end
 end
 
