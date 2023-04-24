@@ -1,7 +1,11 @@
 namespace :ec do
   desc "Send all queued magic link requests"
   task send_magic_links: :environment do
-    MagicLinkSpider.crawl! if Spider.message?("magic_link_spider")
+    return if Spider.message?("magic_link_spider")
+    MagicLinkSpider.crawl!
+    until Spider.get_result("magic_link_spider") == "success"
+      sleep 1
+    end
   end
 end
 
@@ -17,6 +21,9 @@ namespace :ec do
   task nm_crawl_all: :environment do
     Spider.set_message("new_user_spider", "0")
     NewMemberSpider.crawl!
+    until Spider.get_result("new_user_spider") == "success"
+      sleep 1
+    end
   end
 end
 
