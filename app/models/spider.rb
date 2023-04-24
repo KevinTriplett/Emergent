@@ -49,7 +49,8 @@ class Spider < ActiveRecord::Base
       end
       break if success
     end
-
+  rescue Selenium::WebDriver::Error::UnknownError
+  rescue Net::ReadTimeout
   end
 
   def self.send_magic_links
@@ -58,6 +59,8 @@ class Spider < ActiveRecord::Base
     until get_result("magic_link_spider") == "success"
       sleep 1
     end
+  rescue Selenium::WebDriver::Error::UnknownError
+  rescue Net::ReadTimeout
   end
 
   def self.send_survey_invite_messages
