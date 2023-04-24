@@ -3,4 +3,3 @@
   %form{action: send_magic_link_url, method: "put"}
     %input{name: "email", type: "text", placeholder: "Email or Full Name"}
     %button.btn.btn-warning= Rails.env.staging? ? "Log In" : "Send My Magic Link"
-    %p.magic-link Please be patient, it can take a few minutes to send the link via MN chat...
