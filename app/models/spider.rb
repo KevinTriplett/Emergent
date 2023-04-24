@@ -65,7 +65,7 @@ class Spider < ActiveRecord::Base
   end
 
   def self.run_spiders
-    get_new_members
+    get_new_members(50)
     send_magic_links
     send_survey_invite_messages
   end
