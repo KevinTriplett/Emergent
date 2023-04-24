@@ -16,9 +16,7 @@ env 'MAILTO', 'output_of_cron@kevintriplett.com'
 
 if 'production' == @environment
   every 5.minutes do
-    rake "ec:nm_crawl_new"
-    rake "ec:send_survey_invite_messages"
-    rake "ec:send_magic_links"
+    rake "ec:run_spiders"
   end
 end
 

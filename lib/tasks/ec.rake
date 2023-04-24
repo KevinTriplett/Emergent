@@ -1,44 +1,35 @@
 namespace :ec do
+  desc "Run all cron spiders"
+  task run_spiders: :environment do
+    Spider.run_spiders
+  end
+end
+
+namespace :ec do
   desc "Send all queued magic link requests"
   task send_magic_links: :environment do
-    break unless Spider.message?("magic_link_spider")
-    MagicLinkSpider.crawl!
-    until Spider.get_result("magic_link_spider") == "success"
-      sleep 1
-    end
+    Spider.send_magic_links
   end
 end
 
 namespace :ec do
   desc "Send all queued survey invites"
   task send_survey_invite_messages: :environment do
-    SurveyInvite.send_messages
+    Spider.send_survey_invite_messages
   end
 end
 
 namespace :ec do
   desc "Crawls the Emergent Commons MN site for all member requests"
   task nm_crawl_all: :environment do
-    Spider.set_message("new_user_spider", "0")
-    NewMemberSpider.crawl!
-    until Spider.get_result("new_user_spider") == "success"
-      sleep 1
-    end
+    Spider.get_new_members(0)
   end
 end
 
 namespace :ec do
   desc "Crawls the Emergent Commons MN site only for new member requests"
   task nm_crawl_new: :environment do
-    success = nil
-    for i in 1..10 # limit the loop
-      Spider.set_message("new_user_spider", "50")
-      NewUserSpider.crawl!
-      until success = (Spider.get_result("new_user_spider") == "success")
-        sleep i # use the loop index to extend the wait gradually
-      end
-      break if success
-    end
+    Spider.get_new_members(50)
   end
 end
 
