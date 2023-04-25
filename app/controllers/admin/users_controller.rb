@@ -151,7 +151,7 @@ module Admin
     def map_users_for_index_view(users)
       users.map do |u|
         css_class = []
-        css_class.push("pending") unless u.joined?
+        css_class.push("pending") unless u.joined? && u.greeter_id
         css_class.push("clarification") if "Clarification Needed" == u.status
         css_class.push("declined") if "Request Declined" == u.status
         css_class.push("scheduling") if "Scheduling Zoom" == u.status
