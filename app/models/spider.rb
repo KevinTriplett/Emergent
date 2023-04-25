@@ -1,43 +1,68 @@
 class Spider < ActiveRecord::Base
+  def self.get_spider(name)
+    uncached do
+      find_by_name(name) || create(name: name)
+    end
+  end
+
   def self.set_message(name, new_msg)
-    spider = find_by_name(name) || create_spider(name)
-    spider.update(message: new_msg)
+    get_spider(name).update(message: new_msg)
   end
 
   def self.append_message(name, new_msg)
-    spider = find_by_name(name) || create_spider(name)
+    spider = get_spider(name)
     messages = spider.message.blank? ? [] : spider.message.split(",")
     messages.push new_msg
     spider.update(message: messages.join(","))
   end
 
   def self.message?(name)
-    spider = find_by_name(name)
-    !spider.message.blank?
+    !get_spider(name).message.nil?
+  end
+
+  def self.clear_message(name)
+    get_spider(name).update(message: nil)
   end
 
   def self.get_message(name)
-    spider = find_by_name(name)
-    message = spider.message
-    spider.update(message: nil)
-    message
+    get_spider(name).message
   end
 
   def self.set_result(name, result)
-    spider = find_by_name(name)
-    spider.update(result: result)
+    get_spider(name).update(result: result)
+  end
+
+  def self.set_success(name)
+    set_result(name, "success")
+  end
+
+  def self.set_failure(name)
+    set_result(name, "failure")
+  end
+
+  def self.success?(name)
+    get_spider(name).result == "success"
+  end
+
+  def self.failure?(name)
+    get_spider(name).result == "failure"
+  end
+
+  def self.result?(name)
+    !get_spider(name).result.nil?
+  end
+
+  def self.clear_result(name)
+    get_spider(name).update(result: nil)
   end
 
   def self.get_result(name)
-    spider = find_by_name(name)
-    result = spider.result
-    spider.update(result: nil)
-    result
+    get_spider(name).result
   end
 
-  def self.create_spider(name)
-    create(name: name)
-  end
+  ################
+  ## rake tasks
+  ################
 
   def self.get_new_members(qty)
     success = nil
