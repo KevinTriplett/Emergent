@@ -58,10 +58,10 @@ class SurveyInvite < ActiveRecord::Base
     return true if Rails.configuration.mn_username == user.email # cannot send messages to signin account!
     Spider.set_message("private_message_spider", get_invite_message)
     PrivateMessageSpider.crawl!
-    until result = Spider.get_result("private_message_spider")
+    until Spider.result?("private_message_spider")
       sleep 1
     end
-    "success" == result
+    Spider.success?("private_message_spider")
   rescue => error
     false
   end
@@ -95,10 +95,10 @@ class SurveyInvite < ActiveRecord::Base
     when "Private Message"
       Spider.set_message("private_message_spider", get_finished_message)
       PrivateMessageSpider.crawl!
-      until result = Spider.get_result("private_message_spider")
+      until Spider.result?("private_message_spider")
         sleep 1
       end
-      "success" == result
+      Spider.success?("private_message_spider")
     else
       true
     end

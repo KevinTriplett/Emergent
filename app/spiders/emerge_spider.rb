@@ -6,14 +6,23 @@ class EmergeSpider < Kimurai::Base
     self.logger.progname
   end
 
-  def get_message
+  def get_and_clear_message
     msg = ::Spider.get_message(name)
-    return msg if msg
-    logger.fatal "MESSAGE WAS NIL, EXITING"
+    ::Spider.clear_message(name)
+    return msg unless msg.blank?
+    logger.fatal "MESSAGE WAS BLANK, EXITING"
     raise
   end
 
-  def send_request_to(method, url)
+  def sign_in_and_send_request_to(method, url)
+    ::Spider.clear_result(name)
+
+    for i in 1..10 # limit the loop
+      break if looped_sign_in
+      sleep 1
+    end
+    return if ::Spider.failure?(name)
+
     for i in 1..10 # limit the loop
       Rails.logger.info "sending request in loop #{i}"
       break if looped_request_to(method, url)
@@ -24,14 +33,13 @@ class EmergeSpider < Kimurai::Base
   def looped_request_to(method, url)
     request_to(method, url: url)
     logger.info "COMPLETED SUCCESSFULLY"
-    set_result("success")
     true # don't loop
   rescue Net::ReadTimeout
     logger.info "TIMEOUT ERROR, TRYING AGAIN"
     Rails.logger.info "TIMEOUT ERROR, TRYING AGAIN"
-    false # continue loop
+    false # try again
   rescue => error
-    set_result("failure")
+    ::Spider.set_failure(name)
     logger.fatal "ERROR #{error.class}: #{error.message}"
     Rails.logger.info "ERROR #{error.class}: #{error.message}"
     true # don't loop
@@ -41,9 +49,22 @@ class EmergeSpider < Kimurai::Base
     ::Spider.set_result(name, result)
   end
 
-  def sign_in
-    return if response_has("body.communities-app")
+  def looped_sign_in
+    sign_in
+    true
+  rescue Net::ReadTimeout
+    logger.info "TIMEOUT ERROR, TRYING AGAIN"
+    Rails.logger.info "TIMEOUT ERROR, TRYING AGAIN"
+    false # continue loop
+  rescue => error
+    ::Spider.set_failure(name)
+    logger.fatal "ERROR #{error.class}: #{error.message}"
+    Rails.logger.info "ERROR #{error.class}: #{error.message}"
+    true # don't loop
+  end
 
+  def sign_in
+    return if response_has("body.communities-app") # return if already signed in
     logger.info "SIGNING IN"
     wait_until("body.auth-sign_in")
     browser.fill_in "Email", with: Rails.configuration.mn_username

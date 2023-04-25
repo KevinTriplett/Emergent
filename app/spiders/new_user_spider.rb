@@ -27,16 +27,10 @@ class NewUserSpider < EmergeSpider
   ## PARSE
   def parse(response, url:, data: {})
     logger.info "STARTING"
-    sign_in
-
-    @@limit_user_count = get_message.to_i || 100
-    request_to :parse_members, url: "https://emergent-commons.mn.co/settings/invite/requests"
-
-    set_result("success")
+    @@limit_user_count = get_and_clear_message.to_i || 100
+    sign_in_and_send_request_to(:parse_members, "https://emergent-commons.mn.co/settings/invite/requests")
+    ::Spider.set_success(name)
     logger.info "COMPLETED SUCCESSFULLY"
-  rescue => error
-    set_result("failure")
-    logger.fatal "COMPLETED FAILURE: #{error.message}"
   end
 
   ##################################################

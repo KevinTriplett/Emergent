@@ -25,17 +25,13 @@ class ApproveUserSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     logger.info "STARTING"
-    sign_in
-
-    request_to(:approve_user, url: "https://emergent-commons.mn.co/settings/invite/requests")
+    sign_in_and_send_request_to(:approve_user, "https://emergent-commons.mn.co/settings/invite/requests")
+    # ::Spider.set_success(name) <== don't do this, result is set to member_id
     logger.info "COMPLETED SUCCESSFULLY"
-  rescue => error
-    set_result(Rails.env.development? ? "success" : "failure")
-    logger.fatal "#{error.class}: #{error.message}"
   end
 
   def approve_user(response, url:, data: {})
-    first_name, last_name = get_message.split('|')
+    first_name, last_name = get_and_clear_message.split('|')
     logger.info "APPROVING #{first_name} #{last_name}"
 
     ############################################

@@ -25,25 +25,20 @@ class PrivateMessageSpider < EmergeSpider
 
   def parse(response, url:, data: {})
     logger.info "STARTING"
-    sign_in
-
-    @@lines = get_message.split("|")
+    @@lines = get_and_clear_message.split("|")
     @@user = User.find @@lines.shift # first element in array is user_id
-    logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@lines.first}"
-    request_to(:send_message, url: @@user.chat_url)
-
+    sign_in_and_send_request_to(:send_message, @@user.chat_url)
+    ::Spider.set_success(name)
     logger.info "COMPLETED SUCCESSFULLY"
-    set_result("success")
-  rescue => error
-    set_result("failure")
-    logger.fatal "#{error.class}: #{error.message}"
   end
 
   def send_message(response, url:, data: {})
+    logger.info "SENDING MESSAGE TO #{@@user.name} FOR #{@@lines.first}"
     wait_until(".universal-input.chat-prompt .fr-element.fr-view")
     logger.debug "ATTEMPTING TO CLICK CHAT CHANNEL"
     browser.find(:css, ".universal-input.chat-prompt .fr-element.fr-view").click
     logger.debug "ATTEMPTING TO SEND #{@@lines}"
+
     @@lines.each do |line|
       next if line.blank?
       browser.send_keys(line)
