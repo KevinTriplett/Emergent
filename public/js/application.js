@@ -646,7 +646,8 @@ $(document).ready(function() {
     else {
       $("table.users tbody tr").each(function() {
         var self = $(this);
-        var hide = self.attr("data-greeter-id") != greeterId &&
+        var hide = self.attr("data-greeter-id") &&
+          self.attr("data-greeter-id") != greeterId &&
           self.attr("data-status") != "Pending" &&
           self.attr("data-status") != "Clarification Needed"
         if (hide) self.hide();
