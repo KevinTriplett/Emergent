@@ -24,7 +24,7 @@ var progressMessages = [
   "Exchanging credentials ...",
   "Asking about the family, getting a check-in ...",
   "Looking up this member request ...",
-  "Politing asking to approve the request ...",
+  "Politely asking to approve the request ...",
   "Getting response ...",
   "Yep, no problem, got the approval ...",
   "Getting a check-out, saying goodbye ...",
