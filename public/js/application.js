@@ -667,10 +667,12 @@ $(document).ready(function() {
   $("a.reveal-answers").on("click", function(e) {
     e.preventDefault();
     $(".user-questions").toggle();
+    this.scrollIntoView(true);
   })
   $("a.reveal-change-log").on("click", function(e) {
     e.preventDefault();
     $(".change-log").toggle();
+    this.scrollIntoView(true);
   });
   $("a.action-send-email").on("click", function(e) {
     e.preventDefault();
