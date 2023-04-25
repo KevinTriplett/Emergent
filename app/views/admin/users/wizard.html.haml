@@ -82,9 +82,6 @@
         %p When you get a response to your email, you can record the date and time here.
         - datetime = @user.when_timestamp ? @user.when_timestamp.picker_datetime : nil
         %input.datetime-picker.utc-time.form-control{ type: "text", value: datetime }
-        %br
-        - url = admin_user_wizard_path(token: @user.token, status: "scheduling-zoom")
-        = link_to "Compose Email", url, class: "btn btn-warning prev"
 
   - if @user.status.match /completed/
     -# give greeter a fun celebratory animation
