@@ -24,7 +24,6 @@ class EmergeSpider < Kimurai::Base
     return if ::Spider.failure?(name)
 
     for i in 1..10 # limit the loop
-      Rails.logger.info "sending request in loop #{i}"
       break if looped_request_to(method, url)
       sleep i
     end
@@ -36,12 +35,12 @@ class EmergeSpider < Kimurai::Base
     true # don't loop
   rescue Net::ReadTimeout
     logger.info "TIMEOUT ERROR, TRYING AGAIN"
-    Rails.logger.info "TIMEOUT ERROR, TRYING AGAIN"
+    Rails.logger.info "#{name}: TIMEOUT ERROR, TRYING AGAIN"
     false # try again
   rescue => error
     ::Spider.set_failure(name)
     logger.fatal "ERROR #{error.class}: #{error.message}"
-    Rails.logger.info "ERROR #{error.class}: #{error.message}"
+    Rails.logger.info "#{name}: ERROR #{error.class}: #{error.message}"
     true # don't loop
   end
 

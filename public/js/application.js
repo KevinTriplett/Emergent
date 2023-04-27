@@ -18,25 +18,6 @@ var format = {
   hour: "2-digit",
   minute: "2-digit"
 };
-var progressMessages = [
-  "Establishing secure channel ...",
-  "Contacting Mighty Networks ...",
-  "Exchanging credentials ...",
-  "Asking about the family, getting a check-in ...",
-  "Looking up this member request ...",
-  "Politely asking to approve the request ...",
-  "Getting response ...",
-  "Yep, no problem, got the approval ...",
-  "Getting a check-out, saying goodbye ...",
-  "Disconnecting from Mighty Networks ...",
-  "Cleaning up the channel ...",
-  "Updating our database ...",
-  "Waiting, not much longer now ...",
-  "I promise, not much longer ...",
-  "Thanks for being patient :) ...",
-  "Whoops, looks like something went wrong ...",
-  "Please refresh the page"
-]
 
 ////////////////////////////////////////////////////
 // COOKIES
@@ -838,17 +819,8 @@ $(document).ready(function() {
     var self = $(this);
     var url = self.attr("href");
     var token = self.closest("[data-token]").attr("data-token");
-    $("#spinner").show();
-    $(".progress-message").show();
     $(".user-approve,.user-reject").hide();
     
-    // set up the spinner
-    var count = 0;
-    var msgTimer = setInterval(function() {
-      var msg = progressMessages[count++];
-      $(".progress-message").text(msg);
-    }, 2500);
-
     $.ajax({
       url: url,
       type: "POST",
@@ -863,13 +835,11 @@ $(document).ready(function() {
         window.location.assign(result.url);
       },
       error: function(result) {
-        clearInterval(msgTimer);
-        $("#spinner").hide();
         $(".progress-message")
+          .show()
           .text("Something went wrong -- ask Kevin")
           .addClass("failure");
       }
-
     });
   });
 

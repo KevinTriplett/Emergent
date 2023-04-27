@@ -61,7 +61,7 @@ class SurveyInvite < ActiveRecord::Base
     until Spider.result?("private_message_spider")
       sleep 1
     end
-    Spider.success?("private_message_spider")
+    update_state(:invite_sent) if Spider.success?("private_message_spider")
   rescue => error
     false
   end

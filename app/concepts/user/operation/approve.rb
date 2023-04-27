@@ -7,18 +7,9 @@ module User::Operation
 
     def activate_spider(ctx, model:, admin:, **)
       return true if model.member_id # user already approved
-      if Rails.env.production? || Rails.env.staging?
-        data = [model.first_name,model.last_name].join('|')
-        Spider.set_message("approve_user_spider", data)
-        ApproveUserSpider.crawl!
-        until Spider.result?("approve_user_spider")
-          sleep 1
-        end
-        return false if Spider.get_result("approve_user_spider").blank?
-        ctx[:model].member_id = Spider.get_result("approve_user_spider").to_i
-      end
+      model.approved = true if Rails.env.production? || Rails.env.staging?
       timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
-      model.change_log = "#{model.change_log}#{timestamp}\n- Join request approved by #{admin.name}\n"
+      model.change_log = "#{model.change_log}#{timestamp}\n- Join approval requested by #{admin.name}\n"
     end
 
     def update_model(ctx, model:, admin:, **)
