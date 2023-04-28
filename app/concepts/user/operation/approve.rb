@@ -17,8 +17,6 @@ module User::Operation
       model.status = "Scheduling Zoom"
       model.joined = true
       model.greeter_id ||= admin.id
-      model.profile_url = "https://emergent-commons.mn.co/members/#{model.member_id}"
-      model.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{model.member_id}"
       model.save
     end
   end

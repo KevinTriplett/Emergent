@@ -78,6 +78,8 @@ class Spider < ActiveRecord::Base
       end
       return if !result?("approve_user_spider") || failure?("approve_user_spider")
       user.member_id = get_result("approve_user_spider").to_i
+      user.profile_url = "https://emergent-commons.mn.co/members/#{user.member_id}"
+      user.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{user.member_id}"
       user.approved = nil
       user.save
     end
