@@ -66,7 +66,7 @@ class Spider < ActiveRecord::Base
 
   def self.approve_members
     User.where(approved: true).each do |user|
-      for i in 1..10 # limit the loop
+      for i in 1..4 # limit the loop
         data = [user.first_name, user.last_name].join('|')
         set_message("approve_user_spider", data)
         ApproveUserSpider.crawl!
@@ -86,7 +86,7 @@ class Spider < ActiveRecord::Base
   end
 
   def self.get_new_members(qty)
-    for i in 1..10 # limit the loop
+    for i in 1..4 # limit the loop
       set_message("new_user_spider", qty.to_s)
       NewUserSpider.crawl!
       for i in 1..60
@@ -101,7 +101,7 @@ class Spider < ActiveRecord::Base
   
   def self.send_magic_links
     return unless message?("magic_link_spider")
-    for i in 1..10 # limit the loop
+    for i in 1..4 # limit the loop
       MagicLinkSpider.crawl!
       for i in 1..60
         break if result?("magic_link_spider")
@@ -157,6 +157,7 @@ class Spider < ActiveRecord::Base
         end
         next if success?("private_message_spider")
       end
+      invite.update_state(:finished_link_sent) if success?("private_message_spider")
     end
   rescue Selenium::WebDriver::Error::UnknownError
   rescue Net::ReadTimeout
