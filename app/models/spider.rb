@@ -101,12 +101,14 @@ class Spider < ActiveRecord::Base
   
   def self.send_magic_links
     return unless message?("magic_link_spider")
-    MagicLinkSpider.crawl!
-    for i in 1..60
-      break if result?("magic_link_spider")
-      sleep 1
+    for i in 1..10 # limit the loop
+      MagicLinkSpider.crawl!
+      for i in 1..60
+        break if result?("magic_link_spider")
+        sleep 1
+      end
+      break if success?("magic_link_spider")
     end
-    break if success?("magic_link_spider")
   rescue Selenium::WebDriver::Error::UnknownError
   rescue Net::ReadTimeout
   end
