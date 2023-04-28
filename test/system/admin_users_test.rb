@@ -16,7 +16,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       ActionMailer::Base.deliveries.clear
       fill_in "Email or Full Name", with: user.email.upcase
       click_on "Send My Magic Link"
-      assert_selector ".flash", text: "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
+      assert_selector ".flash", text: "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
       email = ActionMailer::Base.deliveries.last
       assert_equal email.to, [user.email]
       assert_equal email.subject, "Emergent Commons - your magic link"
@@ -27,7 +27,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       ActionMailer::Base.deliveries.clear
       fill_in "Email or Full Name", with: user.name.downcase
       click_on "Send My Magic Link"
-      assert_selector ".flash", text: "Magic link sent, check your email SPAM folder and your Emergent Commons chat channel"
+      assert_selector ".flash", text: "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
       email = ActionMailer::Base.deliveries.last
       assert_equal email.to, [user.email]
       assert_equal email.subject, "Emergent Commons - your magic link"
@@ -202,6 +202,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal "Scheduling Zoom", existing_user.reload.status
       assert_selector ".user-status", text: existing_user.status
       assert_selector ".user-greeter", text: admin_1.name
+      click_link "Compose Email"
+
       assert_selector "input.email-subject"
       assert_selector "textarea.email-body"
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 5
@@ -220,6 +222,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
       assert_current_path admin_user_wizard_path(token: existing_user.token)
       assert_equal "Scheduling Zoom", existing_user.reload.status
+      click_link "Compose Email"
 
       assert find("input.email-subject").value.blank?
       assert find("textarea.email-body").value.blank?
@@ -236,6 +239,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_equal "Scheduling Zoom", existing_user.reload.status
       assert_selector ".user-status", text: existing_user.status
       assert_selector ".user-greeter", text: admin_1.name
+      click_link "Compose Email"
+
       assert_selector "input.email-subject"
       assert_selector "textarea.email-body"
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 6
@@ -244,11 +249,10 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "a", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_no_selector "a", text: "Decline This Request"
-
-      click_link "Zoom Scheduled"
+      click_link "Enter Greeting Date"
 
       assert_current_path admin_user_wizard_path(token: existing_user.token)
-      assert_equal "Zoom Scheduled", existing_user.reload.status
+      assert_equal "Scheduling Zoom", existing_user.reload.status
       assert_selector ".user-status", text: existing_user.status
       assert_selector ".user-greeter", text: admin_1.name
       assert_no_selector "input.email-subject"
@@ -274,12 +278,13 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.send_keys("2023-10-09 15:45")
       input.send_keys [:escape]
       sleep 2 # cannot be 1 for some reason...
-      assert_equal "2023-10-09T22:45:00Z", existing_user.reload.when_timestamp.picker_datetime
+      assert_equal "2023-10-09T19:45:00Z", existing_user.reload.when_timestamp.picker_datetime
 
       # check date format in index view
       visit admin_users_path
       assert_selector ".user-meeting-datetime", text: "2023-Oct-9 @ 3:45 PM"
       visit admin_user_wizard_path(token: existing_user.token)
+      click_link "Enter Greeting Date"
 
       # now check ability to delete
       input.click
