@@ -22,19 +22,9 @@ class HomeController < ApplicationController
     params.permit(:email)
     _ctx = run User::Operation::MagicLink, email_or_name: params[:email] do |ctx|
       user = ctx[:user]
-      if user && (Rails.env.staging? || Rails.env.development?)
-        sign_in(user)
-        return redirect_back(fallback_location: root_url)
-      else
-        user.generate_tokens
-        UserMailer.with(user).send_magic_link.deliver_now
-        if Rails.env.production?
-          url = login_url(token: user.token, protocol: "https")
-          Spider.append_message("magic_link_spider", "#{url}|#{user.id}")
-        end
-        flash[:notice] = "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
-      end
-      return redirect_to root_url
+      user.generate_tokens
+      sign_in(user)
+      return redirect_back(fallback_location: root_url)
     end
   
     flash[:error] = _ctx[:flash] || "Unable to find '#{params[:email]}' -- please try again"

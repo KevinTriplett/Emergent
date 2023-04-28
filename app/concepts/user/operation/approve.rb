@@ -2,12 +2,12 @@ module User::Operation
   class Approve < Trailblazer::Operation
 
     step Model(User, :find_by, :token)
-    step :activate_spider
+    step :queue_approval
     step :update_model
 
-    def activate_spider(ctx, model:, admin:, **)
+    def queue_approval(ctx, model:, admin:, **)
       return true if model.member_id # user already approved
-      model.approved = true if Rails.env.production? || Rails.env.staging?
+      model.approved = true
       timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S UTC")
       model.change_log = "#{model.change_log}#{timestamp}\n- Join approval requested by #{admin.name}\n"
     end
@@ -17,8 +17,6 @@ module User::Operation
       model.status = "Scheduling Zoom"
       model.joined = true
       model.greeter_id ||= admin.id
-      model.profile_url = "https://emergent-commons.mn.co/members/#{model.member_id}"
-      model.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{model.member_id}"
       model.save
     end
   end
