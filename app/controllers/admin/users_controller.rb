@@ -75,11 +75,11 @@ module Admin
     # ------------------------------------------------------------------------
 
     def approve_user
+      @user = User.find_by_token(params[:token])
       _ctx = run User::Operation::Approve, admin: current_user do |ctx|
         flash[:notice] = "User scheduled for approval, shouldn't take longer than ten minutes to be reflected in EC"
-        return render json: { url: admin_user_wizard_url(token: ctx[:model].token) }
       end
-      return head(:bad_request)
+      redirect_to admin_user_wizard_url(token: @user.token)
     end
 
     # ------------------------------------------------------------------------

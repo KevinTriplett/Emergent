@@ -266,7 +266,8 @@ input.btn,
 input.form-control,
 input.form-check-input,
 textarea,
-a.btn {
+a.btn,
+button.btn {
   margin-bottom: 11px;
   margin-right: 15px;
 }
@@ -478,6 +479,9 @@ table.users, #greeter.user-wizard {
   .user-questions {
     li {
       margin-bottom: 7px;
+    }
+    form {
+      display: inline;
     }
     span.question {
       font-size: small;

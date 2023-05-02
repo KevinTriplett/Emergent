@@ -29,7 +29,7 @@
           %span.answer= a
     - if pending
       - url = admin_approve_user_path(token: @user.token)
-      = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
+      = button_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
       - url = admin_user_wizard_path(token: @user.token, status: "clarification-needed")
       = link_to "Answers Need Clarification", url, class: "btn btn-warning user-clarify"
 
