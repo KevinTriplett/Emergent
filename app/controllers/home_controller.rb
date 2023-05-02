@@ -9,7 +9,7 @@ class HomeController < ApplicationController
     sign_in
     return redirect_to root_url unless current_user
     return redirect_to admin_users_url if current_user_has_role?(:greeter)
-    redirect_back
+    redirect_back(fallback_location: root_url)
   end
 
   def logout

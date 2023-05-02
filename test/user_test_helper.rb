@@ -69,7 +69,7 @@ def create_authorized_user(roles = [])
 end
 
 def login
-  user = create_authorized_user
+  user = create_authorized_user(:greeter)
   user.first_name, user.last_name = user.name.split(" ")
   user.save
   visit login_url(token: user.token)
