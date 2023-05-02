@@ -383,7 +383,6 @@ var showOpt = function(show) {
 $(document).ready(function() {
   if (_loadedApp) return; // set listeners only once
   _loadedApp = true;
-  $("#spinner").hide();
   $(document)
     .uitooltip()
     .on("keydown", function(e) {
@@ -814,35 +813,6 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // APPROVE AND REJECT BUTTONS
-  $("a.user-approve").on("click", function(e) {
-    e.preventDefault();
-    var self = $(this);
-    var url = self.attr("href");
-    var token = self.closest("[data-token]").attr("data-token");
-    $(".user-approve,.user-reject").hide();
-    
-    $.ajax({
-      url: url,
-      type: "POST",
-      data: null,
-      processData: false,
-      dataType: 'JSON',
-      contentType: 'application/json',
-      headers: {
-        'X-CSRF-Token': token
-      },
-      success: function(result) {
-        window.location.assign(result.url);
-      },
-      error: function(result) {
-        $(".progress-message")
-          .show()
-          .text("Something went wrong -- ask Kevin")
-          .addClass("failure");
-      }
-    });
-  });
-
   $(".user-reject").on("click", function(e) {
     if (!confirm("Have you asked a host to decline this request?")) e.preventDefault();
   });

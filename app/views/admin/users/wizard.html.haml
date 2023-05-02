@@ -1,6 +1,7 @@
 - patch_url = admin_user_patch_path(token: @user.token)
 - email_url = admin_user_send_email_path(token: @user.token)
 - dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
+- pending = "Pending" == @user.status
 
 .wizard{ data: dataset }
   .wizard-pane.jumbotron.wizard-links
@@ -18,7 +19,7 @@
 
   -# make answers to questions available throughout the process
   = link_to "Show or Hide answers to questions", "#", class: "reveal-answers padded"
-  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
+  .wizard-pane.jumbotron.user-questions{ class: pending ? "" : "hidden" }
     %h2 Questions and Answers
     %ol.questions-and-answers
       - @user.questions_responses_array.each do |q, a|
@@ -26,13 +27,11 @@
           %span.question= q
           %br
           %span.answer= a
-    - if "Pending" == @user.status
+    - if pending
       - url = admin_approve_user_path(token: @user.token)
       = link_to "Answers Are Acceptable", url, class: "btn btn-success user-approve"
       - url = admin_user_wizard_path(token: @user.token, status: "clarification-needed")
       = link_to "Answers Need Clarification", url, class: "btn btn-warning user-clarify"
-      .lds-hourglass#spinner
-      %span.progress-message Working ...
 
 
   - if "Scheduling Zoom" == @user.status || "Zoom Scheduled" == @user.status
