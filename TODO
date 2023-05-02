@@ -44,10 +44,10 @@
 - [X] use MN chat to send magic keys to members
 - [X] allow name or email to retrieve magic link
 BUGS
+- [X] do not send to greeter app after survey
 - [ ] greeter search is tangled with survey_invite search
 - [ ] need the ability for a greeter to log in themselves so that approval chats come from them
 - [ ] renew ssl certs
-- [ ] do not send to greeter app after survey
 SURVEYS
 - [X] add admin interface for sending survey invites (show survey view?)
 - [X] create survey invites with tokens to prevent hacking a survey
@@ -73,11 +73,12 @@ GREETER APP
 - [X] show only pending and assigned members
 - [X] keep when_timestamp on status change
 - [X] default to only pending and greeter-picked entries
+- [X] wizard for greeters for step-by-step
+- [X] add greeter authorization role for authenticated user
 - [ ] hover over index record pending = "Click to review this request"
 - [ ] request declined status is not visible in member request to join
 - [ ] hover over tooltip for greeter main view for Pending "Click to begin"
 - [ ] do not log notes change if it's the same
-- [ ] wizard for greeters for step-by-step
 - [ ] view-only state
 - [ ] hover over show view to give hints
 - [ ] convert status_hash to keys with human text?
@@ -86,7 +87,6 @@ GREETER APP
 - [ ] create way for new members to specify dates and times they're available
 - [ ] calculate success rate for greetings (responses / completion)
 - [ ] crawl site for volunteer team memberships (Master of Scrolls)
-- [ ] add greeter authorization role for authenticated user
 - [ ] list of greeters
 - [ ] temporary reorder rotation of greeters
 - [ ] permanent reorder rotation of greeters
