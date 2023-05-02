@@ -5,7 +5,7 @@ class AdminSurveyInvitesTest < ActionDispatch::IntegrationTest
 
   test "Admin page to choose survey to invite" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       existing_survey = create_survey
@@ -18,7 +18,7 @@ class AdminSurveyInvitesTest < ActionDispatch::IntegrationTest
 
   test "Admin page for choosing users for survey invite" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       existing_survey = create_survey

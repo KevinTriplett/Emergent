@@ -5,7 +5,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
   test "Admin page with surveys but no questions" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       survey = create_survey
@@ -24,7 +24,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
   test "Admin page for survey with question" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       question = create_survey_question
@@ -51,7 +51,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
   test "Admin create page for survey question" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       group = create_survey_group
@@ -75,7 +75,7 @@ class AdminSurveyQuestionsTest < ActionDispatch::IntegrationTest
 
   test "Admin edit page for survey question" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       question = create_survey_question(has_scale: true)

@@ -61,14 +61,15 @@ def create_user(params = {})
   create_user_with_result(params)[:model]
 end
 
-def create_authorized_user(params = {})
-  user = create_user(params)
+def create_authorized_user(roles = [])
+  user = create_user
+  [roles].flatten.each {|role| user.add_role(role)}
   user.update(session_token: "H5_LTSXsGWDKkP7V_-aHvA")
   user
 end
 
-def login(params = {})
-  user = create_authorized_user(params)
+def login
+  user = create_authorized_user
   user.first_name, user.last_name = user.name.split(" ")
   user.save
   visit login_url(token: user.token)

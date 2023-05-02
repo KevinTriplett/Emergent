@@ -5,7 +5,7 @@ class AdminSurveyGroupsTest < ActionDispatch::IntegrationTest
 
   test "Admin page for survey with no groups" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       survey = create_survey
@@ -25,7 +25,7 @@ class AdminSurveyGroupsTest < ActionDispatch::IntegrationTest
 
   test "Admin page for survey with groups and questions" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       survey = create_survey
@@ -49,7 +49,7 @@ class AdminSurveyGroupsTest < ActionDispatch::IntegrationTest
 
   test "Admin new page for survey group" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       survey = create_survey
@@ -69,7 +69,7 @@ class AdminSurveyGroupsTest < ActionDispatch::IntegrationTest
 
   test "Admin edit page for survey group" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       set_authorization_cookie
 
       survey = create_survey

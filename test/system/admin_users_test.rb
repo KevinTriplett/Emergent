@@ -6,7 +6,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "User can get a magic link on first visit" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
       visit logout_path
       assert_current_path root_path
 
@@ -361,7 +361,8 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "Greeter can sort members in index view" do
     DatabaseCleaner.cleaning do
       old_request_timestamp = (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
-      admin = login(request_timestamp: old_request_timestamp)
+      admin = login
+      admin.update request_timestamp: old_request_timestamp
       other_greeter = create_user(request_timestamp: old_request_timestamp)
 
       user1 = create_user({
@@ -405,10 +406,9 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "Greeter can search for members" do
     DatabaseCleaner.cleaning do
       old_time = (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
-      admin = login({
-        name: random_user_name,
-        request_timestamp: old_time
-      })
+      admin = login
+      admin.update name: random_user_name
+      admin.update request_timestamp: old_time
       user1 = create_user({
         name: "Jote Bloow",
         request_timestamp: (Time.now-7.days).strftime("%Y-%m-%dT%H:%M:%SZ")

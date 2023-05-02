@@ -10,7 +10,16 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
   test "Admin page with authorized user but first visit" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
+      get admin_users_path
+      assert_response :redirect
+    end
+  end
+
+  test "Admin page with authorized user but not correct role" do
+    DatabaseCleaner.cleaning do
+      user = create_authorized_user(:greeter_yo)
+      set_authorization_cookie
       get admin_users_path
       assert_response :redirect
     end
@@ -18,9 +27,9 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
   test "Admin page with authorized user" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
+      user.add_role :greeter
       set_authorization_cookie
-
       get admin_users_path
       assert_response :success
       assert_not_nil assigns(:users)
@@ -33,9 +42,9 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
 
   test "Admin page with users" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user
+      user = create_authorized_user(:greeter)
+      user.add_role :greeter
       set_authorization_cookie
-
       get admin_users_path
       assert_response :success
       
@@ -62,10 +71,9 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
     DatabaseCleaner.cleaning do
       greeter_1 = create_user
       greeter_2 = create_user
-      user = create_authorized_user({
-        greeter_id: greeter_1.id,
-        shadow_greeter_id: greeter_2.id
-      })
+      user = create_authorized_user(:greeter)
+      user.update greeter_id: greeter_1.id
+      user.update shadow_greeter_id: greeter_2.id
       set_authorization_cookie
 
       get admin_user_path(token: user.token)
