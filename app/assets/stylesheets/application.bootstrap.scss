@@ -424,6 +424,9 @@ body#greeter.user-wizard {
 
   .approval-buttons {
     padding-top: 30px;
+    form {
+      display: inline;
+    }
   }
 
   .user-summary {
@@ -479,9 +482,6 @@ table.users, #greeter.user-wizard {
   .user-questions {
     li {
       margin-bottom: 7px;
-    }
-    form {
-      display: inline;
     }
     span.question {
       font-size: small;

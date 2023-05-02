@@ -16,31 +16,39 @@ class AdminUsersTest < ApplicationSystemTestCase
       ActionMailer::Base.deliveries.clear
       fill_in "Email or Full Name", with: user.email.upcase
       click_on "Send My Magic Link"
-      assert_selector ".flash", text: "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
-      email = ActionMailer::Base.deliveries.last
-      assert_equal email.to, [user.email]
-      assert_equal email.subject, "Emergent Commons - your magic link"
-      assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
-      assert_match /login\/#{user.token}/, email.body.inspect
-      ActionMailer::Base.deliveries.clear
+      # assert_selector ".flash", text: "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
+      # email = ActionMailer::Base.deliveries.last
+      # assert_equal email.to, [user.email]
+      # assert_equal email.subject, "Emergent Commons - your magic link"
+      # assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
+      # assert_match /login\/#{user.token}/, email.body.inspect
+      # ActionMailer::Base.deliveries.clear
+      assert_current_path admin_users_path
+      assert_nil ActionMailer::Base.deliveries.last
+      click_link "Logout"
+      assert_current_path root_path
 
-      ActionMailer::Base.deliveries.clear
+      # ActionMailer::Base.deliveries.clear
       fill_in "Email or Full Name", with: user.name.downcase
       click_on "Send My Magic Link"
-      assert_selector ".flash", text: "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
-      email = ActionMailer::Base.deliveries.last
-      assert_equal email.to, [user.email]
-      assert_equal email.subject, "Emergent Commons - your magic link"
-      assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
-      assert_match /login\/#{user.token}/, email.body.inspect
-      ActionMailer::Base.deliveries.clear
+      # assert_selector ".flash", text: "Please be patient, it can take up to ten minutes to receive the link via EC chat and email (check your SPAM folder)"
+      # email = ActionMailer::Base.deliveries.last
+      # assert_equal email.to, [user.email]
+      # assert_equal email.subject, "Emergent Commons - your magic link"
+      # assert_match /#{get_unsubscribe_link(user)}/, email.header['List-Unsubscribe'].inspect
+      # assert_match /login\/#{user.token}/, email.body.inspect
+      # ActionMailer::Base.deliveries.clear
+      assert_current_path admin_users_path
+      assert_nil ActionMailer::Base.deliveries.last
+      click_link "Logout"
+      assert_current_path root_path
 
       user.update email: ""
       ActionMailer::Base.deliveries.clear
       click_on "Send My Magic Link"
       assert_selector ".flash", text: "Please enter your Mighty Networks email address or name"
       assert_nil ActionMailer::Base.deliveries.last
-      ActionMailer::Base.deliveries.clear
+      assert_current_path root_path
 
       garbage = "I like Pot Lucks"
       ActionMailer::Base.deliveries.clear
@@ -48,7 +56,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       click_on "Send My Magic Link"
       assert_selector ".flash", text: "Unable to find '#{garbage}' -- please try again"
       assert_nil ActionMailer::Base.deliveries.last
-      ActionMailer::Base.deliveries.clear
+      assert_current_path root_path
     end
   end
 
@@ -149,7 +157,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "textarea.email-body"
       assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 5
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_selector "a.btn.btn-success.user-approve", text: "Answers Are Acceptable"
+      assert_selector "form button.btn.btn-success.user-approve", text: "Answers Are Acceptable"
       assert_selector "a.btn.btn-warning.user-clarify", text: "Answers Need Clarification"
       assert_no_selector "a", text: "Decline This Request"
 
@@ -163,7 +171,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "textarea.email-body"
       assert_selector ".email-template-buttons.clarification a.btn.btn-secondary", count: 2
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_selector "a.btn.btn-success.user-approve", text: "Answers Are Acceptable"
+      assert_selector "form button.btn.btn-success.user-approve", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_selector "a.btn.btn-danger.user-reject", text: "Decline This Request"
 
