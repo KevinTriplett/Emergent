@@ -15,7 +15,6 @@ module User::Operation
     def update_model(ctx, model:, admin:, **)
       # TODO can get out of sync, so make this programmatic from the hash
       model.status = "Scheduling Zoom"
-      model.joined = true
       model.greeter_id ||= admin.id
       model.save
     end
