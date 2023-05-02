@@ -2,13 +2,13 @@ class HomeController < ApplicationController
   layout "home"
 
   def index
-    return redirect_to admin_users_url if current_user_has_role(:greeter)
+    return redirect_to admin_users_url if current_user_has_role?(:greeter)
   end
 
   def login
     sign_in
     return redirect_to root_url unless current_user
-    return redirect_to admin_users_url if current_user.has_role(:greeter)
+    return redirect_to admin_users_url if current_user_has_role?(:greeter)
     redirect_back
   end
 

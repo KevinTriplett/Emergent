@@ -41,8 +41,8 @@ module SessionsHelper
     current_user.present?
   end
 
-  def current_user_has_role(role)
-    current_user && current_user.has_role(:greeter)
+  def current_user_has_role?(role)
+    current_user && current_user.has_role?(:greeter)
   end
 
   def create_auth_session_cookie(user)

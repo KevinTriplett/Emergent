@@ -30,10 +30,6 @@ class User < ActiveRecord::Base
     update locked: false
   end
 
-  def has_role(role)
-    true # TODO: implement
-  end
-
   def notes_abbreviated
     notes ? "#{notes[0..16]}#{notes_ellipsis(16)}" : nil
   end
