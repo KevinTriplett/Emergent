@@ -195,7 +195,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "textarea.email-body"
       assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary"
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "a", text: "Answers Are Acceptable"
+      assert_no_selector "form button", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_no_selector "a", text: "Decline This Request"
 
@@ -203,7 +203,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_user_wizard_path(token: existing_user.token)
       assert_current_path admin_user_wizard_path(token: existing_user.token)
 
-      click_link "Answers Are Acceptable"
+      click_on "Answers Are Acceptable"
 
       assert_current_path admin_user_wizard_path(token: existing_user.token)
       assert_selector ".flash", text: "User scheduled for approval, shouldn't take longer than ten minutes to be reflected in EC"
@@ -216,7 +216,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "textarea.email-body"
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 5
       assert_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "a", text: "Answers Are Acceptable"
+      assert_no_selector "form button", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_no_selector "a", text: "Decline This Request"
 
@@ -225,7 +225,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       visit admin_user_wizard_path(token: existing_user.token)
       assert_current_path admin_user_wizard_path(token: existing_user.token)
 
-      click_link "Answers Are Acceptable"
+      click_on "Answers Are Acceptable"
       existing_user.update joined: true
 
       assert_current_path admin_user_wizard_path(token: existing_user.token)
@@ -254,7 +254,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 6
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", text: "Your Most Recent Email"
       assert_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "a", text: "Answers Are Acceptable"
+      assert_no_selector "form button", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_no_selector "a", text: "Decline This Request"
       click_link "Enter Greeting Date"
@@ -267,7 +267,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "textarea.email-body"
       assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary"
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "a", text: "Answers Are Acceptable"
+      assert_no_selector "form button", text: "Answers Are Acceptable"
       assert_no_selector "a", text: "Answers Need Clarification"
       assert_no_selector "a", text: "Decline This Request"
 
