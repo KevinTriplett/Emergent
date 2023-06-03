@@ -3,8 +3,6 @@ class SurveyGroup < ActiveRecord::Base
   has_many :survey_questions, dependent: :destroy
   has_many :notes, dependent: :destroy
 
-  delegate :ordered_groups, :ordered_note_groups, to: :survey
-
   def ordered_questions
     survey_questions.order(position: :asc)
   end

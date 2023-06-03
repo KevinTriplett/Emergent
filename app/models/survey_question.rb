@@ -5,6 +5,7 @@ class SurveyQuestion < ActiveRecord::Base
 
   delegate :survey, :survey_id, :survey_questions,
     :ordered_questions, to: :survey_group
+  delegate :ordered_groups, to: :survey
 
   QUESTION_TYPES = [
     "Question",

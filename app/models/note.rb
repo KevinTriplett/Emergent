@@ -2,6 +2,7 @@ class Note < ActiveRecord::Base
   belongs_to :survey_group
   belongs_to :survey_question, dependent: :destroy
   delegate :survey, :survey_id, :notes, to: :survey_group
+  delegate :ordered_groups, :ordered_note_groups, to: :survey
 
   def group_name
     survey_group.name
@@ -23,10 +24,6 @@ class Note < ActiveRecord::Base
 
   def group_position
     survey_group.position
-  end
-
-  def ordered_groups
-    survey_group.ordered_groups
   end
 
   def update_from_survey_question
