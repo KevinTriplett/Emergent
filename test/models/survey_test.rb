@@ -239,4 +239,18 @@ class SurveyTest < MiniTest::Spec
       assert_equal [question_1_4].map(&:id).to_set, survey.get_survey_questions(question_1_4).map(&:id).to_set
     end
   end
+
+  it "returns collection of survey_groups that are empty or have notes" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      group_0 = create_survey_group(survey: survey)
+      group_1 = create_survey_group(survey: survey)
+      group_2 = create_survey_group(survey: survey)
+      group_3 = create_survey_group(survey: survey)
+      create_survey_question(survey_group: group_0)
+      create_note(survey_group: group_1)
+      create_note(survey_group: group_2)
+      assert_equal [group_1, group_2, group_3].to_set, survey.ordered_note_groups.to_set
+    end
+  end
 end

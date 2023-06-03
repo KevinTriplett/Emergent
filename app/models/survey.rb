@@ -11,6 +11,11 @@ class Survey < ActiveRecord::Base
   def ordered_groups
     survey_groups.order(position: :asc)
   end
+  def ordered_note_groups
+    survey_groups.order(position: :asc).select do |group|
+      group.notes.count > 0 || group.survey_questions.count == 0
+    end
+  end
 
   def ordered_notes
     ordered_groups.collect(&:ordered_notes).flatten
