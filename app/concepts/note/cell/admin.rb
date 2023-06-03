@@ -33,7 +33,7 @@ class Note::Cell::Admin < Cell::ViewModel
   end
 
   def survey_group_names
-    note.ordered_groups.collect(&:name)
+    note.ordered_note_groups.collect(&:name)
   end
   
   def left
