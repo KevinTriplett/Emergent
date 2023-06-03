@@ -26,7 +26,7 @@ module Admin
     end
 
     def duplicate
-      _ctx = run Survey::Operation::Create do |ctx|
+      _ctx = run Survey::Operation::Duplicate do |ctx|
         flash[:notice] = "Survey #{ctx[:existing_survey].name} was duplicated, showing the new survey"
         return redirect_to edit_admin_survey_url(ctx[:model].id)
       end
