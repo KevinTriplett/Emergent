@@ -14,20 +14,20 @@ module User::Operation
       model_params = params[:model]
       user = User.find_by_token(params[:token])
       timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
-      new_change_log = "#{timestamp} by #{admin_name}:\n"
+      new_change_log = nil
       model_params.each_pair do |attr, val|
+        next if user.send(attr) == val
         val = nil if val.blank?
         sattr, new_val, old_val = get_sattr_and_values(user, attr, val)
-        old_val = check_for_notes_and_timestamp(user, sattr, old_val)
-        new_change_log += "- #{sattr} changed: #{old_val} -> #{new_val}\n"
-        if "status" == sattr && user.when_timestamp
-          new_change_log += "- when_timestamp changed: #{user.when_timestamp} -> (blank)\n"
-          user.when_timestamp = nil
+        unless "status" == sattr
+          old_val = check_for_notes_and_timestamp(user, sattr, old_val)
+          new_change_log = "#{timestamp} by #{admin_name}:\n" unless new_change_log
+          new_change_log += "- #{sattr} changed: #{old_val} -> #{new_val}\n"
         end
         setter = "#{attr}="
         user.send(setter, val) # here is where we update the user
       end
-      user.change_log = "#{user.change_log}#{new_change_log}"
+      user.change_log = "#{user.change_log}#{new_change_log}" if new_change_log
       user.save
     end
 

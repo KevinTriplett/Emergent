@@ -81,7 +81,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".ui-selectmenu-text", text: "Zoom Declined (completed)"
       assert_equal "Zoom Declined (completed)", user.reload.status
       click_link "Show or Hide change log"
-      assert_selector ".change-log", text: user.change_log.chomp
+      assert_selector ".change-log", text: (user.change_log || "").chomp
 
       visit admin_user_path(token: user.token)
       assert_current_path admin_user_path(token: user.token)
@@ -281,12 +281,14 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".user-meeting-datetime input", text: ""
       sleep 1
       assert_nil existing_user.reload.when_timestamp
+      assert_equal "Scheduling Zoom", existing_user.status
 
       input.click
       input.send_keys("2023-10-09 15:45")
       input.send_keys [:escape]
       sleep 2 # cannot be 1 for some reason...
       assert_equal "2023-10-09T19:45:00Z", existing_user.reload.when_timestamp.picker_datetime
+      assert_equal "Zoom Scheduled", existing_user.status
 
       # check date format in index view
       visit admin_users_path
@@ -300,8 +302,8 @@ class AdminUsersTest < ApplicationSystemTestCase
       input.value.length.times { input.send_keys [:backspace] }
       input.send_keys [:escape]
       sleep 2
-      existing_user.reload
-      assert_nil existing_user.when_timestamp
+      assert_nil existing_user.reload.when_timestamp
+      assert_equal "Scheduling Zoom", existing_user.status
     end
   end
 

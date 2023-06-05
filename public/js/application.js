@@ -306,11 +306,13 @@ var dateInPast = function(userDom, ts) {
 
 var setUserMeeting = function(e) {
   var userDom = $(this).closest("[data-id]");
-  var data = { when_timestamp: getUserMeeting(userDom) };
-  if (dateInPast(userDom, data.when_timestamp)) return;
-  patch(userDom, data, function() {
-    $(".schedule-zoom").show();
-  }, function() {
+  var when = getUserMeeting(userDom);
+  if (dateInPast(userDom, when)) return;
+  var data = { 
+    when_timestamp: when,
+    status: when ? "Zoom Scheduled" : "Scheduling Zoom"
+  };
+  patch(userDom, data, null, function() {
     alert("Could not set meeting date and time - ask Kevin");
   });
 }
@@ -842,8 +844,13 @@ $(document).ready(function() {
       case "Return":
         $(this).blur();
       }
+    }).on("keyup", function(e) {
+      switch(e.key) {
+      case "Delete":
+      case "Backspace":
+        if (!$("input.datetime-picker").val()) setUserMeeting.call(this, e);
+      }
     });
-    $(".schedule-zoom").hide();
 
   ////////////////////////////////////////////////////
   // NOTES EVENT LISTENER
