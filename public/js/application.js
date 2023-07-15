@@ -643,8 +643,11 @@ $(document).ready(function() {
   }
   $("input#show-all-greetings").on("change", function() {
     showHideUsers(this.checked);
+    setCookie("show-all-greetings", this.checked);
+  }).each(function() {
+    this.checked = getCookie("show-all-greetings");
+    showHideUsers(this.checked);
   });
-  showHideUsers(false);
 
   ////////////////////////////////////////////////////
   // GREETER WIZARD
