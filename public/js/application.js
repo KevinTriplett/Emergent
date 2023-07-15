@@ -24,7 +24,11 @@ var format = {
 function getCookie(name) {
   var value = `; ${document.cookie}`;
   var parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
+  if (parts.length != 2) return null;
+  value = parts.pop().split(';').shift();
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return value;
 }
 
 function setCookie(name, value) {
