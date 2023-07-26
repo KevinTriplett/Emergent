@@ -702,6 +702,7 @@ $(document).ready(function() {
         .closest(".user-email")
         .find(".email-body")
         .text(func(data))
+        .val(func(data))
         .trigger("input");
       self
         .closest(".user-email")
