@@ -71,7 +71,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   end
 
   def question
-    markdown.render(survey_question.question) if survey_question.question || survey_question.instructions
+    markdown.render(survey_question.question) if survey_question.question
   end
   def answer
     survey_answer.answer
