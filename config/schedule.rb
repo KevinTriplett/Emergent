@@ -15,7 +15,7 @@ set :output, "/home/deploy/Emergent/production/current/log/cron.log"
 env 'MAILTO', 'output_of_cron@kevintriplett.com'
 
 if 'production' == @environment
-  every 10.minutes do
+  every 30.minutes do
     rake "ec:run_spiders"
   end
 end
