@@ -1,0 +1,7 @@
+.survey-question{ id: question_css_id }
+  %div{ class: question_type_class }
+    = question
+    - if has_scale?
+      .survey-question-scale-question= "Scale: #{scale_question}"
+    - survey_invites.each do |invite|
+      = cell(Survey::Cell::SurveyReportAnswer, {survey_invite: invite, survey_question: survey_question})

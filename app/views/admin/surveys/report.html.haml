@@ -1,0 +1,11 @@
+%h5= "Report for #{@survey.name}"
+
+#survey-container
+  - @survey_questions.each_pair do |sg, asq|
+    .survey-group-container.jumbotron.jumbotron-fluid{ id: "survey-group-#{sg.id}" }
+      %h1.display-4.survey-group-name= sg.name
+      %p.survey-group-description= sg.description
+      %hr      
+      #survey-questions-container
+        - asq.each do |sq|
+          = cell(Survey::Cell::SurveyReport, {survey_invites: @survey_invites, survey_question: sq})

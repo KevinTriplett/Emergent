@@ -94,5 +94,16 @@ module Admin
       flash[:error] = _ctx[:flash]
       return redirect_to admin_survey_url(ctx[:model].id)
     end
+
+    def report
+      @body_id = "survey"
+      @survey = Survey.find(params[:id])
+      @survey_questions = {}
+      @survey.ordered_questions.each do |sq|
+        @survey_questions[sq.survey_group] ||= []
+        @survey_questions[sq.survey_group].push sq
+      end  
+      @survey_invites = @survey.survey_invites
+    end
   end
 end
