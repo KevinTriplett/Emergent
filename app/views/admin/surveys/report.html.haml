@@ -1,5 +1,7 @@
 %h5= "Report for #{@survey.name}"
 
+= link_to "Back", admin_survey_url(@survey)
+
 #survey-container
   - @survey_questions.each_pair do |sg, asq|
     .survey-group-container.jumbotron.jumbotron-fluid{ id: "survey-group-#{sg.id}" }
@@ -9,3 +11,5 @@
       #survey-questions-container
         - asq.each do |sq|
           = cell(Survey::Cell::SurveyReport, {survey_invites: @survey_invites, survey_question: sq})
+
+= link_to "Back", admin_survey_url(@survey)
