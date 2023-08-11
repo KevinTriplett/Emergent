@@ -11,7 +11,11 @@ class Survey::Cell::SurveyReport < Cell::ViewModel
   end
 
   def markdown
-    @renderer ||= Redcarpet::Render::HTML.new(hard_wrap: true, safe_links_only: true)
+    @renderer ||= Redcarpet::Render::HTML.new({
+      hard_wrap: true,
+      safe_links_only: true,
+      link_attributes: {target: "_blank"}
+    })
     @markdown ||= Redcarpet::Markdown.new(@renderer, {
       autolink: true,
       tables: true,
