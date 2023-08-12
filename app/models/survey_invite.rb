@@ -131,9 +131,9 @@ class SurveyInvite < ActiveRecord::Base
   def self.send_messages
     all.each do |invite|
       if invite.is_created?
-        invite.update_state(:invite_sent) if invite.send_survey_invite_link
+        invite.update_state(:invite_sent, true) if invite.send_survey_invite_link
       elsif invite.is_finished?
-        invite.update_state(:finished_link_sent) if invite.send_finished_survey_link
+        invite.update_state(:finished_link_sent, true) if invite.send_finished_survey_link
       end
     end
   end
