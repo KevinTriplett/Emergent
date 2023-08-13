@@ -27,9 +27,10 @@ class PrivateMessageSpider < EmergeSpider
     logger.info "STARTING"
     @@lines = get_and_clear_message.split("|")
     @@user = User.find @@lines.shift # first element in array is user_id
-    sign_in_and_send_request_to(:send_message, @@user.chat_url)
-    ::Spider.set_success(name)
-    logger.info "COMPLETED SUCCESSFULLY"
+    sign_in_and_send_request_to(:send_message, @@user.chat_url) ?
+      ::Spider.set_success(name) :
+      ::Spider.set_failure(name)
+    logger.info "COMPLETED WITH #{::Spider.success?(name) ? "SUCCESS" : "FAILURE"}"
   end
 
   def send_message(response, url:, data: {})

@@ -161,8 +161,8 @@ class Spider < ActiveRecord::Base
       end
       invite.update_state(:finished_link_sent) if success?("private_message_spider")
     end
-  rescue Selenium::WebDriver::Error::UnknownError
-  rescue Net::ReadTimeout
+  # rescue Selenium::WebDriver::Error::UnknownError
+  # rescue Net::ReadTimeout
   end
 
   def self.run_spiders

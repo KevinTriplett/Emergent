@@ -17,16 +17,22 @@ class EmergeSpider < Kimurai::Base
   def sign_in_and_send_request_to(method, url)
     ::Spider.clear_result(name)
 
+    result = nil
     for i in 1..10 # limit the loop
-      break if looped_sign_in
+      result = looped_sign_in
+      break if result
       sleep 1
     end
-    return if ::Spider.failure?(name)
+    ::Spider.set_failure(name) unless result
+    return false if ::Spider.failure?(name)
 
     for i in 1..10 # limit the loop
-      break if looped_request_to(method, url)
+      result = looped_request_to(method, url)
+      break if result
       sleep i
     end
+    ::Spider.set_failure(name) unless result
+    return ::Spider.success?(name)
   end
 
   def looped_request_to(method, url)
