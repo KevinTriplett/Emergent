@@ -107,6 +107,7 @@ class EmergeSpider < Kimurai::Base
       logger.debug "WAITING UNTIL #{css} ..."
       sleep 1
     end
+    browser.save_screenshot
     raise_error_unless_response_has(css)
   end
 end
