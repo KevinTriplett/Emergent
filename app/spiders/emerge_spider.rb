@@ -47,6 +47,7 @@ class EmergeSpider < Kimurai::Base
     ::Spider.set_failure(name)
     logger.fatal "ERROR #{error.class}: #{error.message}"
     Rails.logger.info "#{name}: ERROR #{error.class}: #{error.message}"
+    browser.save_screenshot
     true # don't loop
   end
 
@@ -65,6 +66,7 @@ class EmergeSpider < Kimurai::Base
     ::Spider.set_failure(name)
     logger.fatal "ERROR #{error.class}: #{error.message}"
     Rails.logger.info "ERROR #{error.class}: #{error.message}"
+    browser.save_screenshot
     true # don't loop
   end
 
@@ -107,7 +109,6 @@ class EmergeSpider < Kimurai::Base
       logger.debug "WAITING UNTIL #{css} ..."
       sleep 1
     end
-    browser.save_screenshot
     raise_error_unless_response_has(css)
   end
 end
