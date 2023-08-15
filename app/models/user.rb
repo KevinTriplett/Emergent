@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
 
     # check first row for correct file format
     headers = data.shift
-    correct_headers = "Member ID,First Name,Last Name,Email Address"
+    correct_headers = ["Member ID","First Name","Last Name","Email Address"].join("\t")
     unless headers == correct_headers
       puts "header row = #{headers}" # first line is headers
       puts "should be  = #{correct_headers}"
