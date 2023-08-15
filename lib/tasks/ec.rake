@@ -58,7 +58,7 @@ namespace :ec do
   desc "Backup database"
   task backup: :environment do
     yml = YAML.load_file('config/database.yml')[Rails.env]
-    `pg_dump -c --no-privileges --no-owner -U #{yml['username']} #{yml['database']} > ~/backups/#{Rails.env}.sql`
+    `pg_dump -c --no-privileges --no-owner -U #{yml['username']} #{yml['database']} > tmp/backups/#{Rails.env}.sql`
   end
 end
 
@@ -66,13 +66,13 @@ namespace :ec do
   desc "Restore database"
   task restore: :environment do
     yml = YAML.load_file('config/database.yml')[Rails.env]
-    `psql -d #{yml['database']} < ~/backups/#{Rails.env}.sql`
+    `psql -d #{yml['database']} < tmp/backups/#{Rails.env}.sql`
   end
 end
 
 namespace :ec do
   desc "Transfer production database into staging (backup production first)"
   task transfer: :environment do
-    `psql -d emergent-staging < ~/backups/production.sql`
+    `psql -d emergent-staging < tmp/backups/production.sql`
   end
 end
