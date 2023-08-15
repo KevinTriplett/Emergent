@@ -71,8 +71,9 @@ namespace :ec do
 end
 
 namespace :ec do
-  desc "Transfer production database into staging (backup production first)"
+  desc "Transfer production database into staging"
   task transfer: :environment do
+    Rake::Task["ec:backup"].execute
     `psql -d emergent-staging < tmp/backups/production.sql`
   end
 end
