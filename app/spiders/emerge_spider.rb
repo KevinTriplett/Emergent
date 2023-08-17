@@ -32,7 +32,7 @@ class EmergeSpider < Kimurai::Base
       sleep i
     end
     ::Spider.set_failure(name) unless result
-    return ::Spider.success?(name)
+    return result
   end
 
   def looped_request_to(method, url)
