@@ -74,8 +74,7 @@ class NewUserSpider < EmergeSpider
     email = row.css(".invite-list-item-email-text").text.strip
     email = nil if email == "--"
     if email && email.match(/\*{3}/) # emails are cloaked with asterisks
-      logger.info "EMAILS ARE CLOAKED"
-      email = nil
+      raise EmailCloaked
     end
     first_name = row.css(".invite-list-item-first-name .ext, .invite-list-item-first-name-text").text.strip
     last_name = row.css(".invite-list-item-last-name-text").text.strip

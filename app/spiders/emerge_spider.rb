@@ -1,6 +1,8 @@
 require 'kimurai'
 
 class EmergeSpider < Kimurai::Base
+  class EmailCloaked < StandardError
+  end
 
   def name
     self.logger.progname
@@ -42,6 +44,10 @@ class EmergeSpider < Kimurai::Base
   rescue Net::ReadTimeout
     logger.info "TIMEOUT ERROR, TRYING AGAIN"
     Rails.logger.info "#{name}: TIMEOUT ERROR, TRYING AGAIN"
+    false # try again
+  rescue EmailCloaked
+    logger.info "EMAILS CLOAKED, TRYING AGAIN"
+    Rails.logger.info "#{name}: EMAILS CLOAKED, TRYING AGAIN"
     false # try again
   rescue => error
     ::Spider.set_failure(name)
