@@ -1,7 +1,6 @@
 - patch_url = admin_user_patch_path(token: @user.token)
 - email_url = admin_user_send_email_path(token: @user.token)
 - dataset = {url: patch_url, email_url: email_url, token: @token, id: @user.id, timestamp: @user.when_timestamp, greeter_id: @user.greeter_id}
-- pending = "Pending" == @user.status
 
 .wizard{ data: dataset }
   .wizard-pane.jumbotron.wizard-links
@@ -19,7 +18,7 @@
 
   -# make answers to questions available throughout the process
   = link_to "Show or Hide answers to questions", "#", class: "reveal-answers padded"
-  .wizard-pane.jumbotron.user-questions{ class: pending ? "" : "hidden" }
+  .wizard-pane.jumbotron.user-questions{ class: @user.joined? ? "hidden" : "" }
     %h2 Questions and Answers
     %ol.questions-and-answers
       - @user.questions_responses_array.each do |q, a|
