@@ -81,6 +81,7 @@ class Spider < ActiveRecord::Base
       user.profile_url = "https://emergent-commons.mn.co/members/#{user.member_id}"
       user.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{user.member_id}"
       user.approved = nil
+      user.joined = true
       user.save
     end
   rescue Selenium::WebDriver::Error::UnknownError
