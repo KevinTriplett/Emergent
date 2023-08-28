@@ -111,7 +111,7 @@ class SurveyInvite < ActiveRecord::Base
       user.id,
       subject,
       body,
-      "Here's your personal link to your completed survey:",
+      "Here's your link to your personal survey:",
       url
     ].join("|")
   end
