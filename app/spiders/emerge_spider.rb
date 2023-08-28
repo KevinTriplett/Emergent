@@ -41,9 +41,9 @@ class EmergeSpider < Kimurai::Base
     request_to(method, url: url)
     logger.info "COMPLETED SUCCESSFULLY"
     true # don't loop
-  rescue Net::ReadTimeout
-    logger.info "TIMEOUT ERROR, TRYING AGAIN"
-    Rails.logger.info "#{name}: TIMEOUT ERROR, TRYING AGAIN"
+  rescue Net::ReadTimeout, EOFError
+    logger.info "TIMEOUT/EOF ERROR, TRYING AGAIN"
+    Rails.logger.info "#{name}: TIMEOUT/EOF ERROR, TRYING AGAIN"
     false # try again
   rescue EmailCloaked
     logger.info "EMAILS CLOAKED, TRYING AGAIN"
@@ -64,10 +64,10 @@ class EmergeSpider < Kimurai::Base
   def looped_sign_in
     sign_in
     true
-  rescue Net::ReadTimeout
-    logger.info "TIMEOUT ERROR, TRYING AGAIN"
-    Rails.logger.info "TIMEOUT ERROR, TRYING AGAIN"
-    false # continue loop
+  rescue Net::ReadTimeout, EOFError
+    logger.info "TIMEOUT/EOF ERROR, TRYING AGAIN"
+    Rails.logger.info "#{name}: TIMEOUT/EOF ERROR, TRYING AGAIN"
+    false # try again
   rescue => error
     ::Spider.set_failure(name)
     logger.fatal "ERROR #{error.class}: #{error.message}"
