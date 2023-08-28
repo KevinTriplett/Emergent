@@ -99,7 +99,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     #----------------------
     when "Essay"
       # output textarea
-      "<textarea cols='80'>#{answer}</textarea>"
+      "<textarea>#{answer}</textarea>"
     #----------------------
     when "Rating", "Range"
       left, right = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
