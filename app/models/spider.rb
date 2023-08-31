@@ -118,52 +118,59 @@ class Spider < ActiveRecord::Base
 
   def self.send_survey_invite_messages
     SurveyInvite.where(state: SurveyInvite::STATUS[:created]).each do |invite|
-      next if Rails.configuration.mn_username == invite.user.email # cannot send messages to signin account!
-      set_message("private_message_spider", invite.get_invite_message)
-      PrivateMessageSpider.crawl!
-      for i in 1..60
-        break if result?("private_message_spider")
-        sleep 1
-      end
-      next unless success?("private_message_spider")
-      invite.update_state(:invite_sent) if success?("private_message_spider")
-    end
-
-    SurveyInvite.where(state: SurveyInvite::STATUS[:finished]).each do |invite|
-      next if Rails.configuration.mn_username == invite.user.email # cannot send messages to signin account!
-
-      first_group = invite.survey.ordered_groups.first
-      next unless "Contact Info" == first_group.name
-      delivery_method_question = first_group.survey_questions.where(answer_type: "Multiple Choice").first
-      next unless delivery_method_question
-      delivery_method = invite.survey_answer_for(delivery_method_question.id)
-      next unless delivery_method && delivery_method.answer
-  
-      case delivery_method.answer
-      when "Email"
-        email_question = first_group.survey_questions.where(answer_type: "Email").first
-        next unless email_question
-        email = invite.survey_answer_for(email_question.id)
-        next unless email && !email.answer.blank?
-        UserMailer.with({
-          email: email.answer,
-          invite: self,
-          message: invite.get_finished_message,
-          url: url
-        }).send_finished_survey_link.deliver_now
-      when "Private Message"
-        set_message("private_message_spider", invite.get_finished_message)
+      begin
+        next if Rails.configuration.mn_username == invite.user.email # cannot send messages to signin account!
+        set_message("private_message_spider", invite.get_invite_message)
         PrivateMessageSpider.crawl!
         for i in 1..60
           break if result?("private_message_spider")
-          sleep 1
+          sleep 2
         end
-        next if success?("private_message_spider")
+        next unless success?("private_message_spider")
+        invite.update_state(:invite_sent) if success?("private_message_spider")
+      rescue Selenium::WebDriver::Error::UnknownError
+      rescue Net::ReadTimeout
       end
-      invite.update_state(:finished_link_sent) if success?("private_message_spider")
     end
-  # rescue Selenium::WebDriver::Error::UnknownError
-  # rescue Net::ReadTimeout
+
+    SurveyInvite.where(state: SurveyInvite::STATUS[:finished]).each do |invite|
+      begin
+        next if Rails.configuration.mn_username == invite.user.email # cannot send messages to signin account!
+
+        first_group = invite.survey.ordered_groups.first
+        next unless "Contact Info" == first_group.name
+        delivery_method_question = first_group.survey_questions.where(answer_type: "Multiple Choice").first
+        next unless delivery_method_question
+        delivery_method = invite.survey_answer_for(delivery_method_question.id)
+        next unless delivery_method && delivery_method.answer
+    
+        case delivery_method.answer
+        when "Email"
+          email_question = first_group.survey_questions.where(answer_type: "Email").first
+          next unless email_question
+          email = invite.survey_answer_for(email_question.id)
+          next unless email && !email.answer.blank?
+          UserMailer.with({
+            email: email.answer,
+            invite: self,
+            message: invite.get_finished_message,
+            url: url
+          }).send_finished_survey_link.deliver_now
+        when "Private Message"
+          set_message("private_message_spider", invite.get_finished_message)
+          PrivateMessageSpider.crawl!
+          for i in 1..60
+            break if result?("private_message_spider")
+            sleep 1
+          end
+          next if success?("private_message_spider")
+        end
+        invite.update_state(:finished_link_sent) if success?("private_message_spider")
+      rescue
+        rescue Selenium::WebDriver::Error::UnknownError
+        rescue Net::ReadTimeout
+      end
+    end
   end
 
   def self.run_spiders
