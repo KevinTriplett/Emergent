@@ -41,9 +41,14 @@ class EmergeSpider < Kimurai::Base
     request_to(method, url: url)
     logger.info "COMPLETED SUCCESSFULLY"
     true # don't loop
-  rescue Net::ReadTimeout, EOFError
+  rescue Net::ReadTimeout, EOFError, Net::ReadTimeout
     logger.info "TIMEOUT/EOF ERROR, TRYING AGAIN"
     Rails.logger.info "#{name}: TIMEOUT/EOF ERROR, TRYING AGAIN"
+    browser.save_screenshot
+    false # try again
+  rescue Selenium::WebDriver::Error::UnexpectedAlertOpenError
+    logger.info "UNEXPECTED ALERT ERROR, TRYING AGAIN"
+    Rails.logger.info "#{name}: UNEXPECTED ALERT ERROR, TRYING AGAIN"
     browser.save_screenshot
     false # try again
   rescue EmailCloaked
@@ -65,9 +70,10 @@ class EmergeSpider < Kimurai::Base
   def looped_sign_in
     sign_in
     true
-  rescue Net::ReadTimeout, EOFError
+  rescue Net::ReadTimeout, EOFError, Net::ReadTimeout
     logger.info "TIMEOUT/EOF ERROR, TRYING AGAIN"
     Rails.logger.info "#{name}: TIMEOUT/EOF ERROR, TRYING AGAIN"
+    browser.save_screenshot
     false # try again
   rescue => error
     ::Spider.set_failure(name)

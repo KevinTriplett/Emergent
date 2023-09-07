@@ -146,6 +146,7 @@ class Spider < ActiveRecord::Base
     invite.update_state(:invite_sent) if success?("private_message_spider")
   rescue Selenium::WebDriver::Error::UnknownError
   rescue Net::ReadTimeout
+  rescue EOFError
   end
 
   ########################
@@ -182,6 +183,7 @@ class Spider < ActiveRecord::Base
     end
   rescue Selenium::WebDriver::Error::UnknownError
   rescue Net::ReadTimeout
+  rescue EOFError
   end
 
   ########################
