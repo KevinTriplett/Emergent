@@ -44,6 +44,7 @@ class EmergeSpider < Kimurai::Base
   rescue Net::ReadTimeout, EOFError
     logger.info "TIMEOUT/EOF ERROR, TRYING AGAIN"
     Rails.logger.info "#{name}: TIMEOUT/EOF ERROR, TRYING AGAIN"
+    browser.save_screenshot
     false # try again
   rescue EmailCloaked
     logger.info "EMAILS CLOAKED, TRYING AGAIN"
