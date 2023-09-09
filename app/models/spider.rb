@@ -151,7 +151,7 @@ class Spider < ActiveRecord::Base
 
   ########################
 
-  def send_survey_finished_message(invite)
+  def self.send_survey_finished_message(invite)
     first_group = invite.survey.ordered_groups.first
     return unless "Contact Info" == first_group.name
     delivery_method_question = first_group.survey_questions.where(answer_type: "Multiple Choice").first
