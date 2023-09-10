@@ -6,4 +6,5 @@
       - if has_scale?
         .survey-question-scale-question= "Scale: #{scale_question}"
       - survey_invites.each do |invite|
+        - next unless invite.started?
         = cell(Survey::Cell::SurveyReportAnswer, {survey_invite: invite, survey_question: survey_question})
