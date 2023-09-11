@@ -21,8 +21,12 @@ module SessionsHelper
     cookies.delete :user_id
   end
 
-  def signed_in_user
-    redirect_to(root_url, notice: "You need a magic link first") unless signed_in?
+  def signed_in_greeter
+    redirect_to(root_url, notice: "You need a magic link first") unless signed_in?(:greeter)
+  end
+
+  def signed_in_surveyor
+    redirect_to(root_url, notice: "You need a magic link first") unless signed_in?(:surveyor)
   end
 
   def current_user
@@ -37,12 +41,12 @@ module SessionsHelper
     @current_user
   end
 
-  def signed_in?
-    current_user.present? && current_user_has_role?(:greeter)
+  def signed_in?(role)
+    current_user.present? && current_user_has_role?(role)
   end
 
   def current_user_has_role?(role)
-    current_user && current_user.has_role?(:greeter)
+    current_user && current_user.has_role?(role)
   end
 
   def create_auth_session_cookie(user)

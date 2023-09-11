@@ -1,7 +1,7 @@
 module Admin
   class SurveyInvitesController < AdminController
     layout "admin"
-    before_action :signed_in_user
+    before_action :signed_in_surveyor
 
     def new
       @survey = Survey.find(params[:survey_id])

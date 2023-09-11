@@ -3,12 +3,14 @@ class HomeController < ApplicationController
 
   def index
     return redirect_to admin_users_url if current_user_has_role?(:greeter)
+    return redirect_to admin_surveys_url if current_user_has_role?(:surveyor)
   end
 
   def login
     sign_in
     return redirect_to root_url unless current_user
     return redirect_to admin_users_url if current_user_has_role?(:greeter)
+    return redirect_to admin_surveys_url if current_user_has_role?(:surveyor)
     redirect_back(fallback_location: root_url)
   end
 

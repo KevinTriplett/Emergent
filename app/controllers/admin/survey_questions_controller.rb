@@ -1,7 +1,7 @@
 module Admin
   class SurveyQuestionsController < AdminController
     layout "admin"
-    before_action :signed_in_user
+    before_action :signed_in_surveyor
 
     def new
       run SurveyQuestion::Operation::Create::Present do |ctx|

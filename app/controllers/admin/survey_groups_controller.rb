@@ -1,7 +1,7 @@
 module Admin
   class SurveyGroupsController < AdminController
     layout "admin"
-    before_action :signed_in_user
+    before_action :signed_in_surveyor
 
     def new
       @return = params["return_to_notes"]

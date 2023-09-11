@@ -1,7 +1,7 @@
 module Admin
   class NotesController < AdminController
     layout "notes"
-    before_action :signed_in_user
+    before_action :signed_in_surveyor
 
     def index
       @survey = Survey.find(params[:survey_id])

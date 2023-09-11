@@ -1,7 +1,7 @@
 module Admin
   class UsersController < ApplicationController
     layout "greeter"
-    before_action :signed_in_user
+    before_action :signed_in_greeter
 
     # ------------------------------------------------------------------------
 

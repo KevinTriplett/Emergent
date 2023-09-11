@@ -1,7 +1,7 @@
 module Admin
   class SurveysController < AdminController
     layout "admin"
-    before_action :signed_in_user
+    before_action :signed_in_surveyor
 
     def index
       @surveys = Survey.all
