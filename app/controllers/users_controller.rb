@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   layout "application"
-  before_action :signed_in_user
+  before_action :signed_in_greeter
 
   def show
     @user = current_user
