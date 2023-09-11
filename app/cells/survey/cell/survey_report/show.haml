@@ -3,6 +3,7 @@
   %div{ class: question_type_class }
     = question
     - if answer?
+      %h3 -:- ANSWERS -:-
       - if has_scale?
         .survey-question-scale-question= "Scale: #{scale_question}"
       - survey_invites.each do |invite|
