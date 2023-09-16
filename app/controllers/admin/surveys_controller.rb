@@ -104,6 +104,14 @@ module Admin
         @survey_questions[sq.survey_group].push sq
       end  
       @survey_invites = @survey.survey_invites
+      @created = @sent = @opened = @started = @finished = 0
+      @survey_invites.each do |si|
+        @created += 1 if si.is_created?
+        @sent += 1 if si.is_invite_sent?
+        @opened += 1 if si.is_opened?
+        @started += 1 if si.is_started?
+        @finished += 1 if si.is_finished? || si.finished_link_sent?
+      end
     end
   end
 end

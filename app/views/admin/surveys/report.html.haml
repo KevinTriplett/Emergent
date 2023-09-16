@@ -5,24 +5,12 @@
 #survey-stats
   %h4 Survey Statistics
   %ul
-    %li
-      %b Total invites:
-      = @survey_invites.count
-    %li
-      %b Created (but not sent):
-      = @survey_invites.where(state: SurveyInvite::STATUS[:created]).count
-    %li
-      %b Sent (but not opened):
-      = @survey_invites.where(state: SurveyInvite::STATUS[:invite_sent]).count
-    %li
-      %b Opened (but not started):
-      = @survey_invites.where(state: SurveyInvite::STATUS[:opened]).count
-    %li
-      %b Started (but not finished):
-      = @survey_invites.where(state: SurveyInvite::STATUS[:started]).count
-    %li
-      %b Finished:
-      = @survey_invites.where(state: SurveyInvite::STATUS[:finished]).count
+    %li= "Total invites: #{@survey_invites.count}"
+    %li= "Created (but not sent): #{@created}"
+    %li= "Sent (but not opened): #{@sent}"
+    %li= "Opened (but not started): #{@opened}"
+    %li= "Started (but not finished): #{@started}"
+    %li= "Finished: #{@finished}"
 
 #survey-container
   - @survey_questions.each_pair do |sg, asq|
