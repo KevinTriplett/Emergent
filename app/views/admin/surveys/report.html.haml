@@ -3,14 +3,24 @@
 = link_to "Back", admin_survey_url(@survey)
 
 #survey-stats
-  %h4 Survey Statistics
+- if @list
+  %h4= "Survey Statistics #{link_to "[summary]", admin_survey_report_path}"
   %ul
     %li= "Total invites: #{@survey_invites.count}"
-    %li= "Created (but not sent): #{@created}"
-    %li= "Sent (but not opened): #{@sent}"
-    %li= "Opened (but not started): #{@opened}"
-    %li= "Started (but not finished): #{@started}"
-    %li= "Finished: #{@finished}"
+    %li= "Created #{@created.count == 0 ? "(none)" : "<ul>#{@created.map {|si| "<li>#{si.user_name}</li>"}.join("\n")}</ul>"}".html_safe
+    %li= "Sent #{@sent.count == 0 ? "(none)" : "<ul>#{@sent.map {|si| "<li>#{si.user_name}</li>"}.join("\n")}</ul>"}".html_safe
+    %li= "Opened #{@opened.count == 0 ? "(none)" : "<ul>#{@opened.map {|si| "<li>#{si.user_name}</li>"}.join("\n")}</ul>"}".html_safe
+    %li= "Started #{@started.count == 0 ? "(none)" : "<ul>#{@started.map {|si| "<li>#{si.user_name}</li>"}.join("\n")}</ul>"}".html_safe
+    %li= "Finished #{@finished.count == 0 ? "(none)" : "<ul>#{@finished.map {|si| "<li>#{si.user_name}</li>"}.join("\n")}</ul>"}".html_safe
+- else
+  %h4= "Survey Statistics #{link_to "[list]", admin_survey_report_path(list: 1)}"
+  %ul
+    %li= "Total invites: #{@survey_invites.count}"
+    %li= "Created (but not sent): #{@created.count}"
+    %li= "Sent (but not opened): #{@sent.count}"
+    %li= "Opened (but not started): #{@opened.count}"
+    %li= "Started (but not finished): #{@started.count}"
+    %li= "Finished: #{@finished.count}"
 
 #survey-container
   - @survey_questions.each_pair do |sg, asq|

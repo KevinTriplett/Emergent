@@ -97,6 +97,7 @@ module Admin
 
     def report
       @body_id = "survey"
+      @list = params[:list]
       @survey = Survey.find(params[:id])
       @survey_questions = {}
       @survey.ordered_questions.each do |sq|
@@ -104,13 +105,17 @@ module Admin
         @survey_questions[sq.survey_group].push sq
       end  
       @survey_invites = @survey.survey_invites
-      @created = @sent = @opened = @started = @finished = 0
+      @created = []
+      @sent = []
+      @opened = []
+      @started = []
+      @finished = []
       @survey_invites.each do |si|
-        @created += 1 if si.is_created?
-        @sent += 1 if si.is_invite_sent?
-        @opened += 1 if si.is_opened?
-        @started += 1 if si.is_started?
-        @finished += 1 if si.is_finished? || si.finished_link_sent?
+        @created.push(si) if si.is_created?
+        @sent.push(si) if si.is_invite_sent?
+        @opened.push(si) if si.is_opened?
+        @started.push(si) if si.is_started?
+        @finished.push(si) if si.is_finished? || si.finished_link_sent?
       end
     end
   end

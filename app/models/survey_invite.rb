@@ -25,6 +25,9 @@ class SurveyInvite < ActiveRecord::Base
   def survey_name
     survey.name
   end
+  def user_name
+    user.name
+  end
 
   def update_state(key, write_to_database=true)
     return false unless STATUS[key]
