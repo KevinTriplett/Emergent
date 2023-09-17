@@ -10,7 +10,6 @@ class ApproveUserSpider < EmergeSpider
     disable_images: true,
     window_size: [1366, 768],
     user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
-    skip_request_errors: [Selenium::WebDriver::Error::UnexpectedAlertOpenError],
     retry_request_errors: [EOFError, Net::ReadTimeout],
     before_request: {
       # Change user agent before each request:

@@ -70,7 +70,7 @@ class EmergeSpider < Kimurai::Base
   def looped_sign_in
     sign_in
     true
-  rescue Net::ReadTimeout, EOFError, Net::ReadTimeout
+  rescue Net::ReadTimeout, EOFError
     logger.info "TIMEOUT/EOF ERROR, TRYING AGAIN"
     Rails.logger.info "#{name}: TIMEOUT/EOF ERROR, TRYING AGAIN"
     browser.save_screenshot
