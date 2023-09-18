@@ -5,7 +5,7 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
 
   test "Admin page for survey notes but no notes" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user(:greeter)
+      user = create_authorized_user(:surveyor)
       set_authorization_cookie
 
       survey = create_survey
@@ -22,7 +22,7 @@ class AdminNotesTest < ActionDispatch::IntegrationTest
 
   test "Admin page for survey notes with notes" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user(:greeter)
+      user = create_authorized_user(:surveyor)
       set_authorization_cookie
 
       group = create_survey_group(color: "#123456")

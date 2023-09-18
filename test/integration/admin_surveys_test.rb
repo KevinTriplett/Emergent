@@ -5,7 +5,7 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
 
   test "Admin page with no surveys" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user(:greeter)
+      user = create_authorized_user(:surveyor)
       set_authorization_cookie
 
       get admin_surveys_path
@@ -19,7 +19,7 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
 
   test "Admin page with surveys" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user(:greeter)
+      user = create_authorized_user(:surveyor)
       set_authorization_cookie
 
       survey = create_survey
@@ -43,7 +43,7 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
 
   test "Admin new page for survey" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user(:greeter)
+      user = create_authorized_user(:surveyor)
       set_authorization_cookie
 
       survey = create_survey
@@ -61,7 +61,7 @@ class AdminSurveysTest < ActionDispatch::IntegrationTest
 
   test "Admin edit page for survey" do
     DatabaseCleaner.cleaning do
-      user = create_authorized_user(:greeter)
+      user = create_authorized_user(:surveyor)
       set_authorization_cookie
 
       survey = create_survey
