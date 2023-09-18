@@ -66,6 +66,7 @@
       = link_to "Launch Chosen Email Client", "#", class: "btn btn-primary email-send greeting"
       = link_to "Zoom Scheduled", admin_user_wizard_path(token: @user.token, status: "zoom-scheduled"), class: "btn btn-success"
     .complete.hidden
+      %h2 Select Completion Type:
       - url = admin_user_wizard_path(token: @user.token, status: "zoom-done")
       = link_to "Zoom Done", url, class: "btn btn-success done"
       - url = admin_user_wizard_path(token: @user.token, status: "chat-done")
