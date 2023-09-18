@@ -8,7 +8,7 @@ class ApproveUserSpider < EmergeSpider
   @engine = @@engine
   @start_urls = @@urls
   @config = @@config
-  @config.retry_request_errors.push(EmailCloaked)
+  @config[:retry_request_errors].push(EmailCloaked)
   create_spider(@name)
 
   def parse(response, url:, data: {})
