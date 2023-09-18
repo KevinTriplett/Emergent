@@ -20,11 +20,12 @@ Rails.application.routes.draw do
   get "unsubscribe/:token", to: "home#unsubscribe", as: :unsubscribe
   get "user_search", to: "admin/users#search", as: :user_search
   
-  # yes, these parameters need to be optional because they will be modified by js
+  # yes, some of these params are optional because js will add the params
   get  "survey/live/:token", to: "survey_invites#live_view", as: :survey_live_view
   get  "survey/results/:token", to: "survey_invites#show_results", as: :survey_show_results
   post "survey/patch/:token(/:id)", to: "survey_invites#patch", as: :survey_patch
   get  "survey(/:token)(/:survey_question_id)", to: "survey_invites#show", as: :survey
+  post "admin/survey_invites/:id/patch", to: "admin/survey_invites#patch", as: :admin_survey_invite_patch
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]

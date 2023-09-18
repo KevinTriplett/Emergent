@@ -23,5 +23,13 @@ module Admin
       @form = _ctx["contract.default"]
       render :new, status: :unprocessable_entity
     end
+
+    def patch
+      invite = SurveyInvite.find(params[:id])
+      state = params[:model][:state]
+      return head(:bad_request) unless state
+      invite.update(state: state)
+      head(:no_content)
+    end
   end
 end

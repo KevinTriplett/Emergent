@@ -1479,4 +1479,18 @@ $(document).ready(function() {
     setInterval(liveView, 2000);
   };
 
+  // ----------------------------------------------------------------------
+  // SURVEY INVITE GENERAL
+  $("a.resend-survey-invite-link").on("click", function(e) {
+    e.preventDefault();
+    var userDom = $(this);
+    var data = {state: 0};
+    patch(userDom, data, function() {
+      alert("Survey Invite queued for re-sending");
+    }, function() {
+      alert("Could not re-send invite - ask Kevin");
+    });
+  
+  })
+
 });

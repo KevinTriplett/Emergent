@@ -97,6 +97,7 @@ module Admin
 
     def report
       @body_id = "survey"
+      @token = form_authenticity_token
       @list = params[:list]
       @survey = Survey.find(params[:id])
       @survey_questions = {}
@@ -105,17 +106,19 @@ module Admin
         @survey_questions[sq.survey_group].push sq
       end  
       @survey_invites = @survey.survey_invites
-      @created = []
-      @sent = []
-      @opened = []
-      @started = []
-      @finished = []
+      @survey_invites_hash = {
+        created: [],
+        sent: [],
+        opened: [],
+        started: [],
+        finished: []
+      }
       @survey_invites.each do |si|
-        @created.push(si) if si.is_created?
-        @sent.push(si) if si.is_invite_sent?
-        @opened.push(si) if si.is_opened?
-        @started.push(si) if si.is_started?
-        @finished.push(si) if si.is_finished? || si.finished_link_sent?
+        @survey_invites_hash[:created].push(si) if si.is_created?
+        @survey_invites_hash[:sent].push(si) if si.is_invite_sent?
+        @survey_invites_hash[:opened].push(si) if si.is_opened?
+        @survey_invites_hash[:started].push(si) if si.is_started?
+        @survey_invites_hash[:finished].push(si) if si.is_finished? || si.finished_link_sent?
       end
     end
   end

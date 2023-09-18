@@ -11,6 +11,20 @@ class SurveyInviteTest < MiniTest::Spec
     end
   end
 
+  it "reports survey name" do
+    DatabaseCleaner.cleaning do
+      invite = create_survey_invite
+      assert_equal invite.survey_name, invite.survey.name
+    end
+  end
+
+  it "reports user name" do
+    DatabaseCleaner.cleaning do
+      invite = create_survey_invite
+      assert_equal invite.user_name, invite.user.name
+    end
+  end
+
   it "reports total votes" do
     DatabaseCleaner.cleaning do
       group_1 = create_survey_group(votes_max: 6)
