@@ -1,39 +1,23 @@
 require 'emerge_spider'
 
 class ApproveUserSpider < EmergeSpider
-  USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+  class EmailCloaked < StandardError
+  end
+
   @name = "approve_user_spider"
-  @engine = Rails.env.development? ? :selenium_firefox : :selenium_chrome
-  @start_urls = ["https://emergent-commons.mn.co/sign_in"]
-  @config = {
-    user_agent: USER_AGENT,
-    disable_images: true,
-    window_size: [1366, 768],
-    user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
-    retry_request_errors: [EOFError, Net::ReadTimeout],
-    before_request: {
-      # Change user agent before each request:
-      change_user_agent: false,
-      # Change proxy before each request:
-      change_proxy: false,
-      # Clear all cookies and set default cookies (if provided) before each request:
-      clear_and_set_cookies: false,
-      # Process delay before each request:
-      delay: 1..2
-    }
-  }
-  ::Spider.create(name: @name) unless ::Spider.find_by_name(@name)
+  @engine = @@engine
+  @start_urls = @@urls
+  @config = @@config
+  @config.retry_request_errors.push(EmailCloaked)
+  create_spider(@name)
 
   def parse(response, url:, data: {})
-    logger.info "STARTING"
     sign_in_and_send_request_to(:approve_user, "https://emergent-commons.mn.co/settings/invite/requests")
-    # ::Spider.set_success(name) <== don't do this, result is set to member_id
-    logger.info "COMPLETED SUCCESSFULLY"
   end
 
   def approve_user(response, url:, data: {})
     first_name, last_name = get_and_clear_message.split('|')
-    logger.info "APPROVING #{first_name} #{last_name}"
+    logger.info "> APPROVING #{first_name} #{last_name}"
 
     ############################################
     # wait until the modal dialog box is visible
@@ -55,12 +39,12 @@ class ApproveUserSpider < EmergeSpider
     ############################################
     # find approve button for this user
     css_approve = "#{css_row} a.invite-list-item-approve-button"
-    logger.debug "LOOKING FOR #{css_approve}"
+    logger.debug "> LOOKING FOR #{css_approve}"
     begin
       browser.find(:css, css_approve).click
       wait_until(css_status, "Joined!")
     rescue Selenium::WebDriver::Error::ElementNotInteractableError
-      logger.fatal "Approve button not interactable on MN platform"
+      logger.fatal "> Approve button not interactable on MN platform"
     end
 
     ############################################
@@ -69,12 +53,12 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def get_member_id(css)
-    logger.debug "ATTEMPTING TO GET MEMBER ID"
+    logger.debug "> ATTEMPTING TO GET MEMBER ID"
     css_link = "#{css} .invite-list-item-first-name-text a"
     link = browser.find(:css, css_link)["href"]
 
     member_id = link.split("/").last
-    logger.info "GOT MEMBER ID '#{member_id}'"
+    logger.info "> GOT MEMBER ID '#{member_id}'"
     set_result(member_id)
   end
 end

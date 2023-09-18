@@ -4,16 +4,18 @@ PATH
     kimurai (1.9.0)
       activesupport
       addressable
+      apparition
       capybara (>= 2.15, < 4.0)
       capybara-mechanize
       cliver
+      cuprite
       headless
       murmurhash3
       nokogiri
       pmap
       poltergeist
-      pry
-      rbcat (~> 0.2)
+      pry-nav
+      rbcat (>= 0.2.2, < 0.3)
       selenium-webdriver
       thor
       whenever
@@ -90,6 +92,9 @@ GEM
       public_suffix (>= 2.0.2, < 6.0)
     airbrussh (1.4.1)
       sshkit (>= 1.6.1, != 1.7.0)
+    apparition (0.6.0)
+      capybara (~> 3.13, < 4)
+      websocket-driver (>= 0.6.5)
     bindex (0.8.1)
     bootsnap (1.14.0)
       msgpack (~> 1.2)
@@ -144,6 +149,9 @@ GEM
     crass (1.0.6)
     cssbundling-rails (1.1.1)
       railties (>= 6.0.0)
+    cuprite (0.14.3)
+      capybara (~> 3.0)
+      ferrum (~> 0.13.0)
     database_cleaner-active_record (2.0.1)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
@@ -193,6 +201,11 @@ GEM
       dry-schema (>= 1.12, < 2)
       zeitwerk (~> 2.6)
     erubi (1.11.0)
+    ferrum (0.13)
+      addressable (~> 2.5)
+      concurrent-ruby (~> 1.1)
+      webrick (~> 1.7)
+      websocket-driver (>= 0.6, < 0.8)
     ffi (1.15.5)
     globalid (1.0.0)
       activesupport (>= 5.0)
@@ -272,9 +285,11 @@ GEM
       capybara (>= 2.1, < 4)
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
-    pry (0.14.1)
+    pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    pry-nav (1.0.0)
+      pry (>= 0.9.10, < 0.15)
     public_suffix (5.0.0)
     puma (5.6.5)
       nio4r (~> 2.0)

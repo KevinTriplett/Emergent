@@ -17,14 +17,15 @@ class SpiderTest < MiniTest::Spec
     DatabaseCleaner.cleaning do
       spider = Spider.get_spider("test_spider")
 
+      msg = "hello this is a message"
       spider.reload
       assert_nil spider.message
-      Spider.set_message("test_spider", "hello this is a message")
+      Spider.set_message("test_spider", msg)
       spider.reload
       assert Spider.message?("test_spider")
-      assert_equal "hello this is a message", spider.message
+      assert_equal msg, spider.message
       
-      assert_equal "hello this is a message", Spider.get_message("test_spider")
+      assert_equal msg, Spider.get_message("test_spider")
       spider.reload
       assert spider.message
       assert Spider.message?("test_spider")
@@ -34,6 +35,13 @@ class SpiderTest < MiniTest::Spec
       spider.reload
       assert_nil spider.message
       assert !Spider.message?("test_spider")
+      assert_nil Spider.get_message("test_spider")
+
+      msg = "hello this is a second message"
+      Spider.set_message("test_spider", msg)
+      spider.reload
+      assert_equal msg, Spider.get_message_and_clear("test_spider")
+      spider.reload
       assert_nil Spider.get_message("test_spider")
     end
   end

@@ -28,6 +28,12 @@ class Spider < ActiveRecord::Base
     get_spider(name).message
   end
 
+  def self.get_message_and_clear(name)
+    msg = get_message(name)
+    clear_message(name)
+    msg
+  end
+
   def self.set_result(name, result)
     get_spider(name).update(result: result)
   end
