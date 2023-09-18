@@ -721,7 +721,7 @@ $(document).ready(function() {
       createEmailTemplateButton(
         templateButtons, 
         templateFunc,
-        "Scheduling your welcome Zoom to Emergent Commons"
+        "Greetings from Emergent Commons: Scheduling your welcome Zoom"
       );
     }
     var lastEmailSubject = getCookie("subject");
@@ -745,7 +745,7 @@ $(document).ready(function() {
       createEmailTemplateButton(
         templateButtons, 
         templateFunc,
-        "Following up on your request to join Emergent Commons"
+        "Greetings from Emergent Commons: Following up on your request to join"
       );
     }
   }
