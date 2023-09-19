@@ -47,7 +47,7 @@ BUGS
 - [X] do not send to greeter app after survey
 - [X] need the ability for a greeter to log in themselves so that approval chats come from them
 - [X] renew ssl certs
-- [ ] greeter search is tangled with survey_invite search
+- [X] greeter search is tangled with survey_invite search
 SURVEYS
 - [X] add admin interface for sending survey invites (show survey view?)
 - [X] create survey invites with tokens to prevent hacking a survey
@@ -65,9 +65,9 @@ SURVEYS
 - [X] allow stickies to be moved in survey invite
 - [X] create nice user interface for surveys
 - [X] use markdown for survey questions and instructions and notes
+- [X] allow anyone to take a survey by entering their DB email address
 - [ ] notes have a way to show total votes from others
 - [ ] rules for question branching / skipping
-- [ ] disable buttons until ajax calls resolve
 - [ ] rename notes to survey_notes
 GREETER APP
 - [X] show only pending and assigned members
@@ -75,14 +75,14 @@ GREETER APP
 - [X] default to only pending and greeter-picked entries
 - [X] wizard for greeters for step-by-step
 - [X] add greeter authorization role for authenticated user
-- [ ] request declined status is not visible in member request to join
+- [X] request declined status is not visible in member request to join
+- [X] convert user show url to use user tokens
+- [X] do not log notes change if it's the same
 - [ ] hover over index record pending = "Click to review this request"
 - [ ] hover over tooltip for greeter main view for Pending "Click to begin"
-- [ ] do not log notes change if it's the same
 - [ ] view-only state
 - [ ] hover over show view to give hints
 - [ ] convert status_hash to keys with human text?
-- [ ] convert user show url to use user tokens
 - [ ] ability to send email invites from domain or personal email
 
 ## MVP 2
