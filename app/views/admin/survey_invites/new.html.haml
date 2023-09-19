@@ -1,5 +1,7 @@
 %h5 Send Survey Invite
 
+= link_to "Link to invite", new_take_survey_path(survey_token: @survey.token)
+
 = simple_form_for @form, as: :survey_invite, url: admin_survey_survey_invites_path do |f|
   .row
     .col= f.error_notification

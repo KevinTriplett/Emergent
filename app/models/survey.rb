@@ -8,6 +8,8 @@ class Survey < ActiveRecord::Base
   has_many :notes, through: :survey_groups
   has_many :users, through: :survey_invites
 
+  has_secure_token
+
   def ordered_groups
     survey_groups.order(position: :asc)
   end

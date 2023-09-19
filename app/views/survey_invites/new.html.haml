@@ -1,0 +1,12 @@
+%h5 Take Survey
+
+= simple_form_for @form, as: :survey_invite, url: take_survey_path(survey_token: @survey.token) do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= "Survey: #{@survey.name}"
+  .row
+    .col
+      %input{name: :user_email, placeholder: "Your Email", label: false}
+  .row
+    .col= f.button :submit, "Start Survey", class: "btn-primary"

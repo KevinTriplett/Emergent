@@ -2,6 +2,29 @@ class SurveyInvitesController < ApplicationController
   layout "survey"
 
   # ------------------------------------------------------------------------
+  def new
+    @survey = Survey.find_by_token(params[:survey_token])
+    run SurveyInvite::Operation::Take::Present, survey_id: @survey.id, user_id: nil do |ctx|
+      @form = ctx["contract.default"]
+    end
+  end
+
+  def create
+    @survey = Survey.find_by_token(params[:survey_token])
+    user = User.find_by_email params[:user_email]
+    invite = SurveyInvite.where(survey_id: @survey.id).where(user_id: user.id).first
+    return redirect_to survey_path(token: invite.token) if invite
+
+    _ctx = run SurveyInvite::Operation::Take, survey_id: @survey.id, user_id: user.id do |ctx|
+      invite = ctx[:model]
+      return redirect_to survey_path(token: invite.token)
+    end
+  
+    flash[:notice] = user ? "We're sorry, something went wrong" : "We're sorry, your email address was not found"
+    @form = _ctx["contract.default"]
+    render :new, status: :unprocessable_entity
+  end
+
   def show
     unless get_invite
       flash[:notice] = "We're sorry, your survey was not found"

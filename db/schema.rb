@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_27_123346) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_19_001004) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -117,6 +117,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_27_123346) do
     t.boolean "locked"
     t.boolean "live_view"
     t.boolean "liveview"
+    t.string "token"
   end
 
   create_table "users", force: :cascade do |t|

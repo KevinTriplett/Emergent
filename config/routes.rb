@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   post "survey/patch/:token(/:id)", to: "survey_invites#patch", as: :survey_patch
   get  "survey(/:token)(/:survey_question_id)", to: "survey_invites#show", as: :survey
   post "admin/survey_invites/:id/patch", to: "admin/survey_invites#patch", as: :admin_survey_invite_patch
+  get  "take_survey/:survey_token", to: "survey_invites#new", as: :new_take_survey
+  post "take_survey/:survey_token", to: "survey_invites#create", as: :take_survey
 
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]
