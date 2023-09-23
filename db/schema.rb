@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_19_001004) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_22_181258) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -19,6 +19,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_19_001004) do
     t.datetime "duration_days"
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "moderations", force: :cascade do |t|
+    t.string "token"
+    t.string "url"
+    t.string "original_text"
+    t.integer "user_id"
+    t.integer "moderator_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_moderations_on_user_id"
+  end
+
+  create_table "moderations_violations", id: false, force: :cascade do |t|
+    t.integer "moderation_id", null: false
+    t.integer "violation_id", null: false
   end
 
   create_table "notes", force: :cascade do |t|
@@ -161,6 +177,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_19_001004) do
     t.index ["role_id"], name: "index_users_roles_on_role_id"
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
     t.index ["user_id"], name: "index_users_roles_on_user_id"
+  end
+
+  create_table "violations", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
   end
 
 end

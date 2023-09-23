@@ -96,6 +96,22 @@ class Spider < ActiveRecord::Base
 
   ########################
 
+  def self.check_new_moderations
+    Moderation.where(user_id: nil).each do |moderation|
+      set_message("moderation_spider", moderation.id)
+      ModerationSpider.crawl!
+      for i in 1..60
+        break if result?("moderation_spider")
+        sleep 2
+      end
+      break if result?("moderation_spider")
+    end
+  rescue Selenium::WebDriver::Error::UnknownError
+  rescue Net::ReadTimeout
+  end
+
+  ########################
+
   def self.get_new_members(qty)
     for i in 1..4 # limit the loop
       set_message("new_user_spider", qty.to_s)
@@ -195,9 +211,10 @@ class Spider < ActiveRecord::Base
   ########################
 
   def self.run_spiders
-    approve_members
-    get_new_members(50)
-    send_magic_links
-    send_survey_invite_messages
+    # approve_members
+    # get_new_members(50)
+    # send_magic_links
+    # send_survey_invite_messages
+    check_new_moderations
   end
 end

@@ -1,0 +1,12 @@
+%h4= (@moderations.empty? ? "No " : "") + "Moderations"
+
+= link_to "New moderation", new_admin_moderation_path, class: "btn btn-primary"
+= link_to "New violation", new_admin_violation_path, class: "btn btn-secondary"
+
+.row
+  .col
+    - @moderations.each do |moderation|
+      %p.moderation
+        %span.token= link_to moderation.token, admin_moderation_path(token: moderation.token)
+        = " --- created at #{moderation.created_at}"
+

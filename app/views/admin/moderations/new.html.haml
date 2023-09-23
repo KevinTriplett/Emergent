@@ -1,0 +1,19 @@
+%h5 Moderation Form
+
+%p
+  Use this form wisely. Register a violation of community guidelines by
+  getting a link to the offending post then choose the violation(s) and click "Submit".
+  Hover over the "i" to get a description of the violation.
+
+= simple_form_for @moderation, url: admin_moderations_path do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :url, placeholder: "Link to post or comment", label: false
+  .row
+    .col= f.association :violations, as: :check_boxes
+  .row
+    .col= f.button :submit, "Submit", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_moderations_path
+

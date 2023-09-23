@@ -21,13 +21,9 @@ module SessionsHelper
     cookies.delete :user_id
   end
 
-  def signed_in_greeter
-    redirect_to(root_url, notice: "You need a magic link first") unless signed_in?(:greeter)
-  end
-
-  def signed_in_surveyor
-    redirect_to(root_url, notice: "You need a magic link first") unless signed_in?(:surveyor)
-  end
+  def signed_in_greeter; signed_in?(:greeter) end
+  def signed_in_surveyor; signed_in?(:surveyor) end
+  def signed_in_moderator; signed_in?(:moderator) end
 
   def current_user
     return @current_user if @current_user
@@ -42,7 +38,8 @@ module SessionsHelper
   end
 
   def signed_in?(role)
-    current_user.present? && current_user_has_role?(role)
+    return if current_user.present? && current_user_has_role?(role)
+    redirect_to(root_url, notice: "You need a magic link first")
   end
 
   def current_user_has_role?(role)

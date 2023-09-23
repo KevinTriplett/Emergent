@@ -45,6 +45,9 @@ class EmergeSpider < Kimurai::Base
     logger.info "> COMPLETED WITH RESULT = '#{::Spider.get_result(name)}'"
   end
 
+  def get_message
+    ::Spider.get_message(name)
+  end
   def get_and_clear_message
     ::Spider.get_message_and_clear(name)
   end

@@ -37,6 +37,9 @@
           - if current_user.has_role? :surveyor
             |
             = link_to "Surveys", admin_surveys_path
+          - if current_user.has_role? :moderator
+            |
+            = link_to "Moderation", new_admin_moderation_path
       .row
         .col-sm-12
           - unless "user-wizard" == @body_class

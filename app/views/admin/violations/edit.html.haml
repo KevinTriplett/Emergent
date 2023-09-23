@@ -1,0 +1,14 @@
+%h5 Edit Violation
+
+= simple_form_for @form, as: :violation, url: admin_violation_path(@model.id), method: :patch do |f|
+  .row
+    .col= f.error_notification
+  .row
+    .col= f.input :name, placeholder: "Name", label: false
+  .row
+    .col= f.input :description, as: :text, placeholder: "Description", label: false
+  .row
+    .col= f.button :submit, "Submit", class: "btn-primary"
+.row
+  .col= link_to "Cancel", admin_violations_path
+

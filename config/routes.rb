@@ -38,6 +38,8 @@ Rails.application.routes.draw do
         resources :survey_questions, only: [:new, :create, :edit, :update, :destroy]
       end
     end
+    resources :moderations, param: :token, only: [:index, :show, :new, :create]
+    resources :violations
   end
 
   resources :users, param: :token, only: [:show, :edit, :update]

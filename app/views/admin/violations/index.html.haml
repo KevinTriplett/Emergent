@@ -1,0 +1,12 @@
+%h5= (@violations.empty? ? "No " : "") + "Possible Violations"
+
+.row
+  .col
+    - @violations.each do |violation|
+      %p.violation
+        = link_to "edit", edit_admin_violation_path(violation)
+        |
+        = link_to "del", admin_violation_path(violation), data: { method: "delete", confirm: "Really delete #{violation.name}?", token: @token }
+        %span.violation-name= violation.name
+
+= link_to "New violation", new_admin_violation_path, class: "btn btn-secondary"
