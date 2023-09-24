@@ -11,9 +11,16 @@
   .row
     .col= f.input :url, placeholder: "Link to post or comment", label: false
   .row
+    .col= f.input :reply, placeholder: "Reply Text", label: false
+  .row
     .col= f.association :violations, as: :check_boxes
   .row
     .col= f.button :submit, "Submit", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_moderations_path
+
+.hidden
+  - Violation.all.each do |v|
+    - text = v.template.present? ? v.template : "#{v.name}: #{v.description}"
+    %p{id: "violation-#{v.id}"}= text
 

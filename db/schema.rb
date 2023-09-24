@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_22_181258) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_23_210208) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -29,6 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_22_181258) do
     t.integer "moderator_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "reply"
     t.index ["user_id"], name: "index_moderations_on_user_id"
   end
 
@@ -182,6 +183,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_22_181258) do
   create_table "violations", force: :cascade do |t|
     t.string "name"
     t.string "description"
+    t.text "template"
   end
 
 end

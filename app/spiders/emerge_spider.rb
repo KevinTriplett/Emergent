@@ -97,10 +97,14 @@ class EmergeSpider < Kimurai::Base
   end
 
   def raise_error_unless_response_has(css)
-    raise "ERROR: could not find css #{css}" unless response_has(css)
+    return if response_has(css)
+    browser.save_screenshot
+    raise "ERROR: could not find css #{css}"
   end
 
   def raise_error_if_response_has(css)
-    raise "ERROR: could not find css #{css}" if response_has(css)
+    return unless response_has(css)
+    browser.save_screenshot
+    raise "ERROR: could not find css #{css}"
   end
 end

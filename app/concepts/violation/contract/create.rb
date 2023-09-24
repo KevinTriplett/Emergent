@@ -5,6 +5,7 @@ module Violation::Contract
     property :id
     property :name
     property :description
+    property :template
 
     validation do
       params do

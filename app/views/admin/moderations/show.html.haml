@@ -10,6 +10,7 @@
     %ul
       - @moderation.violations.each do |violation|
         %li= violation.name
+    %p= "Reply: #{@moderation.reply}"
     %p= "Created #{@moderation.created_at}"
 
 .row

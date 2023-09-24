@@ -1490,7 +1490,19 @@ $(document).ready(function() {
     }, function() {
       alert("Could not re-send invite - ask Kevin");
     });
-  
   })
+
+  // MODERATIONS AND VIOLATIONS
+  $(".moderation_violations").on("click", function(e) {
+    var self = $(this);
+    var text = [];
+    self.find("input.check_boxes").each(function(i, checkbox) {
+      if (checkbox.checked) {
+        var violation = $(`#violation-${checkbox.value}`);
+        text.push(violation.text());
+      }
+      $(".moderation_reply textarea").val(text.join("\r\r"));
+    });
+  });
 
 });

@@ -8,6 +8,8 @@
   .row
     .col= f.input :description, as: :text, placeholder: "Description", label: false
   .row
+    .col= f.input :template, as: :text, placeholder: "Reply Template", label: false
+  .row
     .col= f.button :submit, "Submit", class: "btn-primary"
 .row
   .col= link_to "Cancel", admin_violations_path
