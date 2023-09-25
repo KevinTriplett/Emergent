@@ -18,18 +18,18 @@ class ModerationSpider < EmergeSpider
     moderation = Moderation.find(moderation_id)
     logger.debug "> MODERATING #{moderation.url}"
 
-    post_id = /https:\/\/.+?\/posts\/(\d+)/.match(moderation.url)[1]
-    comment_id = /https:\/\/.+?\/posts\/\d+\/comments\/(\d+)/.match(moderation.url)[1]
+    comment_id = /posts\/\d+\/comments\/(\d+)/.match(moderation.url)
+    comment_id = comment_id[1] if comment_id
 
-    get_moderation_info(moderate, comment_id)
-    reply_to_comment(moderation, comment_id)
+    get_moderation_info(moderation, comment_id)
+    reply(moderation, comment_id)
   end
 
   def get_moderation_info(moderation, comment_id)
     comment_id.nil? ? get_post_info(moderation) : get_comment_info(moderation, comment_id)
   end
   
-  def reply_to_comment(moderation, comment_id)
+  def reply(moderation, comment_id)
     comment_id.nil? ? reply_to_post(moderation) : reply_to_comment(moderation, comment_id)
   end
 
@@ -38,7 +38,7 @@ class ModerationSpider < EmergeSpider
   def get_post_info(moderation)
     container = find_post_container
     author_profile_url = container.find(:css, ".profile-attribution-link-container a.mighty-attribution-name")["href"]
-    original_text = container.find(:css, ".detail-layout-description").text
+    original_text = container.find(:css, ".detail-layout-description")['innerHTML']
 
     member = User.find_by_profile_url(author_profile_url)
     logger.error "> COULD NOT FIND MEMBER" unless member
@@ -81,7 +81,7 @@ class ModerationSpider < EmergeSpider
   end
 
   def reply_to_comment(moderation, comment_id)
-    find_comment_reply_input.click
+    find_comment_reply_input(comment_id).click
     sleep 1
     browser.send_keys(moderation.reply)
     find_comment_reply_submit_button(comment_id).click

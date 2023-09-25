@@ -64,6 +64,13 @@ body#finished {
 .token {
   font-family: monospace;
 }
+.post-original {
+  border: black solid 2px;
+  margin-bottom: 10px;
+  .text {
+    margin: 8px;
+  }
+}
 
 .no-margin {
   margin: 0px;

@@ -1,17 +1,28 @@
-%h5= "Moderation #{@moderation.token}"
-
 .row
   .col
-    %p= link_to @moderation.url, @moderation.url
-    %p= "Original text: #{@moderation.original_text}"
-    %p= "Member name: #{@moderation.user_name}"
-    %p= "Moderator: #{@moderation.moderator_name}"
-    %h5 Violations:
+    %h5 Moderation Information:
+    %p
+      %b Link:
+      = link_to @moderation.url, @moderation.url
+    %b Original text:
+    .post-original
+      .text= @moderation.original_text.html_safe
+    %p
+      %b Member name:
+      = @moderation.user_name
+    %p
+      %b Moderator:
+      = @moderation.moderator_name
+    %h5 Violation(s):
     %ul
       - @moderation.violations.each do |violation|
         %li= violation.name
-    %p= "Reply: #{@moderation.reply}"
-    %p= "Created #{@moderation.created_at}"
+    %p
+      %b Reply:
+      = @moderation.reply
+    %p
+      %b Created:
+      = @moderation.created_at
 
 .row
   .col= link_to "< Back", admin_moderations_path
