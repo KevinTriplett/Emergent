@@ -52,9 +52,9 @@ class EmergeSpider < Kimurai::Base
     ::Spider.get_message_and_clear(name)
   end
 
-  def sign_in_and_send_request_to(method, url)
+  def sign_in_and_send_request_to(role, method, url)
     logger.info "> REQUEST TO #{url}"
-    sign_in
+    sign_in(role)
     request_to(method, url: url)
   end
 
@@ -62,13 +62,24 @@ class EmergeSpider < Kimurai::Base
     ::Spider.set_result(name, result)
   end
 
-  def sign_in
-    return if response_has("body.communities-app") # return if already signed in
-    logger.info "> NOT SIGNED IN SO SIGNING IN"
+  def sign_in(role)
+    email, password = case role
+    when :greeter
+      [Rails.configuration.mn_greeter_username, Rails.configuration.mn_greeter_password]
+    when :moderator
+      [Rails.configuration.mn_greeter_username, Rails.configuration.mn_greeter_password]
+    when :surveyor
+      [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
+    end
+    # TODO: restore when/if moderator account is created
+    # [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
+    # [Rails.configuration.mn_moderator_username, Rails.configuration.mn_moderator_password]
+
     wait_until("body.auth-sign_in")
-    browser.fill_in "Email", with: Rails.configuration.mn_username
-    browser.fill_in "Password", with: Rails.configuration.mn_password
+    browser.fill_in "Email", with: email
+    browser.fill_in "Password", with: password
     browser.click_link "Sign In"
+
     wait_while(".pace-running")
     wait_until("body.communities-app")
     logger.info "> SIGNIN SUCCESSFUL"

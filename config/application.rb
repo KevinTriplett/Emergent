@@ -21,9 +21,11 @@ module Emergent
     # config.eager_load_paths << Rails.root.join("extras")
     config.from_email_adr = "noreply@emergentcommons.app"
 
-    config.admin_name = ENV["ADMIN_NAME"]
-    config.admin_password = ENV["ADMIN_PASSWORD"]
-    config.mn_username = ENV["MN_USERNAME"]
-    config.mn_password = ENV["MN_PASSWORD"]
+    config.mn_greeter_username = ENV["MN_GREETER_USERNAME"]
+    config.mn_greeter_password = ENV["MN_GREETER_PASSWORD"]
+    config.mn_moderator_username = ENV["MN_MODERATOR_USERNAME"]
+    config.mn_moderator_password = ENV["MN_MODERATOR_PASSWORD"]
+    config.mn_surveyor_username = ENV["MN_SURVEYOR_USERNAME"]
+    config.mn_surveyor_password = ENV["MN_SURVEYOR_PASSWORD"]
   end
 end

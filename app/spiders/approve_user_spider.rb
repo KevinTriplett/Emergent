@@ -12,7 +12,7 @@ class ApproveUserSpider < EmergeSpider
   create_spider(@name)
 
   def parse(response, url:, data: {})
-    sign_in_and_send_request_to(:approve_user, "https://emergent-commons.mn.co/settings/invite/requests")
+    sign_in_and_send_request_to(:greeter, :approve_user, "https://emergent-commons.mn.co/settings/invite/requests")
   end
 
   def approve_user(response, url:, data: {})

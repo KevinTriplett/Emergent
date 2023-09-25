@@ -146,12 +146,12 @@ class Spider < ActiveRecord::Base
 
   def self.send_survey_invite_messages
     SurveyInvite.where(state: SurveyInvite::STATUS[:created]).each do |invite|
-      next if Rails.configuration.mn_username == invite.user.email # cannot send messages to signin account!
+      next if Rails.configuration.mn_surveyor_username == invite.user.email # cannot send messages to signin account!
       send_survey_invitation_message(invite)
     end
 
     SurveyInvite.where(state: SurveyInvite::STATUS[:finished]).each do |invite|
-      next if Rails.configuration.mn_username == invite.user.email # cannot send messages to signin account!
+      next if Rails.configuration.mn_surveyor_username == invite.user.email # cannot send messages to signin account!
       send_survey_finished_message(invite)
     end
   end

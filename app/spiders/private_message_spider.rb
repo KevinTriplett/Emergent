@@ -10,7 +10,7 @@ class PrivateMessageSpider < EmergeSpider
   def parse(response, url:, data: {})
     @@lines = get_and_clear_message.split("|")
     @@user = User.find @@lines.shift # first element in array is user_id
-    sign_in_and_send_request_to(:send_message, @@user.chat_url)
+    sign_in_and_send_request_to(:surveyor, :send_message, @@user.chat_url)
   end
 
   def send_message(response, url:, data: {})

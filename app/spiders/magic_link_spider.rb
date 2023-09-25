@@ -11,7 +11,7 @@ class MagicLinkSpider < EmergeSpider
     get_and_clear_message.split(",").each do |message|
       @@url, user_id = message.split("|")
       user = User.find user_id
-      sign_in_and_send_request_to(:send_link, user.chat_url)
+      sign_in_and_send_request_to(:greeter, :send_link, user.chat_url)
     end
   end
 

@@ -12,7 +12,7 @@ class NewUserSpider < EmergeSpider
   ## PARSE
   def parse(response, url:, data: {})
     @@limit_user_count = get_and_clear_message.to_i || 100
-    sign_in_and_send_request_to(:parse_members, "https://emergent-commons.mn.co/settings/invite/requests")
+    sign_in_and_send_request_to(:greeter, :parse_members, "https://emergent-commons.mn.co/settings/invite/requests")
   end
 
   ##################################################

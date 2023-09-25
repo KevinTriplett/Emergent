@@ -58,7 +58,6 @@ class SurveyInvite < ActiveRecord::Base
     #   body: body,
     #   url: url
     # }).send_survey_invite_link.deliver_now
-    return true if Rails.configuration.mn_username == user.email # cannot send messages to signin account!
     Spider.set_message("private_message_spider", get_invite_message)
     PrivateMessageSpider.crawl!
     until Spider.result?("private_message_spider")
@@ -72,7 +71,6 @@ class SurveyInvite < ActiveRecord::Base
   def send_finished_survey_link
     # send email or PM depending on answer in survey
     # survey is created with an initial group / questions for this purpose
-    return true if Rails.configuration.mn_username == user.email # cannot send messages to signin account!
 
     first_group = survey.ordered_groups.first
     return true unless "Contact Info" == first_group.name
