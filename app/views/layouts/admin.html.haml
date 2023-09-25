@@ -28,18 +28,8 @@
           - flash.each do |type, msg|
             .row.alert.alert-info
               .col.flash{class: type}= msg
-        .col-sm-4.right.current-user 
-          = "Hi #{@current_user.first_name} ^_^"
-          = link_to "Logout", logout_url
-          - if current_user.has_role? :greeter
-            |
-            = link_to "Members", admin_users_path
-          - if current_user.has_role? :surveyor
-            |
-            = link_to "Surveys", admin_surveys_path
-          - if current_user.has_role? :moderator
-            |
-            = link_to "Moderation", admin_moderations_path
+        .col-sm-4.right.current-user
+          = cell(Layout::Cell::AdminNav, {current_user: @current_user})
       .row
         .col-sm-12
           %h1 Emergent Commons Volunteer App

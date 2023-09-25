@@ -1,0 +1,11 @@
+= "Hi #{first_name} ^_^"
+= link_to "Logout", logout_path
+- if has_role? :greeter
+  |
+  = link_to "Members", admin_users_path
+- if has_role? :surveyor
+  |
+  = link_to "Surveys", admin_surveys_path
+- if has_role? :moderator
+  |
+  = link_to "Moderations", admin_moderations_path
