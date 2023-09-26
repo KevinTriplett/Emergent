@@ -97,14 +97,14 @@ class ModerationSpider < EmergeSpider
   end
 
   def find_post_reply_input
-    input_css = "#detail-layout-comments-region .universal-input-wysiwyg-region p"
+    input_css = "#detail-layout-comments-region .comments-form-wrapper .universal-input-wysiwyg-region p"
     logger.debug "> FIND CSS # #{input_css}"
     wait_until(input_css)
     browser.find(:css, input_css)
   end
 
   def find_post_reply_submit_button
-    submit_button_css = "#detail-layout-comments-region .universal-input .post-prompt-actions-container a.submit"
+    submit_button_css = "#detail-layout-comments-region .comments-form-wrapper .universal-input .post-prompt-actions-container a.submit"
     logger.debug "> FIND CSS # #{submit_button_css}"
     browser.find(:css, submit_button_css)
   end
