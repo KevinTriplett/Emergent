@@ -53,7 +53,7 @@ class EmergeSpider < Kimurai::Base
   end
 
   def sign_in_and_send_request_to(role, method, url)
-    logger.info "> REQUEST TO #{url}"
+    logger.debug "> REQUEST TO #{url}"
     sign_in(role)
     request_to(method, url: url)
   end

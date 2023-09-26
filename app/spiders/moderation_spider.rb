@@ -16,9 +16,9 @@ class ModerationSpider < EmergeSpider
   def moderate(response, url:, data: {})
     moderation_id = get_and_clear_message
     moderation = Moderation.find(moderation_id)
-    logger.debug "> MODERATING #{moderation.url}"
+    logger.info "> MODERATING #{moderation.url}"
 
-    comment_id = /posts\/\d+\/comments\/(\d+)/.match(moderation.url)
+    comment_id = /\/comments\/(\d+)/.match(moderation.url)
     comment_id = comment_id[1] if comment_id
 
     get_moderation_info(moderation, comment_id)
@@ -56,6 +56,7 @@ class ModerationSpider < EmergeSpider
     sleep 1
     browser.send_keys(moderation.reply)
     find_post_reply_submit_button.click
+    logger.debug "> REPLY SUBMITTED"
   end
 
   # -------------------
@@ -73,11 +74,11 @@ class ModerationSpider < EmergeSpider
     logger.error "> COULD NOT FIND MEMBER" unless member
     return unless member
 
-    logger.debug "> GOT AUTHOR '#{member.name}'"
+    logger.info "> GOT AUTHOR '#{member.name}'"
     moderation.user = member
     moderation.original_text = original_text
     moderation.save!
-    logger.debug "> SAVED SUCCESSFULLY"
+    logger.info "> SAVED SUCCESSFULLY"
   end
 
   def reply_to_comment(moderation, comment_id)
@@ -85,6 +86,7 @@ class ModerationSpider < EmergeSpider
     sleep 1
     browser.send_keys(moderation.reply)
     find_comment_reply_submit_button(comment_id).click
+    logger.debug "> REPLY SUBMITTED"
   end
 
   # -------------------
