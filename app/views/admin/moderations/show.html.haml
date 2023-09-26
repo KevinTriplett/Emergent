@@ -6,7 +6,7 @@
       = link_to @moderation.url, @moderation.url
     %b Original text:
     .post-original
-      .text= @moderation.original_text.html_safe
+      .text= (@moderation.original_text || "(not recorded yet)").html_safe
     %p
       %b Member name:
       = @moderation.user_name
