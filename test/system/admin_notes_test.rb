@@ -16,7 +16,7 @@ class NotesTest < ApplicationSystemTestCase
       group_1 = create_survey_group(name: "Group 1")
       survey = group_1.survey
       group_2 = create_survey_group(survey: survey, name: "Group 2")
-      admin = login
+      admin = login(:surveyor)
       assert survey.reload.ordered_notes.empty?
       assert survey.survey_questions.empty?
 

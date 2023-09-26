@@ -11,7 +11,7 @@ class AdminSurveysTest < ApplicationSystemTestCase
 
   test "Admin can create and edit a survey" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:surveyor)
 
       visit admin_surveys_path
       assert_current_path admin_surveys_path
@@ -57,7 +57,7 @@ class AdminSurveysTest < ApplicationSystemTestCase
 
   test "Admin can create and edit groups" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:surveyor)
       survey = create_survey
 
       visit admin_survey_path(survey.id)
@@ -122,7 +122,7 @@ class AdminSurveysTest < ApplicationSystemTestCase
 
   test "Admin can create and edit survey questions" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:surveyor)
       group = create_survey_group
       survey = group.survey
 
@@ -217,7 +217,7 @@ class AdminSurveysTest < ApplicationSystemTestCase
   # not working using Selinium
   # test "Admin can re-ordering survey groups" do
   #   DatabaseCleaner.cleaning do
-  #     admin = login
+  #     admin = login(:surveyor)
   #     survey = create_survey
   #     group_1 = create_survey_group(survey: survey, name: "Group 1")
   #     group_2 = create_survey_group(survey: survey, name: "Group 2")
@@ -245,7 +245,7 @@ class AdminSurveysTest < ApplicationSystemTestCase
 
   test "Admin can re-ordering survey questions" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:surveyor)
       group = create_survey_group
       survey = group.survey
       survey_question_1 = create_survey_question({

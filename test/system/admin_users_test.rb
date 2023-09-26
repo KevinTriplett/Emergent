@@ -62,7 +62,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can select a user from index view then change status and see answers in show view" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:greeter)
       user = create_user(
         greeter_id: admin.id
       )
@@ -99,7 +99,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can do everything related to approval and greeting in wizard view" do
     DatabaseCleaner.cleaning do
-      admin_1 = login
+      admin_1 = login(:greeter)
       admin_2 = create_user
       existing_user = create_user
       existing_user.update when_timestamp: nil
@@ -172,7 +172,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".email-template-buttons.clarification a.btn.btn-secondary", count: 2
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
       assert_selector "form button.btn.btn-success.user-approve", text: "Answers Are Acceptable"
-      assert_no_selector "a", text: "Answers Need Clarification"
+      assert_selector "a", text: "Answers Need Clarification"
       assert_selector "a.btn.btn-danger.user-reject", text: "Decline This Request"
 
       old_status = existing_user.status
@@ -195,9 +195,9 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "textarea.email-body"
       assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary"
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "form button", text: "Answers Are Acceptable"
-      assert_no_selector "a", text: "Answers Need Clarification"
-      assert_no_selector "a", text: "Decline This Request"
+      assert_selector "form button", text: "Answers Are Acceptable"
+      assert_selector "a", text: "Answers Need Clarification"
+      assert_selector "a", text: "Decline This Request"
 
       existing_user.update status: "Clarification Needed"
       visit admin_user_wizard_path(token: existing_user.token)
@@ -216,9 +216,9 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector "textarea.email-body"
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 5
       assert_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "form button", text: "Answers Are Acceptable"
-      assert_no_selector "a", text: "Answers Need Clarification"
-      assert_no_selector "a", text: "Decline This Request"
+      assert_selector "form button", text: "Answers Are Acceptable"
+      assert_selector "a", text: "Answers Need Clarification"
+      assert_selector "a", text: "Decline This Request"
 
       existing_user.update status: "Pending"
       existing_user.update joined: false
@@ -254,9 +254,9 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", count: 6
       assert_selector ".email-template-buttons.greeting a.btn.btn-secondary", text: "Your Most Recent Email"
       assert_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "form button", text: "Answers Are Acceptable"
-      assert_no_selector "a", text: "Answers Need Clarification"
-      assert_no_selector "a", text: "Decline This Request"
+      assert_selector "form button", text: "Answers Are Acceptable"
+      assert_selector "a", text: "Answers Need Clarification"
+      assert_selector "a", text: "Decline This Request"
       click_link "Enter Greeting Date"
 
       assert_current_path admin_user_wizard_path(token: existing_user.token)
@@ -267,9 +267,9 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_no_selector "textarea.email-body"
       assert_no_selector ".email-template-buttons.greeting a.btn.btn-secondary"
       assert_no_selector "a.btn.btn-success", text: "Zoom Scheduled"
-      assert_no_selector "form button", text: "Answers Are Acceptable"
-      assert_no_selector "a", text: "Answers Need Clarification"
-      assert_no_selector "a", text: "Decline This Request"
+      assert_selector "form button", text: "Answers Are Acceptable"
+      assert_selector "a", text: "Answers Need Clarification"
+      assert_selector "a", text: "Decline This Request"
 
       assert_selector ".user-meeting-datetime input.datetime-picker"
       input = find(".user-meeting-datetime input.datetime-picker")
@@ -309,7 +309,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can update user status in show view" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:greeter)
       existing_user = create_user
       existing_user.update status: "Scheduling Zoom"
 
@@ -327,7 +327,7 @@ class AdminUsersTest < ApplicationSystemTestCase
 
   test "Greeter can enter notes in show view" do
     DatabaseCleaner.cleaning do
-      user = login
+      user = login(:greeter)
       user.update status: "Zoom Done (completed)"
       user.update joined: true
       old_notes = user.notes
@@ -363,7 +363,7 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "Greeter can sort members in index view" do
     DatabaseCleaner.cleaning do
       old_request_timestamp = (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
-      admin = login
+      admin = login(:greeter)
       admin.update request_timestamp: old_request_timestamp
       other_greeter = create_user(request_timestamp: old_request_timestamp)
 
@@ -408,7 +408,7 @@ class AdminUsersTest < ApplicationSystemTestCase
   test "Greeter can search for members" do
     DatabaseCleaner.cleaning do
       old_time = (Time.now-365.days).strftime("%Y-%m-%dT%H:%M:%SZ")
-      admin = login
+      admin = login(:greeter)
       admin.update name: random_user_name
       admin.update request_timestamp: old_time
       user1 = create_user({

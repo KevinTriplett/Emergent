@@ -14,11 +14,12 @@ class AdminSurveyInvitesTest < ApplicationSystemTestCase
 
   test "Admin can create a survey invite" do
     DatabaseCleaner.cleaning do
-      admin = login
+      admin = login(:surveyor)
       existing_survey = create_survey
       existing_user = create_user(name: "Mark Triplett")
       existing_user.update(first_name: "Mark")
       existing_user.update(last_name: "Triplett")
+      assert existing_user.reload.id.present?
 
       assert_nil SurveyInvite.first
       visit admin_surveys_path
@@ -33,6 +34,7 @@ class AdminSurveyInvitesTest < ApplicationSystemTestCase
       search_input = find("input[type='search']")
       search_input.click
       search_input.send_keys(existing_user.first_name)
+      sleep 1
       assert_selector "span.user-name", text: existing_user.name
       page.find("span.user-name").click
       click_on "Send Invite"
