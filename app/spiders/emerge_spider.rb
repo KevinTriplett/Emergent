@@ -64,16 +64,14 @@ class EmergeSpider < Kimurai::Base
 
   def sign_in(role)
     email, password = case role
-    when :greeter
+    when :greeter, :moderator, :surveyor
       [Rails.configuration.mn_greeter_username, Rails.configuration.mn_greeter_password]
-    when :moderator
-      [Rails.configuration.mn_greeter_username, Rails.configuration.mn_greeter_password]
-    when :surveyor
-      [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
+    # TODO: restore when/if moderator and surveyor accounts are created
+    # when :moderator
+    #   [Rails.configuration.mn_moderator_username, Rails.configuration.mn_moderator_password]
+    # when :surveyor
+    #   [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
     end
-    # TODO: restore when/if moderator account is created
-    # [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
-    # [Rails.configuration.mn_moderator_username, Rails.configuration.mn_moderator_password]
 
     wait_until("body.auth-sign_in")
     browser.fill_in "Email", with: email
