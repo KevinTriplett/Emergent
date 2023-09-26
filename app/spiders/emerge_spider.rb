@@ -73,6 +73,7 @@ class EmergeSpider < Kimurai::Base
     #   [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
     end
 
+    logger.info "> SIGN IN"
     wait_until("body.auth-sign_in")
     browser.fill_in "Email", with: email
     browser.fill_in "Password", with: password
@@ -80,7 +81,7 @@ class EmergeSpider < Kimurai::Base
 
     wait_while(".pace-running")
     wait_until("body.communities-app")
-    logger.info "> SIGNIN SUCCESSFUL"
+    logger.info "> SIGN IN SUCCESSFUL"
   end
 
   def response_has(css, text=nil)
@@ -106,14 +107,14 @@ class EmergeSpider < Kimurai::Base
   end
 
   def raise_error_unless_response_has(css)
-    return if response_has(css)
+    return true if response_has(css)
     browser.save_screenshot
-    raise "ERROR: could not find css #{css}"
+    raise "#{name}: > ERROR: could not find css \"#{css}\""
   end
 
   def raise_error_if_response_has(css)
-    return unless response_has(css)
+    return true unless response_has(css)
     browser.save_screenshot
-    raise "ERROR: could not find css #{css}"
+    raise "#{name}: > ERROR: could not find css \"#{css}\""
   end
 end
