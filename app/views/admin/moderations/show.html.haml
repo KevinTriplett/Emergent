@@ -21,6 +21,9 @@
       %b Reply:
       = @moderation.reply
     %p
+      %b Status:
+      = Moderation::STATUS.key(@moderation.state)
+    %p
       %b Created:
       = @moderation.created_at
 
