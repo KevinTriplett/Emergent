@@ -212,7 +212,7 @@ class Spider < ActiveRecord::Base
 
   def self.run_spiders
     approve_members
-    get_new_members(50)
+    get_new_members(20)
     send_magic_links
     send_survey_invite_messages
     check_new_moderations
