@@ -22,17 +22,20 @@ class ModerationSpider < EmergeSpider
     comment_id = comment_id[1] if comment_id
 
     record(moderation, comment_id) unless moderation.recorded?
+    moderation.reload
     reply(moderation, comment_id) unless moderation.replied?
   end
 
   def record(moderation, comment_id)
     comment_id.nil? ? record_post_info(moderation) : record_comment_info(moderation, comment_id)
     moderation.update_state(:recorded)
+    logger.debug "> RECORDED SUCCESSFULLY"
   end
   
   def reply(moderation, comment_id)
     comment_id.nil? ? reply_to_post(moderation) : reply_to_comment(moderation, comment_id)
     moderation.update_state(:replied)
+    logger.debug "> REPLY SUBMITTED"
   end
 
   # -------------------
@@ -50,7 +53,6 @@ class ModerationSpider < EmergeSpider
     moderation.user = member
     moderation.original_text = original_text
     moderation.save!
-    logger.debug "> SAVED SUCCESSFULLY"
   end
 
   def reply_to_post(moderation)
@@ -58,7 +60,6 @@ class ModerationSpider < EmergeSpider
     sleep 1
     browser.send_keys(moderation.reply)
     find_post_reply_submit_button.click
-    logger.debug "> REPLY SUBMITTED"
   end
 
   # -------------------
@@ -80,7 +81,6 @@ class ModerationSpider < EmergeSpider
     moderation.user = member
     moderation.original_text = original_text
     moderation.save!
-    logger.info "> SAVED SUCCESSFULLY"
   end
 
   def reply_to_comment(moderation, comment_id)
@@ -88,7 +88,6 @@ class ModerationSpider < EmergeSpider
     sleep 1
     browser.send_keys(moderation.reply)
     find_comment_reply_submit_button(comment_id).click
-    logger.debug "> REPLY SUBMITTED"
   end
 
   # -------------------
