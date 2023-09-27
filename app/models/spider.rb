@@ -97,7 +97,8 @@ class Spider < ActiveRecord::Base
   ########################
 
   def self.check_new_moderations
-    Moderation.where(user_id: nil).each do |moderation|
+    Moderation.all.each do |moderation|
+      next if moderation.replied?
       set_message("moderation_spider", moderation.id)
       ModerationSpider.crawl!
       for i in 1..60

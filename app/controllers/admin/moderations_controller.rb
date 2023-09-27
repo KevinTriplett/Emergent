@@ -15,6 +15,7 @@ module Admin
     def create
       moderation = Moderation.create(moderation_params)
       moderation.moderator = current_user
+      moderation.update_state(:created, false)
       return redirect_to admin_moderations_url if moderation.save!
 
       render :new, status: :unprocessable_entity

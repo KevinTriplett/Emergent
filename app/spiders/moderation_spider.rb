@@ -21,21 +21,23 @@ class ModerationSpider < EmergeSpider
     comment_id = /\/comments\/(\d+)/.match(moderation.url)
     comment_id = comment_id[1] if comment_id
 
-    get_moderation_info(moderation, comment_id)
-    reply(moderation, comment_id)
+    record(moderation, comment_id) unless moderation.recorded?
+    reply(moderation, comment_id) unless moderation.replied?
   end
 
-  def get_moderation_info(moderation, comment_id)
-    comment_id.nil? ? get_post_info(moderation) : get_comment_info(moderation, comment_id)
+  def record(moderation, comment_id)
+    comment_id.nil? ? record_post_info(moderation) : record_comment_info(moderation, comment_id)
+    moderation.update_state(:recorded)
   end
   
   def reply(moderation, comment_id)
     comment_id.nil? ? reply_to_post(moderation) : reply_to_comment(moderation, comment_id)
+    moderation.update_state(:replied)
   end
 
   # -------------------
   
-  def get_post_info(moderation)
+  def record_post_info(moderation)
     container = find_post_container
     author_profile_url = container.find(:css, ".profile-attribution-link-container a.mighty-attribution-name")["href"]
     original_text = container.find(:css, ".detail-layout-description")['innerHTML']
@@ -61,7 +63,7 @@ class ModerationSpider < EmergeSpider
 
   # -------------------
 
-  def get_comment_info(moderation, comment_id)
+  def record_comment_info(moderation, comment_id)
     container = find_comment_container(comment_id)
     container.find(:css, ".comment-body").click
 
