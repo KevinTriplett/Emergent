@@ -1,8 +1,6 @@
 require 'emerge_spider'
 
 class ApproveUserSpider < EmergeSpider
-  class EmailCloaked < StandardError
-  end
 
   @name = "approve_user_spider"
   @engine = @@engine

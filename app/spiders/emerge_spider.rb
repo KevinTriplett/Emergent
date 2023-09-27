@@ -3,6 +3,8 @@ require 'kimurai'
 class EmergeSpider < Kimurai::Base
   class EmailCloaked < StandardError
   end
+  class CssNotFound < StandardError
+  end
   
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   @@engine = Rails.env.development? ? :selenium_firefox : :selenium_chrome
@@ -12,7 +14,7 @@ class EmergeSpider < Kimurai::Base
     disable_images: true,
     window_size: [1366, 768],
     user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
-    retry_request_errors: [EOFError, Net::ReadTimeout],
+    retry_request_errors: [EOFError, Net::ReadTimeout, CssNotFound],
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
@@ -35,6 +37,7 @@ class EmergeSpider < Kimurai::Base
 
   def self.open_spider
     ::Spider.clear_result(name)
+    logger.info "using #{@@engine} browser"
     logger.info "> STARTING"
   end
 
@@ -109,12 +112,12 @@ class EmergeSpider < Kimurai::Base
   def raise_error_unless_response_has(css)
     return true if response_has(css)
     browser.save_screenshot
-    raise "#{name}: > ERROR: could not find css \"#{css}\""
+    raise CssNotFound, "#{name}: > ERROR: could not find css \"#{css}\""
   end
 
   def raise_error_if_response_has(css)
     return true unless response_has(css)
     browser.save_screenshot
-    raise "#{name}: > ERROR: could not find css \"#{css}\""
+    raise CssNotFound, "#{name}: > ERROR: could not find css \"#{css}\""
   end
 end
