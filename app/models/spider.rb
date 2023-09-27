@@ -90,7 +90,6 @@ class Spider < ActiveRecord::Base
   def self.check_new_moderations
     Moderation.all.each do |moderation|
       next if moderation.replied?
-      data = [user.first_name, user.last_name].join('|')
       set_message("moderation_spider", moderation.id)
       ModerationSpider.crawl!
     end
