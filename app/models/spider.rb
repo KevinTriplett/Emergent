@@ -93,17 +93,7 @@ class Spider < ActiveRecord::Base
       data = [user.first_name, user.last_name].join('|')
       set_message("moderation_spider", moderation.id)
       ModerationSpider.crawl!
-      end
-      end
-      break if result?("moderation_spider")
     end
-  rescue Selenium::WebDriver::Error::UnknownError
-  rescue Net::ReadTimeout
-    end
-      break if result?("moderation_spider")
-    end
-  rescue Selenium::WebDriver::Error::UnknownError
-  rescue Net::ReadTimeout
   end
 
   ########################
@@ -117,25 +107,7 @@ class Spider < ActiveRecord::Base
 
   def self.send_magic_links
     return unless message?("magic_link_spider")
-      MagicLinkSpider.crawl!
-      MagicLinkSpider.crawl!
-      for i in 1..60
-        break if result?("magic_link_spider")
-        sleep 2
-      end
-      break if success?("magic_link_spider")
-    end
-  rescue Selenium::WebDriver::Error::UnknownError
-  rescue Net::ReadTimeout
     MagicLinkSpider.crawl!
-      for i in 1..60
-        break if result?("magic_link_spider")
-        sleep 2
-      end
-      break if success?("magic_link_spider")
-    end
-  rescue Selenium::WebDriver::Error::UnknownError
-  rescue Net::ReadTimeout
   end
 
   ########################
