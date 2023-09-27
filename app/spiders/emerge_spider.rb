@@ -64,6 +64,9 @@ class EmergeSpider < Kimurai::Base
   def set_result(result)
     ::Spider.set_result(name, result)
   end
+  def set_message(msg)
+    ::Spider.set_message(name, msg)
+  end
 
   def sign_in(role)
     email, password = case role
