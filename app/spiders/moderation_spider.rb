@@ -27,14 +27,18 @@ class ModerationSpider < EmergeSpider
   end
 
   def record(moderation, comment_id)
-    comment_id.nil? ? record_post_info(moderation) : record_comment_info(moderation, comment_id)
+    comment_id.nil? ? 
+      record_post_info(moderation) : 
+      record_comment_info(moderation, comment_id)
     moderation.update_state(:recorded)
-    logger.info "> RECORDED SUCCESSFULLY"
     logger.info "> AUTHOR IS '#{moderation.user_name}'"
+    logger.info "> RECORDED SUCCESSFULLY"
   end
   
   def reply(moderation, comment_id)
-    comment_id.nil? ? reply_to_post(moderation) : reply_to_comment(moderation, comment_id)
+    comment_id.nil? ? 
+      reply_to_post(moderation) : 
+      reply_to_comment(moderation, comment_id)
     moderation.update_state(:replied)
     logger.info "> REPLY SUBMITTED"
   end
