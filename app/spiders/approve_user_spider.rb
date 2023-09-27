@@ -57,6 +57,6 @@ class ApproveUserSpider < EmergeSpider
 
     member_id = link.split("/").last
     logger.info "> GOT MEMBER ID '#{member_id}'"
-    set_result(member_id)
+    set_message(member_id)
   end
 end
