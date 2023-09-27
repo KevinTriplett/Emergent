@@ -29,13 +29,14 @@ class ModerationSpider < EmergeSpider
   def record(moderation, comment_id)
     comment_id.nil? ? record_post_info(moderation) : record_comment_info(moderation, comment_id)
     moderation.update_state(:recorded)
-    logger.debug "> RECORDED SUCCESSFULLY"
+    logger.info "> RECORDED SUCCESSFULLY"
+    logger.info "> AUTHOR IS '#{moderation.user_name}'"
   end
   
   def reply(moderation, comment_id)
     comment_id.nil? ? reply_to_post(moderation) : reply_to_comment(moderation, comment_id)
     moderation.update_state(:replied)
-    logger.debug "> REPLY SUBMITTED"
+    logger.info "> REPLY SUBMITTED"
   end
 
   # -------------------
@@ -49,7 +50,6 @@ class ModerationSpider < EmergeSpider
     logger.error "> COULD NOT FIND MEMBER" unless member
     return unless member
 
-    logger.debug "> GOT AUTHOR '#{member.name}'"
     moderation.user = member
     moderation.original_text = original_text
     moderation.save!
@@ -77,7 +77,6 @@ class ModerationSpider < EmergeSpider
     logger.error "> COULD NOT FIND MEMBER" unless member
     return unless member
 
-    logger.info "> GOT AUTHOR '#{member.name}'"
     moderation.user = member
     moderation.original_text = original_text
     moderation.save!
