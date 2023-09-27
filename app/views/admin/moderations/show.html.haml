@@ -1,6 +1,6 @@
 .row
   .col
-    %h5 Moderation Information:
+    %h5= "Moderation Information (#{@moderation.token})"
     %p
       %b Link:
       = link_to @moderation.url, @moderation.url
