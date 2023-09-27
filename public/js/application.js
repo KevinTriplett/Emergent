@@ -482,10 +482,6 @@ $(document).ready(function() {
           td.innerText = user.when;
           tr.appendChild(td);
           td = document.createElement("td");
-          td.className = "user-shadow";
-          td.innerText = user.shadow;
-          tr.appendChild(td);
-          td = document.createElement("td");
           td.className = "user-notes";
           td.innerText = user.notes;
           td.setAttribute("title", user.truncated);
