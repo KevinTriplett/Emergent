@@ -6,6 +6,9 @@ class ApproveUserSpider < EmergeSpider
   @engine = @@engine
   @start_urls = @@urls
   @config = @@config
+  # TODO: can probably fix this if desired:
+  # have to add this error during instantiation because Selenium isn't loaded at app loadtime
+  @config[:retry_request_errors].push(Selenium::WebDriver::Error::InvalidSelectorError)
   create_spider(@name)
 
   def parse(response, url:, data: {})

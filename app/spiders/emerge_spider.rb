@@ -17,7 +17,6 @@ class EmergeSpider < Kimurai::Base
     retry_request_errors: [
       EOFError,
       Net::ReadTimeout,
-      Selenium::WebDriver::Error::InvalidSelectorError,
       EmailCloaked,
       CssNotFound
     ],
