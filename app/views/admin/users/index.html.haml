@@ -17,18 +17,16 @@
             Zoom Meeting
             %br
             %span.tzinfo (GMT)
-          -# %th.shadow Shadow
           %th.notes Notes
           %th.request Requested
       %tbody
         - @users.each do |u|
-          - dataset = {url: u[:url], id: u[:id], status: u[:status], greeter_id: u[:greeter_id], shadow_id: u[:shadow_id] }
+          - dataset = {url: u[:url], id: u[:id], status: u[:status], greeter_id: u[:greeter_id] }
           %tr{ class: u[:css_class], data: dataset }
             %td.user-name= u[:name]
             %td.user-greeter= u[:greeter]
             %td.user-status= u[:status]
             %td.user-meeting-datetime.utc-time= u[:when]
-            -# %td.user-shadow= link_to((u[:shadow] ? u[:shadow] : "I want to shadow"), "#")
             %td.user-notes{ title: u[:truncated] }= u[:notes]
             %td.user-request= u[:request]
       %tfoot
