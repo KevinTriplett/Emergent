@@ -2,7 +2,7 @@
 
 .row
   .col
-    %h5= "Moderation Information (#{@moderation.token})"
+    %h5 Moderation Information
     %p
       %b Link:
       = link_to @moderation.url, @moderation.url
@@ -28,3 +28,5 @@
     %b Original text:
     .post-original
       .text= (@moderation.original_text || "(not recorded yet)").html_safe
+
+%p= @moderation.token
