@@ -37,6 +37,9 @@ class ApproveUserSpider < EmergeSpider
     # find approve button for this user
     css_approve = "#{css_row} a.invite-list-item-approve-button"
     logger.debug "> LOOKING FOR #{css_approve}"
+    wait_until(css_approve)
+    return unless Rails.env.production?
+
     browser.find(:css, css_approve).click
     wait_until(css_status, "Joined!")
     end
