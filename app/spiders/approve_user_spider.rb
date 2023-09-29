@@ -42,7 +42,6 @@ class ApproveUserSpider < EmergeSpider
 
     browser.find(:css, css_approve).click
     wait_until(css_status, "Joined!")
-    end
 
     ############################################
     # update the member's new id
