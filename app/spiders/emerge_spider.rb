@@ -14,7 +14,13 @@ class EmergeSpider < Kimurai::Base
     disable_images: true,
     window_size: [1366, 768],
     user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
-    retry_request_errors: [EOFError, Net::ReadTimeout, CssNotFound],
+    retry_request_errors: [
+      EOFError,
+      Net::ReadTimeout,
+      Selenium::WebDriver::Error::InvalidSelectorError,
+      EmailCloaked,
+      CssNotFound
+    ],
     before_request: {
       # Change user agent before each request:
       change_user_agent: false,
