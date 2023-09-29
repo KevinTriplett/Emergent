@@ -206,7 +206,7 @@ class AdminUsersTest < ApplicationSystemTestCase
       click_on "Answers Are Acceptable"
 
       assert_current_path admin_user_wizard_path(token: existing_user.token)
-      assert_selector ".flash", text: "User scheduled for approval, shouldn't take longer than ten minutes to be reflected in EC"
+      assert_selector ".flash", text: "User scheduled for approval, shouldn't take longer than 30 minutes to be reflected in EC"
       assert_equal "Scheduling Zoom", existing_user.reload.status
       assert_selector ".user-status", text: existing_user.status
       assert_selector ".user-greeter", text: admin_1.name
