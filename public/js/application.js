@@ -433,6 +433,15 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////
   // CONNECT DATATABLE
   // ref https://datatables.net/reference/index
+  $("table.moderations").DataTable({
+    order: [[5,"desc"]],
+    paging: false,
+    fixedHeader: true,
+    fixedColumn: true
+  });
+  $("table.moderations").find("tfoot").hide();
+
+
   $("table.users").DataTable({
     order: [[5,"desc"]],
     paging: false,
@@ -598,7 +607,7 @@ $(document).ready(function() {
 
   ////////////////////////////////////////////////////
   // MAKE TABLE ROWS CLICKABLE
-  $("table.users tbody").on("click", function(e) {
+  $("table.users tbody, table.moderations tbody").on("click", function(e) {
     if (e.target.nodeName == "A") return;
     document.location = $(e.target).closest("tr").attr("data-url");
   });
@@ -1497,7 +1506,9 @@ $(document).ready(function() {
         var violation = $(`#violation-${checkbox.value}`);
         text.push(violation.text());
       }
-      $(".moderation_reply textarea").val(text.join("\r\r"));
+      $(".moderation_reply textarea")
+        .val(text.join("\r\r"))
+        .trigger("input");
     });
   });
 

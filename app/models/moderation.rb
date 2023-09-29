@@ -14,6 +14,10 @@ class Moderation < ActiveRecord::Base
     define_method("is_#{key}?") { (state || 0) == val }
     define_method("#{key}?") { (state || 0) >= val }
   end
+  
+  def get_state
+    Moderation::STATUS.key(state)
+  end
 
   # ----------------------------------------------------------------------
 

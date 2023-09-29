@@ -1,12 +1,29 @@
 %h4= (@moderations.empty? ? "No " : "") + "Moderations"
 
 = link_to "New moderation", new_admin_moderation_path, class: "btn btn-primary"
+= link_to "violations", admin_violations_path, class: "btn btn-secondary"
 
 .row
   .col
-    - @moderations.each do |moderation|
-      %p.moderation
-        %span.token= link_to moderation.token, admin_moderation_path(token: moderation.token)
-        = " --- created at #{moderation.created_at}"
-
-= link_to "violations", admin_violations_path
+    %table.moderations.table.table-bordered.table-striped
+      %thead
+        %tr
+          %th.name User
+          %th.name Moderator
+          %th.status Status
+          %th.url Link
+          %th.notes Violations
+          %th.date Created
+      %tbody
+        - @moderations.each do |m|
+          - dataset = { url: m[:url] }
+          %tr{ class: m[:css_class], data: dataset }
+            %td.user-name= m[:name]
+            %td.user-name= m[:moderator]
+            %td.user-status= m[:state]
+            %td.user-link= link_to "Link", m[:link]
+            %td.user-notes= m[:violations]
+            %td.user-date= m[:created]
+      %tfoot
+        %tr
+          %td{ colspan: 6} No moderations yet

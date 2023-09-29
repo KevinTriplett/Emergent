@@ -1,3 +1,5 @@
+= link_to("👈 Back", admin_moderations_url, class: "user-back btn btn-secondary")
+
 .row
   .col
     %h5= "Moderation Information (#{@moderation.token})"
@@ -19,13 +21,10 @@
       = @moderation.reply
     %p
       %b Status:
-      = Moderation::STATUS.key(@moderation.state)
+      = @moderation.get_state
     %p
       %b Created:
       = @moderation.created_at
     %b Original text:
     .post-original
       .text= (@moderation.original_text || "(not recorded yet)").html_safe
-
-.row
-  .col= link_to "< Back", admin_moderations_path

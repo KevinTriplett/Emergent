@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   post "admin/users/:token/approve", to: "admin/users#approve_user", as: :admin_approve_user
   get  "admin/users/:token/wizard", to: "admin/users#wizard", as: :admin_user_wizard
   post "admin/users/:token/email", to: "admin/users#send_email", as: :admin_user_send_email
+  post "admin/moderations/:token/resolved", to: "admin/moderations#resolved", as: :admin_moderation_resolved
   
   get  "admin/surveys/:id/test", to: "admin/surveys#test", as: :admin_survey_test
   get  "admin/surveys/:id/report", to: "admin/surveys#report", as: :admin_survey_report
