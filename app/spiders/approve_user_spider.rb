@@ -37,11 +37,8 @@ class ApproveUserSpider < EmergeSpider
     # find approve button for this user
     css_approve = "#{css_row} a.invite-list-item-approve-button"
     logger.debug "> LOOKING FOR #{css_approve}"
-    begin
-      browser.find(:css, css_approve).click
-      wait_until(css_status, "Joined!")
-    rescue Selenium::WebDriver::Error::ElementNotInteractableError
-      logger.fatal "> Approve button not interactable on MN platform"
+    browser.find(:css, css_approve).click
+    wait_until(css_status, "Joined!")
     end
 
     ############################################
