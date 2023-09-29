@@ -8,7 +8,7 @@ class EmergeSpider < Kimurai::Base
   end
   
   USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-  @@engine = :selenium_firefox # :selenium_chrome
+  @@engine = :selenium_chrome # :selenium_firefox # :selenium_chrome
   @@urls = ["https://emergent-commons.mn.co/sign_in"]
   @@config = {
     user_agent: USER_AGENT,
