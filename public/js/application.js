@@ -1000,9 +1000,9 @@ $(document).ready(function() {
     });
   }
   $("#survey-container .stickies .vote-up, #survey-container .stickies .vote-down")
-    .on("click", processVote);
+    .on("touchstart mousedown", processVote);
   $("#notes-container .stickies .vote-up, #notes-container .stickies .vote-down")
-    .on("click", processVote);
+    .on("touchstart mousedown", processVote);
 
   var processStarVote = function(e) {
     var self = $(this);
@@ -1033,8 +1033,8 @@ $(document).ready(function() {
     });
   }
   $("#notes-container .voted .vote-up, #notes-container .voted .vote-down")
-    .on("click", processStarVote)
-    .on("click", debounce(reorderVotedRank, 1000));
+    .on("touchstart mousedown", processStarVote)
+    .on("touchstart mousedown", debounce(reorderVotedRank, 1000));
 
   var elsVotedRankSorted = function() {
     return $(".voted.main").sort(function(a, b) {
