@@ -148,11 +148,11 @@ class SurveyInvitesController < ApplicationController
     @notes.each do |note|
       @survey_answers.push @survey_invite.survey_answer_for(note.survey_question_id)
     end
-    # @notes.sort! do |a, b|
-    #   vote_a = @survey_invite.survey_answer_for(a.survey_question_id).votes
-    #   vote_b = @survey_invite.survey_answer_for(b.survey_question_id).votes
-    #   vote_b <=> vote_a
-    # end
+    @notes.sort! do |a, b|
+      vote_a = @survey_invite.survey_answer_for(a.survey_question_id).votes
+      vote_b = @survey_invite.survey_answer_for(b.survey_question_id).votes
+      vote_b <=> vote_a
+    end
   end
   
   def get_liveview_timestamp
