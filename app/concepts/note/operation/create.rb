@@ -12,7 +12,7 @@ module Note::Operation
       end
 
       def initialize_note(ctx, model:, params:, **)
-        model.text = "Click here to edit"
+        model.text = params[:note][:text] || "Click here to edit"
         model.coords = "0:0"
       end
     end
@@ -34,17 +34,14 @@ module Note::Operation
     end
 
     def create_survey_question(ctx, model:, params:, **)
-      result = SurveyQuestion::Operation::Create.call(
-        params: {
-          survey_question: {
-            question: params[:note][:text] || model.text,
-            question_type: "Note",
-            answer_type: "Vote"    
-          },
-          survey_group_id: model.survey_group_id,
-        }
+      survey_question = SurveyQuestion.create(
+        survey_group_id: model.survey_group_id,
+        question: model.text,
+        question_type: "Note",
+        answer_type: "Vote"
       )
-      model.survey_question_id = result[:model].id if result.success?
+      survey_question.update(position: survey_question.survey_questions.count - 1)
+      model.survey_question_id = survey_question.id
     end
 
     def create_survey_answers(ctx, model:, **)

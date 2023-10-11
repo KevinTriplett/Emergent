@@ -187,6 +187,16 @@ class SurveyQuestionOperationTest < MiniTest::Spec
       end
     end
 
+    it "Creates {SurveyQuestion} model with note" do
+      DatabaseCleaner.cleaning do
+        group_1 = create_survey_group
+        group_2 = create_survey_group(survey_id: group_1.survey_id)
+        question_1 = create_survey_question(survey_group: group_1, question_type: "Note", answer_type: "Vote")
+        assert question_1.note
+        assert_equal question_1.question, question_1.note.text
+      end
+    end
+
     it "Updates {SurveyQuestion} with new order" do
       DatabaseCleaner.cleaning do
         group = create_survey_group

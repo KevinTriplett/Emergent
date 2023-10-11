@@ -36,9 +36,20 @@ module SurveyQuestion::Operation
     step Contract::Validate(key: :survey_question)
     step :determine_position
     step Contract::Persist()
-
+    step :create_note
+    
     def determine_position(ctx, model:, params:, **)
       model.position = model.survey_questions.count
+    end
+
+    def create_note(ctx, model:, params:, **)
+      return true unless params[:survey_question][:question_type] == "Note"
+      note = Note.create(
+        survey_question_id: model.id,
+        survey_group_id: model.survey_group_id,
+        text: model.question
+      )
+      note.update(position: note.notes.count - 1)
     end
   end
 end

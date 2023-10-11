@@ -34,7 +34,7 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_not_nil assigns(:users)
 
-      assert_select ".current-user", "Hi  ^_^\nLogout"
+      assert_select ".current-user", "Hi  ^_^\nLogout\n|\nMembers"
       assert_select "h1", "Emergent Commons Volunteer App"
       assert_select "h5", "Greeter View"
     end
