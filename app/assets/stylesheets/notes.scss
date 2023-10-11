@@ -6,29 +6,31 @@
 }
 
 body#notes, body#survey {
-  .hearts {
-    font-size: x-large;
-    position: absolute;
-    top: -10px;
-    left: -11px;
-  }
-  .survey-answer-vote {
-    margin-top: -17px;
-  }
-  .hearts, .survey-answer-vote {
-    .one-third {
-      color: rgb(8, 0, 255);
+  .stickies {
+    .hearts {
+      font-size: x-large;
+      position: absolute;
+      top: -10px;
+      left: -11px;
     }
-    .two-thirds {
-      color: rgb(238, 0, 255);
+    .survey-answer-vote {
+      margin-top: -17px;
     }
-    .three-thirds {
-      color: rgb(255, 0, 0);
+    .hearts, .survey-answer-vote {
+      .one-third {
+        color: rgb(8, 0, 255);
+      }
+      .two-thirds {
+        color: rgb(238, 0, 255);
+      }
+      .three-thirds {
+        color: rgb(255, 0, 0);
+      }
     }
   }
 }
 
-body#notes {
+body#notes.stickies {
   background-color: #9fc0c8;
   font-family: 'Poppins', sans-serif;
   display: flex;

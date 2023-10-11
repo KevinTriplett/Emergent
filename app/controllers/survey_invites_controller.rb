@@ -53,11 +53,13 @@ class SurveyInvitesController < ApplicationController
     if @survey_question.note?
       get_notes_and_survey_answers
       get_liveview_url
-      get_template
+      get_template if @survey_group.get_note_style == "stickies"
       @body_id = "notes"
+      @body_class = @survey_group.get_note_style
     else
       get_survey_questions
       @body_id = "survey"
+      @body_class = "survey"
     end
     @token = form_authenticity_token
   end
@@ -97,6 +99,7 @@ class SurveyInvitesController < ApplicationController
       vote_thirds: survey_answer.vote_thirds,
       votes_left: survey_answer.votes_left,
       group_id: survey_answer.survey_group_id,
+      question_id: survey_answer.survey_question_id,
       color: survey_answer.survey_group.note_color
     }) : (render head(:bad_request))
   end
@@ -144,6 +147,11 @@ class SurveyInvitesController < ApplicationController
     @survey_answers = []
     @notes.each do |note|
       @survey_answers.push @survey_invite.survey_answer_for(note.survey_question_id)
+    end
+    @notes.sort! do |a, b|
+      vote_a = @survey_invite.survey_answer_for(a.survey_question_id).votes
+      vote_b = @survey_invite.survey_answer_for(b.survey_question_id).votes
+      vote_b <=> vote_a
     end
   end
   

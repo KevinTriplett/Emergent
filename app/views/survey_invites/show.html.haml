@@ -18,12 +18,21 @@
   = link_to "Finish", @finish_url, class: "btn btn-primary" if @finish_url
 
 - if @notes
-  #notes-container
-    .notes
+  #notes-container.notes
+    - if @survey_group.get_note_style == :stickies
       - @notes.each do |note|
         = cell(Note::Cell::Survey, {note: note, invite: @survey_invite, patch_url: @patch_url, token: @token})
-    - if @live_view_url
-      .live-view{ data: {timestamp: @live_view_timestamp, url: @live_view_url} }
+      - if @live_view_url
+        .live-view{ data: {timestamp: @live_view_timestamp, url: @live_view_url} }
+    - elsif @survey_group.get_note_style == :voted
+      Vote on the following to rank each
+      - @notes.each_with_index do |note, i|
+        = cell(Note::Cell::Voted, {note: note, i: i, invite: @survey_invite, patch_url: @patch_url, token: @token})
+    - elsif @survey_group.get_note_style == :ranked
+      .sortable
+        Drag and drop the following to rank each
+        - @notes.each do |note|
+          = cell(Note::Cell::Ranked, {note: note, invite: @survey_invite, patch_url: @patch_url, token: @token})
 
 - if @template
   #note-template.hidden

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_27_163539) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_29_143036) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -96,6 +96,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_27_163539) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "note_color"
+    t.integer "note_style"
     t.index ["survey_id"], name: "index_survey_groups_on_survey_id"
   end
 

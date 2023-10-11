@@ -132,6 +132,10 @@ body#survey {
     font-size: small;
     font-family: sans-serif;
     margin: 0px 0px 20px 20px;
+    i {
+      cursor: pointer;
+      margin-right: 10px;
+    }
   }
   .survey-question-question {
     font-weight: normal;
@@ -170,12 +174,54 @@ body#survey {
       width: 150px;
     }
   }  
-  .survey-answer-vote i {
-    cursor: pointer;
-    margin-right: 10px;
-  }
   .voted {
     background-color: #c3edc0;
+  }
+}
+
+body#notes.voted {
+  background-color: white;
+  .notes {
+    .stars-remaining {
+      margin: 10px 0px 10px 10px;
+    }
+    i.bi-star-fill {
+      color: green;
+    }
+    i.vote-up, i.vote-down {
+      color: green;
+    }
+    .vote-count {
+      margin-left: 10px;
+    }
+    .voted {
+      margin-bottom: 10px;
+      padding: 5px;
+      position: relative;
+      .survey-answer-vote {
+        .vote-up {
+          cursor: pointer;
+          margin-left: 5px;
+        }
+        .vote-down {
+          cursor: pointer;
+          margin-left: 5px;
+        }
+        .votes-left, .vote-count {
+          font-family: monospace;
+        }
+        .hearts {
+          .zero-thirds {
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+  }
+  .note-text {
+    margin-left: 10px;
+    margin-top: -10px;
+    font-size: large;
   }
 }
 
@@ -221,6 +267,9 @@ body.home {
 
 .hidden, .opt {
   display: none;
+}
+.hide {
+  visibility: hidden;
 }
 
 // https://www.cssmine.com/ebook/css3-media-queries
@@ -602,6 +651,14 @@ table.users, #greeter.user-wizard {
   }
   .ui-state-default a.btn {
     color: white;
+  }
+  .ui-sortable-handle {
+    cursor: grab;
+    margin: 8px;
+    padding: 5px;
+  }
+  .ui-sortable-handle.ui-sortable-helper {
+    cursor: grabbing;
   }
 }
 

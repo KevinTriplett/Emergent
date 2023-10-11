@@ -12,6 +12,8 @@
   .row
     .col= f.input :note_color, placeholder: "Notes Color (rgb)", label: false
   .row
+    .col= f.input :note_style, placeholder: "Notes Style", label: false, collection: SurveyGroup::NOTE_STYLE
+  .row
     .col
       %input{name: "return_to_notes", type: "hidden", value: @return_param}
   .row

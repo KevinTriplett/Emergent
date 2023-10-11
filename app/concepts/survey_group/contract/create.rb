@@ -8,6 +8,7 @@ module SurveyGroup::Contract
     property :description
     property :votes_max
     property :note_color
+    property :note_style
 
     validation do
       params do
@@ -17,6 +18,7 @@ module SurveyGroup::Contract
         required(:description)
         required(:votes_max)
         required(:note_color)
+        required(:note_style)
       end
     end
   end

@@ -979,23 +979,100 @@ $(document).ready(function() {
         .text(result.votes_left);
       switch(result.vote_thirds) {
       case 0:
-        self.closest(".main").find(".hearts i").hide();
+        self.closest(".main").find(".hearts i").addClass("hidden");
+        self.closest(".main").find(".hearts i.zero-thirds").removeClass("hidden").addClass("hide");
         break;
       case 1:
-        self.closest(".main").find(".hearts i").hide();
-        self.closest(".main").find(".hearts i.one-third").show();
+        self.closest(".main").find(".hearts i").addClass("hidden");
+        self.closest(".main").find(".hearts i.zero-thirds").removeClass("hide");
+        self.closest(".main").find(".hearts i.one-third").removeClass("hidden");
         break;
       case 2:
-        self.closest(".main").find(".hearts i").hide();
-        self.closest(".main").find(".hearts i.two-thirds").show();
+        self.closest(".main").find(".hearts i").addClass("hidden");
+        self.closest(".main").find(".hearts i.zero-thirds").removeClass("hide");
+        self.closest(".main").find(".hearts i.two-thirds").removeClass("hidden");
         break;
       default:
-        self.closest(".main").find(".hearts i").hide();
-        self.closest(".main").find(".hearts i.three-thirds").show();
+        self.closest(".main").find(".hearts i").addClass("hidden");
+        self.closest(".main").find(".hearts i.zero-thirds").removeClass("hide");
+        self.closest(".main").find(".hearts i.three-thirds").removeClass("hidden");
       }
     });
   }
-  $("#survey-container .vote-up, #survey-container .vote-down").on("click", processVote);
+  $("#survey-container .stickies .vote-up, #survey-container .stickies .vote-down")
+    .on("click", processVote);
+  $("#notes-container .stickies .vote-up, #notes-container .stickies .vote-down")
+    .on("click", processVote);
+
+  var processStarVote = function(e) {
+    var self = $(this);
+    vote_change = self.hasClass("vote-up") ? 1 : -1;
+    surveyAnswerPatch(self, {vote_change: vote_change}, function(result) {
+      self
+        .closest("#survey-container, #notes-container")
+        .find(`[data-id='${result.question_id}']`)
+        .find(".vote-count")
+        .html(createStars(result.vote_count));
+      self
+        .closest("#survey-container, #notes-container")
+        .find(".votes-remaining")
+        .html(createStars(result.votes_left));
+    });
+  }
+
+  // after a delay to allow for voting finished (debounce)
+  //   re-rank everything
+  var reorderVotedRank = function() {
+    var topTop = $(".voted.main").position().top;
+    if (rankNotChanged()) return;
+    elsVotedRankSorted().each(function() {
+      var self = $(this);
+      var distance = `${topTop - self.position().top}px`
+      move(self, distance);
+      topTop += self.outerHeight(true);
+    });
+  }
+  $("#notes-container .voted .vote-up, #notes-container .voted .vote-down")
+    .on("click", processStarVote)
+    .on("click", debounce(reorderVotedRank, 1000));
+
+  var elsVotedRankSorted = function() {
+    return $(".voted.main").sort(function(a, b) {
+      var aVote = $(a).find(".vote-count i").length;
+      var bVote = $(b).find(".vote-count i").length;
+      return bVote - aVote;
+    });
+  }
+
+  var rankNotChanged = function() {
+    var ordered = $(".voted.main").get();
+    return elsVotedRankSorted().get().every(function(el, i) {
+      return el.id == ordered[i].id;
+    });
+  }
+
+  var reinsertVotedRank = function() {
+    var elStarsRemaining = $(".stars-remaining");
+    elsVotedRankSorted().get().reverse().forEach(function(el) {
+      $(el).insertAfter(elStarsRemaining);
+    });
+    $(".voted.main").each(function() {
+      $(this).css( "top", 0 );
+    })
+  }
+
+  var move = function(self, distance) {
+    self.animate({
+      top: distance
+    }, {
+      duration: 1000,
+      complete: debounce(reinsertVotedRank, 100)
+    });
+  }
+
+  var createStars = function(numStars) {
+    return Array(numStars).fill("<i class='bi-star-fill'></i>").join("");
+  }
 
   var surveyAnswerPatch = function(dom, data, success, error) {
     var urlDom = dom.closest("[data-url]");
@@ -1017,6 +1094,107 @@ $(document).ready(function() {
       error: error
     });
   }
+
+  $(".sortable.disable").sortable().disableSelection();
+
+  // // for each element
+  // //   do elements need to move up or down or no?
+  // //     if no, return
+  // //   identify the element-group immediately above or below self that needs to move
+  // //     this element-group needs to move down the element-group height + self height + margin
+  // //     the element-group above this element-group needs to move down the element-group height amount + margin
+  // //     the element-group below self needs to move down the element-group height amount + margin
+  // var rankGroupVotesRelativeTo = function(self, groupId) {
+  //   self = self.closest(".voted.main");
+  //   var [topEls, midEls, botEls] = getGroupElsAroundSelf(self, groupId);
+  //   if (midEls.length == 0) return; // leave if no need to move anything
+
+  //   // now move mid by combined height plus height of self plus margin
+  //   // move top and bot by combined mid height
+  //   var [topMove, midMove, botMove] = getMoveDistances(self, midEls)
+
+  //   topEls.forEach(function(el) { move(el, topMove); });
+  //   midEls.forEach(function(el) { move(el, midMove); });
+  //   botEls.forEach(function(el) { move(el, botMove); });
+  // }
+
+  // var getGroupElsAroundSelf = function(self, groupId) {
+  //   var groupEls = $(`#notes-container .voted.main[data-group-id='${groupId}']`)
+  //   var topEls = [];
+  //   var midEls = [];
+  //   var botEls = [];
+  //   var selfVote = self.find(".vote-count i").length;
+  //   var selfIndex = null;
+  //   groupEls.each(function(i, el) {
+  //     el = $(el);
+  //     if (el.attr("id") == self.attr("id")) {
+  //       selfIndex = i;
+  //       return;
+  //     }
+      
+  //     // example votes:
+  //     //   5
+  //     //   4
+  //     //   4
+  //     //   4 -> 3 || 5
+  //     //   4
+  //     //   3
+  //     var elVote = el.find(".vote-count i").length;
+  //     if (elVote >= selfVote && selfIndex == null) {
+  //       topEls.push(el);
+  //     } else if (elVote < selfVote && selfIndex == null) {
+  //       midEls.push(el);
+  //     } else if (elVote > selfVote && selfIndex != null) {
+  //       midEls.push(el);
+  //     } else if (elVote < selfVote && selfIndex != null) {
+  //       botEls.push(el);
+  //     }
+  //   });
+  //   return [topEls, midEls, botEls];
+  // }
+
+  // var getMoveDistances = function(self, midEls) {
+  //   var margin = parseInt(self.css("marginTop")) + parseInt(self.css("marginBottom"));
+  //   margin += parseInt(self.css("paddingTop")) + parseInt(self.css("paddingBottom"));
+  //   var selfHeight = getHeightEls([self], margin);
+  //   var midHeight = getHeightEls(midEls, margin);
+  //   var topMove = midHeight;
+  //   var midMove = midHeight + selfHeight;
+  //   var botMove = midHeight;
+
+  //   var moveDown = determineMoveDown(self, midEls);
+
+  //   if (moveDown) {
+  //     topMove = -topMove;
+  //     midMove = -midMove;
+  //     botMove = -botMove;
+  //   }
+  //   return [topMove, midMove, botMove];
+  // }
+
+  // var getHeightEls = function(ary, initialValue) {
+  //   return ary.reduce(getHeight, initialValue);
+  // }
+
+  // var getHeight = function(accumulator, el) {
+  //   return accumulator + el.height();
+  // }
+
+  // var determineMoveDown = function(self, el) {
+  //   var selfVote = parseInt(self.find(".vote-count").text());
+  //   var elVote = parseInt(el[0].find(".vote-count").text());
+  //   return selfVote > elVote;
+  // }
+
+  // var move = function(el, distance) {
+  //   el.animate( {top: `${distance}px`}, 1000 );
+  // }
+
+  $(".survey-answer-vote .vote-up, .survey-answer-vote .vote-down").on("dblclick", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
 
   ////////////////////////////////////////////////////
   // NOTES
@@ -1394,7 +1572,7 @@ $(document).ready(function() {
     var domNote = note.get()[0]; // get underlying dom element
     note
       .find(".vote-up, .vote-down")
-      .on("click", processVote);
+      .on("click", processVote)
     note
       .find(".survey-answer-vote")
       .on("dblclick", function(e) {
