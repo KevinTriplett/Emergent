@@ -180,10 +180,12 @@ body#survey {
 }
 
 body#notes.voted {
-  background-color: white;
+  background-color: #9fc0c8;
   .notes {
     .stars-remaining {
       margin: 10px 0px 10px 10px;
+      overflow: hidden;
+      white-space: nowrap;
     }
     i.bi-star-fill {
       color: green;
