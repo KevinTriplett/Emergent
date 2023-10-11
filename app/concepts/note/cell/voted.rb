@@ -79,7 +79,7 @@ class Note::Cell::Voted < Cell::ViewModel
   end
 
   def stars_remaining
-    "Stars remaining for votes: <span class='votes-remaining'>#{stars(votes_left)}</span>"
+    "Stars remaining: <span class='votes-remaining'>#{stars(votes_left)}</span>"
   end
 
   def hearts
