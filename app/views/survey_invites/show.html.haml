@@ -25,7 +25,7 @@
       - if @live_view_url
         .live-view{ data: {timestamp: @live_view_timestamp, url: @live_view_url} }
     - elsif @survey_group.get_note_style == :voted
-      Vote on the following to rank each
+      %h4= @survey_group.name
       - @notes.each_with_index do |note, i|
         = cell(Note::Cell::Voted, {note: note, i: i, invite: @survey_invite, patch_url: @patch_url, token: @token})
     - elsif @survey_group.get_note_style == :ranked
