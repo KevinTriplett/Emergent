@@ -189,9 +189,11 @@ body#notes.voted {
     }
     i.bi-star-fill {
       color: green;
+      font-size: larger;
     }
     i.vote-up, i.vote-down {
       color: green;
+      font-size: xx-large;
     }
     .vote-count {
       margin-left: 10px;
