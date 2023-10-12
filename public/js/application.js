@@ -1004,7 +1004,17 @@ $(document).ready(function() {
   $("#notes-container .stickies .vote-up, #notes-container .stickies .vote-down")
     .on("click", processVote);
 
+  var votingControlsEnabled = true;
+  var enableVotingControls = function() {
+    votingControlsEnabled = true;
+  }
+  var disableVotingControls = function() {
+    votingControlsEnabled = false;
+  }
+
   var processStarVote = function(e) {
+    if (!votingControlsEnabled) return;
+
     var self = $(this);
     vote_change = self.hasClass("vote-up") ? 1 : -1;
 
@@ -1070,10 +1080,12 @@ $(document).ready(function() {
     });
     $(".voted.main").each(function() {
       $(this).css( "top", 0 );
-    })
+    });
+    enableVotingControls();
   }
 
   var move = function(self, distance) {
+    disableVotingControls();
     self.animate({
       top: distance
     }, {
