@@ -1007,17 +1007,17 @@ $(document).ready(function() {
   var processStarVote = function(e) {
     var self = $(this);
     vote_change = self.hasClass("vote-up") ? 1 : -1;
-    surveyAnswerPatch(self, {vote_change: vote_change}, function(result) {
-      self
-        .closest("#survey-container, #notes-container")
-        .find(`[data-id='${result.question_id}']`)
-        .find(".vote-count")
-        .html(createStars(result.vote_count));
-      self
-        .closest("#survey-container, #notes-container")
-        .find(".votes-remaining")
-        .html(createStars(result.votes_left));
-    });
+    var votesLeftStars = $("#stars-remaining .votes-remaining i");
+    if (vote_change > votesLeftStars.length) {
+      return;
+    }
+    var votesLeft = votesLeftStars.length - vote_change;
+    votesLeftStars.parent().html(createStars(votesLeft));
+    var voteCountStars = self.closest(".survey-answer-vote").find(".vote-count i");
+    var voteCount = voteCountStars.length + vote_change;
+    voteCountStars.parent().html(createStars(voteCount));
+
+    surveyAnswerPatch(self, {vote_change: vote_change});
   }
 
   // after a delay to allow for voting finished (debounce)
@@ -1052,7 +1052,7 @@ $(document).ready(function() {
   }
 
   var reinsertVotedRank = function() {
-    var elStarsRemaining = $(".stars-remaining");
+    var elStarsRemaining = $("#stars-remaining");
     elsVotedRankSorted().get().reverse().forEach(function(el) {
       $(el).insertAfter(elStarsRemaining);
     });
@@ -1096,99 +1096,6 @@ $(document).ready(function() {
   }
 
   $(".sortable.disable").sortable().disableSelection();
-
-  // // for each element
-  // //   do elements need to move up or down or no?
-  // //     if no, return
-  // //   identify the element-group immediately above or below self that needs to move
-  // //     this element-group needs to move down the element-group height + self height + margin
-  // //     the element-group above this element-group needs to move down the element-group height amount + margin
-  // //     the element-group below self needs to move down the element-group height amount + margin
-  // var rankGroupVotesRelativeTo = function(self, groupId) {
-  //   self = self.closest(".voted.main");
-  //   var [topEls, midEls, botEls] = getGroupElsAroundSelf(self, groupId);
-  //   if (midEls.length == 0) return; // leave if no need to move anything
-
-  //   // now move mid by combined height plus height of self plus margin
-  //   // move top and bot by combined mid height
-  //   var [topMove, midMove, botMove] = getMoveDistances(self, midEls)
-
-  //   topEls.forEach(function(el) { move(el, topMove); });
-  //   midEls.forEach(function(el) { move(el, midMove); });
-  //   botEls.forEach(function(el) { move(el, botMove); });
-  // }
-
-  // var getGroupElsAroundSelf = function(self, groupId) {
-  //   var groupEls = $(`#notes-container .voted.main[data-group-id='${groupId}']`)
-  //   var topEls = [];
-  //   var midEls = [];
-  //   var botEls = [];
-  //   var selfVote = self.find(".vote-count i").length;
-  //   var selfIndex = null;
-  //   groupEls.each(function(i, el) {
-  //     el = $(el);
-  //     if (el.attr("id") == self.attr("id")) {
-  //       selfIndex = i;
-  //       return;
-  //     }
-      
-  //     // example votes:
-  //     //   5
-  //     //   4
-  //     //   4
-  //     //   4 -> 3 || 5
-  //     //   4
-  //     //   3
-  //     var elVote = el.find(".vote-count i").length;
-  //     if (elVote >= selfVote && selfIndex == null) {
-  //       topEls.push(el);
-  //     } else if (elVote < selfVote && selfIndex == null) {
-  //       midEls.push(el);
-  //     } else if (elVote > selfVote && selfIndex != null) {
-  //       midEls.push(el);
-  //     } else if (elVote < selfVote && selfIndex != null) {
-  //       botEls.push(el);
-  //     }
-  //   });
-  //   return [topEls, midEls, botEls];
-  // }
-
-  // var getMoveDistances = function(self, midEls) {
-  //   var margin = parseInt(self.css("marginTop")) + parseInt(self.css("marginBottom"));
-  //   margin += parseInt(self.css("paddingTop")) + parseInt(self.css("paddingBottom"));
-  //   var selfHeight = getHeightEls([self], margin);
-  //   var midHeight = getHeightEls(midEls, margin);
-  //   var topMove = midHeight;
-  //   var midMove = midHeight + selfHeight;
-  //   var botMove = midHeight;
-
-  //   var moveDown = determineMoveDown(self, midEls);
-
-  //   if (moveDown) {
-  //     topMove = -topMove;
-  //     midMove = -midMove;
-  //     botMove = -botMove;
-  //   }
-  //   return [topMove, midMove, botMove];
-  // }
-
-  // var getHeightEls = function(ary, initialValue) {
-  //   return ary.reduce(getHeight, initialValue);
-  // }
-
-  // var getHeight = function(accumulator, el) {
-  //   return accumulator + el.height();
-  // }
-
-  // var determineMoveDown = function(self, el) {
-  //   var selfVote = parseInt(self.find(".vote-count").text());
-  //   var elVote = parseInt(el[0].find(".vote-count").text());
-  //   return selfVote > elVote;
-  // }
-
-  // var move = function(el, distance) {
-  //   el.animate( {top: `${distance}px`}, 1000 );
-  // }
 
   $(".survey-answer-vote .vote-up, .survey-answer-vote .vote-down").on("dblclick", function(e) {
     e.preventDefault();
