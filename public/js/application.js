@@ -1007,16 +1007,29 @@ $(document).ready(function() {
   var processStarVote = function(e) {
     var self = $(this);
     vote_change = self.hasClass("vote-up") ? 1 : -1;
+
+    // stars left to vote with?
     var votesLeftStars = $("#stars-remaining .votes-remaining");
     var votesLeft = votesLeftStars.find("i").length - vote_change;
-    if (votesLeft <= 0) return;
+    if (votesLeft < 0) return;
 
-    votesLeftStars.html(createStars(votesLeft));
+    // stars left to remove?
     var voteCountStars = self.closest(".survey-answer-vote").find(".vote-count");
     var voteCount = voteCountStars.find("i").length + vote_change;
-    voteCountStars.html(createStars(voteCount));
+    if (voteCount < 0) return;
 
-    surveyAnswerPatch(self, {vote_change: vote_change});
+    // update stars
+    voteCountStars.html(createStars(voteCount));
+    votesLeftStars.html(createStars(votesLeft));
+
+    // communicate this to server
+    // TODO: reverse the stars if server has error
+    surveyAnswerPatch(self, {vote_change: vote_change}, null, function() {
+      votesLeft = votesLeftStars.find("i").length + vote_change;
+      voteCount = voteCountStars.find("i").length - vote_change;
+      voteCountStars.html(createStars(voteCount));
+      votesLeftStars.html(createStars(votesLeft));
+    });
   }
 
   // after a delay to allow for voting finished (debounce)
