@@ -58,7 +58,7 @@ class Note::Cell::Voted < Cell::ViewModel
 
   def voting_controls
     "<i class='vote-down bi-dash-square-fill'></i>
-    /<i class='vote-up bi-plus-square-fill'></i>
+    <i class='vote-up bi-plus-square-fill'></i>
     <span class='vote-count'>#{stars(votes)}</span>"
   end
 

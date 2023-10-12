@@ -102,6 +102,8 @@ body#survey {
     background-color: rgb(227, 227, 227);
     padding: 24px;
     border-radius: 10px;
+    border: 6px solid rgb(74, 73, 73);
+  
   }
   .survey-name {
     margin-bottom: 0px;
@@ -180,9 +182,12 @@ body#survey {
 }
 
 body#notes.voted {
-  background-color: #9fc0c8;
+  // background-color: #fff8e3;
+  background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
   .notes {
-    .stars-remaining {
+    .stars-remaining, .vote-count {
+      font-weight: bold;
+      font-size: large;
       margin: 10px 0px 10px 10px;
       height: 4em;
     }
@@ -193,38 +198,30 @@ body#notes.voted {
     i.vote-up, i.vote-down {
       color: green;
       font-size: xx-large;
-    }
-    .vote-count {
-      margin-left: 10px;
+      margin: 0px 10px;
+      cursor: pointer;
+      // ref https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting
+      // According to "Can I use" the user-select + -webkit-user-select for Safari is enough to
+      // achieve desired behavior in all major browsers.
+      -webkit-user-select: none;
+      user-select: none;
     }
     .voted {
+      border-radius: 6px;
+      border: #6a6589 solid 3px;
       margin-bottom: 10px;
       padding: 5px;
       position: relative;
-      .survey-answer-vote {
-        .vote-up {
-          cursor: pointer;
-          margin-left: 5px;
-        }
-        .vote-down {
-          cursor: pointer;
-          margin-left: 5px;
-        }
-        .votes-left, .vote-count {
-          font-family: monospace;
-        }
-        .hearts {
-          .zero-thirds {
-            margin-left: 4px;
-          }
-        }
-      }
+      line-height: 1.8em;
     }
   }
   .note-text {
     margin-left: 10px;
     margin-top: -10px;
-    font-size: large;
+    font-family: 'architects_daughterregular', Arial, sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    font-size: x-large;
   }
 }
 
