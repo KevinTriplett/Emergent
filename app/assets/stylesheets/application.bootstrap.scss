@@ -196,6 +196,10 @@ body#notes.voted {
       font-size: large;
       margin: 10px 0px 10px 10px;
     }
+    .vote-count {
+      position: relative;
+      top: -4px;
+    }
     #stars-remaining {
       position: sticky;
       top: 0px;
