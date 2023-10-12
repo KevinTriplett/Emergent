@@ -184,8 +184,7 @@ body#notes.voted {
   .notes {
     .stars-remaining {
       margin: 10px 0px 10px 10px;
-      overflow: hidden;
-      white-space: nowrap;
+      height: 4em;
     }
     i.bi-star-fill {
       color: green;
