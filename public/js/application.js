@@ -1007,15 +1007,14 @@ $(document).ready(function() {
   var processStarVote = function(e) {
     var self = $(this);
     vote_change = self.hasClass("vote-up") ? 1 : -1;
-    var votesLeftStars = $("#stars-remaining .votes-remaining i");
-    if (vote_change > votesLeftStars.length) {
-      return;
-    }
-    var votesLeft = votesLeftStars.length - vote_change;
-    votesLeftStars.parent().html(createStars(votesLeft));
-    var voteCountStars = self.closest(".survey-answer-vote").find(".vote-count i");
-    var voteCount = voteCountStars.length + vote_change;
-    voteCountStars.parent().html(createStars(voteCount));
+    var votesLeftStars = $("#stars-remaining .votes-remaining");
+    var votesLeft = votesLeftStars.find("i").length - vote_change;
+    if (votesLeft <= 0) return;
+
+    votesLeftStars.html(createStars(votesLeft));
+    var voteCountStars = self.closest(".survey-answer-vote").find(".vote-count");
+    var voteCount = voteCountStars.find("i").length + vote_change;
+    voteCountStars.html(createStars(voteCount));
 
     surveyAnswerPatch(self, {vote_change: vote_change});
   }
@@ -1071,6 +1070,7 @@ $(document).ready(function() {
   }
 
   var createStars = function(numStars) {
+    if (numStars <= 0) return "";
     return Array(numStars).fill("<i class='bi-star-fill'></i>").join("");
   }
 
