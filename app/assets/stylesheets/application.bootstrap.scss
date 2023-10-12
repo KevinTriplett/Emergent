@@ -191,6 +191,12 @@ body#notes.voted {
       margin: 10px 0px 10px 10px;
       height: 4em;
     }
+    #stars-remaining {
+      position: sticky;
+      top: 0px;
+      background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
+      width: 100%;
+    }
     i.bi-star-fill {
       color: green;
       font-size: larger;
