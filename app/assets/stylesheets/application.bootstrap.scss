@@ -181,6 +181,12 @@ body#survey {
   }
 }
 
+// yikes! it's harsh but we doesn't like horizontal scrollbars, no precious
+html {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 body#notes.voted {
   // background-color: #fff8e3;
   background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
@@ -189,13 +195,19 @@ body#notes.voted {
       font-weight: bold;
       font-size: large;
       margin: 10px 0px 10px 10px;
-      height: 4em;
     }
     #stars-remaining {
       position: sticky;
       top: 0px;
+      height: 4em;
       background-image: url(images/olga-thelavart-vS3idIiYxX0-unsplash.jpg);
-      width: 100%;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      text-align: center;
+      border-bottom: 4px solid black;
+      z-index: 10;
+      box-shadow: 0 10px 10px 5px rgba(60, 60, 60, 0.1);
     }
     i.bi-star-fill {
       color: green;
