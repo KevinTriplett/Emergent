@@ -1089,7 +1089,7 @@ $(document).ready(function() {
     self.animate({
       top: distance
     }, {
-      duration: 750,
+      duration: 500,
       complete: reinsertVotedRank
     });
   }
