@@ -9,6 +9,10 @@ class SurveyGroup < ActiveRecord::Base
     [:voted, 20],
     [:ranked, 30]
   ]
+  NOTE_STYLE.each do |key, val|
+    define_method("#{key}?") { (note_style || 0) == val }
+  end
+
   def get_note_style
     return note_style && NOTE_STYLE.select {|nsa| nsa[1] == note_style}.first[0]
   end

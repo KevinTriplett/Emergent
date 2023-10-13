@@ -53,7 +53,7 @@ class SurveyInvitesController < ApplicationController
     if @survey_question.note?
       get_notes_and_survey_answers
       get_liveview_url
-      get_template if @survey_group.get_note_style == "stickies"
+      get_template if @survey_group.stickies?
       @body_id = "notes"
       @body_class = @survey_group.get_note_style
     else

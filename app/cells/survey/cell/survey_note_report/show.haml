@@ -1,0 +1,4 @@
+%hr
+.survey-question
+  - notes_ranked_with_votes.each do |nv|
+    %p.note= "#{nv[:votes]} votes: #{nv[:note].text}"

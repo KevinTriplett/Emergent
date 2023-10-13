@@ -19,16 +19,16 @@
 
 - if @notes
   #notes-container.notes
-    - if @survey_group.get_note_style == :stickies
+    - if @survey_group.stickies?
       - @notes.each do |note|
         = cell(Note::Cell::Survey, {note: note, invite: @survey_invite, patch_url: @patch_url, token: @token})
       - if @live_view_url
         .live-view{ data: {timestamp: @live_view_timestamp, url: @live_view_url} }
-    - elsif @survey_group.get_note_style == :voted
+    - elsif @survey_group.voted?
       %h4= "#{@survey_group.name}: #{@survey_group.description}"
       - @notes.each_with_index do |note, i|
         = cell(Note::Cell::Voted, {note: note, i: i, invite: @survey_invite, patch_url: @patch_url, token: @token})
-    - elsif @survey_group.get_note_style == :ranked
+    - elsif @survey_group.ranked?
       .sortable
         Drag and drop the following to rank each
         - @notes.each do |note|
