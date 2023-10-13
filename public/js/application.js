@@ -1090,7 +1090,7 @@ $(document).ready(function() {
       top: distance
     }, {
       duration: 750,
-      complete: debounce(reinsertVotedRank, 100)
+      complete: reinsertVotedRank
     });
   }
 
