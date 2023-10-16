@@ -9,6 +9,9 @@ class Note::Cell::Voted < Cell::ViewModel
   def group_name
     note.group_name
   end
+  def reset_url
+    model[:reset_url]
+  end
   def patch_url
     "#{model[:patch_url]}/#{note.survey_question_id}"
   end

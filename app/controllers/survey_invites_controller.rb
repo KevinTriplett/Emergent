@@ -83,6 +83,18 @@ class SurveyInvitesController < ApplicationController
       timestamp: @live_view_timestamp
     }
   end
+
+  # ------------------------------------------------------------------------
+  
+  def reset_votes
+    get_invite
+    get_survey
+    @survey_invite.reset_votes(@survey_group.id)
+    puts "***************************************************************"
+    puts "   ======> got group #{@survey_group.name}"
+    puts "   ======> got question #{@survey_question.question}"
+    redirect_to survey_path(token: @survey_invite.token, survey_question_id: params[:survey_question_id])
+  end
   
   # ------------------------------------------------------------------------
 

@@ -47,6 +47,11 @@ class SurveyInvite < ActiveRecord::Base
     group_answers.select { |sa| sa.survey_question.vote? }.collect(&:votes).sum(0)
   end
 
+  def reset_votes(group_id)
+    group_answers = survey_answers.select { |sa| sa.survey_group_id == group_id }
+    group_answers.each { |sa| sa.update(votes: 0) }
+  end
+
   # ----------------------------------------------------------------------
 
   def send_survey_invite_link
