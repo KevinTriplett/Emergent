@@ -1056,7 +1056,7 @@ $(document).ready(function() {
   }
   $("#notes-container .voted .vote-up, #notes-container .voted .vote-down")
     .on("click", processStarVote)
-    .on("click", debounce(reorderVotedRank, 1000));
+    .on("click", debounce(reorderVotedRank, 2000));
 
   var elsVotedRankSorted = function() {
     return $(".voted.main").sort(function(a, b) {
