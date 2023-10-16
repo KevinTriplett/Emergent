@@ -24,13 +24,14 @@ Rails.application.routes.draw do
   # yes, some of these params are optional because js will add the params
   get  "survey/live/:token", to: "survey_invites#live_view", as: :survey_live_view
   get  "survey/results/:token", to: "survey_invites#show_results", as: :survey_show_results
-  get  "survey/reset_votes/:token/:survey_question_id", to: "survey_invites#reset_votes", as: :survey_reset_votes
   post "survey/patch/:token(/:id)", to: "survey_invites#patch", as: :survey_patch
   get  "survey(/:token)(/:survey_question_id)", to: "survey_invites#show", as: :survey
   post "admin/survey_invites/:id/patch", to: "admin/survey_invites#patch", as: :admin_survey_invite_patch
   get  "take_survey/:survey_token", to: "survey_invites#new", as: :new_take_survey
   post "take_survey/:survey_token", to: "survey_invites#create", as: :take_survey
-
+  
+  delete  "survey/votes/:token/:survey_question_id", to: "survey_invites#delete_votes", as: :survey_delete_votes
+  
   namespace :admin do
     resources :users, param: :token, only: [:index, :show]
     resources :surveys do

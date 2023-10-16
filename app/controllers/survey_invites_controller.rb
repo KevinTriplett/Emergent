@@ -86,14 +86,14 @@ class SurveyInvitesController < ApplicationController
 
   # ------------------------------------------------------------------------
   
-  def reset_votes
+  def delete_votes
     get_invite
     get_survey
     @survey_invite.reset_votes(@survey_group.id)
-    puts "***************************************************************"
-    puts "   ======> got group #{@survey_group.name}"
-    puts "   ======> got question #{@survey_question.question}"
-    redirect_to survey_path(token: @survey_invite.token, survey_question_id: params[:survey_question_id])
+    url = survey_path(token: @survey_invite.token, survey_question_id: params[:survey_question_id])
+    return render json: { url: url }
+  rescue
+    return head(:bad_request)
   end
   
   # ------------------------------------------------------------------------
