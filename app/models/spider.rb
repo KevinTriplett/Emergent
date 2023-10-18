@@ -81,6 +81,7 @@ class Spider < ActiveRecord::Base
       user.chat_url = "https://emergent-commons.mn.co/chats/new?user_id=#{user.member_id}"
       user.approved = nil
       user.joined = true
+      user.join_timestamp = Time.now
       user.save
     end
   end

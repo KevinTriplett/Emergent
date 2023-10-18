@@ -18,6 +18,7 @@
             %br
             %span.tzinfo (GMT)
           %th.notes Notes
+          %th.joined Joined
           %th.request Requested
       %tbody
         - @users.each do |u|
@@ -28,7 +29,8 @@
             %td.user-status= u[:status]
             %td.user-meeting-datetime.utc-time= u[:when]
             %td.user-notes{ title: u[:truncated] }= u[:notes]
+            %td.user-joined= u[:joined]
             %td.user-request= u[:request]
       %tfoot
         %tr
-          %td{ colspan: 6} No pending requests to join and you have no active greetings
+          %td{ colspan: 7} No pending requests to join and you have no active greetings

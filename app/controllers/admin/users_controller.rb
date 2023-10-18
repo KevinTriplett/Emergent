@@ -166,6 +166,7 @@ module Admin
           "when": u.when_timestamp ? u.when_timestamp.picker_datetime : nil,
           "notes": u.notes_abbreviated,
           "truncated": u.notes ? u.notes.truncate(500, separator: ' ') : nil,
+          "joined": u.join_timestamp ? u.join_timestamp.picker_date : nil,
           "request": u.request_timestamp ? u.request_timestamp.picker_date : nil,
           "url": done ? admin_user_url(token: u.token) : admin_user_wizard_url(token: u.token),
           "token": u.token,

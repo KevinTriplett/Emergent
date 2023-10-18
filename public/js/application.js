@@ -443,7 +443,7 @@ $(document).ready(function() {
 
 
   $("table.users").DataTable({
-    order: [[5,"desc"]],
+    order: [[6,"desc"]],
     paging: false,
     fixedHeader: true,
     fixedColumn: true
@@ -494,6 +494,10 @@ $(document).ready(function() {
           td.className = "user-notes";
           td.innerText = user.notes;
           td.setAttribute("title", user.truncated);
+          tr.appendChild(td);
+          td = document.createElement("td");
+          td.className = "user-joined";
+          td.innerText = user.joined;
           tr.appendChild(td);
           td = document.createElement("td");
           td.className = "user-request";

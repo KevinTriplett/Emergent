@@ -101,6 +101,35 @@ class UserOperationTest < MiniTest::Spec
     end
 
     # ----------------
+    # happy path tests
+    it "Queues approval of user and updates model" do
+      DatabaseCleaner.cleaning do
+        admin = create_user
+        result = create_user_with_result({
+          name: random_user_name, 
+          email: random_email
+        })
+        assert result.success?
+
+        user = result[:model]
+        user.update(join_timestamp: nil)
+        assert_nil user.member_id
+        assert_nil user.approved
+
+        user_hash = { token: user.token }
+        result = User::Operation::Approve.call(params: user_hash, admin: admin)
+
+        assert user.reload.approved
+
+        user.update(member_id: 1)
+        user.update(approved: nil)
+        result = User::Operation::Approve.call(params: user_hash, admin: admin)
+        assert_nil user.reload.approved
+      end
+    end
+
+
+    # ----------------
     # failing tests
     it "Fails with invalid parameters" do
       DatabaseCleaner.cleaning do
