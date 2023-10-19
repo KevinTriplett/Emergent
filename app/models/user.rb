@@ -110,42 +110,43 @@ class User < ActiveRecord::Base
     file.close
 
     # check first row for correct file format
-    headers = data.shift
-    correct_headers = ["Member ID","First Name","Last Name","Email Address"].join("\t")
-    unless headers == correct_headers
-      puts "header row = #{headers}" # first line is headers
-      puts "should be  = #{correct_headers}"
-      return
-    end
+    header = data.shift
+    headers = header.split("\t").collect(&:to_sym)
 
     data.each do |line|
-      member_id, first_name, last_name, email = line.split("\t")
-      name = "#{first_name} #{last_name}"
-      profile_url = member_id.present? ? "https://emergent-commons.mn.co/members/#{member_id}" : nil
-      chat_url = member_id.present? ? "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}" : nil
+      values = line.split("\t")
 
-      user = email.present? ? find_by_email(email) : find_by_name(name)
+      model = {}
+      headers.each_with_index do |head, i|
+        model[head] = case head
+        when :opt_out
+          values[i].present?
+        when :join_timestamp
+          if values[i].present?
+            ts = values[i].split("/")
+            "20#{ts[2]}/#{ts[0]}/#{ts[1]}"
+          end
+        else
+          values[i]
+        end
+      end
+      model.compact!
+
+      if model[:first_name] || model[:last_name]
+        model[:name] = "#{model[:first_name]} #{model[:last_name]}"
+      end
+      id = model[:member_id]
+      model[:profile_url] = "https://emergent-commons.mn.co/members/#{id}"
+      model[:chat_url] = "https://emergent-commons.mn.co/chats/new?user_id=#{id}"
+
+      user = find_by_member_id(id)
+
       if user
-        puts "updating #{name}"
-        user.update(name: name)
-        user.update(first_name: first_name)
-        user.update(last_name: last_name)
-        user.update(email: email.downcase) if email.present?
-        user.update(member_id: member_id) if member_id.present?
-        user.update(profile_url: profile_url) if profile_url.present?
-        user.update(chat_url: chat_url) if chat_url.present?
-      else
-        puts "creating #{name}"
-        create({
-          name: name,
-          first_name: first_name,
-          last_name: last_name,
-          email: (email || "").downcase,
-          member_id: member_id,
-          profile_url: profile_url,
-          chat_url: chat_url,
-          status: "existing"
-        })
+        puts "-------------------------------------------------\nupdating #{user.inspect} to #{model}"
+        user.update model
+      # else -- no because member might be in db w/o member_id
+      #   puts "creating #{model}"
+      #   User.create model
       end
     end
   end
