@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_29_143036) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_19_032652) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "space_id"
@@ -169,6 +169,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_29_143036) do
     t.boolean "joined"
     t.boolean "locked"
     t.boolean "approved"
+    t.boolean "opt_out"
     t.index ["email"], name: "index_users_on_email"
     t.index ["session_token"], name: "index_users_on_session_token", unique: true
     t.index ["status"], name: "index_users_on_status"
