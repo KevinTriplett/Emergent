@@ -1025,7 +1025,10 @@ $(document).ready(function() {
     // stars left to vote with?
     var votesLeftStars = $("#stars-remaining .votes-remaining");
     var votesLeft = votesLeftStars.find("i").length - vote_change;
-    if (votesLeft < 0) return;
+    if (votesLeft < 0) {
+      alert("Sorry, no stars left - you can recycle stars from other items");
+      return;
+    }
 
     // stars left to remove?
     var voteCountStars = self.closest(".survey-answer-vote").find(".vote-count");
