@@ -116,11 +116,13 @@ class Spider < ActiveRecord::Base
     SurveyInvite.where(state: SurveyInvite::STATUS[:created]).each do |invite|
       next if Rails.configuration.mn_surveyor_username == invite.user.email # cannot send messages to signin account!
       send_survey_invitation_message(invite)
+      invite.update(state: SurveyInvite::STATUS[:invite_sent]) if success?("private_message_spider")
     end
 
     SurveyInvite.where(state: SurveyInvite::STATUS[:finished]).each do |invite|
       next if Rails.configuration.mn_surveyor_username == invite.user.email # cannot send messages to signin account!
       send_survey_finished_message(invite)
+      invite.update(state: SurveyInvite::STATUS[:finished_link_sent]) if success?("private_message_spider")
     end
   end
 
