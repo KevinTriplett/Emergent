@@ -44,7 +44,7 @@ class SurveyInvite < ActiveRecord::Base
 
   def votes_total(group_id)
     group_answers = survey_answers.select { |sa| sa.survey_group_id == group_id }
-    group_answers.select { |sa| sa.survey_question.vote? }.collect(&:votes).sum(0)
+    group_answers.collect(&:votes).sum(0)
   end
 
   def reset_votes(group_id)
