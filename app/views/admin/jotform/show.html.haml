@@ -1,0 +1,22 @@
+%p
+  Form ID
+  %input#form-id{ name: "formID" }
+%p
+  Submission ID
+  %input#sub-id{ name: "submissionID" }
+%p
+  %button.jotform.get-forms{ name: "get-forms" }
+    Get Forms
+  %button.jotform.get-subs{ name: "get-submissions" }
+    Get Submissions
+  %button.jotform.get-sub{ name: "get-submission" }
+    Get Submission
+%hr
+%ul
+  = @type_name
+  - @forms.each do |form|
+    %li= form.inspect
+  - @subs.each do |sub|
+    %li= sub.inspect
+  - if @sub
+    %li= @sub.inspect

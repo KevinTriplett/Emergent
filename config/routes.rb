@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   post "admin/users/:token/email", to: "admin/users#send_email", as: :admin_user_send_email
   post "admin/moderations/:token/resolved", to: "admin/moderations#resolved", as: :admin_moderation_resolved
   
+  get  "admin/jotform", to: "admin/jotform#show"
+  
   get  "admin/surveys/:id/test", to: "admin/surveys#test", as: :admin_survey_test
   get  "admin/surveys/:id/report", to: "admin/surveys#report", as: :admin_survey_report
   get  "admin/surveys/:id/notes/new", to: "admin/surveys#new_note", as: :new_admin_survey_note

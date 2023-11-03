@@ -1629,4 +1629,23 @@ $(document).ready(function() {
     });
   });
 
+  // ----------------------------------------------------------------------
+  // JOTFORM TESTS
+  $(".jotform").on("click", function(e) {
+    e.preventDefault();
+    switch(e.target.className) {
+      case "jotform get-forms":
+        window.location = "jotform?cmd=get-forms";
+        break;
+      case "jotform get-subs":
+        var formId = $("#form-id").val();
+        window.location = `jotform?cmd=get-subs&form_id=${formId}`;
+        break;
+      case "jotform get-sub":
+        var subId = $("#sub-id").val();
+        window.location = `jotform?cmd=get-sub&sub_id=${subId}`;
+        break;
+    }
+  })
+
 });
