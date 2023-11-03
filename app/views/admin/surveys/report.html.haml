@@ -1,6 +1,6 @@
 %h5= "Report for #{@survey.name}"
 
-= link_to "Back", admin_survey_url(@survey)
+= link_to "Back", admin_survey_url(@survey), class: "user-back btn btn-secondary"
 
 = cell(Survey::Cell::SurveyReportSummary, {invites: @survey_invites, invites_hash: @survey_invites_hash, list: @list, token: @token})
 
