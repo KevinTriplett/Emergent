@@ -11,7 +11,7 @@ module Survey::Contract
       params do
         required(:id)
         required(:name).filled.value(:string)
-        required(:description).filled.value(:string)
+        required(:description)
         required(:liveview)
       end
     end
