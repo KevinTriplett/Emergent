@@ -44,7 +44,7 @@ module Admin
       end
     
       @form = _ctx["contract.default"]
-      render :new, status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
 
     def destroy
