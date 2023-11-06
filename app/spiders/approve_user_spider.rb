@@ -17,8 +17,10 @@ class ApproveUserSpider < EmergeSpider
     logger.info "> APPROVING #{first_name} #{last_name}"
     # cope with names that have an apostrophe in them
     # NOTE: for some reason, "/\/\'" results in //' not \\' which is what's needed
-    first_name.gsub!(/'/, "/\\/'").gsub!("/", "")
-    last_name.gsub!(/'/, "/\\/'").gsub!("/", "")
+    first_name.gsub!(/'/, "/\\/'")
+    first_name.gsub!("/", "")
+    last_name.gsub!(/'/, "/\\/'")
+    last_name.gsub!("/", "")
 
     ############################################
     # wait until the modal dialog box is visible
