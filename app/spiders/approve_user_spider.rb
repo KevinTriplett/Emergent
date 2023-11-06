@@ -15,6 +15,10 @@ class ApproveUserSpider < EmergeSpider
   def approve_user(response, url:, data: {})
     first_name, last_name = get_and_clear_message.split('|')
     logger.info "> APPROVING #{first_name} #{last_name}"
+    # cope with names that have an apostrophe in them
+    # NOTE: for some reason, "/\/\'" results in //' not \\' which is what's needed
+    first_name.gsub!(/'/, "/\\/'").gsub!("/", "")
+    last_name.gsub!(/'/, "/\\/'").gsub!("/", "")
 
     ############################################
     # wait until the modal dialog box is visible
