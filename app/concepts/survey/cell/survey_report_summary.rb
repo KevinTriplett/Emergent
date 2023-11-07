@@ -23,7 +23,6 @@ class Survey::Cell::SurveyReportSummary < Cell::ViewModel
   end
 
   def resend_link(si)
-    return if si.is_created?
     cls = "resend-survey-invite-link"
     url = admin_survey_invite_patch_path(si.id)
     "<a class='#{cls}' data-id='#{si.id}' data-url='#{url}' data-token='#{token}'>resend invite</a>".html_safe
