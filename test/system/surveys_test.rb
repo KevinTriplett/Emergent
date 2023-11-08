@@ -8,12 +8,11 @@ class SurveysTest < ApplicationSystemTestCase
 
   test "User can access and take a survey" do
     DatabaseCleaner.cleaning do
-      survey_invite = create_survey_invite
-      survey = survey_invite.survey
+      user = create_user
+      survey = create_survey
       group_0 = create_survey_group(survey: survey)
       group_1 = create_survey_group(survey: survey)
       group_2 = create_survey_group(survey: survey, votes_max: 10, name: "Group 2")
-      user = survey_invite.user
 
       survey_question_0 = create_survey_question({
         survey_group: group_0,
@@ -113,6 +112,54 @@ class SurveysTest < ApplicationSystemTestCase
       assert_equal [0,1,2,3,4,5], [survey_question_6,survey_question_6b,survey_question_7,survey_question_8,survey_question_9,survey_question_10].map(&:position)
       assert_equal [0,1,2], [survey_question_11,survey_question_12,survey_question_13].map(&:position)
 
+      # ------------------------------------------------------------------------------
+      # first make sure can access without an invite
+      visit take_survey_path(survey_token: survey.token)
+      assert_selector "input", count: 3
+      assert_selector "input[name='user_email']"
+      assert_selector "input[name='user_name']"
+
+      # test with no input
+      click_on "Start Survey"
+      sleep 1
+      assert_current_path take_survey_path(survey_token: survey.token)
+      assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
+
+      # try false email
+      fill_in "Your Mighty Networks Email", with: "something@company.com"
+      click_on "Start Survey"
+      assert_current_path take_survey_path(survey_token: survey.token)
+      assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
+
+      # try false name
+      fill_in "The name you use in Emergent Commons", with: "marvin goomble"
+      click_on "Start Survey"
+      assert_current_path take_survey_path(survey_token: survey.token)
+      assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
+
+      # try good email
+      fill_in "Your Mighty Networks Email", with: user.email
+      click_on "Start Survey"
+      assert_current_path survey_path(token: SurveyInvite.first.token)
+      assert_equal SurveyInvite.all.count, 1
+
+      SurveyInvite.delete_all
+      visit take_survey_path(survey_token: survey.token)
+
+      # try good name
+      fill_in "The name you use in Emergent Commons", with: user.name
+      click_on "Start Survey"
+      assert_equal SurveyInvite.all.count, 1
+      assert_current_path survey_path(token: SurveyInvite.first.token)
+
+      SurveyInvite.delete_all
+
+      # ------------------------------------------------------------------------------
+      # now with an invite
+      survey_invite = create_survey_invite(
+        survey: survey,
+        user: user
+      )
       visit survey_path(survey_invite.token)
 
       assert_current_path survey_path(survey_invite.token)
