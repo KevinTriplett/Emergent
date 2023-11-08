@@ -1003,10 +1003,13 @@ $(document).ready(function() {
       }
     });
   }
-  $("#survey-container .stickies .vote-up, #survey-container .stickies .vote-down")
-    .on("click", processVote);
-  $("#notes-container .stickies .vote-up, #notes-container .stickies .vote-down")
-    .on("click", processVote);
+  $("#survey-container .stickies .vote-up, \
+    #survey-container .stickies .vote-down, \
+    #notes-container .stickies .vote-up, \
+    #notes-container .stickies .vote-down, \
+    #survey-container .survey-answer-vote .vote-up, \
+    #survey-container .survey-answer-vote .vote-down \
+  ").on("click", processVote);
 
   var votingControlsEnabled = true;
   var enableVotingControls = function() {
