@@ -11,7 +11,13 @@ class SurveyInvitesController < ApplicationController
 
   def create
     @survey = Survey.find_by_token(params[:survey_token])
-    user = User.find_by_email params[:user_email]
+    user = params[:user_email].present? && User.find_by_email(params[:user_email])
+    user ||= params[:user_name].present? && User.find_by_name(params[:user_name])
+    unless user
+      flash[:error] = "We're sorry, your name or email address was not found"
+      return redirect_to take_survey_path(survey_token: params[:survey_token]) 
+    end
+
     invite = SurveyInvite.where(survey_id: @survey.id).where(user_id: user.id).first
     return redirect_to survey_path(token: invite.token) if invite
 
@@ -20,7 +26,7 @@ class SurveyInvitesController < ApplicationController
       return redirect_to survey_path(token: invite.token)
     end
   
-    flash[:notice] = user ? "We're sorry, something went wrong" : "We're sorry, your email address was not found"
+    flash[:error] = "We're sorry, something went wrong"
     @form = _ctx["contract.default"]
     render :new, status: :unprocessable_entity
   end
