@@ -1129,12 +1129,6 @@ $(document).ready(function() {
 
   $(".sortable.disable").sortable().disableSelection();
 
-  $(".survey-answer-vote .vote-up, .survey-answer-vote .vote-down").on("dblclick", function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-
   ////////////////////////////////////////////////////
   // NOTES
   var userView = function() {
@@ -1512,12 +1506,6 @@ $(document).ready(function() {
     note
       .find(".vote-up, .vote-down")
       .on("click", processVote)
-    note
-      .find(".survey-answer-vote")
-      .on("dblclick", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      });
     note.on("mousedown", bringToFront);
     var domHandler = note.hasClass("move") && !_isTouchUI ? domNote : domNote.querySelector(".move");
     dragmove(domNote, domHandler, onDragStart, onDragEnd);

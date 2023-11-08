@@ -222,11 +222,6 @@ body#notes.voted {
       font-size: xx-large;
       margin: 0px 10px;
       cursor: pointer;
-      // ref https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting
-      // According to "Can I use" the user-select + -webkit-user-select for Safari is enough to
-      // achieve desired behavior in all major browsers.
-      -webkit-user-select: none;
-      user-select: none;
     }
     .voted {
       border-radius: 6px;
@@ -286,6 +281,17 @@ body.home {
     }
   }
 }
+
+#survey-container {
+  .vote-up, .vote-down {
+    // ref https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting
+    // According to "Can I use" the user-select + -webkit-user-select for Safari is enough to
+    // achieve desired behavior in all major browsers.
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
 
 .hidden, .opt {
   display: none;
