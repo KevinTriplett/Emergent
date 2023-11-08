@@ -10,6 +10,9 @@ module Survey::Operation
     step :create_survey_invite
 
     def create_survey_invite(ctx, model:, current_user:, url:, **)
+      ctx[:survey_invite] = SurveyInvite.where(survey_id: model.id).where(user_id: current_user.id).first
+      return true if ctx[:survey_invite]
+
       ctx[:survey_invite] = SurveyInvite::Operation::Create.call(
         params: {
           survey_invite: {
