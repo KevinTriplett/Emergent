@@ -4,9 +4,11 @@
   .row
     .col
       %h2= "Survey: #{@survey.name}"
+      %p Enter one of the two:
   .row
     .col
-      %input.form-control{name: :user_email, placeholder: "Your Mighty Networks Email", label: false}
+      %input.form-control{name: :user_email, placeholder: "The email you used to join Mighty Networks", label: false}
+      %p OR
   .row
     .col
       %input.form-control{name: :user_name, placeholder: "The name you use in Emergent Commons", label: false}
