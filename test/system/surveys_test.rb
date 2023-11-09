@@ -123,19 +123,19 @@ class SurveysTest < ApplicationSystemTestCase
       click_on "Start Survey"
       sleep 1
       assert_current_path take_survey_path(survey_token: survey.token)
-      assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
+      assert_selector ".flash.error", text: "We're sorry, your was not found"
 
       # try false email
       fill_in "The email you used to join Mighty Networks", with: "something@company.com"
       click_on "Start Survey"
       assert_current_path take_survey_path(survey_token: survey.token)
-      assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
+      assert_selector ".flash.error", text: "We're sorry, your email address was not found"
 
       # try false name
       fill_in "The name you use in Emergent Commons", with: "marvin goomble"
       click_on "Start Survey"
       assert_current_path take_survey_path(survey_token: survey.token)
-      assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
+      assert_selector ".flash.error", text: "We're sorry, your name was not found"
 
       # try good email
       fill_in "The email you used to join Mighty Networks", with: user.email

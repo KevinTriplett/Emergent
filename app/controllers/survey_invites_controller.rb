@@ -16,7 +16,7 @@ class SurveyInvitesController < ApplicationController
     user = email && User.where("lower(email) = ?", email).first
     user ||= name && User.where("lower(name) = ?", name).first
     unless user
-      msg = [name && "name", email && "email address"].compact.join(" or ")
+      msg = [name ? "name" : nil, email ? "email address" : nil].compact.join(" or ")
       flash[:error] = "We're sorry, your #{msg} was not found"
       return redirect_to take_survey_path(survey_token: params[:survey_token]) 
     end
