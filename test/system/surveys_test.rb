@@ -126,7 +126,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
 
       # try false email
-      fill_in "Your Mighty Networks Email", with: "something@company.com"
+      fill_in "The email you used to join Mighty Networks", with: "something@company.com"
       click_on "Start Survey"
       assert_current_path take_survey_path(survey_token: survey.token)
       assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
@@ -138,7 +138,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_selector ".flash.error", text: "We're sorry, your name or email address was not found"
 
       # try good email
-      fill_in "Your Mighty Networks Email", with: user.email
+      fill_in "The email you used to join Mighty Networks", with: user.email
       click_on "Start Survey"
       assert_current_path survey_path(token: SurveyInvite.first.token)
       assert_equal SurveyInvite.all.count, 1

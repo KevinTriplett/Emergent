@@ -11,8 +11,9 @@ class SurveyInvitesController < ApplicationController
 
   def create
     @survey = Survey.find_by_token(params[:survey_token])
-    user = params[:user_email].present? && User.find_by_email(params[:user_email])
-    user ||= params[:user_name].present? && User.find_by_name(params[:user_name])
+    email = params[:user_email].present? && params[:user_email].downcase.strip 
+    user = email && User.find_by_email(email)
+    user ||= params[:user_name].present? && User.where("lower(name) = ?", params[:user_name].strip).first
     unless user
       flash[:error] = "We're sorry, your name or email address was not found"
       return redirect_to take_survey_path(survey_token: params[:survey_token]) 
