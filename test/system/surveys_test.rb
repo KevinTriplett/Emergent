@@ -146,8 +146,26 @@ class SurveysTest < ApplicationSystemTestCase
       SurveyInvite.delete_all
       visit take_survey_path(survey_token: survey.token)
 
+      # try badly formatted email
+      fill_in "The email you used to join Mighty Networks", with: "  #{user.email.upcase}  "
+      click_on "Start Survey"
+      assert_current_path survey_path(token: SurveyInvite.first.token)
+      assert_equal SurveyInvite.all.count, 1
+
+      SurveyInvite.delete_all
+      visit take_survey_path(survey_token: survey.token)
+
       # try good name
       fill_in "The name you use in Emergent Commons", with: user.name
+      click_on "Start Survey"
+      assert_equal SurveyInvite.all.count, 1
+      assert_current_path survey_path(token: SurveyInvite.first.token)
+
+      SurveyInvite.delete_all
+      visit take_survey_path(survey_token: survey.token)
+
+      # try badly formatted name
+      fill_in "The name you use in Emergent Commons", with: "  #{user.name.upcase}  "
       click_on "Start Survey"
       assert_equal SurveyInvite.all.count, 1
       assert_current_path survey_path(token: SurveyInvite.first.token)

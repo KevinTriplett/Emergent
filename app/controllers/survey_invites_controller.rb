@@ -10,18 +10,23 @@ class SurveyInvitesController < ApplicationController
   end
 
   def create
-    @survey = Survey.find_by_token(params[:survey_token])
-    email = params[:user_email].present? && params[:user_email].downcase.strip 
-    user = email && User.find_by_email(email)
-    user ||= params[:user_name].present? && User.where("lower(name) = ?", params[:user_name].strip).first
+    # first, find the user
+    email = params[:user_email].present? && params[:user_email].downcase.strip
+    name = params[:user_name].present? && params[:user_name].downcase.strip
+    user = email && User.where("lower(email) = ?", email).first
+    user ||= name && User.where("lower(name) = ?", name).first
     unless user
-      flash[:error] = "We're sorry, your name or email address was not found"
+      msg = [name && "name", email && "email address"].compact.join(" or ")
+      flash[:error] = "We're sorry, your #{msg} was not found"
       return redirect_to take_survey_path(survey_token: params[:survey_token]) 
     end
-
+    
+    # now see if there is already a survey invite for this user
+    @survey = Survey.find_by_token(params[:survey_token])
     invite = SurveyInvite.where(survey_id: @survey.id).where(user_id: user.id).first
     return redirect_to survey_path(token: invite.token) if invite
 
+    # no invite, so create one
     _ctx = run SurveyInvite::Operation::Take, survey_id: @survey.id, user_id: user.id do |ctx|
       invite = ctx[:model]
       return redirect_to survey_path(token: invite.token)
