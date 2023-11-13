@@ -119,6 +119,12 @@ class Spider < ActiveRecord::Base
       invite.update(state: SurveyInvite::STATUS[:invite_sent]) if success?("private_message_spider")
     end
 
+    SurveyInvite.where(state: SurveyInvite::STATUS[:remind]).each do |invite|
+      next if Rails.configuration.mn_surveyor_username == invite.user.email # cannot send messages to signin account!
+      send_survey_invitation_remind_message(invite)
+      invite.update(state: SurveyInvite::STATUS[:invite_sent]) if success?("private_message_spider")
+    end
+
     SurveyInvite.where(state: SurveyInvite::STATUS[:finished]).each do |invite|
       next if Rails.configuration.mn_surveyor_username == invite.user.email # cannot send messages to signin account!
       send_survey_finished_message(invite)
@@ -133,7 +139,10 @@ class Spider < ActiveRecord::Base
     PrivateMessageSpider.crawl!
   end
 
-  ########################
+  def self.send_survey_invitation_remind_message(invite)
+    set_message("private_message_spider", invite.get_remind_message)
+    PrivateMessageSpider.crawl!
+  end
 
   def self.send_survey_finished_message(invite)
     first_group = invite.survey.ordered_groups.first

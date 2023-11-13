@@ -9,6 +9,7 @@ class SurveyInvite < ActiveRecord::Base
 
   STATUS = {
     created: 0,
+    remind: 5,
     invite_sent: 10,
     opened: 20,
     started: 30,
@@ -117,7 +118,17 @@ class SurveyInvite < ActiveRecord::Base
       user.id,
       subject,
       body,
-      "Here's your link to your personal survey:",
+      "Here's your personal link to the survey:",
+      url
+    ].join("|")
+  end
+
+  def get_remind_message
+    [
+      user.id,
+      "Hello #{user.first_name || user_name},",
+      "Gentle reminder: your insight is greatly valued and needed for this survey.",
+      "This is your personal link to the survey:",
       url
     ].join("|")
   end

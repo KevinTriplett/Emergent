@@ -1597,7 +1597,7 @@ $(document).ready(function() {
   $("a.resend-survey-invite-link").on("click", function(e) {
     e.preventDefault();
     var userDom = $(this);
-    var data = {state: 0};
+    var data = {state: 5};
     patch(userDom, data, function() {
       alert("Survey Invite queued for re-sending");
     }, function() {
