@@ -282,7 +282,7 @@ body.home {
   }
 }
 
-#survey-container {
+#survey-container, #notes-container {
   .survey-answer-vote, .vote-up, .vote-down {
     // ref https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting
     // According to "Can I use" the user-select + -webkit-user-select for Safari is enough to
