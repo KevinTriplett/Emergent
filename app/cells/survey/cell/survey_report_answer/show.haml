@@ -1,6 +1,6 @@
 .survey-invite-answer{ class: answer_type_class }
   %p
-    %span.survey-user-name= "#{user_name} spaketh:"
+    %span.survey-user-name= "#{user_name}:"
     %span.answer= survey_answer && survey_answer.answer.present? ? survey_answer.answer : "[NO ANSWER]"
   - if survey_answer && has_scale?
     %p.survey-answer-scale= "Scale: #{survey_answer.scale}"
