@@ -63,7 +63,7 @@ class Note::Cell::Admin < Cell::ViewModel
     votes_left = note.survey_answer.votes_left
     "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
     <i class='vote-down bi-hand-thumbs-down-fill'></i>\
-    <span class='vote-count'>#{votes}</span>\
+    <span class='vote-count positive'>#{votes}</span>\
     (<span class='votes-left'>#{votes_left}</span> votes left)"
   end
 end

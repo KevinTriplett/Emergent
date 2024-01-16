@@ -196,9 +196,24 @@ body#notes.voted {
       font-size: large;
       margin: 10px 0px 10px 10px;
     }
+    .votes-remaining {
+      color: green;
+      i.bi-star-fill {
+        font-size: larger;
+      }
+    }
     .vote-count {
       position: relative;
       top: -4px;
+      &.positive {
+        color: green;
+      }
+      &.negative {
+        color: red;
+      }
+      i.bi-star-fill {
+        font-size: larger;
+      }
     }
     #stars-remaining {
       position: sticky;
@@ -213,15 +228,16 @@ body#notes.voted {
       z-index: 10;
       box-shadow: 0 10px 10px 5px rgba(60, 60, 60, 0.1);
     }
-    i.bi-star-fill {
-      color: green;
-      font-size: larger;
-    }
     i.vote-up, i.vote-down {
-      color: green;
       font-size: xx-large;
       margin: 0px 10px;
       cursor: pointer;
+    }
+    i.vote-up {
+      color: green;
+    }
+    i.vote-down {
+      color: green;
     }
     .voted {
       border-radius: 6px;

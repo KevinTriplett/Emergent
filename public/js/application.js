@@ -1023,33 +1023,33 @@ $(document).ready(function() {
     if (!votingControlsEnabled) return;
 
     var self = $(this);
-    vote_change = self.hasClass("vote-up") ? 1 : -1;
+    var voteChange = self.hasClass("vote-up") ? 1 : -1;
+    var domStarCount = self.closest(".survey-answer-vote").find(".vote-count");
+    var domStarsLeft = $("#stars-remaining .votes-remaining");
 
-    // stars left to vote with?
-    var votesLeftStars = $("#stars-remaining .votes-remaining");
-    var votesLeft = votesLeftStars.find("i").length - vote_change;
-    if (votesLeft < 0) {
-      alert("Sorry, no stars left - you can recycle stars from other items");
-      return;
-    }
-
-    // stars left to remove?
-    var voteCountStars = self.closest(".survey-answer-vote").find(".vote-count");
-    var voteCount = voteCountStars.find("i").length + vote_change;
-    if (voteCount < 0) return;
-
-    // update stars
-    voteCountStars.html(createStars(voteCount));
-    votesLeftStars.html(createStars(votesLeft));
+    if (!updateStars(domStarCount, domStarsLeft, voteChange)) return;
 
     // communicate this to server
-    // TODO: reverse the stars if server has error
-    surveyAnswerPatch(self, {vote_change: vote_change}, null, function() {
-      votesLeft = votesLeftStars.find("i").length + vote_change;
-      voteCount = voteCountStars.find("i").length - vote_change;
-      voteCountStars.html(createStars(voteCount));
-      votesLeftStars.html(createStars(votesLeft));
+    surveyAnswerPatch(self, {vote_change: voteChange}, null, function() {
+      updateStars(domStarCount, domStarsLeft, -voteChange, true);
     });
+  }
+
+  var updateStars = function(domStarCount, domStarsLeft, voteChange, restore = false) {
+    var newStarCount = domStarCount.find("i").length + voteChange;
+    if (newStarCount < 0) return false;
+
+    var newStarsLeft = domStarsLeft.find("i").length - voteChange;
+    if (newStarsLeft < 0) {
+      alert("No more stars left - you can remove stars from other items to get more stars");
+      return false;
+    }
+
+    // update stars
+    domStarCount.html(createStars(newStarCount));
+    domStarsLeft.html(createStars(newStarsLeft));
+
+    return true; // success
   }
 
   // after a delay to allow for voting finished (debounce)

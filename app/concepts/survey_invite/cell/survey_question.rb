@@ -116,7 +116,7 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
       count = survey_answer.vote_count || 0
       "<i class='vote-up bi-hand-thumbs-up-fill'></i>\
       <i class='vote-down bi-hand-thumbs-down-fill'></i>\
-      <span class='vote-count'>#{count}</span>\
+      <span class='vote-count positive'>#{count}</span>\
       (<span class='votes-left'>#{survey_answer.votes_left}</span> votes left)"
     #----------------------
     when "Email"

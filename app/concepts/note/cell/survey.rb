@@ -64,7 +64,7 @@ class Note::Cell::Survey < Cell::ViewModel
     votes = survey_answer ? survey_answer.votes : 0
     votes_left = survey_answer ? survey_answer.votes_left : 0
     "<i class='vote-up bi-caret-up-fill'></i><br>
-    <span class='vote-count'>#{votes}</span><br>
+    <span class='vote-count positive'>#{votes}</span><br>
     <i class='vote-down bi-caret-down-fill'></i><br>
     <span class='votes-left'>#{votes_left}</span>"
   end
