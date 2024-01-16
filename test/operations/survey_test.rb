@@ -64,11 +64,15 @@ class SurveyOperationTest < MiniTest::Spec
         existing_survey = create_survey(create_initial_questions: true)
         note_group = create_survey_group(survey: existing_survey)
         note = create_note(survey_group: note_group)
-
+        
+        assert_equal 1, Survey.all.count
         result = Survey::Operation::Duplicate.call( params: { id: existing_survey.id } )
         assert result.success?
-
+        assert_equal 2, Survey.all.count
+        existing_survey.reload
+        
         new_survey = result[:model]
+        assert existing_survey.id != new_survey.id
         new_survey.survey_groups.each do |group|
           assert existing_survey.survey_groups.where(name: group.name).first
         end
