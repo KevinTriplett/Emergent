@@ -4,7 +4,7 @@ module Admin
     before_action :signed_in_surveyor
 
     def index
-      @surveys = Survey.all
+      @surveys = Survey.order(id: :desc).all
       @token = form_authenticity_token
     end
 
