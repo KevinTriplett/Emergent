@@ -101,7 +101,7 @@ class SurveyOperationTest < MiniTest::Spec
       end
     end
 
-    it "Fails with blank description" do
+    it "Passes with blank description" do
       DatabaseCleaner.cleaning do
         existing_survey = create_survey
 
@@ -110,8 +110,7 @@ class SurveyOperationTest < MiniTest::Spec
           description: ""
         })
 
-        assert !result.success?
-        assert_equal(["description must be filled"], result["contract.default"].errors.full_messages_for(:description))
+        assert result.success?
       end
     end
   end
