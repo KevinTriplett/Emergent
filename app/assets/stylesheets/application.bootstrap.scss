@@ -160,7 +160,7 @@ body#survey {
       font-weight: normal;
       font-size: smaller;
       font-family: sans-serif;
-      margin-top: 10px;
+      margin-top: -10px;
 
       &.left {
         position: relative;
@@ -168,7 +168,7 @@ body#survey {
       }
       &.right {
         position: relative;
-        left: 80px;
+        left: 70px;
       }
     }
     input {
