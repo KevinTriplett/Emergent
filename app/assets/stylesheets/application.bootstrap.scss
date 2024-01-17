@@ -153,17 +153,30 @@ body#survey {
     font-weight: normal;
     font-size: large;
     font-family: sans-serif;
+    margin-top: 25px;
   }
-  .survey-answer-scale {
+  .survey-answer-scale, .survey-answer-range {
     label {
       font-weight: normal;
-      font-size: small;
+      font-size: smaller;
       font-family: sans-serif;
       margin-top: 10px;
+
+      &.left {
+        position: relative;
+        left: 10px;
+      }
+      &.right {
+        position: relative;
+        left: 80px;
+      }
     }
     input {
       vertical-align: bottom;
-    }
+      position: relative;
+      left: 30px;
+      top: -15px
+  }
   }
   .survey-answer-yes-no label, .survey-answer-multiple-choice label {
     margin-left: 3px;

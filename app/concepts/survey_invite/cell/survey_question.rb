@@ -104,9 +104,10 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
     when "Rating", "Range"
       left, right = survey_question.answer_labels ? survey_question.answer_labels.split("|") : ["0", "5"]
       # output horizontal radio buttons "1-N" and labels describing rating system
-      "<label>#{left}</label>\
-      <input type='range' name='#{name}' value='#{answer}' min='0' max='10'>\
-      <label>#{right}</label>"
+      "<label class='left'>#{left}</label>\
+      <label class='right'>#{right}</label>\
+      <br />\
+      <input type='range' name='#{name}' value='#{answer}' min='0' max='10'>"
     #----------------------
     when "Number"
       # output text input
@@ -137,7 +138,10 @@ class SurveyInvite::Cell::SurveyQuestion < Cell::ViewModel
   def answer_scale
     return nil unless survey_question.has_scale?
     left, right = (survey_question.scale_labels || "Not Important|Very Important").split("|")
-    "<label>#{left}</label> <input type='range' name='#{name}' value='#{scale}' min='0' max='10'> <label>#{right}</label>"
+    "<label class='left'>#{left}</label>\
+    <label class='right'>#{right}</label>\
+    <br />\
+    <input type='range' name='#{name}' value='#{scale}' min='0' max='10'>"
   end
 
   def scale_question
