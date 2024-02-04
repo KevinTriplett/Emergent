@@ -63,7 +63,6 @@ class ModerationAssessmentSpider < EmergeSpider
 
   # comment -------------------
 
-  # https://emergent-commons.mn.co/posts/hastily-thought/comments/100781250
   def record_comment
     container = find_comment_container
     author_profile_url = container.find(:css, "a.author-name")["href"]

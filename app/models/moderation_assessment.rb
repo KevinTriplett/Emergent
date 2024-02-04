@@ -127,7 +127,6 @@ class ModerationAssessment < ActiveRecord::Base
 
   def create_reply
     update(reply: "assessment|https://emergentcommons.app/m/#{token}")
-    # update(reply: "https://emergentcommons.app/m/#{token}|")
   end
 
   def update_state(key)
