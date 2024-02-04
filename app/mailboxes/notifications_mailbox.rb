@@ -6,7 +6,6 @@ class NotificationsMailbox < ApplicationMailbox
     # get link to comment or post
     url = doc.css('table.button-action-container a')[0].attribute_nodes[1].value.split('?')[0]
     # ignore if not a comment or post
-    return unless /post/.match(url)
-    ModerationAssessment.create(url: url)
+    ModerationAssessment.create(url: url) if /post/.match(url)
   end
 end
