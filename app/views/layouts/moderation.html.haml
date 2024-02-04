@@ -1,0 +1,16 @@
+!!! XML
+!!!
+%html
+  %head
+    %title Emergent Commons Moderation
+    %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag "jquery-ui"
+
+  %body{ id: @body_id, class: @body_class }
+    .container
+      .row
+        .col-sm-12
+          %h1 Moderation Assessment
+          = yield

@@ -34,6 +34,13 @@ namespace :ec do
 end
 
 namespace :ec do
+  desc "Crawls the Emergent Commons MN site for all moderation"
+  task nm_moderate_all: :environment do
+    ModerationAssessment.create_assessments
+  end
+end
+
+namespace :ec do
   desc "Imports users from tmp/import.tsv (a \"tab separated value\" file)"
   task import_users: :environment do
     User.import_users

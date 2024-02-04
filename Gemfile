@@ -15,6 +15,7 @@ gem "cells-hamlit"
 gem "cells-rails"
 gem "reform"
 gem "rolify"
+gem "ruby-openai"
 
 # web scraping
 gem "kimurai", path: "vendor/bundle/kimuraframework"

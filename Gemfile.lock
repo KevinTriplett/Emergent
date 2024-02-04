@@ -201,6 +201,13 @@ GEM
       dry-schema (>= 1.12, < 2)
       zeitwerk (~> 2.6)
     erubi (1.11.0)
+    event_stream_parser (1.0.0)
+    faraday (2.9.0)
+      faraday-net_http (>= 2.0, < 3.2)
+    faraday-multipart (1.0.4)
+      multipart-post (~> 2)
+    faraday-net_http (3.1.0)
+      net-http
     ferrum (0.13)
       addressable (~> 2.5)
       concurrent-ruby (~> 1.1)
@@ -258,7 +265,10 @@ GEM
     minitest-line (0.6.5)
       minitest (~> 5.0)
     msgpack (1.6.0)
+    multipart-post (2.3.0)
     murmurhash3 (0.1.6)
+    net-http (0.4.1)
+      uri
     net-http-digest_auth (1.4.1)
     net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
@@ -343,6 +353,10 @@ GEM
       uber (< 0.2.0)
     rexml (3.2.5)
     rolify (6.0.1)
+    ruby-openai (6.3.1)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -413,6 +427,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
+    uri (0.13.0)
     web-console (4.2.0)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -467,6 +482,7 @@ DEPENDENCIES
   redcarpet
   reform
   rolify
+  ruby-openai
   sassc-rails
   selenium-webdriver
   simple_form

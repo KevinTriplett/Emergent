@@ -23,9 +23,13 @@ module Emergent
 
     config.mn_greeter_username = ENV["MN_GREETER_USERNAME"]
     config.mn_greeter_password = ENV["MN_GREETER_PASSWORD"]
+    config.mn_moderation_username = ENV["MN_MODERATION_USERNAME"]
+    config.mn_moderation_password = ENV["MN_MODERATION_PASSWORD"]
     config.mn_moderator_username = ENV["MN_MODERATOR_USERNAME"]
     config.mn_moderator_password = ENV["MN_MODERATOR_PASSWORD"]
     config.mn_surveyor_username = ENV["MN_SURVEYOR_USERNAME"]
     config.mn_surveyor_password = ENV["MN_SURVEYOR_PASSWORD"]
+    
+    config.openai_api_key = ENV["OPENAI_API_KEY"]
   end
 end

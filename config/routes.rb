@@ -31,7 +31,7 @@ Rails.application.routes.draw do
   post "admin/survey_invites/:id/patch", to: "admin/survey_invites#patch", as: :admin_survey_invite_patch
   get  "take_survey/:survey_token", to: "survey_invites#new", as: :new_take_survey
   post "take_survey/:survey_token", to: "survey_invites#create", as: :take_survey
-  
+
   delete  "survey/votes/:token/:survey_question_id", to: "survey_invites#delete_votes", as: :survey_delete_votes
   
   namespace :admin do
@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   end
 
   resources :users, param: :token, only: [:show, :edit, :update]
+  resources :moderation_assessment, param: :token, only: [:index, :show], path: "m"
 
   root to: "home#index"
 end

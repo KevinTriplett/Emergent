@@ -2,6 +2,7 @@
 
 ## MVP 1
 - [ ] output cvs of survey answers
+- [ ] remove moderation feature
 - [X] sign in to EC@MN
 - [X] collect new member information
 - [X] simple greeter log in
