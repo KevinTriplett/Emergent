@@ -88,12 +88,8 @@ class Spider < ActiveRecord::Base
 
   ########################
 
-  def self.check_new_moderations
-    Moderation.all.each do |moderation|
-      next if moderation.replied?
-      set_message("moderation_spider", moderation.id)
-      ModerationSpider.crawl!
-    end
+  def self.check_moderations
+    ModerationAssessment.create_assessments
   end
 
   ########################
@@ -179,6 +175,6 @@ class Spider < ActiveRecord::Base
     get_new_members(20)
     send_magic_links
     send_survey_invite_messages
-    check_new_moderations
+    check_moderations
   end
 end
