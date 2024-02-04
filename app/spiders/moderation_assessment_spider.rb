@@ -64,14 +64,13 @@ class ModerationAssessmentSpider < EmergeSpider
   # comment -------------------
 
   def record_comment
-    container = find_comment_container
-    author_profile_url = container.find(:css, "a.author-name")["href"]
+    author_profile_url = find_comment_author["href"]
     member = User.find_by_profile_url(author_profile_url)
     logger.error "> COULD NOT FIND MEMBER" unless member
 
-    container.find(:css, ".comment-body").click
+    find_comment_body.click
     sleep 1
-    original_text = container.find(:css, ".comment-body").text
+    original_text = find_comment_body.text
 
     @@moderation.user = member if member
     @@moderation.original_text = original_text
@@ -127,27 +126,38 @@ class ModerationAssessmentSpider < EmergeSpider
 
   # comment -------------------
 
+  def find_comment_author
+    find_css("#{comment_item_css} > div > a.author-name", __method__)
+  end
+
+  def find_comment_body
+    find_css("#{comment_show_css} .comment-body", __method__)
+  end
+
   def find_comment_reply_button
-    find_css("a.btn-comment-reply", __method__, find_comment_container)
+    find_css("#{comment_item_css} > div > .comment-footer a.btn-comment-reply", __method__)
   end
 
   def find_comment_reply_input
-    find_css(".comment-replies-container p", __method__, find_comment_container)
+    find_css("#{comment_item_css} .comment-replies-container .comment-reply-wrapper p", __method__)
   end
 
   def find_comment_reply_submit_button
-    find_css(".submit-actions a.submit", __method__, find_comment_container)
+    find_css("#{comment_item_css} .submit-actions a.submit", __method__)
   end
 
   # utilities -------------------
 
-  def find_comment_container
-    find_css(".flyout-left .comments-list .comment-item[data-detail-comment='#{@@comment_id}']", __method__)
+  def comment_item_css
+    ".flyout-left .comments-list .comment-item[data-detail-comment='#{@@comment_id}']"
   end
 
-  def find_css(css, method_name, dom=nil)
+  def comment_show_css
+    ".flyout-left .comments-list .comment-show[data-detail-comment='#{@@comment_id}']"
+  end
+
+  def find_css(css, method_name)
     logger.debug "> #{method_name}: \"#{css}\""
-    wait_until(css)
-    (dom || browser).find(:css, css)
+    browser.find(:css, css)
   end
 end
