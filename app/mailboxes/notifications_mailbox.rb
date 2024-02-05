@@ -1,14 +1,17 @@
-require 'nokogiri'
-
 class NotificationsMailbox < ApplicationMailbox
   def process
+    # write out email body for debugging
     file = File.new("tmp/last_email", "w")
     file.write(mail.body.decoded)
     file.close
-    doc = Nokogiri::HTML(mail.body.decoded)
+
     # get link to comment or post
-    url = doc.css('table.button-action-container a')[0].attribute_nodes[1].value.split('?')[0]
-    # ignore if not a comment or post
-    ModerationAssessment.create(url: url) if /post/.match(url)
+    match = mail.body.decoded.match(/See Comment: (https:\/\/mightynetworks.com.+?)\?/)
+    url = match[1] if match
+    match = mail.body.decoded.match(/See Post: (https:\/\/mightynetworks.com.+?)\?/)
+    url = match[1] if match
+
+    # ignore if no url
+    ModerationAssessment.create(url: url) if url
   end
 end
