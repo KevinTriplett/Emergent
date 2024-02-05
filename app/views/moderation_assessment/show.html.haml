@@ -1,5 +1,15 @@
 .row
-  .col= markdown.render(@moderation.assessment).html_safe
+  .col
+    %hr
+    %h2 Original Text
+    = markdown.render(@moderation.original_text).html_safe
 .row
   .col
+    %hr
+    %h2 Assessment
+    = markdown.render(@moderation.assessment).html_safe
+.row
+  .col
+    %hr
+    %h2 Info
     %p= link_to "How is this assessment generated?", moderation_assessment_index_path, class: "btn btn-primary"
