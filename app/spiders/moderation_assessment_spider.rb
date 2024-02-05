@@ -84,6 +84,8 @@ class ModerationAssessmentSpider < EmergeSpider
 
     sleep 1
     find_post_reply_submit_button.click unless Rails.env.test?
+    sleep 2
+
     @@moderation.update_state(:replied)
   end
 
@@ -116,7 +118,7 @@ class ModerationAssessmentSpider < EmergeSpider
     sleep 1
     # logger.info(">> COMMENT REPLY IS #{find_comment_reply_input.text}")
     find_comment_reply_submit_button.click unless Rails.env.test?
-    sleep 5
+    sleep 2
 
     @@moderation.update_state(:replied)
   end
@@ -169,7 +171,7 @@ class ModerationAssessmentSpider < EmergeSpider
   end
 
   def find_post_reply_input
-    find_css("#detail-layout-comments-region .comments-form-wrapper .post-prompt-form-body-content .fr-element.fr-view", __method__)
+    find_css("#detail-layout-comments-region .comments-form-wrapper .post-prompt-form-container p", __method__)
   end
 
   def find_post_reply_submit_button
@@ -227,19 +229,6 @@ class ModerationAssessmentSpider < EmergeSpider
   def find_comment_last_reply
     find_css("#{comment_item_css} > .comment-replies-container .comments-list li:last-child > div .comment-body", __method__)
   end
-
-  # old
-  # def find_comment_reply_input
-  #   find_css("#{comment_item_css} > .comment-replies-container .comment-reply-wrapper .post-prompt-form-container p", __method__)
-  # end
-
-  # def find_comment_reply_submit_button
-  #   find_css("#{comment_item_css} > .comment-replies-container .comment-reply-wrapper .post-prompt-actions-container .submit-actions a.submit", __method__)
-  # end
-
-  # def find_comment_last_reply
-  #   find_css("#{comment_item_css} > .comment-replies-container .comments-list li:last-child > div .comment-body", __method__)
-  # end
 
   # utilities -------------------
 
