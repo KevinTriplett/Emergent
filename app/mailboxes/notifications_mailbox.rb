@@ -2,7 +2,7 @@ require 'nokogiri'
 
 class NotificationsMailbox < ApplicationMailbox
   def process
-    file = File.new("last_email", "w")
+    file = File.new("tmp/last_email", "w")
     file.write(mail.body.decoded)
     file.close
     doc = Nokogiri::HTML(mail.body.decoded)
