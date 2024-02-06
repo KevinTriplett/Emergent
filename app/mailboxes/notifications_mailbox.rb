@@ -1,14 +1,15 @@
 class NotificationsMailbox < ApplicationMailbox
   def process
-    # write out email body for debugging
-    file = File.new("tmp/last_email", "w")
-    file.write(mail.body.decoded)
-    file.close
-
     # get link to comment or post or article
     match = mail.body.decoded.match(/(\w+?): (https:\/\/mightynetworks.com.+?)\?/)
-    type = match[1] if match
+    what = match[1] if match
     url = match[2] if match
-    ModerationAssessment.create(url: url, what: type) if url
+    ModerationAssessment.create(url: url, what: what) if url
+
+    # write out email body for debugging
+    file = File.new("tmp/last_email", "w")
+    file.write("What: #{what} || URL: #{url}\n---------------------------------\n")
+    file.write(mail.body.decoded)
+    file.close
   end
 end
