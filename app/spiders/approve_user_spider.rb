@@ -27,8 +27,10 @@ class ApproveUserSpider < EmergeSpider
 
     ############################################
     # see if user has already joined (database out of sync with MN database)
-    first_name_td = "td.invite-list-item-first-name[title='#{first_name}']"
-    last_name_td = "td.invite-list-item-last-name[title='#{last_name}']"
+    first_name_title = first_name == "--" ? "" : "[title='#{first_name}']"
+    last_name_title = last_name == "--" ? "" : "[title='#{last_name}']"
+    first_name_td = "td.invite-list-item-first-name#{first_name_title}"
+    last_name_td = "td.invite-list-item-last-name#{last_name_title}"
     css_row = "#{css}:has(#{first_name_td}):has(#{last_name_td})"
     css_status = "#{css_row} .invite-list-item-status-text"
     return get_member_id(css_row) if response_has(css_status, "Joined!")
