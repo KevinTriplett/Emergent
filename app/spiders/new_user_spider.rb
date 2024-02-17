@@ -111,7 +111,7 @@ class NewUserSpider < EmergeSpider
       logger.fatal "> skipping user ------------------------------------"
       logger.fatal "> for member #{full_name}"
       logger.fatal "> failed to open Answers modal:"
-      logger.fatal e> rror
+      logger.fatal "> #{error}"
       logger.fatal "> skipping user ------------------------------------"
     end
 
