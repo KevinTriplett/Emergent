@@ -21,5 +21,5 @@ if 'production' == @environment
 end
 
 every 1.day do
-  rake "ec:backup"
+  rake "RAILS_ENV=production ec:backup"
 end
