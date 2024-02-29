@@ -104,16 +104,7 @@ class NewUserSpider < EmergeSpider
     profile_url = member_id ? "https://emergent-commons.mn.co/members/#{member_id}" : nil
     chat_url = member_id ? "https://emergent-commons.mn.co/chats/new?user_id=#{member_id}" : nil
 
-    begin
-      questions_and_answers = get_questions_and_answers(joined, row) if !user || user.questions_responses.blank?
-    rescue => error
-      # skip this member but output an error message in the log
-      logger.fatal "> skipping user ------------------------------------"
-      logger.fatal "> for member #{full_name}"
-      logger.fatal "> failed to open Answers modal:"
-      logger.fatal "> #{error}"
-      logger.fatal "> skipping user ------------------------------------"
-    end
+    questions_and_answers = get_questions_and_answers(joined, row, full_name) if !user || user.questions_responses.blank?
 
     logger.debug "> \n\n-------------------------------------------------------"
     logger.debug "> Adding name = #{full_name}"
@@ -153,7 +144,7 @@ class NewUserSpider < EmergeSpider
     href.blank? ? nil : href.value.split('/').last.to_i
   end
 
-  def get_questions_and_answers(joined, row)
+  def get_questions_and_answers(joined, row, full_name)
     questions_and_answers = nil
 
     row_id = row.attr("data-id") # returns the id string
@@ -186,15 +177,24 @@ class NewUserSpider < EmergeSpider
     sleep 1
     # browser.save_screenshot
     questions_and_answers = parse_questions_and_answers
+  rescue => error
+    # skip this member but output an error message in the log
+    logger.fatal "> skipping user ------------------------------------"
+    logger.fatal "> for member #{full_name}"
+    logger.fatal "> failed to open Answers modal:"
+    logger.fatal "> #{error}"
+    logger.fatal "> skipping user ------------------------------------"
+  ensure
     logger.debug "> ATTEMPTING TO CLOSE MODAL"
     css = ".modal-form-container-header a.modal-form-container-left-button"
-    browser.find(:css, css).click
+    browser.find(:css, css).click if response_has(css)
     # browser.save_screenshot
-    questions_and_answers
+    questions_and_answers.instance_of?(Array) ? questions_and_answers : nil
   end
 
   def parse_questions_and_answers
     css = ".invite-request-answers"
+    sleep 1
     wait_until(css)
     css += " ol li"
     browser.current_response.css(css).collect do |li|
