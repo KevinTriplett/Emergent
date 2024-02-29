@@ -171,8 +171,8 @@ class Spider < ActiveRecord::Base
   ########################
 
   def self.run_spiders
+    get_new_members(20) if (Time.now.min % 15) == 0
     approve_members
-    get_new_members(20)
     send_magic_links
     send_survey_invite_messages
     check_moderations
