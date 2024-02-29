@@ -13,7 +13,7 @@ class EmergeSpider < Kimurai::Base
   @@config = {
     user_agent: USER_AGENT,
     disable_images: true,
-    window_size: [1366, 768],
+    window_size: [1690, 600],
     user_data_dir: Rails.root.join('shared', 'tmp', 'chrome_profile').to_s,
     retry_request_errors: [
       EOFError,
