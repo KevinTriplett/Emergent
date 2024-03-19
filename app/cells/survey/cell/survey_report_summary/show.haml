@@ -1,19 +1,23 @@
 #survey-stats
-- if list
-  %h4= "Survey Statistics #{link_to "[summary]", admin_survey_report_path}"
-  %ul
-    %li= "Total invites: #{invites.count}"
-    %li= "Created: #{lists(:created)}"
-    %li= "Sent #{lists(:sent)}"
-    %li= "Opened #{lists(:opened)}"
-    %li= "Started #{lists(:started)}"
-    %li= "Finished #{lists(:finished)}"
-- else
-  %h4= "Survey Statistics #{link_to "[list]", admin_survey_report_path(list: 1)}"
-  %ul
-    %li= "Total invites: #{invites.count}"
-    %li= "Created (but not sent): #{count(:created)}"
-    %li= "Sent (but not opened): #{count(:sent)}"
-    %li= "Opened (but not started): #{count(:opened)}"
-    %li= "Started (but not finished): #{count(:started)}"
-    %li= "Finished: #{count(:finished)}"
+  - if list
+    %h4= "Survey Statistics #{link_to "[summary]", admin_survey_report_path}"
+    %ul
+      %li= "Total invites: #{invites.count}"
+      %li= "Created: #{lists(:created)}"
+      %li= "Sent #{lists(:sent)}"
+      %li= "Opened #{lists(:opened)}"
+      %li= "Started #{lists(:started)}"
+      %li= "Finished #{lists(:finished)}"
+  - else
+    %h4= "Survey Statistics #{link_to "[list]", admin_survey_report_path(list: 1)}"
+    %ul
+      %li= "Total invites: #{invites.count}"
+      %li= "Created (but not sent): #{count(:created)}"
+      %li= "Sent (but not opened): #{count(:sent)}"
+      %li= "Opened (but not started): #{count(:opened)}"
+      %li= "Started (but not finished): #{count(:started)}"
+      %li= "Finished: #{count(:finished)}"
+  - if names
+    %h4= link_to "Hide names", admin_survey_report_path
+  - else
+    %h4= link_to "Show names", admin_survey_report_path(names: 1)

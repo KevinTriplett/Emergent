@@ -99,6 +99,7 @@ module Admin
       @body_id = "survey"
       @token = form_authenticity_token
       @list = params[:list]
+      @names = params[:names]
       @survey = Survey.find(params[:id])
       @survey_questions = {}
       @survey.ordered_questions.each do |sq|

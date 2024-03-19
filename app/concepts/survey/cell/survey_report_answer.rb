@@ -9,6 +9,9 @@ class Survey::Cell::SurveyReportAnswer < Cell::ViewModel
   def survey_question
     model[:survey_question]
   end
+  def names
+    model[:names]
+  end
   def survey_answer
     survey_invite.survey_answer_for(survey_question.id)
   end
@@ -28,6 +31,9 @@ class Survey::Cell::SurveyReportAnswer < Cell::ViewModel
   end
   def voted?
     survey_question.vote? && survey_answer.votes > 0
+  end
+  def scale
+    survey_answer.scale
   end
 
   def user_name

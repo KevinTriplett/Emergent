@@ -1,6 +1,14 @@
-.survey-invite-answer{ class: answer_type_class }
-  %p
-    %span.survey-user-name= "#{user_name}:"
-    %span.answer= survey_answer && survey_answer.answer.present? ? survey_answer.answer : "[NO ANSWER]"
-  - if survey_answer && has_scale?
-    %p.survey-answer-scale= "Scale: #{survey_answer.scale}"
+- if names
+  .survey-invite-answer{ class: answer_type_class }
+    %p
+      %span.survey-user-name
+        %b= "#{user_name}:"
+      %span.answer= survey_answer && survey_answer.answer.present? ? survey_answer.answer : "[NOT ANSWERED]"
+      - if survey_answer && survey_question.has_scale?
+        %p.survey-answer-scale= "Scale: #{scale.present? ? survey_answer.scale : "[NO SCALE GIVEN]"}"
+- elsif survey_answer && survey_answer.answer.present?
+  .survey-invite-answer{ class: answer_type_class }
+    %p
+      %span.answer= survey_answer.answer
+      - if survey_answer && survey_question.has_scale? && scale.present?
+        %p.survey-answer-scale= "Scale: #{survey_answer.scale}"

@@ -2,6 +2,12 @@
 .survey-question
   - notes_ranked_with_votes.each do |nv|
     %p.note
-      %b= "#{nv[:votes]} stars, #{nv[:zeros]} zeros, #{nv[:voters]} voters: (#{nv[:counts].join(' ')})"
-      %br
       = nv[:note].text
+      %br
+      - if names
+        - nv[:answers].each do |a|
+          = "&nbsp;&nbsp;&nbsp;&nbsp;#{a.vote_count} -- "
+          %b= "#{a.user_name}"
+          %br
+      - else
+        %b= "#{nv[:votes]} stars, #{nv[:zeros]} zeros, #{nv[:voters]} voters: (#{nv[:counts].join(' ')})"

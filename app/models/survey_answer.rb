@@ -3,7 +3,7 @@ class SurveyAnswer < ActiveRecord::Base
   belongs_to :survey_question
   has_secure_token
 
-  delegate :user, :survey, to: :survey_invite
+  delegate :user, :survey, :user_name, to: :survey_invite
   delegate :question_type, :question, :has_scale?, :answer_type,
     :survey_group, :survey_group_id, :group_position, to: :survey_question
 

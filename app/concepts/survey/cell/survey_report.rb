@@ -9,6 +9,9 @@ class Survey::Cell::SurveyReport < Cell::ViewModel
   def survey_question
     model[:survey_question]
   end
+  def names
+    model[:names]
+  end
 
   def markdown
     @renderer ||= Redcarpet::Render::HTML.new({
@@ -52,5 +55,27 @@ class Survey::Cell::SurveyReport < Cell::ViewModel
   end
   def has_scale?
     survey_question.has_scale?
+  end
+
+  def compile_ranges
+    survey_answers = SurveyAnswer.where(survey_question_id: survey_question.id)
+    answers = survey_answers.collect(&:answer).compact.map(&:to_i).sort! { |a, b| b <=> a } # high to low
+    no_answers = survey_answers.size - answers.size
+    size_answers = answers.size
+    average_answer = answers.sum / size_answers unless 0 == size_answers
+    scales = survey_answers.collect(&:scale).compact.sort! { |a, b| b <=> a } # high to low
+    no_scales = survey_answers.size - scales.size
+    size_scales = scales.size
+    average_scale = scales.sum / size_scales unless 0 == size_scales
+    {
+      answers: answers,
+      no_answers: no_answers,
+      average_answer: average_answer,
+      size_answers: size_answers,
+      scales: scales,
+      no_scales: no_scales,
+      average_scale: average_scale,
+      size_scales: size_scales
+    }
   end
 end

@@ -6,6 +6,9 @@ class Survey::Cell::SurveyReportSummary < Cell::ViewModel
   def list
     model[:list]
   end
+  def names
+    model[:names]
+  end
   def invites
     model[:invites]
   end
