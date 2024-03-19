@@ -8,14 +8,20 @@
       - if has_scale?
         .survey-question-scale-question= "Scale: #{scale_question}"
       = "names = #{names} and question.range? = #{survey_question.range?}"
-      - if names || !survey_question.range?
-        - survey_invites.each do |invite|
-          - next unless invite.started?
-          = cell(Survey::Cell::SurveyReportAnswer, {survey_invite: invite, survey_question: survey_question, names: names})
+      - if survey_question.range?
+        - if names
+          - answers = SurveyAnswer.where(survey_question_id: survey_question.id)
+          - if has_scale?
+            - answers = answers.select(&:scale).sort {|a,b| b.scale <=> a.scale}
+          - answers.each do |sa|
+            = cell(Survey::Cell::SurveyReportAnswer, {survey_invite: sa.survey_invite, survey_question: survey_question, names: names})
+        - else
+          - r = compile_ranges
+          .survey-invite-answer
+            %p.note
+              %b= "Range: #{r[:average_answer]} average, #{r[:no_answers]} none, #{r[:answers].size} ranges: (#{r[:answers].join(' ')})"
+              %br
+              %b= "Scale: #{r[:average_scale]} average, #{r[:no_scales]} none, #{r[:scales].size} scales: (#{r[:scales].join(' ')})"
       - else
-        - r = compile_ranges
-        .survey-invite-answer
-          %p.note
-            %b= "Range: #{r[:average_answer]} average, #{r[:no_answers]} none, #{r[:answers].size} ranges: (#{r[:answers].join(' ')})"
-            %br
-            %b= "Scale: #{r[:average_scale]} average, #{r[:no_scales]} none, #{r[:scales].size} scales: (#{r[:scales].join(' ')})"
+        - survey_invites.select(&:started?).each do |invite|
+          = cell(Survey::Cell::SurveyReportAnswer, {survey_invite: invite, survey_question: survey_question, names: names})
