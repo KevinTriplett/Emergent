@@ -10,4 +10,4 @@
           %b= "#{a.user_name}"
           %br
       - else
-        %b= "Votes:<br />&nbsp;&nbsp;&nbsp;#{nv[:votes]} votes<br />&nbsp;&nbsp;&nbsp;#{nv[:zeros]} zeros<br />&nbsp;&nbsp;&nbsp;#{nv[:voters]} voters: #{nv[:counts].join(' ')}<br />&nbsp;&nbsp;&nbsp;Average: #{nv[:average]}"
+        %b= "Votes:<br />&nbsp;&nbsp;&nbsp;#{nv[:votes]} vote count<br />&nbsp;&nbsp;&nbsp;#{nv[:voters]} voters: #{nv[:counts].join(' ')}<br />&nbsp;&nbsp;&nbsp;#{nv[:zeros]} no votes<br />&nbsp;&nbsp;&nbsp;Average: #{nv[:average]}"
