@@ -17,7 +17,7 @@ class Survey::Cell::SurveyNoteReport < Cell::ViewModel
       vote_counts = survey_answers.collect(&:vote_count).select {|vc| vc > 0}
       zeros_count = survey_answers.count - vote_counts.count
       voters_count = vote_counts.count
-      vote_counts.sort! { |a, b| a <=> b } # low to high
+      vote_counts.sort! { |a, b| b <=> a } # low to high
       total_votes = survey_answers.sum(&:vote_count)
       {
         note: sq.note,
@@ -27,6 +27,6 @@ class Survey::Cell::SurveyNoteReport < Cell::ViewModel
         zeros: zeros_count,
         voters: voters_count
       }
-    end
+    end.sort {|a,b| b[:votes] <=> a[:votes]}
   end
 end

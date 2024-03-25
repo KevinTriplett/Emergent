@@ -36,6 +36,9 @@ class Survey::Cell::SurveyReport < Cell::ViewModel
     return nil unless survey_question.has_scale?
     survey_question.scale_question
   end
+  def print_range_description
+    "0: #{}"
+  end
 
   def question_type_class
     "survey-question-#{survey_question.question_type.downcase.gsub(" ", "-").gsub("/", "-")}"
