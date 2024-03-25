@@ -7,8 +7,8 @@
       %h3 ~:~ ANSWERS ~:~
       - if has_scale?
         .survey-question-scale-question= "Scale: #{scale_question}"
-      = "names = #{names} and question.range? = #{survey_question.range?}"
       - if survey_question.range?
+        %p= print_range_description
         - if names
           - answers = SurveyAnswer.where(survey_question_id: survey_question.id)
           - if has_scale?
