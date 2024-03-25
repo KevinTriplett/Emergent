@@ -39,12 +39,12 @@ class Survey::Cell::SurveyReport < Cell::ViewModel
   def range_labels
     return unless survey_question.answer_labels
     labels = survey_question.answer_labels.split("|")
-    "<br />Question range: 0 = #{labels[0]} ~:~ 10 = #{labels[1]}"
+    "0 = #{labels[0]} ~:~ 10 = #{labels[1]}"
   end
   def scale_labels
     return unless survey_question.scale_labels
     labels = survey_question.scale_labels.split("|")
-    "<br />Scale range: 0 = #{labels[0]} ~:~ 10 = #{labels[1]}"
+    "0 = #{labels[0]} ~:~ 10 = #{labels[1]}"
   end
 
   def question_type_class

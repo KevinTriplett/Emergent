@@ -2,10 +2,9 @@
 .survey-question{ id: question_css_id }
   %div{ class: question_type_class }
     %h3= "~:~ #{answer? ? "QUESTION" : "INSTRUCTIONS / NOTES"} ~:~"
-    %p= "#{question} #{range_labels}"
+    %p= question
     - if has_scale?
-      .survey-question-scale-question
-        = "Scale: #{scale_question} #{scale_labels}"
+      .survey-question-scale-question= "Scale: #{scale_question}"
     - if answer?
       %h3 ~:~ ANSWERS ~:~
       - if survey_question.range?
@@ -19,9 +18,9 @@
           - r = compile_ranges
           .survey-invite-answer
             %p.note
-              %b= "Range:<br />&nbsp;&nbsp;&nbsp;#{r[:average_answer]} average<br />&nbsp;&nbsp;&nbsp;#{r[:answers].size} ranges: #{r[:answers].join(' ')}<br />&nbsp;&nbsp;&nbsp;#{r[:no_answers]} no response"
+              %b= "Range: #{range_labels}<br />&nbsp;&nbsp;&nbsp;#{r[:average_answer]} average<br />&nbsp;&nbsp;&nbsp;#{r[:answers].size} ranges: #{r[:answers].join(' ')}<br />&nbsp;&nbsp;&nbsp;#{r[:no_answers]} no response"
               %br
-              %b= "Scale:<br />&nbsp;&nbsp;&nbsp;#{r[:average_scale]} average<br />&nbsp;&nbsp;&nbsp;#{r[:scales].size} scales: #{r[:scales].join(' ')}<br />&nbsp;&nbsp;&nbsp;#{r[:no_scales]} no response"
+              %b= "Scale: #{scale_labels}<br />&nbsp;&nbsp;&nbsp;#{r[:average_scale]} average<br />&nbsp;&nbsp;&nbsp;#{r[:scales].size} scales: #{r[:scales].join(' ')}<br />&nbsp;&nbsp;&nbsp;#{r[:no_scales]} no response"
       - else
         - survey_invites.select(&:started?).each do |invite|
           = cell(Survey::Cell::SurveyReportAnswer, {survey_invite: invite, survey_question: survey_question, names: names})
