@@ -265,7 +265,7 @@ GEM
     minitest-line (0.6.5)
       minitest (~> 5.0)
     msgpack (1.6.0)
-    multipart-post (2.3.0)
+    multipart-post (2.4.0)
     murmurhash3 (0.1.6)
     net-http (0.4.1)
       uri
@@ -353,7 +353,7 @@ GEM
       uber (< 0.2.0)
     rexml (3.2.5)
     rolify (6.0.1)
-    ruby-openai (6.3.1)
+    ruby-openai (6.4.0)
       event_stream_parser (>= 0.3.0, < 2.0.0)
       faraday (>= 1)
       faraday-multipart (>= 1)

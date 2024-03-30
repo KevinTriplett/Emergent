@@ -4,7 +4,7 @@ class NotificationsMailbox < ApplicationMailbox
     match = mail.body.decoded.match(/(\w+?): (https:\/\/mightynetworks.com.+?)\?/)
     what = match[1] if match
     url = match[2] if match
-    ModerationAssessment.create(url: url, what: what) if url
+    ModerationAssessment.create(url: url, what: what, state: 0) if url
 
     # write out email body for debugging
     file = File.new("tmp/last_email", "w")

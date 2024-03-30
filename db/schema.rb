@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
+ActiveRecord::Schema[7.0].define(version: 2024_03_30_122009) do
   create_table "action_mailbox_inbound_emails", force: :cascade do |t|
     t.integer "status", default: 0, null: false
     t.string "message_id", null: false
@@ -52,8 +49,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   end
 
   create_table "memberships", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "space_id"
+    t.integer "user_id"
+    t.integer "space_id"
     t.string "role"
     t.datetime "start_timestamp"
     t.datetime "duration_days"
@@ -67,7 +64,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
     t.string "url"
     t.string "original_text"
     t.string "assessment"
-    t.bigint "user_id"
+    t.integer "user_id"
     t.string "thread_id"
     t.string "message_id"
     t.string "run_id"
@@ -75,6 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "what"
+    t.string "ai_model_name"
     t.index ["user_id"], name: "index_moderation_assessments_on_user_id"
   end
 
@@ -82,7 +80,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
     t.string "token"
     t.string "url"
     t.string "original_text"
-    t.bigint "user_id"
+    t.integer "user_id"
     t.integer "moderator_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -93,8 +91,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   end
 
   create_table "moderations_violations", id: false, force: :cascade do |t|
-    t.bigint "moderation_id", null: false
-    t.bigint "violation_id", null: false
+    t.integer "moderation_id", null: false
+    t.integer "violation_id", null: false
   end
 
   create_table "notes", force: :cascade do |t|
@@ -112,7 +110,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   create_table "roles", force: :cascade do |t|
     t.string "name"
     t.string "resource_type"
-    t.bigint "resource_id"
+    t.integer "resource_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
@@ -132,7 +130,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   end
 
   create_table "survey_answers", force: :cascade do |t|
-    t.bigint "survey_question_id"
+    t.integer "survey_question_id"
     t.text "answer"
     t.integer "scale"
     t.datetime "created_at", null: false
@@ -145,7 +143,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   end
 
   create_table "survey_groups", force: :cascade do |t|
-    t.bigint "survey_id"
+    t.integer "survey_id"
     t.string "name"
     t.string "description"
     t.integer "votes_max"
@@ -158,8 +156,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   end
 
   create_table "survey_invites", force: :cascade do |t|
-    t.bigint "survey_id"
-    t.bigint "user_id"
+    t.integer "survey_id"
+    t.integer "user_id"
     t.string "subject"
     t.text "body"
     t.string "token"
@@ -233,8 +231,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_143630) do
   end
 
   create_table "users_roles", id: false, force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "role_id"
+    t.integer "user_id"
+    t.integer "role_id"
     t.index ["role_id"], name: "index_users_roles_on_role_id"
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
     t.index ["user_id"], name: "index_users_roles_on_user_id"

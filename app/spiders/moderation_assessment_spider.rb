@@ -15,7 +15,7 @@ class ModerationAssessmentSpider < EmergeSpider
     @@comment_id = /\/comments\/(\d+)/.match(@@moderation.url)
     @@comment_id = @@comment_id[1] if @@comment_id
 
-    sign_in_and_send_request_to(:moderation, method.to_sym, @@moderation.url)
+    sign_in_and_send_request_to(:moderator, method.to_sym, @@moderation.url)
   end
 
   # record original text -------------------
