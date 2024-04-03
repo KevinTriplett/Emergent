@@ -38,4 +38,26 @@ class SurveyGroupTest < MiniTest::Spec
       assert_equal [note_3.id, note_2.id, note_1.id], group.ordered_notes.map(&:id)
     end
   end
+
+  it "destroys dependent survey_questions and survey_notes" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      group = create_survey_group(survey: survey)
+      question = create_survey_question(survey_group: group)
+      note = create_note(survey_group: group)
+      survey.destroy
+      assert_raises ActiveRecord::RecordNotFound do
+        survey.reload
+      end
+      assert_raises ActiveRecord::RecordNotFound do
+        group.reload
+      end
+      assert_raises ActiveRecord::RecordNotFound do
+        question.reload
+      end
+      assert_raises ActiveRecord::RecordNotFound do
+        note.reload
+      end
+    end
+  end
 end

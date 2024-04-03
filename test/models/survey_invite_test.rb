@@ -182,4 +182,26 @@ class SurveyInviteTest < MiniTest::Spec
       end
     end
   end
+
+  it "destroys dependent survey_answers but not questions or notes or groups" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      group = create_survey_group(survey: survey)
+      question = create_survey_question(survey_group: group)
+      note = create_note(survey_group: group)
+      invite = create_survey_invite(survey: survey)
+      answer = create_survey_answer(survey_invite: invite)
+      invite.destroy
+      assert survey.reload.present?
+      assert group.reload.present?
+      assert question.reload.present?
+      assert note.reload.present?
+      assert_raises ActiveRecord::RecordNotFound do
+        invite.reload
+      end
+      assert_raises ActiveRecord::RecordNotFound do
+        answer.reload
+      end
+    end
+  end
 end

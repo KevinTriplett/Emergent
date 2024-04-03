@@ -51,7 +51,7 @@ class SurveyInvitesController < ApplicationController
     if finished?
       if "Test Survey" == @survey_invite.subject && "Test Survey" == @survey_invite.body
         @url = admin_survey_path(@survey_invite.survey_id)
-        @survey_invite.delete
+        @survey_invite.destroy
       else
         @survey_invite.update url: survey_show_results_url(token: @survey_invite.token)
         # @survey_invite.send_finished_survey_link

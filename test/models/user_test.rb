@@ -51,4 +51,20 @@ class UserTest < MiniTest::Spec
       assert_equal [["1q","1a"],["2q","2a"],["3q","3a"],["4q","4a"],["5q","5a"]], user.questions_responses_array
     end
   end
+
+  it "destroys dependent survey_invites" do
+    DatabaseCleaner.cleaning do
+      user = create_user
+      survey = create_survey
+      invite = create_survey_invite(survey: survey, user: user)
+      user.destroy
+      assert survey.reload.present?
+      assert_raises ActiveRecord::RecordNotFound do
+        user.reload
+      end
+      assert_raises ActiveRecord::RecordNotFound do
+        invite.reload
+      end
+    end
+  end
 end

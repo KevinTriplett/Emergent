@@ -253,4 +253,18 @@ class SurveyTest < MiniTest::Spec
       assert_equal [group_1, group_2, group_3].to_set, survey.ordered_note_groups.to_set
     end
   end
+
+  it "destroys dependent survey_group" do
+    DatabaseCleaner.cleaning do
+      survey = create_survey
+      group = create_survey_group(survey: survey)
+      survey.destroy
+      assert_raises ActiveRecord::RecordNotFound do
+        survey.reload
+      end
+      assert_raises ActiveRecord::RecordNotFound do
+        group.reload
+      end
+    end
+  end
 end

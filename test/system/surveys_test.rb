@@ -143,7 +143,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_current_path survey_path(token: SurveyInvite.first.token)
       assert_equal SurveyInvite.all.count, 1
 
-      SurveyInvite.delete_all
+      SurveyInvite.destroy_all
       visit take_survey_path(survey_token: survey.token)
 
       # try badly formatted email
@@ -152,7 +152,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_current_path survey_path(token: SurveyInvite.first.token)
       assert_equal SurveyInvite.all.count, 1
 
-      SurveyInvite.delete_all
+      SurveyInvite.destroy_all
       visit take_survey_path(survey_token: survey.token)
 
       # try good name
@@ -161,7 +161,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_equal SurveyInvite.all.count, 1
       assert_current_path survey_path(token: SurveyInvite.first.token)
 
-      SurveyInvite.delete_all
+      SurveyInvite.destroy_all
       visit take_survey_path(survey_token: survey.token)
 
       # try badly formatted name
@@ -170,7 +170,7 @@ class SurveysTest < ApplicationSystemTestCase
       assert_equal SurveyInvite.all.count, 1
       assert_current_path survey_path(token: SurveyInvite.first.token)
 
-      SurveyInvite.delete_all
+      SurveyInvite.destroy_all
 
       # ------------------------------------------------------------------------------
       # now with an invite
