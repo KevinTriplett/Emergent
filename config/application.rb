@@ -25,6 +25,11 @@ module Emergent
     config.mn_greeter_password = ENV["MN_GREETER_PASSWORD"]
     config.mn_moderation_username = ENV["MN_MODERATION_USERNAME"]
     config.mn_moderation_password = ENV["MN_MODERATION_PASSWORD"]
+    config.mn_surveyor_username = config.mn_greeter_username
+    config.mn_surveyor_password = config.mn_greeter_password
+    # TODO: restore when/if surveyor account is created
+    # config.mn_surveyor_username = ENV["MN_SURVEYOR_USERNAME"]
+    # config.mn_surveyor_password = ENV["MN_SURVEYOR_PASSWORD"]
     
     config.openai_api_key = ENV["OPENAI_API_KEY"]
   end

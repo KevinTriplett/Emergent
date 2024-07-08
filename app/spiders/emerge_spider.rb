@@ -81,9 +81,8 @@ class EmergeSpider < Kimurai::Base
       [Rails.configuration.mn_greeter_username, Rails.configuration.mn_greeter_password]
     when :moderation
       [Rails.configuration.mn_moderation_username, Rails.configuration.mn_moderation_password]
-    # TODO: restore when/if surveyor account is created
-    # when :surveyor
-    #   [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
+    when :surveyor
+      [Rails.configuration.mn_surveyor_username, Rails.configuration.mn_surveyor_password]
     end
 
     logger.info "> SIGN IN"
