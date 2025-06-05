@@ -13,6 +13,11 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
+  @@limit_user_count = 50 # magic number for now -- enough to get past the unapproved users
+  row_css = ".invite-list-container tr.invite-request-list-item"
+    wait_until(row_css)
+    scroll_to_end(row_css, "#flyout-main-content")
+
     first_name, last_name = get_and_clear_message.split('|')
     logger.info "> APPROVING #{first_name} #{last_name}"
     # cope with names that have an apostrophe in them
@@ -60,5 +65,47 @@ class ApproveUserSpider < EmergeSpider
     member_id = link.split("/").last
     logger.info "> GOT MEMBER ID '#{member_id}'"
     set_message(member_id)
+  end
+
+  ##################################################
+  ## SCROLLING
+  def scroll_to_end(css, modal_css)
+    new_count = 0
+    prev_count = browser.current_response.css(css).count
+    logger.debug "> SCROLLING TO #{@@limit_user_count} ROWS ..."
+
+    return prev_count if prev_count == 0 || (@@limit_user_count > 0 && prev_count >= @@limit_user_count)
+    
+    loop do
+      if modal_css
+        browser.execute_script("$('#{modal_css}')[0].scrollBy(0,10000)")
+      else
+        browser.execute_script("window.scrollBy(0,10000)")
+      end
+
+      logger.debug "> WAITING FOR NEW ROW COUNT ..."
+      for i in 0..20
+        break if browser.current_response.css(css).count > prev_count
+        sleep 1
+      end
+      break if browser.current_response.css(css).count == prev_count
+
+      new_count = browser.current_response.css(css).count
+      logger.info "> INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
+      prev_count = new_count
+      break if @@limit_user_count > 0 && new_count >= @@limit_user_count
+    end
+
+    new_count
+  end
+
+  def scroll_back_to_beginning(count, modal_css)
+    for i in 0..count.to_i
+      if modal_css
+        browser.execute_script("$('#{modal_css}')[0].scrollBy(0,-10000)")
+      else
+        browser.execute_script("window.scrollBy(0,-10000)")
+      end
+    end
   end
 end
