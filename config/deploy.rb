@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.17.1"
+lock "~> 3.19.0"
 
 set :application, "Emergent"
 set :repo_url, "git@github.com:KevinTriplett/Emergent.git"

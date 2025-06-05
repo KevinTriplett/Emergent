@@ -81,7 +81,7 @@ group :development do
   gem "web-console"
 
   # deploy...
-  gem 'capistrano'
+  gem 'capistrano', "~> 3.19.0"
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
   gem 'capistrano-passenger'
