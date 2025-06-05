@@ -146,7 +146,7 @@ GEM
     chronic (0.10.2)
     cliver (0.3.2)
     coderay (1.1.3)
-    concurrent-ruby (1.3.5)
+    concurrent-ruby (1.3.4)
     connection_pool (2.5.3)
     crass (1.0.6)
     cssbundling-rails (1.4.3)
@@ -536,6 +536,7 @@ DEPENDENCIES
   cells-hamlit
   cells-rails
   chroma
+  concurrent-ruby (= 1.3.4)
   cssbundling-rails
   database_cleaner-active_record
   debug

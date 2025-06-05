@@ -67,6 +67,10 @@ gem "sassc-rails"
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+group :production do
+  gem "concurrent-ruby", "1.3.4" # 1.3.5 hangs with "uninitialized constant ActiveSupport::LoggerThreadSafeLevel::Logger"
+end
+
 group :development, :production do
   gem "pg", "~> 1.1"
 end
