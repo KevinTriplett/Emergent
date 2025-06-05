@@ -249,15 +249,14 @@ class NewUserSpider < EmergeSpider
 
       logger.debug "> WAITING FOR NEW ROW COUNT ..."
       for i in 0..20
-        break if browser.current_response.css(css).count > prev_count
+        new_count = browser.current_response.css(css).count
+        break if new_count > prev_count
         sleep 1
       end
-      break if browser.current_response.css(css).count == prev_count
+      break if new_count == prev_count || (@@limit_user_count > 0 && new_count >= @@limit_user_count)
 
-      new_count = browser.current_response.css(css).count
       logger.info "> INFINITE SCROLLING: prev_count = #{prev_count}; new_count = #{new_count}"
       prev_count = new_count
-      break if @@limit_user_count > 0 && new_count >= @@limit_user_count
     end
 
     new_count
