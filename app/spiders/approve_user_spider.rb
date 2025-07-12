@@ -13,7 +13,7 @@ class ApproveUserSpider < EmergeSpider
   end
 
   def approve_user(response, url:, data: {})
-  @@limit_user_count = 50 # magic number for now -- enough to get past the unapproved users
+  @@limit_user_count = 100 # magic number for now -- enough to get past the unapproved users
   row_css = ".invite-list-container tr.invite-request-list-item"
     wait_until(row_css)
     scroll_to_end(row_css, "#flyout-main-content")
