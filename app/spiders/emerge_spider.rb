@@ -91,10 +91,10 @@ class EmergeSpider < Kimurai::Base
     browser.find(:css, "#c-p-bn").click if response_has("#c-p-bn")
 
     browser.fill_in "Email", with: email
-    browser.click "Next"
-    browser.click "Sign In with Password"
+    browser.click_button "Next"
+    browser.click_button "Sign In with Password"
     browser.fill_in "Password", with: password
-    browser.click "Next"
+    browser.click_button "Next"
 
     wait_while(".pace-running")
     wait_until("body.communities-app")
