@@ -23,9 +23,6 @@ class NewUserSpider < EmergeSpider
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
 
-    # acknowledge cookies
-    browser.find(:css, "#gdpr-cookie-accept").click if response_has("#gdpr-cookie-accept")
-
     # MN is cloaking member emails so reveal emails
     logger.info "> MAKING EMAILS VISIBLE"
     begin
