@@ -18,6 +18,11 @@ class NewUserSpider < EmergeSpider
   ##################################################
   ## PARSE NEW
   def parse_members(response, url:, data: {})
+    if (response_has("#c-p-bn"))
+      logger.info "> GDPR COOKIE ACCEPT"
+      browser.find(:css, "#c-p-bn").click
+      sleep 1
+    end
     logger.debug "> LOOKING FOR NEW JOIN REQUESTS"
     row_css = ".invite-list-container .invite-request-list-item"
     wait_until(row_css)
