@@ -88,8 +88,10 @@ class EmergeSpider < Kimurai::Base
     logger.info "> SIGN IN"
     wait_until("body.auth-sign_in")
     browser.fill_in "Email", with: email
+    browser.click_link "Next"
+    browser.click_button "Sign In with Password"
     browser.fill_in "Password", with: password
-    browser.click_link "Sign In"
+    browser.click_link "Next"
 
     wait_while(".pace-running")
     wait_until("body.communities-app")

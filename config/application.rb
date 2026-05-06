@@ -30,7 +30,5 @@ module Emergent
     # TODO: restore when/if surveyor account is created
     # config.mn_surveyor_username = ENV["MN_SURVEYOR_USERNAME"]
     # config.mn_surveyor_password = ENV["MN_SURVEYOR_PASSWORD"]
-    
-    config.openai_api_key = ENV["OPENAI_API_KEY"]
   end
 end
