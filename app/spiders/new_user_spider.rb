@@ -19,18 +19,20 @@ class NewUserSpider < EmergeSpider
   ## PARSE NEW
   def parse_members(response, url:, data: {})
     logger.debug "> LOOKING FOR NEW JOIN REQUESTS"
-    row_css = ".invite-list-container tr.invite-request-list-item"
+    row_css = ".invite-list-container .invite-request-list-item"
     wait_until(row_css)
     @@new_user_count = scroll_to_end(row_css, "#flyout-main-content")
 
     # MN is cloaking member emails so reveal emails
     logger.info "> MAKING EMAILS VISIBLE"
     begin
-      browser.find(:css, ".invite-list-container thead .email-visibility-toggle").click
-      wait_until(".confirmation-modal-container .modal-confirm-button")
-      sleep 1
-      browser.find(:css, ".confirmation-modal-container .modal-confirm-button").click
-      sleep 1
+      if (response_has(".invite-list-container .email-visibility-toggle"))
+        browser.find(:css, ".invite-list-container .email-visibility-toggle").click
+        wait_until(".confirmation-modal-container .modal-confirm-button")
+        sleep 1
+        browser.find(:css, ".confirmation-modal-container .modal-confirm-button").click
+        sleep 1
+      end
     rescue => error
       logger.info "> COULD NOT REVEAL EMAIL BECAUSE: #{error}"
     end
@@ -165,7 +167,7 @@ class NewUserSpider < EmergeSpider
       #   user not in database and not approved yet
       #     for pending requests, just click the handy "View Answers" button
       #     scrap answers to questions
-      css += " td.invite-list-item-status a.invite-list-item-view-answers-button"
+      css += " .invite-list-item-status a.invite-list-item-view-answers-button"
       logger.debug "> CLICKING THE VIEW ANSWER BUTTON"
     end
 
