@@ -1,6 +1,7 @@
 # TODO
 
 ## MVP 1
+- [ ] mark deleted accounts
 - [ ] output cvs of survey answers
 - [ ] remove moderation feature
 - [X] sign in to EC@MN
@@ -46,6 +47,7 @@
 - [X] use MN chat to send magic keys to members
 - [X] allow name or email to retrieve magic link
 BUGS
+- [ ] new members not approved do not appear without first scrolling
 - [X] do not send to greeter app after survey
 - [X] need the ability for a greeter to log in themselves so that approval chats come from them
 - [X] renew ssl certs
