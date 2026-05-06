@@ -87,6 +87,9 @@ class EmergeSpider < Kimurai::Base
 
     logger.info "> SIGN IN"
     wait_until("body.auth-sign_in")
+    # acknowledge cookies
+    browser.find(:css, "#c-p-bn").click if response_has("#c-p-bn")
+
     browser.fill_in "Email", with: email
     browser.click_link "Next"
     browser.click_button "Sign In with Password"
