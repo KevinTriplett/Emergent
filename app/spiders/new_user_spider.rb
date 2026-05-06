@@ -49,6 +49,10 @@ class NewUserSpider < EmergeSpider
   ##################################################
   ## EXTRACT USER DATA
   def exfiltrate_user_hash(row)
+    if (response_has(".mighty-expandable-box-head"))
+      browser.find(:css, ".mighty-expandable-box-head").click
+      sleep 1
+    end
     status = row.css(".invite-list-item-status-text").text.strip
     joined = "Joined!" == status
     member_id = get_member_id(row)
