@@ -15,11 +15,11 @@ set :output, "/home/deploy/Emergent/production/current/log/cron.log"
 env 'MAILTO', 'output_of_cron@kevintriplett.com'
 
 if 'production' == @environment
-  every '*/15 1-23 * * *' do
+  every 1.day, at:'09:00' do
     rake "ec:run_spiders"
   end
 end
 
-every 1.day, at: '03:00' do
+every 1.day, at: '09:30' do
   rake "RAILS_ENV=production ec:backup"
 end
